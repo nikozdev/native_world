@@ -1,13 +1,14 @@
 #ifndef CN_WORLD_H
 #define CN_WORLD_H
 
-#include <CheerNik.h>
+#include <cn_Application.h>
+
+#pragma comment (lib, "CN_Engine.lib")
 
 // Predeclarations
 namespace CN
 {
 	class CHN_API Application;
-	extern Application* cnCreateApp();
 }
 
 namespace CNW

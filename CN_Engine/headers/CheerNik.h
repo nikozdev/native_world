@@ -4,4 +4,8 @@
 
 #include <cn_Application.h>
 
+/// --------<EntryPoint>--------
+#include "EntryPoint.h"
+/// --------</EntryPoint>--------
+
 #endif

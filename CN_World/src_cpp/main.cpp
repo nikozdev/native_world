@@ -1,8 +1,10 @@
 #include <CNWorld.h>
+#include <CheerNik.h>
 
-int main(int argc, char** argv)
+namespace CN
 {
-	auto app = CN::cnCreateApp();
-	app->run();
-	delete app;
+	Application* cnCreateApp()
+	{
+		return new CNW::CNWorld();
+	}
 }

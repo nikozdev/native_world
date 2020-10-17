@@ -1,7 +1,7 @@
 #ifndef CHEER_NIK_APP_H
 #define CHEER_NIK_APP_H
 
-#include <cn/cn_core.hpp>
+#include <cn_core.hpp>
 
 namespace CN
 {
@@ -16,7 +16,7 @@ namespace CN
 	};
 
 	/// Has to be defined in client - function for entry point
-	extern Application* cnCreateApp();
+	Application* cnCreateApp();
 }
 
 #endif

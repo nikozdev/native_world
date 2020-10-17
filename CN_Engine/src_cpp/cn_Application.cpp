@@ -1,5 +1,5 @@
+#include "headers/cn_pch.hpp"
 #include <cn_Application.h>
-#include <stdio.h>
 
 namespace CN
 {
