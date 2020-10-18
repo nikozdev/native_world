@@ -74,8 +74,8 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)bin\int\$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>$(SolutionDir)CN_World\headers;$(SolutionDir)CN_Engine\headers;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)bin\Debug\CN_Engine\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <IncludePath>$(SolutionDir)CN_Engine;$(SolutionDir)CN_World\src_cpp\_hpp;$(SolutionDir)CN_Engine\src_cpp\_hpp;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)bin\Debug\CN_Engine;$(WindowsSDK_LibraryPath_x64);$(VC_LibraryPath_x64);$(SolutionDir)CN_Engine\extern</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -84,8 +84,8 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)bin\int\$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>$(SolutionDir)CN_World\headers;$(SolutionDir)CN_Engine\headers;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)bin\Debug\CN_Engine\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <IncludePath>$(SolutionDir)CN_Engine;$(SolutionDir)CN_World\src_cpp\_hpp;$(SolutionDir)CN_Engine\src_cpp\_hpp;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)bin\Debug\CN_Engine;$(WindowsSDK_LibraryPath_x64);$(VC_LibraryPath_x64);$(SolutionDir)CN_Engine\extern</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -147,16 +147,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="headers\CNWorld.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="src_cpp\CNWorld.cpp" />
-    <ClCompile Include="src_cpp\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CN_Engine\CN_Engine.vcxproj">
       <Project>{a64db7eb-e80c-4598-8244-57aa76906929}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src_cpp\_hpp\CNWorld.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

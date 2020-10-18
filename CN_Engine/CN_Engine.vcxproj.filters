@@ -15,157 +15,144 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src_cpp\audio\aud_AudioMaster.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\cn\cn_EvSys.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src_cpp\cn\cn_LoadMaster.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\cn\cn_MemoryMaster.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src_cpp\esc\esc_Component.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\esc\esc_Entity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\esc\esc_EntLord.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\esc\esc_Tile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\esc\esc_TileGrid.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\gl_Cwindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\gl_MaterialLord.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\gl_Renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\gl_ShaderLord.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\gl_structs.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\gl_types.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\glTextRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\lua\lua_LState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src_cpp\CheerNik.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\cn_Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\cn_pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src_cpp\events\ev_EvSys.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\cn\window\WinWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="extern\stbiLoad\ch_stbi_load.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\cn\cn_Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="headers\audio\aud_AudioMaster.h">
+    <ClInclude Include="src_cpp\events\ev_Event.cpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\cn\cn_EvSys.h">
+    <ClInclude Include="extern\GLEW\glew.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\cn\cn_LoadMaster.h">
+    <ClInclude Include="extern\GLFW\glfw3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\cn\cn_Logger.h">
+    <ClInclude Include="extern\GLFW\glfw3native.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\cn\cn_MemoryMaster.h">
+    <ClInclude Include="extern\stbiLoad\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\esc\esc_Component.h">
+    <ClInclude Include="src_cpp\_hpp\audio\aud_AudioMaster.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\esc\esc_Entity.h">
+    <ClInclude Include="src_cpp\_hpp\cn\window\cn_Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\esc\esc_EntLord.h">
+    <ClInclude Include="src_cpp\_hpp\cn\window\WinWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\esc\esc_tile.h">
+    <ClInclude Include="src_cpp\_hpp\cn\cn_Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\esc\esc_tileGrid.h">
+    <ClInclude Include="src_cpp\_hpp\cn\cn_LoadMaster.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\gl\gui\gui_structs.h">
+    <ClInclude Include="src_cpp\_hpp\cn\cn_Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\gl\gui\gui_types.h">
+    <ClInclude Include="src_cpp\_hpp\cn\cn_MemoryMaster.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\gl\gl_cWindow.h">
+    <ClInclude Include="src_cpp\_hpp\esc\esc_Component.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\gl\gl_MaterialLord.h">
+    <ClInclude Include="src_cpp\_hpp\esc\esc_Entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\gl\gl_Renderer.h">
+    <ClInclude Include="src_cpp\_hpp\esc\esc_EntLord.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\gl\gl_ShaderLord.h">
+    <ClInclude Include="src_cpp\_hpp\esc\esc_tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\gl\gl_structs.h">
+    <ClInclude Include="src_cpp\_hpp\esc\esc_tileGrid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\gl\gl_TextRenderer.h">
+    <ClInclude Include="src_cpp\_hpp\events\ev_Event.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\gl\gl_types.h">
+    <ClInclude Include="src_cpp\_hpp\events\ev_EvSys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\gl\gl_WorldMaster.h">
+    <ClInclude Include="src_cpp\_hpp\gl\gui\gui_structs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\lua\lua_Lstate.h">
+    <ClInclude Include="src_cpp\_hpp\gl\gui\gui_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\math\cn_geom.h">
+    <ClInclude Include="src_cpp\_hpp\gl\gl_MaterialLord.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\math\cn_math.h">
+    <ClInclude Include="src_cpp\_hpp\gl\gl_Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\phys\cn_phys.h">
+    <ClInclude Include="src_cpp\_hpp\gl\gl_ShaderLord.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\scenes\scn_scene.h">
+    <ClInclude Include="src_cpp\_hpp\gl\gl_structs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\CheerNik.h">
+    <ClInclude Include="src_cpp\_hpp\gl\gl_TextRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\cn_Application.h">
+    <ClInclude Include="src_cpp\_hpp\gl\gl_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\EntryPoint.h">
+    <ClInclude Include="src_cpp\_hpp\lua\lua_Lstate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\cn_core.hpp">
+    <ClInclude Include="src_cpp\_hpp\math\cn_math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="headers\cn_pch.hpp">
+    <ClInclude Include="src_cpp\_hpp\phys\cn_phys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src_cpp\_hpp\scenes\scn_scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\_hpp\CheerNik.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\_hpp\cn_core.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\_hpp\cn_pch.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\_hpp\EntryPoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="extern\GLEW\glew32.lib" />
+    <Library Include="extern\GLFW\glfw3.lib" />
+    <Library Include="extern\lua_l\lua54.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="extern\GLEW\glew32.dll" />
   </ItemGroup>
 </Project>

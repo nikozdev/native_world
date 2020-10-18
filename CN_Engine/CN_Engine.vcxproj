@@ -72,18 +72,18 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(Configuration)\$(ProjectName)\</OutDir>
+    <OutDir>$(SolutionDir)bin\$(Configuration)\CN_World\</OutDir>
     <IntDir>$(SolutionDir)bin\int\$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>$(SolutionDir)CN_Engine;$(SolutionDir)CN_Engine\headers;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)CN_Engine;$(SolutionDir)CN_Engine\src_cpp\_hpp;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(Configuration)\$(ProjectName)\</OutDir>
+    <OutDir>$(SolutionDir)bin\$(Configuration)\CN_World\</OutDir>
     <IntDir>$(SolutionDir)bin\int\$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>$(SolutionDir)CN_Engine;$(SolutionDir)CN_Engine\headers;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)CN_Engine;$(SolutionDir)CN_Engine\src_cpp\_hpp;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -95,7 +95,7 @@
       <PreprocessorDefinitions>CN_PLATFORM_WINDOWS;CN_BUILD_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>headers/cn_pch.hpp</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>cn_pch.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -125,7 +125,7 @@
       <PreprocessorDefinitions>CN_PLATFORM_WINDOWS;CN_BUILD_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>headers/cn_pch.hpp</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>cn_pch.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -149,61 +149,62 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src_cpp\audio\aud_AudioMaster.cpp" />
+    <ClCompile Include="extern\stbiLoad\ch_stbi_load.cpp" />
     <ClCompile Include="src_cpp\CheerNik.cpp" />
-    <ClCompile Include="src_cpp\cn\cn_EvSys.cpp" />
+    <ClCompile Include="src_cpp\events\ev_EvSys.cpp" />
     <ClCompile Include="src_cpp\cn\cn_LoadMaster.cpp" />
     <ClCompile Include="src_cpp\cn\cn_MemoryMaster.cpp" />
-    <ClCompile Include="src_cpp\cn_Application.cpp" />
+    <ClCompile Include="src_cpp\cn\cn_Application.cpp" />
     <ClCompile Include="src_cpp\cn_pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src_cpp\esc\esc_Component.cpp" />
-    <ClCompile Include="src_cpp\esc\esc_Entity.cpp" />
-    <ClCompile Include="src_cpp\esc\esc_EntLord.cpp" />
-    <ClCompile Include="src_cpp\esc\esc_Tile.cpp" />
-    <ClCompile Include="src_cpp\esc\esc_TileGrid.cpp" />
-    <ClCompile Include="src_cpp\gl\glTextRenderer.cpp" />
-    <ClCompile Include="src_cpp\gl\gl_Cwindow.cpp" />
-    <ClCompile Include="src_cpp\gl\gl_MaterialLord.cpp" />
-    <ClCompile Include="src_cpp\gl\gl_Renderer.cpp" />
-    <ClCompile Include="src_cpp\gl\gl_ShaderLord.cpp" />
-    <ClCompile Include="src_cpp\gl\gl_structs.cpp" />
-    <ClCompile Include="src_cpp\gl\gl_types.cpp" />
-    <ClCompile Include="src_cpp\lua\lua_LState.cpp" />
+    <ClCompile Include="src_cpp\cn\window\WinWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="headers\EntryPoint.h" />
-    <ClInclude Include="headers\audio\aud_AudioMaster.h" />
-    <ClInclude Include="headers\CheerNik.h" />
-    <ClInclude Include="headers\cn_core.hpp" />
-    <ClInclude Include="headers\cn\cn_EvSys.h" />
-    <ClInclude Include="headers\cn\cn_LoadMaster.h" />
-    <ClInclude Include="headers\cn\cn_Logger.h" />
-    <ClInclude Include="headers\cn\cn_MemoryMaster.h" />
-    <ClInclude Include="headers\cn_Application.h" />
-    <ClInclude Include="headers\cn_pch.hpp" />
-    <ClInclude Include="headers\esc\esc_Component.h" />
-    <ClInclude Include="headers\esc\esc_Entity.h" />
-    <ClInclude Include="headers\esc\esc_EntLord.h" />
-    <ClInclude Include="headers\esc\esc_tile.h" />
-    <ClInclude Include="headers\esc\esc_tileGrid.h" />
-    <ClInclude Include="headers\gl\gl_cWindow.h" />
-    <ClInclude Include="headers\gl\gl_MaterialLord.h" />
-    <ClInclude Include="headers\gl\gl_Renderer.h" />
-    <ClInclude Include="headers\gl\gl_ShaderLord.h" />
-    <ClInclude Include="headers\gl\gl_structs.h" />
-    <ClInclude Include="headers\gl\gl_TextRenderer.h" />
-    <ClInclude Include="headers\gl\gl_types.h" />
-    <ClInclude Include="headers\gl\gl_WorldMaster.h" />
-    <ClInclude Include="headers\gl\gui\gui_structs.h" />
-    <ClInclude Include="headers\gl\gui\gui_types.h" />
-    <ClInclude Include="headers\lua\lua_Lstate.h" />
-    <ClInclude Include="headers\math\cn_geom.h" />
-    <ClInclude Include="headers\math\cn_math.h" />
-    <ClInclude Include="headers\phys\cn_phys.h" />
-    <ClInclude Include="headers\scenes\scn_scene.h" />
+    <ClInclude Include="extern\GLEW\glew.h" />
+    <ClInclude Include="extern\GLFW\glfw3.h" />
+    <ClInclude Include="extern\GLFW\glfw3native.h" />
+    <ClInclude Include="extern\stbiLoad\stb_image.h" />
+    <ClInclude Include="src_cpp\_hpp\cn\window\cn_Window.h" />
+    <ClInclude Include="src_cpp\_hpp\EntryPoint.h" />
+    <ClInclude Include="src_cpp\_hpp\audio\aud_AudioMaster.h" />
+    <ClInclude Include="src_cpp\_hpp\CheerNik.h" />
+    <ClInclude Include="src_cpp\_hpp\cn_core.hpp" />
+    <ClInclude Include="src_cpp\_hpp\events\ev_Event.h" />
+    <ClInclude Include="src_cpp\_hpp\events\ev_EvSys.h" />
+    <ClInclude Include="src_cpp\_hpp\cn\cn_LoadMaster.h" />
+    <ClInclude Include="src_cpp\_hpp\cn\cn_Logger.h" />
+    <ClInclude Include="src_cpp\_hpp\cn\cn_MemoryMaster.h" />
+    <ClInclude Include="src_cpp\_hpp\cn\cn_Application.h" />
+    <ClInclude Include="src_cpp\_hpp\cn_pch.hpp" />
+    <ClInclude Include="src_cpp\_hpp\esc\esc_Component.h" />
+    <ClInclude Include="src_cpp\_hpp\esc\esc_Entity.h" />
+    <ClInclude Include="src_cpp\_hpp\esc\esc_EntLord.h" />
+    <ClInclude Include="src_cpp\_hpp\esc\esc_tile.h" />
+    <ClInclude Include="src_cpp\_hpp\esc\esc_tileGrid.h" />
+    <ClInclude Include="src_cpp\_hpp\cn\window\WinWindow.h" />
+    <ClInclude Include="src_cpp\_hpp\gl\gl_MaterialLord.h" />
+    <ClInclude Include="src_cpp\_hpp\gl\gl_Renderer.h" />
+    <ClInclude Include="src_cpp\_hpp\gl\gl_ShaderLord.h" />
+    <ClInclude Include="src_cpp\_hpp\gl\gl_structs.h" />
+    <ClInclude Include="src_cpp\_hpp\gl\gl_TextRenderer.h" />
+    <ClInclude Include="src_cpp\_hpp\gl\gl_types.h" />
+    <ClInclude Include="src_cpp\_hpp\gl\gui\gui_structs.h" />
+    <ClInclude Include="src_cpp\_hpp\gl\gui\gui_types.h" />
+    <ClInclude Include="src_cpp\_hpp\lua\lua_Lstate.h" />
+    <ClInclude Include="src_cpp\_hpp\math\cn_math.h" />
+    <ClInclude Include="src_cpp\_hpp\phys\cn_phys.h" />
+    <ClInclude Include="src_cpp\_hpp\scenes\scn_scene.h" />
+    <ClInclude Include="src_cpp\events\ev_Event.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="extern\GLEW\glew32.lib" />
+    <Library Include="extern\GLFW\glfw3.lib" />
+    <Library Include="extern\lua_l\lua54.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="extern\GLEW\glew32.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
