@@ -39,21 +39,15 @@
     <ClCompile Include="src_cpp\cn\cn_Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src_cpp\gl\gl_Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\math\cn_math.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src_cpp\events\ev_Event.cpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="extern\GLEW\glew.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="extern\GLFW\glfw3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="extern\GLFW\glfw3native.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="extern\stbiLoad\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\_hpp\audio\aud_AudioMaster.h">
@@ -131,9 +125,6 @@
     <ClInclude Include="src_cpp\_hpp\phys\cn_phys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src_cpp\_hpp\scenes\scn_scene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src_cpp\_hpp\CheerNik.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -146,13 +137,33 @@
     <ClInclude Include="src_cpp\_hpp\EntryPoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src_cpp\_hpp\events\ev_WndEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\_hpp\events\ev_KeyEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\_hpp\events\ev_MouseEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\GLFW\glfw3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\GLFW\glfw3native.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\GLEW\glew.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\_hpp\cn\scenes\scn_scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\_hpp\gl\gl_declarations.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="extern\GLEW\glew32.lib" />
     <Library Include="extern\GLFW\glfw3.lib" />
-    <Library Include="extern\lua_l\lua54.lib" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="extern\GLEW\glew32.dll" />
+    <Library Include="extern\GLEW\glew32.lib" />
   </ItemGroup>
 </Project>

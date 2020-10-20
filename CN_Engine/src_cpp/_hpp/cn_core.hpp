@@ -27,18 +27,21 @@ typedef unsigned char UChar;
 /// --------</TypeDefs>--------
 
 /// --------<SupportMacroses>--------
-#define CN_LOG(loc) ("LOG::" + #loc + "::LINE_" + __LINE__ + ":\n")
+#define CN_CSTR(anything) (#anything)
+#define CN_STR(anything) (std::string(#anything))
 
-#define CN_ENABLE_ASSERTIONS
-#ifdef CN_ENABLE_ASSERTIONS
-	#define CN_ASSERT(expr, comment) if (!expr) { \
-		printf("CN::CORE::ASSERT::LINE_%d: %s\n", __LINE__, comment); \
+#define CN_ENABLE_DEBUG
+#ifdef CN_ENABLE_DEBUG
+	#define CN_LOG(loc, what) (std::cout << "LOG::" << loc << "::LINE_" << __LINE__ << ":\n" << what << std::endl)
+	#define CN_ASSERT(expr, comment) if (!expr) { std::cout << \
+		"CN::ASSERT::" << __FILE__ << "::LINE_" << __LINE__ << ":\n" << comment << std::endl; \
 		__debugbreak(); }
 #else
-	#define CN_ASSET (x, ...)
+	#define CN_LOG(loc, what) std::cout << std::endl;
+	#define CN_ASSERT(expr, comment) std::cout << std::endl;
 #endif
 
-#define BIT_MV(num) num << 1
+#define BIT_MV(num) 1 << num
 /// --------</SupportMacroses>--------
 
 #endif

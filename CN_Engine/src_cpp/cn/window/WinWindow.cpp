@@ -2,6 +2,15 @@
 
 #include <cn/Window/WinWindow.h>
 
+#include <extern/GLEW/glew.h>
+#include <extern/GLFW/glfw3.h>
+
+#include <events/ev_EvSys.h>
+#include <events/ev_Event.h>
+#include <events/ev_KeyEvent.h>
+#include <events/ev_WndEvent.h>
+#include <events/ev_MouseEvent.h>
+
 #include <extern/imgui/imgui.h>
 #include <extern/imgui/imgui_impl_glfw.h>
 #include <extern/imgui/imgui_impl_opengl3.h>
@@ -24,21 +33,28 @@ namespace CN
 // Windows platform Window
 namespace CN
 {
-	// Constructor&Destructor
 	WinWindow::WinWindow(const WndDescript& descript)
 	{
 		init(descript);
-#ifdef USE_EVSYS
-		EV::EvSys::initialize(m_wnd);
-#endif
+		EV::EvSys::init(m_wnd);
+
 		printf("CN::WIN_WND::CONSTRUCTOR: The window %s\nhas been created.\n",
 			m_data.Title.c_str());
 	}
 	WinWindow::~WinWindow()
 	{
+		closeWindow();
 		shutDown();
+
 		printf("CN::WIN_WND::DESTRUCTOR: The window %s\nhas been destroyed.\n",
 			m_data.Title.c_str());
+	}
+
+	void WinWindow::setVSync(bool enabled)
+	{
+		if (enabled) glfwSwapInterval(1);
+		else glfwSwapInterval(0);
+	m_data.vSync = enabled;
 	}
 
 	// Core functions
@@ -60,17 +76,17 @@ namespace CN
 		m_data.Height = descript.Height;
 		printf("CN::WIN_WINDOW::INIT: %s::%dx%d\n",
 			m_data.Title.c_str(), m_data.Width, m_data.Height);
-		
+
 		// init glfw and configure the window
 		if (!s_GLFWinit)
 		{
 			CN_ASSERT(glfwInit() == GLFW_TRUE, "Could not initialize GLFW");
 			s_GLFWinit = true;
 		}
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+		//glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 		// Set window pointer
 		m_wnd = glfwCreateWindow((int)m_data.Width, (int)m_data.Height,
@@ -83,9 +99,9 @@ namespace CN
 			s_GLEWinit = true;
 			glewExperimental = GL_TRUE;
 		}
-
-		glfwSetWindowUserPointer(m_wnd, &m_data);
 		setVSync(true);
+		// Bind own data pointer to window. It allows to get this pointer in callback
+		glfwSetWindowUserPointer(m_wnd, &m_data);
 	}
 	void WinWindow::shutDown()
 	{

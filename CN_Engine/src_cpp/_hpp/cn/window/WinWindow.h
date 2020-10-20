@@ -3,14 +3,21 @@
 
 #include <cn/window/cn_Window.h>
 
+#include <gl/gl_declarations.hpp>
+
+#pragma comment(lib, "opengl32.lib")
+
 namespace CN
 {
 	/// Window for The "Windows" platform
+	/// --Works with GLFW
+	/// --Can interact mostly by events but not with the application directly
 	class CN_API WinWindow : public Window
 	{
 	public:
 		// Constructor&Destructor
-		WinWindow(const WndDescript&);
+		/// Has default window description
+		WinWindow(const WndDescript& description);
 		virtual ~WinWindow();
 		
 		// Accessors
@@ -21,32 +28,33 @@ namespace CN
 		// Modificators
 		inline void setEventCallback(const ev_Callback& callback) override
 		{ m_data.ev_Callback = callback; }
-		void setVSync(bool enabled) override {
-			if (enabled) glfwSwapInterval(1);
-			else glfwSwapInterval(0);
-			m_data.vSync = enabled; }
+
+		void setVSync(bool enabled) override;
 
 		// Main functions
 		void onUpdate() override;
 		void closeWindow() override;
-	private:
-		/// Initialize glfw if it isn't still set
-		/// Create window instance
-		/// Initilize glew if it isn't still set
-		virtual void init(const CN::WndDescript& description);
-		/// Destroy window and release all resources
-		virtual void shutDown();
-	private:
-		GLFWwindow* m_wnd;
-		/// Window data for window config and callback function
+	public: // Members and struct
+		/// Special structure for "windows window"
+		/// Stores default window data event function for processing all events
 		struct WndData
 		{
 			std::string Title;
 			UInt Width, Height;
 			bool vSync;
-			
+
 			ev_Callback ev_Callback;
 		};
+	private: // Implementation functions
+		/// Initialize glfw if it isn't still set
+		/// Create window instance
+		/// Initilize GL functions if ther aren't still set
+		virtual void init(const CN::WndDescript& description);
+		/// Destroy window and release all resources
+		virtual void shutDown();
+	private:
+		GLFWwindow* m_wnd;
+		/// Window data can be called by GLFW
 		WndData m_data;
 	};
 }

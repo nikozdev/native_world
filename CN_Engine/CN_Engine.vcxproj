@@ -75,6 +75,7 @@
     <OutDir>$(SolutionDir)bin\$(Configuration)\CN_World\</OutDir>
     <IntDir>$(SolutionDir)bin\int\$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>$(SolutionDir)CN_Engine;$(SolutionDir)CN_Engine\src_cpp\_hpp;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)extern/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -84,6 +85,7 @@
     <OutDir>$(SolutionDir)bin\$(Configuration)\CN_World\</OutDir>
     <IntDir>$(SolutionDir)bin\int\$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>$(SolutionDir)CN_Engine;$(SolutionDir)CN_Engine\src_cpp\_hpp;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)extern/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -160,12 +162,13 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src_cpp\cn\window\WinWindow.cpp" />
+    <ClCompile Include="src_cpp\gl\gl_Renderer.cpp" />
+    <ClCompile Include="src_cpp\math\cn_math.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="extern\GLEW\glew.h" />
     <ClInclude Include="extern\GLFW\glfw3.h" />
     <ClInclude Include="extern\GLFW\glfw3native.h" />
-    <ClInclude Include="extern\stbiLoad\stb_image.h" />
     <ClInclude Include="src_cpp\_hpp\cn\window\cn_Window.h" />
     <ClInclude Include="src_cpp\_hpp\EntryPoint.h" />
     <ClInclude Include="src_cpp\_hpp\audio\aud_AudioMaster.h" />
@@ -184,6 +187,10 @@
     <ClInclude Include="src_cpp\_hpp\esc\esc_tile.h" />
     <ClInclude Include="src_cpp\_hpp\esc\esc_tileGrid.h" />
     <ClInclude Include="src_cpp\_hpp\cn\window\WinWindow.h" />
+    <ClInclude Include="src_cpp\_hpp\events\ev_KeyEvent.h" />
+    <ClInclude Include="src_cpp\_hpp\events\ev_MouseEvent.h" />
+    <ClInclude Include="src_cpp\_hpp\events\ev_WndEvent.h" />
+    <ClInclude Include="src_cpp\_hpp\gl\gl_declarations.hpp" />
     <ClInclude Include="src_cpp\_hpp\gl\gl_MaterialLord.h" />
     <ClInclude Include="src_cpp\_hpp\gl\gl_Renderer.h" />
     <ClInclude Include="src_cpp\_hpp\gl\gl_ShaderLord.h" />
@@ -195,16 +202,12 @@
     <ClInclude Include="src_cpp\_hpp\lua\lua_Lstate.h" />
     <ClInclude Include="src_cpp\_hpp\math\cn_math.h" />
     <ClInclude Include="src_cpp\_hpp\phys\cn_phys.h" />
-    <ClInclude Include="src_cpp\_hpp\scenes\scn_scene.h" />
+    <ClInclude Include="src_cpp\_hpp\cn\scenes\scn_scene.h" />
     <ClInclude Include="src_cpp\events\ev_Event.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="extern\GLEW\glew32.lib" />
     <Library Include="extern\GLFW\glfw3.lib" />
-    <Library Include="extern\lua_l\lua54.lib" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="extern\GLEW\glew32.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,6 +1,9 @@
 #include <events/ev_Event.h>
 
-namespace EV
+namespace CN
 {
-	//
+	namespace EV
+	{
+		//
+	}
 }

@@ -1,11 +1,14 @@
 #ifndef GUI_TYPES_H
 #define GUI_TYPES_H
 
-namespace gl
+namespace CN
 {
-	namespace gui
+	namespace GL
 	{
-		//
+		namespace GUI
+		{
+			//
+		}
 	}
 }
 

@@ -1,17 +1,22 @@
 #ifndef CN_WINDOW_H
 #define CN_WINDOW_H
 
-#include <string>
-#include <functional>
+#include <cn_pch.hpp>
 
 #include <cn_core.hpp>
-#include <events/ev_EvSys.h>
+
+namespace CN
+{
+	namespace EV
+	{
+		class CN_API Event;
+	}
+}
 
 // cn_Window class
 namespace CN
 {
-	/// Data for the window creation
-	/// Has Title, Hidth and Height set by default
+	/// Default data for the window creation
 	struct WndDescript
 	{
 		std::string Title;
@@ -24,10 +29,13 @@ namespace CN
 	};
 
 	/// The main interface class of a window class for any platform
+	/// --Interface contains: 3 accessors, 2 modifiers(setEventCallback as well)
+	/// --"onUpdate" function and createWnd for the new window of the derrived class
 	class CN_API Window
 	{
 	public:
 		/// Callback function of this window
+		/// It is the name of std::function<void(Event&)>;
 		using ev_Callback = std::function<void(EV::Event&)>;
 		
 		// Virtual destructor for inherits
