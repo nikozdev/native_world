@@ -3,7 +3,7 @@
 
 #include <cn/cn_Application.h>
 
-#pragma comment (lib, "CN_Engine.lib")
+#pragma comment (lib, "GLEW/glew32.lib")
 
 // Predeclarations
 namespace CN

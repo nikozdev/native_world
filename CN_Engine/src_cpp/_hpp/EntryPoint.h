@@ -15,6 +15,8 @@ int main(int argc, char* argv)
 	auto app = CN::cnCreateApp();
 	app->run();
 	delete app;
+	CN_LOG("ENTRY_POINT", "Programm is going out");
+	CN::MemoryMaster::printMem();
 }
 #endif
 

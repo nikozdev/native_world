@@ -72,8 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>$(SolutionDir)bin\int\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Configuration)-$(Platform)-$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)bin\int\$(Configuration)-$(Platform)-$(ProjectName)\</IntDir>
     <IncludePath>$(SolutionDir)CN_Engine;$(SolutionDir)CN_World\src_cpp\_hpp;$(SolutionDir)CN_Engine\src_cpp\_hpp;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)bin\Debug\CN_Engine;$(WindowsSDK_LibraryPath_x64);$(VC_LibraryPath_x64);$(SolutionDir)CN_Engine\extern</LibraryPath>
   </PropertyGroup>
@@ -82,8 +82,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>$(SolutionDir)bin\int\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Configuration)-$(Platform)-$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)bin\int\$(Configuration)-$(Platform)-$(ProjectName)\</IntDir>
     <IncludePath>$(SolutionDir)CN_Engine;$(SolutionDir)CN_World\src_cpp\_hpp;$(SolutionDir)CN_Engine\src_cpp\_hpp;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)bin\Debug\CN_Engine;$(WindowsSDK_LibraryPath_x64);$(VC_LibraryPath_x64);$(SolutionDir)CN_Engine\extern</LibraryPath>
   </PropertyGroup>

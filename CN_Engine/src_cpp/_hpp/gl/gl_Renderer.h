@@ -28,9 +28,14 @@ namespace CN
 			// Static methods
 			static void draw(VertexArr& va, IndexBuf& ib, Shader& shader);
 			static void clear(float* colorRGBA);
+		private: // OpenGL types
+			VertexArr* m_va;
+			IndexBuf* m_ib;
+			VertexBuf* m_vb;
 		private: // Default data
 			float m_globalColor[4];
-			float* m_indices;
+			UInt* m_indices;
+			float* m_vertices;
 		};
 	}
 }

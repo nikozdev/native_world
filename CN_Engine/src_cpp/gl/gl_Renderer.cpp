@@ -1,5 +1,7 @@
 #include <cn_pch.hpp>
 #include <gl/gl_Renderer.h>
+#include <gl/gl_types.h>
+#include <gl/gl_structs.h>
 
 #include <cn/cn_LoadMaster.h>
 
@@ -14,12 +16,31 @@ namespace CN
 		Renderer::Renderer() :
 			m_globalColor{ 0.0f, 0.0f, 0.0f, 1.0f }
 		{
-			CN::LoadMaster::get().loadIt_bin("resources/.ddt", m_indices, sizeof(UInt) * 5);
+			m_va = new VertexArr();
+			m_vb = new VertexBuf();
+			m_ib = new IndexBuf();
+
+			m_vertices = new float[] {
+				-0.5f, -0.5f, // Left-bottom
+				0.5f, -0.5f, // Right-Bottom
+				0.5f, 0.5f, // Right-upper
+				-0.5f, 0.5f // Left-upper
+			};
+			m_indices = new UInt[] {
+				0, 1, 2,
+				2, 3, 0
+			};
 
 			CN_LOG("GL::RENDERER::DESTRUCTOR", "Renderer has been created");
 		}
 		Renderer::~Renderer()
 		{
+			delete m_va;
+			delete m_vb;
+			delete m_ib;
+
+			if (m_indices) delete m_indices;
+			if (m_vertices) delete m_vertices;
 
 			CN_LOG("GL::RENDERER::DESTRUCTOR", "Renderer has been destroyed");
 		}
@@ -33,6 +54,9 @@ namespace CN
 		}
 		void Renderer::draw()
 		{
+			m_va->bind();
+			m_ib->bind();
+			m_
 		}
 
 		// Static functions

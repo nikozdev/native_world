@@ -8,6 +8,7 @@ namespace CNW
 	}
 	CNWorld::~CNWorld()
 	{
+		CN::MemoryMaster::printMem();
 	}
 }
 
@@ -16,7 +17,6 @@ namespace CN
 {
 	Application* cnCreateApp()
 	{
-		MemoryMaster::printMem();
 		return new CNW::CNWorld();
 	}
 }

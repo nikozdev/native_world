@@ -9,27 +9,45 @@ namespace CN
 {
 	namespace GL
 	{
-		/// Buffer Element struct
+		/// Vertex for 2D world
+		/// --Contains xy coordinates for position
+		/// --Contains uv coordinates for texture coordinates
+		struct Vertex2
+		{
+			float vCoords[2];
+			float uvs[2];
+
+			Vertex2(float* position = nullptr, float* texCoord = nullptr) :
+				vCoords{ 0.0f, 0.0f }, uvs{ 0.0f, 0.0f } {}
+		};
+		/// Vertex for 3D world
+		/// --Contains xyz coordinates for position and normal
+		/// --Contains uv coordinates for texture coordinates
+		struct Vertex3
+		{
+			float vCoords[3];
+			float normal[3];
+			float uvs[2];
+
+			Vertex3(float* position = nullptr,
+				float* normalVec = nullptr, float* texCoord = nullptr) :
+				vCoords{ 0.0f, 0.0f, 0.0f },
+				normal{ 0.0f, 0.0f, 0.0f }, uvs{0.0f, 0.0f} {}
+		};
+		/// VertexAttrib struct
 		/// --Means the elements in the OpenGL shader layout
-		/// Any new data loaded into the  is a 
-		struct BufferElement
+		/// --Whenever we create a pointer to the VBO data, we need to know it's parameters
+		/// --glVertexAttribArrayPointer
+		/// -->(layoutNum, countOfAttributes, type, normalization, sizeof(stride))
+		struct VertexAttrib
 		{
 			UInt type;
-			UInt size;
-			UChar normald;
+			UInt count;
+			UChar normalized;
 
-			BufferElement(UInt newType = GL_FLOAT,
-				UInt newSize = sizeof(GL_FLOAT), UChar newNormald = GL_FALSE) :
-				type(newType), size(newSize), normald(newNormald) {}
-			
-			static UInt getTypeSz(UInt type)
-			{
-				switch (type)
-				{
-				case GL_FLOAT: return 4;
-				case GL_UNSIGNED_INT: return 4;
-				case GL_UNSIGNED_BYTE: return 1;
-				}
+			VertexAttrib(UInt newType = GL_FLOAT,
+				UInt elementsCount = sizeof(GL_FLOAT), UChar normalize = GL_FALSE) :
+				type(newType), count(elementsCount), normalized(normalize) {}
 			}
 		};
 		/// RenderLayer structure
@@ -42,7 +60,6 @@ namespace CN
 			Sprite* backObjects;
 			Sprite* faceObjects;
 		};
-
 	}
 }
 

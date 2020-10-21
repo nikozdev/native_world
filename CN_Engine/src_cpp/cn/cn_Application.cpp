@@ -15,7 +15,7 @@
 // Application class
 namespace CN
 {
-/// This macro allows to bind any function as a lambda expression
+/// This macro allows to bind any function to some class as a lambda expression
 /// So, we can give a function as an argument
 #define BIND_EVENT_FN(func)std::bind(&func, this, std::placeholders::_1)
 
@@ -30,7 +30,7 @@ namespace CN
 		m_isRunning = true;
 		
 		printf("\n--------<CN::APP::CONSTRUCTOR>--------\n");
-		CN_LOG("CN_APPLICATION.CPP", "Application has been destroyed");
+		CN_LOG("CN_APPLICATION.CPP", "Application has been created");
 		CN::MemoryMaster::printMem();
 	}
 	Application::~Application()

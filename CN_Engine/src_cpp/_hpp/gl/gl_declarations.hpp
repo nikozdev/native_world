@@ -10,10 +10,11 @@ namespace CN
 		class CN_API Camera;
 
 		class CN_API VertexArr;
-		class CN_API VertexBuf;
-		class CN_API IndexBuf;
 		class CN_API BufferElement;
 		class CN_API BufferLayout;
+		class CN_API GLBuffer;
+		class CN_API VertexBuf;
+		class CN_API IndexBuf;
 
 		class CN_API Renderer;
 		class CN_API TextRenderer;
@@ -135,6 +136,10 @@ namespace CN
 #define GL_POLYGON_OFFSET_UNITS 0x2A00
 #define GL_POLYGON_OFFSET_POINT 0x2A01
 #define GL_POLYGON_OFFSET_LINE 0x2A02
+
+#define GL_STATIC_DRAW 0x88E4
+#define GL_STREAM_DRAW 0x88E0
+#define GL_DYNAMIC_DRAW 0x88E8
 
 // OpenGL types
 struct GLFWwindow;

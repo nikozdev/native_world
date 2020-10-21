@@ -5,7 +5,7 @@
 namespace CN
 {
 	// Vectors
-	namespace Mth
+	namespace MAT
 	{
 		// Vec2
 		void Vec2::normalize()
@@ -75,7 +75,7 @@ namespace CN
 		//
 	}
 	// Math functions
-	namespace Mth
+	namespace MAT
 	{
 		// Absolute number
 		void abs(int& num)

@@ -72,8 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(Configuration)\CN_World\</OutDir>
-    <IntDir>$(SolutionDir)bin\int\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Configuration)-$(Platform)-CN_World\</OutDir>
+    <IntDir>$(SolutionDir)bin\int\$(Configuration)-$(Platform)-$(ProjectName)\</IntDir>
     <IncludePath>$(SolutionDir)CN_Engine;$(SolutionDir)CN_Engine\src_cpp\_hpp;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)extern/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -82,8 +82,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(Configuration)\CN_World\</OutDir>
-    <IntDir>$(SolutionDir)bin\int\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Configuration)-$(Platform)-CN_World\</OutDir>
+    <IntDir>$(SolutionDir)bin\int\$(Configuration)-$(Platform)-$(ProjectName)\</IntDir>
     <IncludePath>$(SolutionDir)CN_Engine;$(SolutionDir)CN_Engine\src_cpp\_hpp;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)extern/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -163,6 +163,8 @@
     </ClCompile>
     <ClCompile Include="src_cpp\cn\window\WinWindow.cpp" />
     <ClCompile Include="src_cpp\gl\gl_Renderer.cpp" />
+    <ClCompile Include="src_cpp\gl\gl_structs.cpp" />
+    <ClCompile Include="src_cpp\gl\gl_types.cpp" />
     <ClCompile Include="src_cpp\math\cn_math.cpp" />
   </ItemGroup>
   <ItemGroup>

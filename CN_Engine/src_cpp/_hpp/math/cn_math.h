@@ -5,7 +5,7 @@
 namespace CN
 {
 	// Constants
-	namespace Mth
+	namespace MAT
 	{
 		// Core constant values
 		/// The length of the bow in 180 degrees
@@ -16,7 +16,7 @@ namespace CN
 		constexpr double RAD_DEG = PI / 180;
 	}
 	// Structs
-	namespace Mth
+	namespace MAT
 	{
 		/// CheerNik 2-float-vector implementation
 		/// --Can be used for:
@@ -200,7 +200,7 @@ namespace CN
 		};
 	}
 	// Functions
-	namespace Mth
+	namespace MAT
 	{
 		/// Absolute integer
 		void abs(int& num);
