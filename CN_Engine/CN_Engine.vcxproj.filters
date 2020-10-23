@@ -51,6 +51,12 @@
     <ClCompile Include="src_cpp\gl\gl_structs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src_cpp\gl\gl_Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\gl\cn_gl_lib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src_cpp\events\ev_Event.cpp">
@@ -167,9 +173,30 @@
     <ClInclude Include="src_cpp\_hpp\gl\gl_declarations.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src_cpp\_hpp\cn\layers\cn_AppLayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\_hpp\cn\layers\cn_LayerStack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\_hpp\gl\gl_Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\_hpp\gl\cn_gl_lib.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="extern\GLFW\glfw3.lib" />
     <Library Include="extern\GLEW\glew32.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\core_2d_fs.lua" />
+    <None Include="shaders\core_2d_vs.lua" />
+    <None Include="shaders\obj0_2d_fs.lua" />
+    <None Include="shaders\obj0_2d_vs.lua" />
+    <None Include="shaders\obj0_3d_fs.lua" />
+    <None Include="shaders\obj0_3d_phong_fs.lua" />
+    <None Include="shaders\obj0_3d_vs.lua" />
   </ItemGroup>
 </Project>

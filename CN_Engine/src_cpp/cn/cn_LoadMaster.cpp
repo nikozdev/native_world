@@ -18,16 +18,16 @@ namespace CN
     bool LoadMaster::saveIt_bin(const std::string& path,
         void* data, size_t bytes)
     {
-        std::ofstream saver(path, std::ios::out);
+        std::ofstream saver;
+        saver.open(path, std::ofstream::out);
         if (!saver.is_open())
         {
-            printf("CN::LOAD_MASTER::SAVE_IT_BIN: Failed to save the data by path\n%s\n",
-                path.c_str());
+            CN_LOG(("Failed to load the data by path\n" + path + '\n').c_str());
             return false;
         }
 
         saver.write((char*)data, bytes);
-
+        //for (saver >> data;;);
         saver.close();
         return true;
     }
@@ -35,11 +35,10 @@ namespace CN
     bool LoadMaster::loadIt_bin(const std::string& path,
         void* data, size_t bytes)
     {
-        std::ifstream loader(path, std::ios::in);
+        std::ifstream loader(path, std::ifstream::in);
         if (!loader.is_open())
         {
-            printf("CN::LOAD_MASTER::LOAD_IT_BIN: Failed to load the data by path\n%s\n",
-                path.c_str());
+            CN_LOG(("Failed to load the data by path\n" + path + "\n").c_str());
             return false;
         }
 

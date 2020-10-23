@@ -13,5 +13,6 @@ void main()
 {
 	vs_uv = m_uv;
 	vs_pos = vec3(model * vec4(m_pos, 0.0f, 1.0f));
-	gl_Position = model * projView * vec4(m_pos, 0.0f, 1.0f);
+	//gl_Position = model * projView * vec4(m_pos, 0.0f, 1.0f);
+	gl_Position = vec4(m_pos, 0.0f, 1.0f);
 }

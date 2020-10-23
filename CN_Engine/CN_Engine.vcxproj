@@ -162,7 +162,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src_cpp\cn\window\WinWindow.cpp" />
+    <ClCompile Include="src_cpp\gl\cn_gl_lib.cpp" />
     <ClCompile Include="src_cpp\gl\gl_Renderer.cpp" />
+    <ClCompile Include="src_cpp\gl\gl_Shader.cpp" />
     <ClCompile Include="src_cpp\gl\gl_structs.cpp" />
     <ClCompile Include="src_cpp\gl\gl_types.cpp" />
     <ClCompile Include="src_cpp\math\cn_math.cpp" />
@@ -171,6 +173,8 @@
     <ClInclude Include="extern\GLEW\glew.h" />
     <ClInclude Include="extern\GLFW\glfw3.h" />
     <ClInclude Include="extern\GLFW\glfw3native.h" />
+    <ClInclude Include="src_cpp\_hpp\cn\layers\cn_AppLayer.h" />
+    <ClInclude Include="src_cpp\_hpp\cn\layers\cn_LayerStack.h" />
     <ClInclude Include="src_cpp\_hpp\cn\window\cn_Window.h" />
     <ClInclude Include="src_cpp\_hpp\EntryPoint.h" />
     <ClInclude Include="src_cpp\_hpp\audio\aud_AudioMaster.h" />
@@ -193,8 +197,10 @@
     <ClInclude Include="src_cpp\_hpp\events\ev_MouseEvent.h" />
     <ClInclude Include="src_cpp\_hpp\events\ev_WndEvent.h" />
     <ClInclude Include="src_cpp\_hpp\gl\gl_declarations.hpp" />
+    <ClInclude Include="src_cpp\_hpp\gl\cn_gl_lib.hpp" />
     <ClInclude Include="src_cpp\_hpp\gl\gl_MaterialLord.h" />
     <ClInclude Include="src_cpp\_hpp\gl\gl_Renderer.h" />
+    <ClInclude Include="src_cpp\_hpp\gl\gl_Shader.h" />
     <ClInclude Include="src_cpp\_hpp\gl\gl_ShaderLord.h" />
     <ClInclude Include="src_cpp\_hpp\gl\gl_structs.h" />
     <ClInclude Include="src_cpp\_hpp\gl\gl_TextRenderer.h" />
@@ -210,6 +216,15 @@
   <ItemGroup>
     <Library Include="extern\GLEW\glew32.lib" />
     <Library Include="extern\GLFW\glfw3.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\core_2d_fs.lua" />
+    <None Include="shaders\core_2d_vs.lua" />
+    <None Include="shaders\obj0_2d_fs.lua" />
+    <None Include="shaders\obj0_2d_vs.lua" />
+    <None Include="shaders\obj0_3d_fs.lua" />
+    <None Include="shaders\obj0_3d_phong_fs.lua" />
+    <None Include="shaders\obj0_3d_vs.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

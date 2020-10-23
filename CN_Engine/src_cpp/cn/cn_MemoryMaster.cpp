@@ -22,13 +22,13 @@ namespace CN
 	// Constructors&Destructor
 	MemoryMaster::MemoryMaster()
 	{
-		printf("CN::MEMORY_MASTER::CONSTRUCTOR: Memory master is created\n");
+		CN_LOG("Memory master is created");
 		printMem();
 	}
 	MemoryMaster::~MemoryMaster()
 	{
 		printMem();
-		printf("CN::MEMORY_MASTER::DESTRUCTOR: Memory master is dead\n");
+		CN_LOG("Memory master is dead");
 	}
 
 	// Allocation functions

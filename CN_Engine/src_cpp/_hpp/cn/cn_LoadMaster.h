@@ -37,7 +37,7 @@ namespace CN
 		~LoadMaster();
 
 		// Accessors
-		LoadMaster& get() const { static LoadMaster s_instance; return s_instance; }
+		static LoadMaster& get() { static LoadMaster s_instance; return s_instance; }
 		
 		UInt getTexCount() const { return texturesCount; }
 		UInt getMeshesCount() const { return meshesCount; }

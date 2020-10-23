@@ -2,8 +2,7 @@
 #define GL_STRUCTS_H
 
 #include <cn_core.hpp>
-
-#include <gl/gl_declarations.hpp>
+#include <gl/cn_gl_lib.hpp>
 
 namespace CN
 {
@@ -39,16 +38,32 @@ namespace CN
 		/// --Whenever we create a pointer to the VBO data, we need to know it's parameters
 		/// --glVertexAttribArrayPointer
 		/// -->(layoutNum, countOfAttributes, type, normalization, sizeof(stride))
-		struct VertexAttrib
+		struct CN_API VertexAttrib
 		{
-			UInt type;
 			UInt count;
+			GLenum type;
 			UChar normalized;
 
-			VertexAttrib(UInt newType = GL_FLOAT,
-				UInt elementsCount = sizeof(GL_FLOAT), UChar normalize = GL_FALSE) :
-				type(newType), count(elementsCount), normalized(normalize) {}
-			}
+			VertexAttrib(UInt elementsCount = 0, GLenum newType = GL_FLOAT, UChar normalize = GL_FALSE) :
+				count(elementsCount), type(newType), normalized(normalize) {}
+		};
+		/// BufferLayout class
+		/// --Layout size and stride tracker for GL buffers
+		struct CN_API BufferLayout
+		{
+		public:
+			BufferLayout() : m_stride(0) {}
+			
+			// Accessors
+			inline VertexAttrib* getAttrib(int index) { return m_attribs[index]; }
+			inline size_t getStride() { return m_stride; }
+			// Modificators
+			void addAttrib(VertexAttrib& attribute);
+		private:
+			/// Stride grows with every new attribute
+			size_t m_stride;
+			/// Layout points to all vbo's attributes that they have
+			std::vector<VertexAttrib*> m_attribs;
 		};
 		/// RenderLayer structure
 		/// --It needs to draw in 2D and 2.5D with depth sorting

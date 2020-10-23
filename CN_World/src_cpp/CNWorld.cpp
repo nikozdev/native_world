@@ -1,3 +1,5 @@
+#define CN_ENTRY_POINT
+
 #include <CNWorld.h>
 #include <CheerNik.h>
 

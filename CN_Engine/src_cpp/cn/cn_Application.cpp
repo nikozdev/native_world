@@ -10,7 +10,7 @@
 
 #include <math/cn_math.h>
 
-#include <extern/GLFW/glfw3.h>
+#include <gl/gl_declarations.hpp>
 
 // Application class
 namespace CN
@@ -28,9 +28,9 @@ namespace CN
 		m_renderer = new GL::Renderer();
 		
 		m_isRunning = true;
-		
+
 		printf("\n--------<CN::APP::CONSTRUCTOR>--------\n");
-		CN_LOG("CN_APPLICATION.CPP", "Application has been created");
+		CN_LOG("Application has been created");
 		CN::MemoryMaster::printMem();
 	}
 	Application::~Application()
@@ -39,7 +39,7 @@ namespace CN
 		if (m_renderer) delete m_renderer;
 
 		printf("\n--------<CN::APP::DESTRUCTOR>--------\n");
-		CN_LOG("CN_APPLICATION.CPP", "Application has been destroyed");
+		CN_LOG("Application has been destroyed");
 		CN::MemoryMaster::printMem();
 	}
 
@@ -47,15 +47,12 @@ namespace CN
 	void Application::run()
 	{
 		m_isRunning = true;
+		
 		while (m_isRunning)
 		{
 			m_renderer->clear();
+			m_renderer->draw();
 
-			if (EV::EvSys::isPressed_key(GLFW_KEY_ESCAPE))
-			{
-				m_wnd->closeWindow();
-				m_isRunning = false;
-			}
 			m_wnd->onUpdate();
 		}
 	}
@@ -89,13 +86,13 @@ namespace CN
 		case GLFW_KEY_5:
 			break;
 		case GLFW_KEY_R:
-			CN_LOG("KEY_PRESSED", "R is pressed");
+			CN_LOG("R is pressed");
 			break;
 		case GLFW_KEY_ESCAPE:
 			m_isRunning = false;
 			break;
 		default:
-			CN_LOG("KEY_PRESSED", ev.getKeyCode());
+			CN_LOG(ev.getKeyCode());
 			break;
 		}
 		return false;

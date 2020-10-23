@@ -22,8 +22,10 @@ namespace CN
 			~Renderer();
 
 			// Core functions
-			void clear();
+			/// Draw all the data due to
+			/// VertexArray and IndexBuffer that is loaded in VetexBuffer object
 			void draw();
+			void clear();
 
 			// Static methods
 			static void draw(VertexArr& va, IndexBuf& ib, Shader& shader);
@@ -32,10 +34,18 @@ namespace CN
 			VertexArr* m_va;
 			IndexBuf* m_ib;
 			VertexBuf* m_vb;
+			Shader* m_shader;
 		private: // Default data
 			float m_globalColor[4];
-			UInt* m_indices;
-			float* m_vertices;
+			UInt m_indices[6] = {
+				0, 1, 2,
+				2, 3, 0 };
+			float m_vertices[8]{
+				-0.5f, -0.5f, // Left-bottom
+				0.5f, -0.5f, // Right-Bottom
+				0.5f, 0.5f, // Right-upper
+				-0.5f, 0.5f // Left-upper
+			};
 		};
 	}
 }
