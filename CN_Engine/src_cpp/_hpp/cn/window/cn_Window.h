@@ -51,6 +51,7 @@ namespace CN
 
 		// Main Functions
 		/// Call it each frame: PollEvents and SwapBuffers are recomended
+		virtual void onDraw() = 0;
 		virtual void onUpdate() = 0;
 		virtual void closeWindow() = 0;
 		/// Create windows of derrived classes for any platform

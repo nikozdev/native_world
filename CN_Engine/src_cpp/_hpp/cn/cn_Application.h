@@ -2,6 +2,7 @@
 #define CHEER_NIK_APP_H
 
 #include <cn_core.hpp>
+#include <cn_pch.hpp>
 #include <cn/window/WinWindow.h>
 
 #include <gl/gl_declarations.hpp>
@@ -36,6 +37,8 @@ namespace CN
 		
 		// Core functions
 		void run();
+		void update();
+		void render();
 		/// Get window events and create dispatcher for them
 		void onEvent(EV::Event& newEvent);
 	private:
@@ -44,7 +47,10 @@ namespace CN
 		// GL variables
 		GL::Renderer* m_renderer;
 		
+		// Other fields
 		bool m_isRunning;
+		// Time: current frame, last frame and the difference between them
+		float m_currTime, m_lastTime, m_deltaTime;
 	private: // Functions
 		bool onWndClosed(EV::WndCloseEvent ev);
 

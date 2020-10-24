@@ -10,7 +10,7 @@
 
 #include <math/cn_math.h>
 
-#include <gl/gl_declarations.hpp>
+#include <extern/GLFW/glfw3.h>
 
 // Application class
 namespace CN
@@ -20,7 +20,8 @@ namespace CN
 #define BIND_EVENT_FN(func)std::bind(&func, this, std::placeholders::_1)
 
 	// Constructor&Destructor
-	Application::Application()
+	Application::Application() :
+		m_currTime(0.0f), m_deltaTime(0.0f), m_lastTime(0.0f)
 	{
 		m_wnd = Window::createWnd();
 		m_wnd->setEventCallback(BIND_EVENT_FN(Application::onEvent));
@@ -47,16 +48,29 @@ namespace CN
 	void Application::run()
 	{
 		m_isRunning = true;
-		
 		while (m_isRunning)
 		{
-			m_renderer->clear();
-			m_renderer->draw();
-
-			m_wnd->onUpdate();
+			render();
+			update();
 		}
 	}
 
+	void Application::update()
+	{
+		m_currTime = glfwGetTime();
+		m_deltaTime = m_currTime - m_lastTime;
+		m_lastTime = m_currTime;
+		m_wnd->onUpdate();
+	}
+
+	void Application::render()
+	{
+		m_renderer->clear();
+		m_renderer->draw();
+		m_wnd->onDraw();
+	}
+
+	// Event Functions
 	void Application::onEvent(EV::Event& newEvent)
 	{
 		EV::EvDis dispatcher(newEvent);

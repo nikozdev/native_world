@@ -1,6 +1,7 @@
 #include <cn_pch.hpp>
 #include <cn_core.hpp>
 #include <math/cn_math.h>
+#include <cmath>
 
 namespace CN
 {
@@ -16,7 +17,7 @@ namespace CN
 		}
 		float Vec2::length()
 		{
-			return (x * x + y * y) * (x * x + y * y);
+			return sqrt(x * x + y * y);
 		}
 		float Vec2::angleDeg(Vec2& vec)
 		{
@@ -48,7 +49,7 @@ namespace CN
 		}
 		float Vec3::length()
 		{
-			return (x * x + y * y + z * z) * (x * x + y * y + z * z);
+			return sqrt(x * x + y * y + z * z);
 		}
 		float Vec3::angleDeg(Vec3& vec)
 		{
@@ -66,13 +67,47 @@ namespace CN
 			case 1: return this->y;
 			case 2: return this->z;
 			default:
-				CN_ASSERT(false, "We can not index the Vec2 with this number.");
+				CN_ASSERT(false, "We can not index the Vec3 with this number.");
 				return 0.0f;
 			}
 		}
 
 		// Vec4
-		//
+		void Vec4::normalize()
+		{
+			float len = length();
+			x /= len;
+			y /= len;
+			z /= len;
+		}
+
+		float Vec4::length()
+		{
+			return sqrt(x * x + y * y + z * z + w * w);
+		}
+
+		float Vec4::angleDeg(Vec3& vec)
+		{
+			return 0.0f;
+		}
+
+		float Vec4::angleRad(Vec3& vec)
+		{
+			return 0.0f;
+		}
+		float Vec4::operator[](unsigned int index)
+		{
+			switch (index)
+			{
+			case 0: return this->x;
+			case 1: return this->y;
+			case 2: return this->z;
+			case 3: return this->w;
+			default:
+				CN_ASSERT(false, "We can not index the Vec4 with this number.");
+				return 0.0f;
+			}
+		}
 	}
 	// Math functions
 	namespace MAT

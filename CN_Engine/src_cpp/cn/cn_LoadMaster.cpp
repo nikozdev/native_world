@@ -3,12 +3,19 @@
 #include <extern/stbiLoad/stb_image.h>
 #include <extern/GLEW/glew.h>
 
+//#include <EntryPoint.h>
+namespace CN
+{
+    extern char* EXE_DIR;
+}
+
 // LoadMaster
 namespace CN
 {
     // Constructor&Destructor
 	LoadMaster::LoadMaster() :
-        bytesCount(0), texturesCount(0), meshesCount(0)
+        m_resDir("F:\\dev\\CheerNik\\CN_Engine"),
+        m_bytesCount(0), m_loadedCount(0)
 	{
 	}
     LoadMaster::~LoadMaster()
@@ -43,7 +50,7 @@ namespace CN
         }
 
         while (loader.read((char*)data, bytes));
-        bytesCount += bytes;
+        m_bytesCount += bytes;
 
         loader.close();
         return true;

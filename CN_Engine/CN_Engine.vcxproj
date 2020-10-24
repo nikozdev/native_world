@@ -163,10 +163,13 @@
     </ClCompile>
     <ClCompile Include="src_cpp\cn\window\WinWindow.cpp" />
     <ClCompile Include="src_cpp\gl\cn_gl_lib.cpp" />
+    <ClCompile Include="src_cpp\gl\gui\gl_TextRenderer.cpp" />
     <ClCompile Include="src_cpp\gl\gl_Renderer.cpp" />
     <ClCompile Include="src_cpp\gl\gl_Shader.cpp" />
     <ClCompile Include="src_cpp\gl\gl_structs.cpp" />
     <ClCompile Include="src_cpp\gl\gl_types.cpp" />
+    <ClCompile Include="src_cpp\gl\gui\gui_structs.cpp" />
+    <ClCompile Include="src_cpp\gl\gui\gui_types.cpp" />
     <ClCompile Include="src_cpp\math\cn_math.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -203,7 +206,7 @@
     <ClInclude Include="src_cpp\_hpp\gl\gl_Shader.h" />
     <ClInclude Include="src_cpp\_hpp\gl\gl_ShaderLord.h" />
     <ClInclude Include="src_cpp\_hpp\gl\gl_structs.h" />
-    <ClInclude Include="src_cpp\_hpp\gl\gl_TextRenderer.h" />
+    <ClInclude Include="src_cpp\_hpp\gl\gui\gui_TextRenderer.h" />
     <ClInclude Include="src_cpp\_hpp\gl\gl_types.h" />
     <ClInclude Include="src_cpp\_hpp\gl\gui\gui_structs.h" />
     <ClInclude Include="src_cpp\_hpp\gl\gui\gui_types.h" />
@@ -218,12 +221,14 @@
     <Library Include="extern\GLFW\glfw3.lib" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\core_2d_fs.lua" />
+    <None Include="shaders\core_2d_ps.lua" />
     <None Include="shaders\core_2d_vs.lua" />
-    <None Include="shaders\obj0_2d_fs.lua" />
+    <None Include="shaders\core_txt_ps.lua" />
+    <None Include="shaders\core_txt_vs.lua" />
+    <None Include="shaders\obj0_2d_ps.lua" />
     <None Include="shaders\obj0_2d_vs.lua" />
-    <None Include="shaders\obj0_3d_fs.lua" />
-    <None Include="shaders\obj0_3d_phong_fs.lua" />
+    <None Include="shaders\obj0_3d_ps.lua" />
+    <None Include="shaders\obj0_3d_phong_ps.lua" />
     <None Include="shaders\obj0_3d_vs.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

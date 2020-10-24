@@ -73,6 +73,13 @@ extern bool GL_log(const char* funcName, const char* file, int line);
 /// --------<SupportFunctions>--------
 /// --------</SupportFunctions>--------
 
+/// --------<GlobalVeriables>--------
+namespace CN
+{
+	extern char* EXE_DIR;
+}
+/// --------</GlobalVeriables>--------
+
 #endif
 
 /// 18.10.2020

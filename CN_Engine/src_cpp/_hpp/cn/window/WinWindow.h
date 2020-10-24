@@ -32,6 +32,7 @@ namespace CN
 		void setVSync(bool enabled) override;
 
 		// Main functions
+		void onDraw() override;
 		void onUpdate() override;
 		void closeWindow() override;
 	public: // Members and struct

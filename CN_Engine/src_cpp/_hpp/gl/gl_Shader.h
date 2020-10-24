@@ -13,7 +13,7 @@ namespace CN
 		/// Shader class - handler for shader program OpenGL
 		/// --Has m_id, 3 shaders: vertex, fragment, [geometry]
 		/// --Can set uniforms via bunch of comands
-		class Shader
+		class CN_API Shader
 		{
 		private:
 			enum class ShaderTypes {

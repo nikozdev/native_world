@@ -58,10 +58,14 @@ namespace CN
 	}
 
 	// Core functions
+	void WinWindow::onDraw()
+	{
+		glfwSwapBuffers(m_wnd);
+	}
+
 	void WinWindow::onUpdate()
 	{
 		EV::EvSys::pollEvents();
-		glfwSwapBuffers(m_wnd);
 	}
 
 	void WinWindow::closeWindow()

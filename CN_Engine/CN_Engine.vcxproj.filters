@@ -57,6 +57,15 @@
     <ClCompile Include="src_cpp\gl\cn_gl_lib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src_cpp\gl\gui\gl_TextRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\gl\gui\gui_structs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\gl\gui\gui_types.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src_cpp\events\ev_Event.cpp">
@@ -122,9 +131,6 @@
     <ClInclude Include="src_cpp\_hpp\gl\gl_structs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src_cpp\_hpp\gl\gl_TextRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src_cpp\_hpp\gl\gl_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -185,18 +191,23 @@
     <ClInclude Include="src_cpp\_hpp\gl\cn_gl_lib.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src_cpp\_hpp\gl\gui\gui_TextRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="extern\GLFW\glfw3.lib" />
     <Library Include="extern\GLEW\glew32.lib" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\core_2d_fs.lua" />
     <None Include="shaders\core_2d_vs.lua" />
-    <None Include="shaders\obj0_2d_fs.lua" />
     <None Include="shaders\obj0_2d_vs.lua" />
-    <None Include="shaders\obj0_3d_fs.lua" />
-    <None Include="shaders\obj0_3d_phong_fs.lua" />
     <None Include="shaders\obj0_3d_vs.lua" />
+    <None Include="shaders\core_txt_vs.lua" />
+    <None Include="shaders\core_txt_ps.lua" />
+    <None Include="shaders\core_2d_ps.lua" />
+    <None Include="shaders\obj0_2d_ps.lua" />
+    <None Include="shaders\obj0_3d_ps.lua" />
+    <None Include="shaders\obj0_3d_phong_ps.lua" />
   </ItemGroup>
 </Project>

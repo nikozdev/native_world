@@ -1,7 +1,6 @@
 #ifndef CN_MATH_H
 #define CN_MATH_H
 
-
 namespace CN
 {
 	// Constants
@@ -18,6 +17,13 @@ namespace CN
 	// Structs
 	namespace MAT
 	{
+		/// Mathematical vector interface
+		template <int dimentions>
+		struct MathVec
+		{
+			MathVec() {};
+			virtual ~MathVec() {};
+		};
 		/// CheerNik 2-float-vector implementation
 		/// --Can be used for:
 		/// -->Point coordinates on cartesian system or iso projection
@@ -35,8 +41,10 @@ namespace CN
 				float g;
 			};
 
-			Vec2(float X = 0.0f, float Y = 0.0f) :
+			Vec2(float X, float Y) :
 				x(X), y(Y) {}
+			Vec2(float num = 0.0f) :
+				x(num), y(num) {}
 			Vec2(const Vec2& rVec) : x(rVec.x), y(rVec.y) {}
 
 			// Normalization
@@ -115,8 +123,10 @@ namespace CN
 				float b;
 			};
 
-			Vec3(float X = 0.0f, float Y = 0.0f, float Z = 0.0f) :
+			Vec3(float X, float Y, float Z) :
 				x(X), y(Y), z(Z) {}
+			Vec3(float num = 0.0f) :
+				x(num), y(num), z(num) {}
 			Vec3(const Vec3& rVec) : x(rVec.x), y(rVec.y), z(rVec.z) {}
 
 			// Normalization
@@ -198,6 +208,162 @@ namespace CN
 			// Indexing
 			float operator[] (unsigned int index);
 		};
+		/// CheerNik 4x4-float-matrix implementation
+		/// --Can be used for:
+		/// -->Transformation matricies
+		/// ||==ProjectionMatrix
+		/// ||==ViewMatrix
+		/// ||==ModelMatrix
+		struct Vec4
+		{
+			union
+			{
+				float x;
+				float r;
+			};
+			union
+			{
+				float y;
+				float g;
+			};
+			union
+			{
+				float z;
+				float b;
+			};
+			union
+			{
+				float z;
+				float b;
+			};
+			union
+			{
+				float w;
+				float a;
+			};
+
+			Vec4(float X, float Y, float Z, float W) :
+				x(X), y(Y), z(Z), w(W) {}
+			Vec4(float num = 0.0f) :
+				x(num), y(num), z(num), w(num) {}
+			Vec4(const Vec4& rVec) : x(rVec.x), y(rVec.y), z(rVec.z), w(rVec.w) {}
+
+			// Normalization
+			void normalize();
+			float length();
+			float angleDeg(Vec3& vec);
+			float angleRad(Vec3& vec);
+
+			// Scalar operations
+			void operator+ (float& scalar)
+			{
+				this->x += scalar;
+				this->y += scalar;
+			}
+			void operator- (float& scalar)
+			{
+				this->x -= scalar;
+				this->y -= scalar;
+			}
+			void operator* (float& scalar)
+			{
+				this->x *= scalar;
+				this->y *= scalar;
+			}
+			void operator/ (float& scalar)
+			{
+				this->x /= scalar;
+				this->y /= scalar;
+			}
+
+			// Vector2 operations
+			void operator+ (Vec2& rVec)
+			{
+				this->x += rVec.x;
+				this->y += rVec.y;
+			}
+			void operator- (Vec2& rVec)
+			{
+				this->x -= rVec.x;
+				this->y -= rVec.y;
+			}
+			void operator* (Vec2& rVec)
+			{
+				this->x *= rVec.x;
+				this->y *= rVec.y;
+			}
+			void operator/ (Vec2& rVec)
+			{
+				this->x /= rVec.x;
+				this->y /= rVec.y;
+			}
+
+			// Vector3 operations
+			void operator+ (Vec3& rVec)
+			{
+				this->x += rVec.x;
+				this->y += rVec.y;
+				this->z += rVec.z;
+			}
+			void operator- (Vec3& rVec)
+			{
+				this->x -= rVec.x;
+				this->y -= rVec.y;
+				this->z -= rVec.z;
+			}
+			void operator* (Vec3& rVec)
+			{
+				this->x *= rVec.x;
+				this->y *= rVec.y;
+				this->z *= rVec.z;
+			}
+			void operator/ (Vec3& rVec)
+			{
+				this->x /= rVec.x;
+				this->y /= rVec.y;
+				this->z /= rVec.z;
+			}
+
+			// Vector4 operations
+			void operator+ (Vec4& rVec)
+			{
+				this->x += rVec.x;
+				this->y += rVec.y;
+				this->z += rVec.z;
+			}
+			void operator- (Vec4& rVec)
+			{
+				this->x -= rVec.x;
+				this->y -= rVec.y;
+				this->z -= rVec.z;
+			}
+			void operator* (Vec4& rVec)
+			{
+				this->x *= rVec.x;
+				this->y *= rVec.y;
+				this->z *= rVec.z;
+			}
+			void operator/ (Vec4& rVec)
+			{
+				this->x /= rVec.x;
+				this->y /= rVec.y;
+				this->z /= rVec.z;
+			}
+
+			// Indexing
+			float operator[] (unsigned int index);
+		};
+		/// CheerNik 4x4-float-matrix implementation
+		/// --Can be used for:
+		/// -->Transformation matricies
+		/// ||==ProjectionMatrix
+		/// ||==ViewMatrix
+		/// ||==ModelMatrix
+
+		struct Mat4x4
+		{
+			Mat4x4& operator*(Vec4 vec4);
+		};
 	}
 	// Functions
 	namespace MAT
@@ -267,6 +433,9 @@ namespace CN
 		Vec2 normalVec(Vec2& vec);
 		/// Normalize vector 3 - set vector's x, y and z between 0.0 and 1.0
 		Vec3 normalVec(Vec3& vec);
+
+		// Matricies
+		Mat4x4& translateMat();
 	}
 }
 

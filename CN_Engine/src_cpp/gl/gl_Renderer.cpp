@@ -17,35 +17,20 @@ namespace CN
 		Renderer::Renderer() :
 			m_globalColor{ 0.0f, 0.2f, 0.3f, 1.0f }
 		{
-			//CN::LoadMaster::get().loadIt_bin("F://dev/CheerNik/CN_Engine/resources/color_data/default_color.bdt",
-			//	(void*)m_globalColor, sizeof(m_globalColor));
-
-			m_va = new VertexArr();
-			m_vb = new VertexBuf();
-			m_ib = new IndexBuf();
-			m_shader = new Shader("shaders/core_2d_vs.lua", "shaders/core_2d_fs.lua");
-			//CN::LoadMaster::get().loadIt_bin("F://dev/CheerNik/CN_Engine/resources/vertex_data/rect_vd_4_2.bdt", (void*)m_vertices, sizeof(m_vertices));
-			//CN::LoadMaster::get().loadIt_bin("F://dev/CheerNik/CN_Engine/resources/vertex_data/rect_ind_4_2.bdt", (void*)m_indices, sizeof(m_vertices));
-
-			m_ib->setData(m_indices, 6, GLBuffer::DYNAMIC);
-			m_vb->setData(m_vertices, 8, GLBuffer::DYNAMIC);
-			m_vb->addAttrib(2, GL_FLOAT, GL_FALSE);
-
-			m_va->addVBuffer(*m_vb);
-			m_va->setIBuffer(*m_ib);
-
+			m_shader = new Shader("F:\\dev\\CheerNik\\CN_Engine\\shaders\\core_2d_vs.lua",
+				"F:\\dev\\CheerNik\\CN_Engine\\shaders\\core_2d_ps.lua");
+			m_rect = new Rectangle();
+			m_rect->setShaderPtr(*m_shader);
+		
 			CN_LOG("Renderer has been created");
 		}
 		Renderer::~Renderer()
 		{
-			delete m_va;
-			delete m_vb;
-			delete m_ib;
-			delete m_shader;
-
-			//CN::LoadMaster::get().saveIt_bin("F://dev/CheerNik/CN_Engine/resources/vertex_data/rect_vd_4_2.bdt", (void*)m_vertices, sizeof(m_vertices));
-			//CN::LoadMaster::get().saveIt_bin("F://dev/CheerNik/CN_Engine/resources/vertex_data/rect_ind_4_2.bdt", (void*)m_indices, sizeof(m_indices));
-			//CN::LoadMaster::get().saveIt_bin("F://dev/CheerNik/CN_Engine/resources/color_data/default_color.bdt", (void*)m_globalColor, sizeof(m_globalColor));
+			if(m_va)delete m_va;
+			if(m_vb)delete m_vb;
+			if(m_ib)delete m_ib;
+			if(m_shader)delete m_shader;
+			if(m_rect)delete m_rect;
 
 			CN_LOG("Renderer has been destroyed");
 		}
@@ -59,16 +44,31 @@ namespace CN
 		}
 		void Renderer::draw()
 		{
-			m_shader->use();
-			m_va->bind();
-			GL_CALL(glDrawElements(GL_TRIANGLES, m_ib->getBufferData()->count, GL_UNSIGNED_INT, nullptr));
-			m_va->unbind();
-			m_shader->stopUse();
+			if (false)
+			{
+				m_shader->use();
+				m_va->bind();
+				GL_CALL(glDrawElements(GL_TRIANGLES, m_ib->getBufferData()->count, GL_UNSIGNED_INT, nullptr));
+				m_va->unbind();
+				m_shader->stopUse();
+			}
+			else
+			{
+				m_rect->draw();
+			}
 		}
 
 		// Static functions
 		void Renderer::draw(VertexArr& va, IndexBuf& ib, Shader& shader)
 		{
+			if (false)
+			{
+				shader.use();
+				va.bind();
+				GL_CALL(glDrawElements(GL_TRIANGLES, ib.getBufferData()->count, GL_UNSIGNED_INT, nullptr));
+				va.unbind();
+				shader.stopUse();
+			}
 		}
 		void Renderer::clear(float* colorRGBA)
 		{

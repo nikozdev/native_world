@@ -3,15 +3,25 @@
 
 #include <cn_core.hpp>
 #include <gl/cn_gl_lib.hpp>
+#include <math/cn_math.h>
 
 namespace CN
 {
+	// Global enumerations
+	namespace GL
+	{
+		enum class DimTypes
+		{
+			DEFAULT = 0, _1D = 1, _2D, _3D
+		};
+	}
+
 	namespace GL
 	{
 		/// Vertex for 2D world
 		/// --Contains xy coordinates for position
 		/// --Contains uv coordinates for texture coordinates
-		struct Vertex2
+		struct CN_API Vertex2
 		{
 			float vCoords[2];
 			float uvs[2];
@@ -22,7 +32,7 @@ namespace CN
 		/// Vertex for 3D world
 		/// --Contains xyz coordinates for position and normal
 		/// --Contains uv coordinates for texture coordinates
-		struct Vertex3
+		struct CN_API Vertex3
 		{
 			float vCoords[3];
 			float normal[3];
@@ -68,7 +78,7 @@ namespace CN
 		/// RenderLayer structure
 		/// --It needs to draw in 2D and 2.5D with depth sorting
 		/// --Every sprite has to be on the certain layer
-		struct RenderLayer2D
+		struct CN_API RenderLayer2D
 		{
 			// Tile_Y* wallTiles;
 			// Tile_XZ* groundTiles;

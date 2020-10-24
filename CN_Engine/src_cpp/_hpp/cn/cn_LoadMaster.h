@@ -2,17 +2,7 @@
 #define CN_LOAD_MASTER_H
 
 #include <cn_core.hpp>
-
-// Predeclarations
-namespace CN
-{
-	namespace GL
-	{
-		class CN_API Texture;
-		class CN_API Mesh;
-		class CN_API Sprite;
-	}
-}
+#include <gl/cn_gl_lib.hpp>
 
 namespace CN
 {
@@ -32,6 +22,9 @@ namespace CN
 		enum class ImgFormats {
 			DEFAULT = 0, PNG = 1, JPG, DDS
 		};
+		enum class ShaderFormats {
+			DEFAULT = 0, VERTEX = 1, PIXEL, GEOMETRY
+		};
 	public: // Methods
 		// Destructor
 		~LoadMaster();
@@ -39,8 +32,10 @@ namespace CN
 		// Accessors
 		static LoadMaster& get() { static LoadMaster s_instance; return s_instance; }
 		
-		UInt getTexCount() const { return texturesCount; }
-		UInt getMeshesCount() const { return meshesCount; }
+		/// Returns resources directory of the project
+		std::string getDir() const { return m_resDir; };
+		UInt getLoadedCount() const { return m_loadedCount; }
+		UInt getLoadedBytes() const { return m_bytesCount; }
 
 		// Saving
 		/// Save the data with the given size into the file by given path
@@ -59,10 +54,13 @@ namespace CN
 		/// Load material and image data from the file and initialize GL sprite class
 		bool loadIt_sprite(const std::string& path,
 			GL::Sprite* spritePtr);
+		/// Load shader state from the file and initialize GL shader class
+		bool loadIt_Shader(const std::string& path,
+			GL::Shader* shaderPtr);
 	private: // Members
-		size_t bytesCount;
-		UInt texturesCount;
-		UInt meshesCount;
+		std::string m_resDir;
+		size_t m_bytesCount;
+		UInt m_loadedCount;
 	private: // Implementation Functions
 		// Private singleton Constructor
 		LoadMaster();

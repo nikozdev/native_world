@@ -18,6 +18,10 @@ namespace CN
 		class CN_API VertexBuf;
 		class CN_API IndexBuf;
 
+		class CN_API GraphicsObj;
+		class CN_API Primitive;
+		class CN_API Rectangle;
+
 		class CN_API Renderer;
 		class CN_API TextRenderer;
 
