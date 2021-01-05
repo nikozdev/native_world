@@ -47,5 +47,5 @@ namespace NW
 	{
 		return true;
 	}
-	// ========</GMaterialSprite>========
+	// ========</GMaterial2d>========
 }
