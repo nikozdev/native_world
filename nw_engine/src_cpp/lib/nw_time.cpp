@@ -5,29 +5,29 @@
 
 namespace NW
 {
-    // ========<RealTimeCounter>========
+    // --==<RealTimeCounter>==--
     RealTimeCounter::RealTimeCounter() :
         m_nBeginTime(TimeSys::GetRealTime()),
         m_nEndTime(TimeSys::GetRealTime()),
         m_nCreationTime(TimeSys::GetRealTime()) { }
 
-    // -- Getters
-    // -- Setters
+    // --getters
+    // --setters
     void RealTimeCounter::BeginCount() { m_nEndTime = TimeSys::GetRealTime(); }
     void RealTimeCounter::EndCount() { m_nEndTime = TimeSys::GetRealTime(); }
-    // -- Interface Methods
-    // ========</RealTimeCounter>========
+    // --core_methods
+    // --==</RealTimeCounter>==--
 
-    // ========<AppTimeCounter>========
+    // --==<AppTimeCounter>==--
     AppTimeCounter::AppTimeCounter() :
         m_nBeginTime(TimeSys::GetAppTime()),
         m_nEndTime(TimeSys::GetAppTime()),
         m_nCreationTime(TimeSys::GetAppTime()) { }
 
-    // -- Getters
-    // -- Setters
+    // --getters
+    // --setters
     void AppTimeCounter::BeginCount() { m_nEndTime = TimeSys::GetAppTime(); }
     void AppTimeCounter::EndCount() { m_nEndTime = TimeSys::GetAppTime(); }
-    // -- Interface Methods
-    // ========</AppTimeCounter>========
+    // --core_methods
+    // --==</AppTimeCounter>==--
 }

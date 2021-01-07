@@ -11,6 +11,42 @@
 #if (defined NW_GRAPHICS)
 namespace NW
 {
+	/// Abstract SubShader Class
+	class NW_API ASubShader : public ACodeChunk
+	{
+	public:
+		using Attribs = HashMap<String, UInt32>;
+		using Blocks = HashMap<String, UInt32>;
+	public:
+		ASubShader(const char* strName, ShaderTypes sdType);
+		virtual ~ASubShader();
+
+		// --getters
+		inline UInt32 GetRenderId() const { return m_unRId; }
+		inline ShaderTypes GetType() const { return m_shdType; }
+		inline const BufferLayout& GetVertexLayout() const { return m_vtxLayout; }
+		inline const Attribs& GetAttribs() const { return m_Attribs; }
+		inline const Blocks& GetBlocks() const { return m_Blocks; }
+		virtual inline const AShader* GetOverShader() const = 0;
+
+		// --core_methods
+		virtual void Attach(AShader* pOverShader) = 0;
+		virtual void Detach() = 0;
+		virtual bool Compile() = 0;
+		virtual void Reset() = 0;
+
+		// --data_methods
+		virtual bool SaveF(const char* strFPath) = 0;
+		virtual bool LoadF(const char* strFPath) = 0;
+
+		static ASubShader* Create(const char* strName, ShaderTypes sdType);
+	protected:
+		UInt32 m_unRId;
+		ShaderTypes m_shdType;
+		BufferLayout m_vtxLayout;
+		mutable Attribs m_Attribs;
+		mutable Blocks m_Blocks;
+	};
 	/// Abstract Shader Class
 	/// --Interface:
 	/// -> Create -> AddSource Code with defined type -> Compile/Link
@@ -29,27 +65,32 @@ namespace NW
 	class NW_API AShader : public ACodeChunk
 	{
 	public:
-		using Attribs = HashMap<const char*, UInt32>;
+		using Attribs = HashMap<String, UInt32>;
+		using Blocks = HashMap<String, UInt32>;
 	public:
 		AShader(const char* strName);
 		virtual ~AShader();
 
-		// -- Getters
-		UInt32 GetRenderId() const { return m_unRId; }
-		inline const BufferLayout& GetBufferLayout() { return m_BufLayout; }
-		virtual inline Attribs& GetAttribs() { return m_Attribs; }
-		// -- Setters
-
-		// -- Interface methods
+		// --getters
+		inline UInt32 GetRenderId() const { return m_unRId; }
+		inline const BufferLayout& GetVertexLayout() const { return m_vtxLayout; }
+		inline const BufferLayout& GetShdLayout() const { return m_shdLayout; }
+		inline const Attribs& GetAttribs() const { return m_Attribs; }
+		inline const Blocks& GetBlocks() const { return m_Blocks; }
+		virtual inline const ASubShader* GetSubShader(ShaderTypes sdType) = 0;
+		// --core_methods
 		virtual void Enable() = 0;
 		virtual void Disable() = 0;
 		virtual bool Compile() = 0;
 		virtual void Reset() = 0;
-		// -- DataRes methods
+
+		// --data_methods
 		virtual bool SaveF(const char* strFPath) = 0;
 		virtual bool LoadF(const char* strFPath) = 0;
 
-		// --Attributes&Settings
+		static AShader* Create(const char* strName);
+
+		// --setters
 		virtual void SetBool(const char* strName, bool value) const {}
 		virtual void SetInt(const char* strName, int value) const {}
 		virtual void SetIntArray(const char *strName, Int32 *pIntArr, UInt32 unCount) const {}
@@ -60,53 +101,51 @@ namespace NW
 		virtual void SetV2f(const char* strName, const V2f& value) const {}
 		virtual void SetV3f(const char* strName, const V3f& value) const {}
 		virtual void SetV4f(const char* strName, const V4f& value) const {}
-
 		virtual void SetM4f(const char* strName, const Mat4f& value) const {}
-		// -- Light Sources
-		virtual void SetLight(const String& strName, const DirectLight3d& drLight) const {};
-		virtual void SetLight(const String& strName, const PointLight3d& ptLight) const {};
-		virtual void SetLight(const String& strName, const SpotLight3d& stLight) const {};
-		// --Attributes&Settings
-		
-		static AShader* Create(const char* strName);
 	protected:
 		UInt32 m_unRId;
-		BufferLayout m_BufLayout;
+		BufferLayout m_vtxLayout;
+		BufferLayout m_shdLayout;
 		mutable Attribs m_Attribs;
+		mutable Blocks m_Blocks;
 	};
 }
 #endif	// NW_GRAPHICS
 #if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-// Shader
+// SubShader
 namespace NW
 {
-	class NW_API ShaderProg;
-	/// Shader class OpenGL abstraction
+	/// SubShader class OpenGL abstraction
 	/// Interface:
 	/// -> Create the shader
 	/// -> Set the entire shader source code with written comment "#shader type" on the top
-	/// -> Compile(Load) -> Set the shaderProgram -> link that ShaderProgram
-	class NW_API ShaderOgl : public AShader
+	/// -> Compile(Load) -> Set the ShaderOglram -> link that ShaderOglram
+	class NW_API SubShaderOgl : public ASubShader
 	{
+		friend class ShaderOgl;
 	public:
-		ShaderOgl(const char* strName, ShaderTypes sType);
-		~ShaderOgl();
-		
-		// -- Setters
-		inline void SetShaderProg(ShaderProg* pShaderProg) { Disable(); m_pShaderProg = pShaderProg; }
+		SubShaderOgl(const char* strName, ShaderTypes sType);
+		~SubShaderOgl();
 
-		// -- Interface Methods
-		virtual void Enable() override;
-		virtual void Disable() override;
+		// --getters
+		virtual const AShader* GetOverShader() const override;
+		// --core_methods
+		virtual void Attach(AShader* pOverShader) override;
+		virtual void Detach() override;
 		virtual bool Compile() override;
 		virtual void Reset() override;
-		// -- DataRes methods
+		// --data_methods
 		virtual bool SaveF(const char* strFPath) override;
 		virtual bool LoadF(const char* strFPath) override;
-	private: // Implementation Attributes
-		ShaderProg* m_pShaderProg;
-		ShaderTypes m_sType;
+	private:
+		bool CodeProc();
+	private:
+		ShaderOgl* m_pOverShader;
 	};
+}
+// Shader
+namespace NW
+{
 	/// Shader class - handler for shader program OpenGL
 	/// Interface:
 	/// -> Create ->
@@ -114,51 +153,50 @@ namespace NW
 	/// -> Load the program
 	/// Description
 	/// -- Instead of own source code, shader programm has shader objects with that code
-	class NW_API ShaderProg : public AShader
+	class NW_API ShaderOgl : public AShader
 	{
+		friend class SubShaderOgl;
 	public: // Interface Methods
-		ShaderProg(const char* strName);
-		~ShaderProg();
+		ShaderOgl(const char* strName);
+		~ShaderOgl();
 
-		// -- Interface Methods
+		// --getters
+		virtual inline const ASubShader* GetSubShader(ShaderTypes sdType) {
+			auto itSub = FIND_BY_FUNC(m_SubShaders, ASubShader&, sdType, .GetType);
+			return itSub == m_SubShaders.end() ? nullptr : &*itSub;
+		}
+		// --core_methods
 		virtual void Enable() override;
 		virtual void Disable() override;
 		virtual bool Compile() override;
 		virtual void Reset() override;
-		// -- DataRes Methods
+		// --data_methods
 		virtual bool SaveF(const char* strFPath) override;
 		virtual bool LoadF(const char* strFPath) override;
 
-		// --Attributes&Settings
+		// --setters
 		virtual void SetBool(const char* strName, bool value) const override;
-
 		virtual void SetInt(const char* strName, int value) const override;
 		virtual void SetIntArray(const char* strName, Int32* pIntArr, UInt32 unCount) const override;
 		virtual void SetUIntArray(const char* strName, UInt32* pIntArr, UInt32 unCount) const override;
-
 		virtual void SetFloat(const char* strName, float value) const override;
 		virtual void SetFloatArray(const char* strName, float* pFloatArr, UInt32 unCount) const override;
 		virtual void SetV2f(const char* strName, const V2f& value) const override;
 		virtual void SetV3f(const char* strName, const V3f& value) const override;
 		virtual void SetV4f(const char* strName, const V4f& value) const override;
-
-		void SetM4f(const char* strName, const Mat4f& value) const override;
-
-		// -- Light Sources
-		virtual void SetLight(const String& strName, const DirectLight3d& drLight) const override;
-		virtual void SetLight(const String& strName, const PointLight3d& ptLight) const override;
-		virtual void SetLight(const String& strName, const SpotLight3d& stLight) const override;
-	private: // Implementation Attributes
-		DArray<ShaderOgl> m_Shaders;
-	private: // Implementation Methods
+		virtual void SetM4f(const char* strName, const Mat4f& value) const override;
+	private:
+		DArray<SubShaderOgl> m_SubShaders;
+	private:
 		/// We have gotten a whole source code file
 		/// Iterate throught all the lines in that code
 		/// If it suits the format:
-		/// Create new ShaderOgl of appropriate type in the own vector, set it's source
-		bool SourceCodeProc();
+		/// Create new SubShaderOgl of appropriate type in the own vector, set it's source
+		bool CodeProc();
 		// Optimization
 		/// Gets uniforms from the program, or from the uniforms cashe if they are there
-		inline Int32 GetUniformLoc(const char* uniformName) const;
+		inline Int32 GetAttribLoc(const char* strName) const;
+		inline Int32 GetBlockIdx(const char* strName) const;
 	};
 }
 #endif // NW_GRAPHICS

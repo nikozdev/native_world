@@ -10,11 +10,11 @@ namespace NW
 	class NW_API IOSys
 	{
 		friend class EvSys;
-	public:	// Interface Attributes
+	public:
 		static CursorState Cursor;
 		static double xScrollDelta, yScrollDelta;
 	public:
-		// -- Getters
+		// --getters
 		static inline bool GetKeyPressed(UInt16 unKeyId) { return s_bsKeys[unKeyId].bPressed; }
 		static inline bool GetKeyReleased(UInt16 unKeyId) { return s_bsKeys[unKeyId].bReleased; }
 		static inline bool GetKeyHeld(UInt16 unKeyId) { return s_bsKeys[unKeyId].bHeld; }
@@ -22,7 +22,7 @@ namespace NW
 		static inline bool GetMsButtonReleased(UInt16 unButtonId) { return s_bsMsBtns[unButtonId].bReleased; }
 		static inline bool GetMsButtonHeld(UInt16 unButtonId) { return s_bsMsBtns[unButtonId].bHeld; }
 		
-		// -- Core Methods
+		// --core_methods
 		static void Update();
 
 		static void UpdateKeyboard();

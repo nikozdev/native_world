@@ -15,13 +15,13 @@ namespace NW
 		LuaScriptCmp(AEntity& rEntity);
 		~LuaScriptCmp() = default;
 
-		// -- Getters
+		// --getters
 		inline LuaScript* GetScript() { return &m_Script; }
-		// -- Setters
+		// --setters
 		void SetLuaName(const char* strName);
 		virtual inline void SetEnabled(bool bIsEnabled) override;
 
-		// -- Core Methods
+		// --core_methods
 		virtual void OnUpdate() override;
 		void OnEnable();
 		void OnDisable();

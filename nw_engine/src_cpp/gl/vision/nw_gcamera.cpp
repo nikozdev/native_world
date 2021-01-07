@@ -13,7 +13,7 @@ namespace NW
 		m_gcMode(GCM_2D), m_gcType(GCT_ORTHO),
 		m_m4Proj(Mat4f{ 1.0f }), m_m4View(Mat4f{ 1.0f }) {}
 
-	// -- Getters
+	// --getters
 	const Mat4f& GCamera::GetProjMatrix()
 	{
 		if (m_gcType == GCT_ORTHO) {

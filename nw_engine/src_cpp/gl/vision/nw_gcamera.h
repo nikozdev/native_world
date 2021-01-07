@@ -53,12 +53,12 @@ namespace NW
 		GCamera();
 		~GCamera() = default;
 
-		// -- Getters
+		// --getters
 		virtual inline const Mat4f& GetViewMatrix();
 		virtual inline const Mat4f& GetProjMatrix();
 		inline GCameraTypes& GetType() { return m_gcType; }
 		inline GCameraModes& GetMode() { return m_gcMode; }
-		// -- Setters
+		// --setters
 		inline void SetType(GCameraTypes gcType) {
 			m_gcType = gcType;
 			if (m_gcType == GCT_ORTHO) {

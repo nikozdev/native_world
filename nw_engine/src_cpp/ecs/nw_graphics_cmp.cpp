@@ -1,66 +1,65 @@
 #include <nw_pch.hpp>
 #include <ecs/nw_scene.h>
 
-#include <gl/control/nw_drawer.h>
+#include <core/nw_graph_engine.h>
 
 #include <sys/nw_data_sys.h>
 
 namespace NW
 {
-	// ========<DrawPolyLineCmp>========
+	// --==<DrawPolyLineCmp>==--
 	DrawPolyLineCmp::DrawPolyLineCmp(AEntity& rEntity) :
 		AGraphicsCmp(rEntity)
 	{
 		m_PolyLine.vtxCrds.push_back(V3f{ -1.0f, 0.0f, 0.0f });
 		m_PolyLine.vtxCrds.push_back(V3f{ 0.0f, 1.0f, 0.0f });
 		m_PolyLine.vtxCrds.push_back(V3f{ 1.0f, 0.0f, 0.0f });
-		m_PolyLine.GetGMaterial()->SetTexture(DataSys::GetDataRes<ATexture1d>("tex_white_solid"));
-		m_PolyLine.GetGMaterial()->SetShader(DataSys::GetDataRes<AShader>("shd_batch_lines"));
+		m_PolyLine.pGMtl->SetTexture(DataSys::GetDataRes<ATexture1d>("tex_white_solid"));
+		m_PolyLine.pGMtl->SetShader(DataSys::GetDataRes<AShader>("shd_batch_lines"));
 	}
 	
-	// -- Interface Methods
+	// --core_methods
 	void DrawPolyLineCmp::OnUpdate()
 	{
 	}
-	// ========</DrawPolyLineCmp>========
+	// --==</DrawPolyLineCmp>==--
 
-	// ========<DrawPolygonsCmp>========
+	// --==<DrawPolygonsCmp>==--
 	DrawPolygonsCmp::DrawPolygonsCmp(AEntity& rEntity) :
 		AGraphicsCmp(rEntity)
 	{
 		m_Polygons.vtxCrds.push_back(V3f{ -0.5f, -0.5f, 0.0f });
 		m_Polygons.vtxCrds.push_back(V3f{ 0.0f, 0.5f, 0.0f });
 		m_Polygons.vtxCrds.push_back(V3f{ 0.5f, 0.5f, 0.0f });
-		m_Polygons.GetGMaterial()->SetTexture(DataSys::GetDataRes<ATexture2d>("tex_white_solid"));
-		m_Polygons.GetGMaterial()->SetShader(DataSys::GetDataRes<AShader>("shd_batch_lines"));
+		m_Polygons.pGMtl->SetTexture(DataSys::GetDataRes<ATexture2d>("tex_white_solid"));
+		m_Polygons.pGMtl->SetShader(DataSys::GetDataRes<AShader>("shd_batch_lines"));
 	}
 
-	// -- Interface Methods
+	// --core_methods
 	void DrawPolygonsCmp::OnUpdate()
 	{
 	}
-	// ========</DrawPolygonsCmp>========
+	// --==</DrawPolygonsCmp>==--
 
-	// ========<Graphics2dCmp>========
+	// --==<Graphics2dCmp>==--
 	Graphics2dCmp::Graphics2dCmp(AEntity& rEntity) :
 		AGraphicsCmp(rEntity)
 	{
-		m_Sprite.GetGMaterial()->SetTexture(DataSys::GetDataRes<ATexture2d>("tex_white_solid"));
-		m_Sprite.GetGMaterial()->SetShader(DataSys::GetDataRes<AShader>("shd_batch_3d"));
+		m_Sprite.pGMtl->SetTexture(DataSys::GetDataRes<ATexture2d>("tex_white_solid"));
+		m_Sprite.pGMtl->SetShader(DataSys::GetDataRes<AShader>("shd_batch_3d"));
 		DOData.pDrawable = &m_Sprite;
 		DOData.DrawPrimitive = PT_TRIANGLES;
 	}
 
-	// -- Interface Methods
+	// --core_methods
 	void Graphics2dCmp::OnUpdate()
 	{
-		Drawer::BeginDraw();
-		DOData.pShader = m_Sprite.GetGMaterial()->GetShader();
+		GraphEngine::BeginDraw({ Scene::Get().GetGCamera() });
 		DOData.unDrawOrder = unDrawOrder;
-		Drawer::GetGApi()->SetModes(true, PM_BLEND);
-		Drawer::GetGApi()->SetBlendFunc(BC_SRC_ALPHA, BC_ONE_MINUS_SRC_ALPHA);
-		Drawer::OnDraw(DOData);
-		Drawer::EndDraw();
+		GraphEngine::GetGApi()->SetModes(true, PM_BLEND);
+		GraphEngine::GetGApi()->SetBlendFunc(BC_SRC_ALPHA, BC_ONE_MINUS_SRC_ALPHA);
+		GraphEngine::OnDraw(DOData);
+		GraphEngine::EndDraw();
 	}
-	// ========</Graphics2dCmp>========
+	// --==</Graphics2dCmp>==--
 }

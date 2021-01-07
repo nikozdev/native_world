@@ -19,7 +19,7 @@ namespace NW
 		using ADRs = HashMap<UInt32, ADataRes*>;
 		template <class DRType> using DRs = HashMap<String, DRType*>;
 	public:
-		// -- Getters
+		// --getters
 		inline const char* GetDirectory() const { return &s_strRscDir[0]; }
 		
 		static inline ADRs& GetADataResources() { return s_ADRs; }
@@ -35,7 +35,7 @@ namespace NW
 			DRs<DRType>::iterator itDR = s_DRs.find(strName);
 			return itDR == s_DRs.end() ? nullptr : itDR->second;
 		}
-		// -- Setters
+		// --setters
 		static void AddADataRes(ADataRes* pDataRes);
 		static void RemoveADataRes(UInt32 unId);
 		
@@ -51,13 +51,13 @@ namespace NW
 			s_DRs.erase(itDR);
 		}
 		
-		// -- Core Methods
+		// --core_methods
 		static bool OnInit();
 		static void OnQuit();
-		// -- File Dialogs
+		// --file_dialogs
 		static String FDialog_save(const char* strFilter);
 		static String FDialog_load(const char* strFilter);
-		// -- Binary data
+		// --binary_data
 		static bool SaveF_data(const char *strFPath, void* pData, UInt64 unBytes);
 		static bool SaveF_data(const char *directory, const char *name, const char *noPointformat,
 			void* pData, UInt64 unBytes);
@@ -66,23 +66,23 @@ namespace NW
 		static bool LoadF_data(const char *directory, const char *name, const char *noPointformat,
 			void *pData, UInt64 unBytes);
 		static inline bool LoadF_data(void* pData, UInt64 unBytes) { return LoadF_data(&FDialog_load("all_files(*.*)\0*.*\0")[0], pData, unBytes); }
-		// -- Strings
+		// --strings
 		static bool SaveF_string(const char* strFPath, const char* strSrc, UInt64 unBytes);
 		static bool LoadF_string(const char* strFPath, String& strDest);
-		// -- Images
+		// --images
 		static UInt8* LoadF_image(const char* strFPath, Int32* pnW, Int32* pnH, Int32* pnChannels);
 		static bool LoadF_image(const char* strFPath, UByte* pClrDataBuf, Int32* pnW, Int32* pnH, Int32* pnChannels);
 		static bool LoadF_image(const char* strFilePath, ImageInfo* pImage);
-		// -- Meshes
+		// --meshes
 		static bool SaveF_mesh(const String& strFilePath, DArray<VertexShape3d>* pVtxData, DArray<UInt32>* punIndData);
 		static bool LoadF_mesh(const String& strFilePath, DArray<VertexShape3d>* pVtxData, DArray<UInt32>* punIndData);
-		// -- Shaders
-	private: // Implementation Attributes
+		// --shaders
+	private:
 		static ADRs s_ADRs;
 		static String s_strRscDir;
 		static std::stringstream s_strStream;
 		static std::fstream s_fStream;
-	private: // Implementation Methods
+	private:
 		static bool LoadF_mesh_dae(const String& strFileData, DArray<UInt32>& arrIndices,
 			DArray<V3f>& vtxCoords, DArray<V2f>& texCoords, DArray<V3f>& normalCoords);
 		static bool LoadF_mesh_dae(const String& strFileData, DArray<UInt32>& arrIndices,

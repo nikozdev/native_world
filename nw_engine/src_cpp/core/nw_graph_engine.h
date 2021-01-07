@@ -6,30 +6,30 @@
 
 namespace NW
 {
-	/// Drawer Singleton Class
+	/// GraphEngine Singleton Class
 	/// Description:
-	/// -- This is the secondary singleton Draw class (Drawer can not live without Drawer3d)
-	/// -- Drawer3d handles Graphics API and provides an interface for drawing any AShape3d we have
-	/// -- Drawer has index and vertex buffers, arrays, materials and shaders for drawing AShape2d
+	/// -- This is the secondary singleton Draw class (GraphEngine can not live without GraphEngine3d)
+	/// -- GraphEngine3d handles Graphics API and provides an interface for drawing any AShape3d we have
+	/// -- GraphEngine has index and vertex buffers, arrays, materials and shaders for drawing AShape2d
 	/// -- All Draw must to be done betweeen calls BeginDraw() and EndDraw() in some place inside the
 	/// application while-loop
 	/// -- It uses batch Drawing technique to draw everything we ask for as less as possible "draw calls"
 	/// -- Because of batch Drawing we have a great performance but
 	/// maximum amount of 2d shapes is restriced as well as textures we can set in just 1 time.
 	/// Interface:
-	/// -> Initialize graphics context -> Set Drawer's GAPI type
+	/// -> Initialize graphics context -> Set GraphEngine's GAPI type
 	/// -> Call the Init method -> BeginDraw with some scene which has a camera
 	/// -> OnDraw all the objects you need -> EndDraw
-	class NW_API Drawer
+	class NW_API GraphEngine
 	{
 	public:
-		// -- Getters
+		// --getters
 		static inline AGraphicsApi* GetGApi() { return s_pGApi.get(); }
-		static const DrawerInfo& GetInfo() { return s_DInfo; }
-		// -- Setters
-		static void SetVertexSize(UInt32 szVertex);
-		static void SetMaxVCount(UInt32 unMaxVtx);
-		static void SetMaxICount(UInt32 unMaxInd);
+		static const GraphEngineInfo& GetInfo() { return s_DInfo; }
+		// --setters
+		static void SetMaxVtxSize(Size szMaxVtx);
+		static void SetMaxIdxSize(Size szMaxIdx);
+		static void SetMaxShdSize(Size szMaxShd);
 		static void SetMaxTexCount(UInt8 unMaxTex);
 		// -- Predicates
 		static bool IsDrawing() { return s_bIsDrawing; }
@@ -39,16 +39,17 @@ namespace NW
 		static void OnQuit();
 		static void Update();
 
-		static void BeginDraw();
+		static void BeginDraw(const DrawSceneData& rDSData);
 		static void OnDraw(const DrawObjectData& rDOData);
 		static void EndDraw();
 	private: // Implementation Methods
-		static void inline UploadData(ADrawable* pDrawable);
-		static void inline DrawCall();
+		static inline void UploadVtxData(ADrawable* pDrawable);
+		static inline void UploadShdData();
+		static inline void DrawCall();
 	private: // Implementation Attributes
 		static RefOwner<AGraphicsApi> s_pGApi;
 
-		static DrawerInfo s_DInfo;
+		static GraphEngineInfo s_DInfo;
 		static bool s_bIsDrawing;
 	};
 }

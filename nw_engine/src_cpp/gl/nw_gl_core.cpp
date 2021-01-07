@@ -3,38 +3,8 @@
 
 #include <sys/nw_mem_sys.h>
 
-#if (defined NW_GRAPHICS)
-// Functions
-namespace NW
-{
-	static inline UInt32 SDType_GetSize(ShaderDataTypes sDataType)
-	{
-		switch (sDataType)
-		{
-		case SDT_BOOL: case SDT_INT8: case SDT_UINT8:
-			return 1;
-		case SDT_INT16: case SDT_UINT16:
-			return 2;
-		case SDT_INT32: case SDT_UINT32: case SDT_FLOAT32:
-			return 4;
-		}
-		NW_ERR("Inaccessible shader data type");
-	}
-}
-// BufferLayout
-namespace NW
-{
-	void BufferLayout::Update()
-	{
-		unStride = 0;
-		for (auto& elem : BufElems)
-		{
-			elem.unOffset = unStride;
-			unStride += elem.unCount * SDType_GetSize(elem.sdType);
-		}
-	}
-}
-#endif	// NW_GRAPHICS
+#pragma warning (disable: 4312)
+
 #if (NW_GRAPHICS & NW_GRAPHICS_OGL)
 #include <glad/glad.h>
 // Functions
@@ -97,7 +67,6 @@ namespace NW
 				errLog.resize(errLogSize);
 
 				glGetShaderInfoLog(shaderID, errLogSize, NULL, &errLog[0]);
-				std::cout << "Failed to compile " << strType << std::endl;
 				NW_ERR(errLog);
 				return NW_ERR_SHADER_COMPILE;
 			}
@@ -111,7 +80,6 @@ namespace NW
 				errLog.resize(errLogSize);
 
 				glGetProgramInfoLog(shaderID, errLogSize, NULL, &errLog[0]);
-				std::cout << "Failed to link " << strType << std::endl;
 				NW_ERR(&errLog[0]);
 				return NW_ERR_SHADER_LINK;
 			}
@@ -127,53 +95,61 @@ namespace NW
 #include <sys/nw_data_sys.h>
 
 #if (defined NW_GRAPHICS)
-#include <gl/control/nw_drawer.h>
+#include <core/nw_graph_engine.h>
 // Buffers
 namespace NW
 {
 	AVertexBuf* AVertexBuf::Create(Size szAlloc, void* pVtxData)
 	{
 		AVertexBuf* pVB = nullptr;
-		switch (Drawer::GetGApi()->GetType()) {
+		switch (GraphEngine::GetGApi()->GetType()) {
 		#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-		case GApiTypes::GAPI_COUT:
-			if (pVtxData == nullptr) pVB = MemSys::NewT<VertexBufCout>;
-			else pVB = MemSys::NewT<VertexBufCout>(szAlloc, pVtxData);
-			break;
+		case GApiTypes::GAPI_COUT: break;
 		#endif	// NW_GRAPHICS
 		#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GApiTypes::GAPI_OPENGL:
-			if (pVtxData == nullptr) pVB = MemSys::NewT<VertexBufOgl>(szAlloc);
-			else pVB = MemSys::NewT<VertexBufOgl>(szAlloc, pVtxData);
-			break;
+		case GApiTypes::GAPI_OPENGL: pVB = MemSys::NewT<VertexBufOgl>(); break;
 		#endif	// NW_GRAPHICS
 		default:
 			NW_ERR("There is no accessible API");
 			break;
 		}
+		pVB->SetData(szAlloc, pVtxData);
 		return pVB;
 	}
-	AIndexBuf* AIndexBuf::Create(UInt32 unCount, UInt32* pIndData)
+	AIndexBuf* AIndexBuf::Create(Size szAlloc, void* pIndData)
 	{
 		AIndexBuf* pIB = nullptr;
-		switch (Drawer::GetGApi()->GetType()) {
+		switch (GraphEngine::GetGApi()->GetType()) {
 		#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-		case GApiTypes::GAPI_COUT:
-			if (iDataPtr == nullptr) pIB = MemSys::NewT<IndexBufCout>(unCount);
-			else pIB = MemSys::NewT<IndexBufCout>(unCount, iDataPtr);
-			break;
+		case GApiTypes::GAPI_COUT: break;
 		#endif // NW_GRAPHICS
 		#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GApiTypes::GAPI_OPENGL:
-			if (pIndData == nullptr) pIB = MemSys::NewT<IndexBufOgl>(unCount);
-			else pIB = MemSys::NewT<IndexBufOgl>(unCount, pIndData);
+		case GApiTypes::GAPI_OPENGL: pIB = MemSys::NewT<IndexBufOgl>();
 			break;
 		#endif // NW_GRAPHICS
 		default:
 			NW_ERR("Graphics API is not defined");
 			break;
 		}
+		pIB->SetData(szAlloc, pIndData);
 		return pIB;
+	}
+	AShaderBuf* AShaderBuf::Create(Size szAlloc, void* pIndData) {
+		AShaderBuf* pSB = nullptr;
+		switch (GraphEngine::GetGApi()->GetType()) {
+	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
+		case GApiTypes::GAPI_COUT: break;
+	#endif // NW_GRAPHICS
+	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
+		case GApiTypes::GAPI_OPENGL: pSB = MemSys::NewT<ShaderBufOgl>();
+			break;
+	#endif // NW_GRAPHICS
+		default:
+			NW_ERR("Graphics API is not defined");
+			break;
+		}
+		pSB->SetData(szAlloc, pIndData);
+		return pSB;
 	}
 }
 #endif	// NW_GRAPHICS
@@ -182,102 +158,118 @@ namespace NW
 namespace NW
 {
 	// VertexBufOglfer
-	VertexBufOgl::VertexBufOgl(Size szAlloc) :
-		m_unRIdVB(0), m_szData(szAlloc)
+	VertexBufOgl::VertexBufOgl() :
+		m_unRIdVB(0), m_unRIdVA(0), m_szData(0)
 	{
-		glGenBuffers(1, &m_unRIdVB);
 		glGenVertexArrays(1, &m_unRIdVA);
-		glBindBuffer(GL_ARRAY_BUFFER, m_unRIdVB);
-		glBufferData(GL_ARRAY_BUFFER, szAlloc, nullptr, GL_DYNAMIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
-	VertexBufOgl::VertexBufOgl(Size szAlloc, void* pVtxData) :
-		m_unRIdVB(0), m_szData(szAlloc)
-	{
-		glGenBuffers(1, &m_unRIdVB);
-		glGenVertexArrays(1, &m_unRIdVA);
-		glBindBuffer(GL_ARRAY_BUFFER, m_unRIdVB);
-		glBufferData(GL_ARRAY_BUFFER, szAlloc, pVtxData, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 	VertexBufOgl::~VertexBufOgl()
 	{
-		glDeleteBuffers(1, &m_unRIdVB);
+		SetData(0, nullptr);
 		glDeleteVertexArrays(1, &m_unRIdVA);
 	}
 
-	// Interface Methods
-	void VertexBufOgl::SetData(Size szAlloc, void* pVtxData, Size szOffset)
-	{
-		m_szData += szAlloc;
+	// --setters
+	void VertexBufOgl::SetData(Size szData, void* pVtxData) {
+		m_szData = szData;
+		if (m_unRIdVB != 0) { glDeleteBuffers(1, &m_unRIdVB); m_unRIdVB = 0; }
+		if (szData == 0) { return; }
+		glGenBuffers(1, &m_unRIdVB);
+
 		glBindBuffer(GL_ARRAY_BUFFER, m_unRIdVB);
-		glBufferSubData(GL_ARRAY_BUFFER, szOffset, szAlloc, pVtxData);
+		glBufferData(GL_ARRAY_BUFFER, szData, pVtxData,
+			pVtxData == nullptr ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
-
-	void VertexBufOgl::Bind() const
-	{
-		glBindVertexArray(m_unRIdVA);
+	void VertexBufOgl::SetSubData(Size szData, void* pVtxData, Size szOffset) {
 		glBindBuffer(GL_ARRAY_BUFFER, m_unRIdVB);
-		for (UInt32 ati = 0; ati < m_bufLayout.BufElems.size(); ati++)
-		{
-			const BufferElement& rBufElem = m_bufLayout.BufElems[ati];
+		glBufferSubData(GL_ARRAY_BUFFER, szOffset, szData, pVtxData);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+	void VertexBufOgl::SetLayout(const BufferLayout& rBufLayout) {
+		glBindVertexArray(m_unRIdVA); glBindBuffer(GL_ARRAY_BUFFER, m_unRIdVB);
+		for (UInt32 ati = 0; ati < m_BufLayout.GetElems().size(); ati++) { glDisableVertexAttribArray(ati); }
+		m_BufLayout = rBufLayout;
+		for (UInt32 ati = 0; ati < rBufLayout.GetElems().size(); ati++) {
+			const BufferElement& rBufElem = m_BufLayout.GetElem(ati);
 			glVertexAttribPointer(ati, rBufElem.unCount,
 				rBufElem.sdType, rBufElem.bNormalized ? GL_TRUE : GL_FALSE,
-				m_bufLayout.unStride, reinterpret_cast<void*>(rBufElem.unOffset));
+				m_BufLayout.GetStride(), reinterpret_cast<void*>(rBufElem.unOffset));
 			glEnableVertexAttribArray(ati);
 		}
+		glBindVertexArray(0); glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
-	void VertexBufOgl::Unbind() const
-	{
-		for (UInt32 ati = 0; ati < m_bufLayout.BufElems.size(); ati++)
-		{
-			glDisableVertexAttribArray(ati);
-		}
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
+
+	// --core_methods
+	void VertexBufOgl::Bind() const { glBindVertexArray(m_unRIdVA); glBindBuffer(GL_ARRAY_BUFFER, m_unRIdVB); }
+	void VertexBufOgl::Unbind() const { glBindVertexArray(0); glBindBuffer(GL_ARRAY_BUFFER, 0); }
 }
 // IndexBufferOgl
 namespace NW
 {
-	IndexBufOgl::IndexBufOgl(UInt32 unIndCount) :
-		m_unRId(0), m_unIndCount(unIndCount)
-	{
+	IndexBufOgl::IndexBufOgl() :
+		m_unRId(0), m_szData(0) { }
+	IndexBufOgl::~IndexBufOgl() { SetData(0, nullptr); }
+
+	// --setters
+	void IndexBufOgl::SetData(Size szAlloc, void* pIndData) {
+		m_szData = szAlloc;
+		if (m_unRId != 0) { glDeleteBuffers(1, &m_unRId); m_unRId = 0; }
+		if (szAlloc == 0) { return; }
 		glGenBuffers(1, &m_unRId);
+		
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_unRId);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, unIndCount * sizeof(UInt32), nullptr, GL_DYNAMIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, szAlloc, pIndData,
+			pIndData == nullptr ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
-	IndexBufOgl::IndexBufOgl(UInt32 unIndCount, UInt32* pIndData) :
-		m_unRId(0), m_unIndCount(unIndCount)
+	void IndexBufOgl::SetSubData(Size szData, void* pIndData, Size szOffset)
 	{
-		glGenBuffers(1, &m_unRId);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_unRId);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, unIndCount * sizeof(UInt32), pIndData, GL_STATIC_DRAW);
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, szOffset, szData, pIndData);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	}
-	IndexBufOgl::~IndexBufOgl()
-	{
-		glDeleteBuffers(1, &m_unRId);
 	}
 
-	// Interface Methods
-	void IndexBufOgl::SetData(UInt32 unIndCount, UInt32* pIndData, Size szOffset)
-	{
-		m_unIndCount += unIndCount;
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_unRId);
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, szOffset, unIndCount * sizeof(UInt32), pIndData);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	// --core_methods
+	void IndexBufOgl::Bind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_unRId); }
+	void IndexBufOgl::Unbind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
+}
+// ShaderBufferOgl
+namespace NW
+{
+	ShaderBufOgl::ShaderBufOgl() :
+		m_unRId(0), m_szData(0) { }
+	ShaderBufOgl::~ShaderBufOgl() { SetData(0, nullptr); }
+
+	// --setters
+	void ShaderBufOgl::SetData(Size szAlloc, void* pIndData) {
+		m_szData = szAlloc;
+		if (m_unRId != 0) { glDeleteBuffers(1, &m_unRId); m_unRId = 0; }
+		if (szAlloc == 0) { return; }
+		glGenBuffers(1, &m_unRId);
+
+		glBindBuffer(GL_UNIFORM_BUFFER, m_unRId);
+		glBufferData(GL_UNIFORM_BUFFER, szAlloc, pIndData,
+			pIndData == nullptr ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
-	void IndexBufOgl::Bind() const
+	void ShaderBufOgl::SetSubData(Size szData, void* pIndData, Size szOffset)
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_unRId);
+		glBindBuffer(GL_UNIFORM_BUFFER, m_unRId);
+		glBufferSubData(GL_UNIFORM_BUFFER, szOffset, szData, pIndData);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
-	void IndexBufOgl::Unbind() const
-	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	// --core_methods
+	void ShaderBufOgl::Bind(UInt32 unPoint) const {
+		glBindBuffer(GL_UNIFORM_BUFFER, m_unRId);
+		glBindBufferBase(GL_UNIFORM_BUFFER, unPoint, m_unRId);
 	}
+	void ShaderBufOgl::Bind(UInt32 unPoint, Size szData, Size szOffset) const {
+		glBindBuffer(GL_UNIFORM_BUFFER, m_unRId);
+		glBindBufferRange(GL_UNIFORM_BUFFER, unPoint, m_unRId, szOffset, szData);
+	}
+	void ShaderBufOgl::Unbind() const { glBindBuffer(GL_UNIFORM_BUFFER, 0); }
 }
 #endif	// NW_GRAPHICS
 #if (NW_GRAPHICS & NW_GRAPHICS_COUT)

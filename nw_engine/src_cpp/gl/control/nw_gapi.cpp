@@ -1,13 +1,12 @@
 #include <nw_pch.hpp>
 #include "nw_gapi.h"
 
-#include <gl/nw_gl_core.h>
-#include <gl/gcontext/nw_gcontext.h>
-#include <gl/gcontext/nw_framebuf.h>
-
 #include <sys/nw_mem_sys.h>
 
 #if (defined NW_GRAPHICS)
+#include <gl/nw_gl_core.h>
+#include <gl/gcontext/nw_gcontext.h>
+#include <gl/gcontext/nw_framebuf.h>
 namespace NW
 {
 	AGraphicsApi* AGraphicsApi::Create(GApiTypes GApitype)
@@ -46,7 +45,7 @@ namespace NW
 		m_pGContext(nullptr) {}
 	GraphicsApiOgl::~GraphicsApiOgl() = default;
 
-	// ========<Setters>========
+	// --==<Setters>==--
 	void GraphicsApiOgl::SetModes(bool bEnable, ProcModes unModeId) {
 		if (bEnable) { glEnable(unModeId); }
 		else { glDisable(unModeId); }
@@ -60,25 +59,17 @@ namespace NW
 	void GraphicsApiOgl::SetBlendFunc(BlendConfigs unSrcFactorId, BlendConfigs unDestFactorId) { glBlendFunc(unSrcFactorId, unDestFactorId); }
 	void GraphicsApiOgl::SetDepthFunc(DepthConfigs unDepthFuncId) { glDepthFunc(unDepthFuncId); }
 	void GraphicsApiOgl::SetStencilFunc(StencilConfigs unFuncId, UInt32 unRefValue, UInt8 unBitMask) { glStencilFunc(unFuncId, unRefValue, unBitMask); }
-	// ========</Setters>========
+	// --==</Setters>==--
 
-	// ========<Drawing>========
+	// --==<Drawing>==--
 	void GraphicsApiOgl::DrawIndexed(UInt32 unIndexCount) { glDrawElements(m_unPrimitiveTypeId, unIndexCount, GL_UNSIGNED_INT, nullptr); }
 	void GraphicsApiOgl::DrawArray(UInt32 unVertexCount) { glDrawArrays(m_unPrimitiveTypeId, 0, unVertexCount); }
-	// ========</Drawing>========
+	// --==</Drawing>==--
 
 }
 #endif // NW_GRAPHICS
 
 #if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-#include <cn/nw_engine.h>
-#include <window/cn_CoutWindow.h>
-
-#include <gl/cout/cout_gTypes.h>
-
-#include <window/cout_FrameBuf.h>
-#include <window/cout_GContext.h>
-
 namespace NW
 {
 	// Constructor&Destructor
@@ -97,7 +88,7 @@ namespace NW
 	// Getters
 	// Setters
 
-	// ========<Drawing>========
+	// --==<Drawing>==--
 	/// Algorythm of data usage:
 	/// -> Create VertexBuffer -> Load vertex data
 	/// -> Vertex data saves as a char array which will be casted
@@ -188,9 +179,9 @@ namespace NW
 		//
 	}
 	// --Drawing in the buffer
-	// ========</Drawing>========
+	// --==</Drawing>==--
 
-	// ========<Configurations>========
+	// --==<Configurations>==--
 	void GraphicsApiCout::ClearBuffers(UInt32 uiBufBitMask)
 	{
 		if (uiBufBitMask & NW_BUFFER_COLOR_BIT)
@@ -212,9 +203,9 @@ namespace NW
 	}
 	void GraphicsApiCout::SetDepth(bool bEnableDepth, UInt32 uiDepthBit)
 	{}
-	// ========</Configurations>========
+	// --==</Configurations>==--
 
-	// ========<Implementation Methods>========
+	// --==<Implementation Methods>==--
 	inline void GraphicsApiCout::GetAbsRect(vsi4d& xywhRect)
 	{
 		if (xywhRect.Left < xywhRect.Right)
@@ -255,6 +246,6 @@ namespace NW
 		}
 		return rect;
 	}
-	// ========</Implementation Methods>========
+	// --==</Implementation Methods>==--
 }
 #endif // NW_GRAPHICS

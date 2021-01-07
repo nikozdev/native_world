@@ -13,7 +13,7 @@ namespace NW
 	public:
 		ASingleton(const ASingleton& rCpy) = delete;
 		virtual ~ASingleton() = default;
-		// -- Getters
+		// --getters
 		static inline Type& Get() { static Type s_instance;  return s_instance; }
 		
 		void operator =(ASingleton& rCpy) = delete;
@@ -33,14 +33,14 @@ namespace NW
 	public: // Interface Methods
 		virtual ~AMaster() = default;
 
-		// -- Getters
+		// --getters
 		inline const char* GetDirectory() const { return &b_strDir[0]; }
 		inline IType* GetInstance(UInt32 unId) {
 			Insts::iterator itInst = std::find_if(b_pInstances.begin(), b_pInstances.end(),
 				[=](RefOwner<IType>& pInst)->bool {return pInst->GetId() == unId; });
 			return itInst == b_pInstances.end() ? nullptr : (*itInst).get();
 		}
-		// -- Setters
+		// --setters
 		inline void SetDirectory(const char* strDir) { b_strDir = strDir; }
 		inline void AddInstance(IType* pInstance) {
 			if (pInstance == nullptr) return;

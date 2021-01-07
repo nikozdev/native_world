@@ -16,14 +16,14 @@ namespace NW
 		RealTimeCounter();
 		~RealTimeCounter() = default;
 
-		// -- Getters
+		// --getters
 		inline float GetCreationTime() { return m_nCreationTime; }
 		inline float GetCountedTime() { return m_nEndTime - m_nBeginTime; }
-		// -- Setters
+		// --setters
 		void BeginCount();
 		void EndCount();
 
-		// -- Core Methods
+		// --core_methods
 	private:
 		float m_nBeginTime;
 		float m_nEndTime;
@@ -38,14 +38,14 @@ namespace NW
 		AppTimeCounter();
 		~AppTimeCounter() = default;
 
-		// -- Getters
+		// --getters
 		inline float GetCreationTime() { return m_nCreationTime; }
 		inline float GetCountedTime() { return m_nEndTime - m_nBeginTime; }
-		// -- Setters
+		// --setters
 		void BeginCount();
 		void EndCount();
 
-		// -- Core Methods
+		// --core_methods
 	private:
 		float m_nBeginTime;
 		float m_nEndTime;

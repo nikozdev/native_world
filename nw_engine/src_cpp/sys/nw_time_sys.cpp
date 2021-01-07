@@ -1,17 +1,14 @@
 #include <nw_pch.hpp>
 #include "nw_time_sys.h"
 
-namespace NW
-{
-    // Time - is money
-    float TimeSys::s_nRealTime(0.0f), TimeSys::s_nRealDelta(0.0f), TimeSys::s_nRealLast(0.0f);
-    float TimeSys::s_nAppTime(0.0f), TimeSys::s_nAppDelta(0.0f), TimeSys::s_nAppLast(0.0f);
-    float TimeSys::s_nTimeSpeed(1.0f);
+float NW::TimeSys::s_nRealTime(0.0f), NW::TimeSys::s_nRealDelta(0.0f), NW::TimeSys::s_nRealLast(0.0f);
+float NW::TimeSys::s_nAppTime(0.0f), NW::TimeSys::s_nAppDelta(0.0f), NW::TimeSys::s_nAppLast(0.0f);
+float NW::TimeSys::s_nTimeSpeed(1.0f);
 
-    RealTimeCounter TimeSys::s_RealTimeCounter = RealTimeCounter();
-    AppTimeCounter TimeSys::s_AppTimeCounter = AppTimeCounter();
+NW::RealTimeCounter NW::TimeSys::s_RealTimeCounter = NW::RealTimeCounter();
+NW::AppTimeCounter NW::TimeSys::s_AppTimeCounter = NW::AppTimeCounter();
 
-    TimeInfo TimeSys::s_TimeInfo;
+NW::TimeInfo NW::TimeSys::s_TimeInfo;
 
 #if (NW_WINDOW & NW_WINDOW_GLFW)
 #include <GLFW/glfw3.h>
@@ -20,15 +17,14 @@ namespace NW
     static std::chrono::steady_clock::time_point s_tpLastTime;
     static std::chrono::duration<float> s_dfDeltaTime;
 #endif  // NW_WINDOW
-}
 
 namespace NW
 {
-    // -- Getters
+    // --getters
     const TimeInfo& TimeSys::GetTimeInfo() { std::mktime(&s_TimeInfo); return s_TimeInfo; }
-    // -- Setters
+    // --setters
 
-    // ========<Core Methods>========
+    // --==<core_methods>==--
     void TimeSys::Update()
     {
 #if (NW_WINDOW & NW_WINDOW_GLFW)
@@ -49,5 +45,5 @@ namespace NW
         s_fTimeDelta = s_dfDeltaTime.count();
 #endif // NW_WINDOW_GLFW
     }
-    // ========</Core Methods>========
+    // --==</core_methods>==--
 }

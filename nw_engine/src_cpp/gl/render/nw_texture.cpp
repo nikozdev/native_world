@@ -5,7 +5,7 @@
 #include <sys/nw_mem_sys.h>
 
 #if (defined NW_GRAPHICS)
-#include <gl/control/nw_drawer.h>
+#include <core/nw_graph_engine.h>
 
 #include <sys/nw_log_sys.h>
 
@@ -22,7 +22,7 @@ namespace NW
 	}
 	ATexture::~ATexture() { DataSys::RemoveDataRes<ATexture>(GetName()); }
 
-	// ========<ATexture1d>========
+	// --==<ATexture1d>==--
 	ATexture1d::ATexture1d(const char* strName) :
 	ATexture(strName) { DataSys::AddDataRes<ATexture1d>(this); }
 	ATexture1d::~ATexture1d() { DataSys::RemoveDataRes<ATexture1d>(GetName()); }
@@ -56,9 +56,9 @@ namespace NW
 
 		return bSuccess;
 	}
-	// ========</ATexture1d>========
+	// --==</ATexture1d>==--
 
-	// ========<ATexture2d>========
+	// --==<ATexture2d>==--
 	ATexture2d::ATexture2d(const char* strName) :
 		ATexture(strName) { DataSys::AddDataRes<ATexture2d>(this); }
 	ATexture2d::~ATexture2d() { DataSys::RemoveDataRes<ATexture2d>(GetName()); }
@@ -102,9 +102,9 @@ namespace NW
 
 		return bSuccess;
 	}
-	// ========</ATexture2d>========
+	// --==</ATexture2d>==--
 
-	// ========<ATexture3d>========
+	// --==<ATexture3d>==--
 	ATexture3d::ATexture3d(const char* strName) :
 		ATexture(strName) { DataSys::AddDataRes<ATexture3d>(this); }
 	ATexture3d::~ATexture3d() { DataSys::RemoveDataRes<ATexture3d>(GetName()); }
@@ -138,11 +138,11 @@ namespace NW
 
 		return bSuccess;
 	}
-	// ========</ATexture3d>========
+	// --==</ATexture3d>==--
 
 	ATexture1d* ATexture1d::Create(const char* strName) {
 		ATexture1d* pTex = nullptr;
-		switch (Drawer::GetGApi()->GetType()) {
+		switch (GraphEngine::GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GAPI_COUT:
 			pTex = MemSys::NewT<Texture1dCout>(strName);
@@ -159,7 +159,7 @@ namespace NW
 	}
 	ATexture2d* ATexture2d::Create(const char* strName) {
 		ATexture2d* pTex = nullptr;
-		switch (Drawer::GetGApi()->GetType()) {
+		switch (GraphEngine::GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GAPI_COUT:
 			pTex = MemSys::NewT<Texture2dCout>(strName);
@@ -176,7 +176,7 @@ namespace NW
 	}
 	ATexture3d* ATexture3d::Create(const char* strName) {
 		ATexture3d* pTex = nullptr;
-		switch (Drawer::GetGApi()->GetType()) {
+		switch (GraphEngine::GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GAPI_COUT:
 			pTex = MemSys::NewT<Texture3dCout>(strName);
@@ -204,7 +204,7 @@ namespace NW
 	Texture1dOgl::~Texture1dOgl()
 	{ }
 
-	// -- Setters
+	// --setters
 	void Texture1dOgl::SetInfo(const TextureInfo& rTexInfo) {
 		m_TexInfo = rTexInfo;
 	}
@@ -218,7 +218,7 @@ namespace NW
 		m_ImgInfo = rImgInfo;
 	}
 
-	// ========<Interface Methods>========
+	// --==<Interface Methods>==--
 	void Texture1dOgl::Bind(UInt32 unTexSlot)
 	{
 		m_unTexSlot = unTexSlot;
@@ -260,7 +260,7 @@ namespace NW
 		glGenerateMipmap(GL_TEXTURE_1D);
 		Unbind();
 	}
-	// ========</Core Methods>========
+	// --==</core_methods>==--
 	// Texture2d
 	Texture2dOgl::Texture2dOgl(const char* strName) :
 		ATexture2d(strName)
@@ -268,7 +268,7 @@ namespace NW
 	Texture2dOgl::~Texture2dOgl()
 	{ }
 
-	// -- Setters
+	// --setters
 	void Texture2dOgl::SetInfo(const TextureInfo& rTexInfo) {
 		m_TexInfo = rTexInfo;
 	}
@@ -280,7 +280,7 @@ namespace NW
 		m_ImgInfo = rImgInfo;
 	}
 
-	// ========<Interface Methods>========
+	// --==<Interface Methods>==--
 	void Texture2dOgl::Bind(UInt32 unTexSlot)
 	{
 		m_unTexSlot = unTexSlot;
@@ -314,7 +314,7 @@ namespace NW
 		glGenerateMipmap(GL_TEXTURE_2D);
 		Unbind();
 	}
-	// ========</Core Methods>========
+	// --==</core_methods>==--
 	
 	// Texture3d
 	Texture3dOgl::Texture3dOgl(const char* strName) :
@@ -322,7 +322,7 @@ namespace NW
 	{ }
 	Texture3dOgl::~Texture3dOgl() { }
 
-	// -- Setters
+	// --setters
 	void Texture3dOgl::SetInfo(const TextureInfo& rTexInfo) {
 		m_TexInfo = rTexInfo;
 	}
@@ -334,7 +334,7 @@ namespace NW
 		m_ImgInfo = rImgInfo;
 	}
 
-	// ========<Interface Methods>========
+	// --==<Interface Methods>==--
 	void Texture3dOgl::Bind(UInt32 unTexSlot)
 	{
 		m_unTexSlot = unTexSlot;
@@ -378,7 +378,7 @@ namespace NW
 		glGenerateMipmap(GL_TEXTURE_3D);
 		Unbind();
 	}
-	// ========</Core Methods>========
+	// --==</core_methods>==--
 }
 #endif // NW_GRAPHICS
 #if (NW_GRAPHICS & NW_GRAPHICS_COUT)

@@ -14,7 +14,7 @@ namespace NW
 	public:
 		friend class EvSys;
 	public:
-		// -- Getters
+		// --getters
 		static inline float GetRealLast() { return s_nRealLast; }
 		static inline float GetRealTime() { return s_nRealTime; }
 		static inline float GetRealDelta() { return s_nRealDelta; }
@@ -28,10 +28,10 @@ namespace NW
 
 		static const TimeInfo& GetTimeInfo();
 		static const char* GetTimeString() { return std::asctime(&GetTimeInfo()); }
-		// -- Setters
+		// --setters
 		static inline void SetAppSpeed(float nSpeed) { s_nTimeSpeed = nSpeed; }
 
-		// -- Core Methods
+		// --core_methods
 		static void Update();
 	private:
 		// Time: current frame, last frame and the difference between them

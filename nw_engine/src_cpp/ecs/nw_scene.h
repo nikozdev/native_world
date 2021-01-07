@@ -46,18 +46,17 @@ namespace NW
 		void operator=(Scene& rScn) = delete;
 		~Scene();
 
-		// -- Getters
+		// --getters
 		inline const char* GetName() const { return &m_strName[0]; }
 		inline GCamera* GetGCamera() { return m_pGCamera; }
 		inline AFrameBuf* GetFrameBuf() { return m_pFrameBuf; }
 		inline const V4f& GetViewport() const { return m_xywhViewport; }
-		// -- Setters
+		// --setters
 		inline void SetName(const char* strName) { m_strName = strName; }
-		inline void SetGCamera(GCamera* pGCamera) { m_pGCamera = pGCamera; }
-		inline void SetFrameBuf(AFrameBuf* pFrameBuf) { m_pFrameBuf = pFrameBuf; }
+		void SetGCamera(GCamera* pGCamera);
 		void SetViewport(const V4f& xywhViewport);
 
-		// -- Core Methods
+		// --core_methods
 		void Update();
 		// -- Entities
 		inline Ents& GetEnts() { return m_Ents; }
@@ -117,7 +116,7 @@ namespace NW
 			m_ACmps.erase(itCmp);
 		}
 		inline bool HasAComponent(UInt32 unId) { return GetAComponent(unId) != nullptr; }
-		// -- Data Methods
+		// --data_methods
 		bool SaveF(const char* strFPath);
 		bool LoadF(const char* strFPath);
 	private:

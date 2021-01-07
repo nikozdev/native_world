@@ -1,9 +1,9 @@
 #include <nw_pch.hpp>
-#include <core/nw_engine.h>
+#include <core/nw_core_engine.h>
 
-#include <core/nw_engine_state.h>
+#include <core/nw_core_state.h>
 
-#include <gl/control/nw_drawer.h>
+#include <core/nw_graph_engine.h>
 #include <gl/gcontext/nw_window.h>
 
 #include <ecs/nw_scene.h>
@@ -19,22 +19,22 @@
 
 namespace NW
 {
-	Engine::Engine() :
+	CoreEngine::CoreEngine() :
 		m_strName("NW_Application"),
 		m_bIsRunning(false),
 		m_pCurrState(nullptr),
 		m_pWindow(nullptr)
 	{ }
-	Engine::~Engine()
+	CoreEngine::~CoreEngine()
 	{ }
 
-	// -- Setters
-	EngineState* Engine::GetState(const char* strName) {
-		auto itState = FIND_BY_NAME(m_States, EngineState*, strName, ->GetName);
+	// --setters
+	CoreState* CoreEngine::GetState(const char* strName) {
+		auto itState = FIND_BY_NAME(m_States, CoreState*, strName, ->GetName);
 		return itState == m_States.end() ? nullptr : *itState;
 	}
-	// -- Setters
-	void Engine::AddState(EngineState* pState)
+	// --setters
+	void CoreEngine::AddState(CoreState* pState)
 	{
 		if (pState == nullptr) { return; }
 		States::iterator itState = std::find(m_States.begin(), m_States.end(), pState);
@@ -43,11 +43,11 @@ namespace NW
 		if (!pState->Init()) { Quit(); }
 		if (m_pCurrState == nullptr) { SwitchState(pState->GetName()); }
 	}
-	void Engine::RemoveState(const char* strName)
+	void CoreEngine::RemoveState(const char* strName)
 	{
-		States::iterator itState = FIND_BY_FUNC(m_States, EngineState*, strName, ->GetName);
+		States::iterator itState = FIND_BY_FUNC(m_States, CoreState*, strName, ->GetName);
 		if (itState == m_States.end()) return;
-		EngineState* pState = *itState;
+		CoreState* pState = *itState;
 		pState->OnDisable();
 		m_States.erase(itState);
 		if (m_pCurrState == pState) {
@@ -56,17 +56,17 @@ namespace NW
 			else { m_pCurrState = nullptr; Quit(); }
 		}
 	}
-	void Engine::SwitchState(const char* strName)
+	void CoreEngine::SwitchState(const char* strName)
 	{
-		States::iterator itState = FIND_BY_FUNC(m_States, EngineState*, strName, ->GetName);
+		States::iterator itState = FIND_BY_FUNC(m_States, CoreState*, strName, ->GetName);
 		if (itState == m_States.end()) { return; }
 		if (m_pCurrState != nullptr) { m_pCurrState->OnDisable(); }
 		m_pCurrState = *itState;
 		m_pCurrState->OnEnable();
 	}
 
-	// ========<Core Methods>========
-	bool Engine::Init()
+	// --==<core_methods>==--
+	bool CoreEngine::Init()
 	{
 		WindowInfo WindowInfo{ &m_strName[0], 800, 600, true, nullptr };
 		m_pWindow.reset(AWindow::Create(WindowInfo, WApiTypes::WAPI_GLFW));
@@ -75,7 +75,7 @@ namespace NW
 			m_pWindow->OnQuit();
 			return false;
 		}
-		m_pWindow->SetEventCallback(NW_BIND_FN(Engine::OnEvent));
+		m_pWindow->SetEventCallback([this](AEvent& rEvt)->void { return OnEvent(rEvt); });
 	#if (defined NW_GRAPHICS)
 		GApiTypes GApiType = GApiTypes::GAPI_NONE;
 		#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
@@ -84,9 +84,9 @@ namespace NW
 		GApiType = GApiTypes::GAPI_COUT;
 		#endif
 	#endif	// NW_GRAPHICS
-		if (!Drawer::Init(GApiType)) {
-			LogSys::WriteErrStr(NW_ERR_NO_INIT, "Drawer is not initialized!");
-			Drawer::OnQuit();
+		if (!GraphEngine::Init(GApiType)) {
+			LogSys::WriteErrStr(NW_ERR_NO_INIT, "GraphEngine is not initialized!");
+			GraphEngine::OnQuit();
 			m_pWindow->OnQuit();
 			return false;
 		}
@@ -97,33 +97,33 @@ namespace NW
 
 		return true;
 	}
-	void Engine::Quit()
+	void CoreEngine::Quit()
 	{
 		m_bIsRunning = false;
 	}
-	void Engine::Run()
+	void CoreEngine::Run()
 	{
 		// -- Preparation
 		m_bIsRunning = true;
-		if (m_pCurrState == nullptr) { AddState(MemSys::NewT<EngineState>()); }
+		if (m_pCurrState == nullptr) { AddState(MemSys::NewT<CoreState>()); }
 		// -- Main Loop
 		while (m_bIsRunning) { Update(); }
 		// -- Quit code
 		while (!m_States.empty()) {
 			(*m_States.begin())->OnDisable();
-			MemSys::DelT<EngineState>(*m_States.begin());
+			MemSys::DelT<CoreState>(*m_States.begin());
 			m_States.erase(m_States.begin());
 		}
 		DataSys::OnQuit();
 		GuiSys::OnQuit();
 
-		Drawer::OnQuit();
+		GraphEngine::OnQuit();
 		m_pWindow->OnQuit();
 
 		system("\a");
-		LogSys::WriteStr("NW_Engine has been quited");
+		LogSys::WriteStr("NW_CoreEngine has been quited");
 	}
-	inline void Engine::Update()
+	inline void CoreEngine::Update()
 	{	
 		GuiSys::BeginDraw();
 		GuiSys::Update();
@@ -131,16 +131,16 @@ namespace NW
 		GuiSys::EndDraw();
 
 		m_pWindow->Update();
-		Drawer::Update();
+		GraphEngine::Update();
 	
 		IOSys::Update();
 		TimeSys::Update();
 		EvSys::Update();
 	}
-	// ========</Core Methods>========
+	// --==</core_methods>==--
 
-	// ========<OnEvent Methods>========
-	void Engine::OnEvent(AEvent& rEvt)
+	// --==<--on_event_methods>==--
+	void CoreEngine::OnEvent(AEvent& rEvt)
 	{
 		// Dispatch particular events
 		if (MouseEvent* pmEvt = dynamic_cast<MouseEvent*>(&rEvt)) {
@@ -166,5 +166,5 @@ namespace NW
 			}
 		}
 	}
-	// ========</OnEvent Methods>========
+	// --==</--on_event_methods>==--
 }

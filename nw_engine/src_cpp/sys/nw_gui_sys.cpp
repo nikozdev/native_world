@@ -8,7 +8,7 @@
 #include <gl/vision/nw_gcamera.h>
 #include <gl/vision/nw_gmaterial.h>
 
-#include <gl/control/nw_drawer.h>
+#include <core/nw_graph_engine.h>
 #include <gl/gcontext/nw_gcontext.h>
 #include <gl/gcontext/nw_framebuf.h>
 #include <gl/control/nw_gapi.h>
@@ -17,7 +17,7 @@
 #include <gl/vision/nw_gcamera.h>
 #include <gl/vision/nw_gmaterial.h>
 
-#include <core/nw_engine.h>
+#include <core/nw_core_engine.h>
 #include <sys/nw_ev_sys.h>
 #include <sys/nw_time_sys.h>
 #include <sys/nw_io_sys.h>
@@ -36,7 +36,7 @@
 #endif	// NW_GUI
 
 
-// ========<Static fields>========
+// --==<Static fields>==--
 namespace NW
 {
 	struct NW_API DrawToolsGui
@@ -55,22 +55,22 @@ namespace NW
 	static ImGuiIO *s_pGuiIO = nullptr;
 	static ImGuiStyle *s_pGuiStyle = nullptr;
 }
-// ========</Static fields>========
+// --==</Static fields>==--
 
 namespace NW
 {
-	// -- Setters
+	// --setters
 
 	void GuiSys::SetWindow(GuiWindow* pWindow) {
 		s_pCurrWindow = pWindow;
 	}
 
-	// ========<Core Methods>========
+	// --==<core_methods>==--
 	void GuiSys::OnInit()
 	{
-		AGraphicsApi* pGApi = Drawer::GetGApi();
+		AGraphicsApi* pGApi = GraphEngine::GetGApi();
 		if (pGApi == nullptr) { return; }
-		AWindow* pWindow = Engine::Get().GetWindow();
+		AWindow* pWindow = CoreEngine::Get().GetWindow();
 		if (pWindow == nullptr) {
 			return;
 		}
@@ -376,5 +376,5 @@ namespace NW
 		 return ImGui::ButtonEx(sLabel, ImVec2{ (float)whSize.x, (float)whSize.y }, ImGuiButtonFlags_None);
 	 }
 	// --==</Widgets>==--
-	// ========</Core Methods>========
+	// --==</core_methods>==--
 }

@@ -11,12 +11,12 @@ namespace NW
 		Physics2dCmp(AEntity& rEntity);
 		~Physics2dCmp() = default;
 
-		// -- Getters
+		// --getters
 		inline ACollider2dCmp* GetCollider() { return m_pCollider2d; }
-		// -- Setters
+		// --setters
 		virtual inline void SetCollider(ACollider2dCmp* pCollider) { m_pCollider2d = pCollider; }
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void OnUpdate() override;
 	private:
 		ACollider2dCmp* m_pCollider2d;

@@ -3,27 +3,27 @@
 
 namespace NW
 {
-	// ========<Collider2dRectCmp>========
+	// --==<Collider2dRectCmp>==--
 	Collider2dRectCmp::Collider2dRectCmp(AEntity& rEntity) :
 		ACollider2dCmp(rEntity)
 	{
 	}
 
-	// -- Interface Methods
+	// --core_methods
 	void Collider2dRectCmp::OnUpdate()
 	{
 	}
-	// ========</Collider2dRectCmp>========
+	// --==</Collider2dRectCmp>==--
 	
-	// ========<Collider2dPolyCmp>========
+	// --==<Collider2dPolyCmp>==--
 	Collider2dPolyCmp::Collider2dPolyCmp(AEntity& rEntity) :
 		ACollider2dCmp(rEntity)
 	{
 	}
 
-	// -- Interface Methods
+	// --core_methods
 	void Collider2dPolyCmp::OnUpdate()
 	{
 	}
-	// ========</Collider2dPolyCmp>========
+	// --==</Collider2dPolyCmp>==--
 }

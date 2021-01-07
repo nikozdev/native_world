@@ -17,37 +17,38 @@ namespace NW
 		static NativeWindow s_pNativeWindow;
 		static bool s_bWindowFocused;
 	public:
-		// -- Getters
+		// --getters
 
-		// -- Core Methods
+		// --core_methods
 		static bool OnInit();
 		static void Update();
 
 	#if (NW_WINDOW & NW_WINDOW_CONSOLE)
-		// Input callbacks
+		// --input_callbacks: mouse
 		static void cb_mouse_coord(double dX, double dY);
 		static void cb_mouse_scroll(double dX, double dY);
 		static void cb_mouse_button(UInt32 unButton, UInt32 unAction);
+		// --input_callbacks: keyboard
 		static void cb_keyboard(UInt32 unKey, UInt32 unScanCode, UInt32 unAction);
 		static void cb_keyboard_char(UInt32 unChar);
-		// Window callbacks
+		// --window_callbacks
 		static void cb_menu(Int32 nCmdId);
 		static void cb_window_size(Int32 nW, Int32 nH);
 		static void cb_window_focus(Int32 nFocus);
 	#endif // NW_WINDOW
 	#if (NW_WINDOW & NW_WINDOW_GLFW)
-		// Mouse callback functions
+		// --input_callbacks: mouse
 		static void cb_mouse_coord(GLFWwindow* pWindow, double nCoordX, double nCoordY);
 		static void cb_mouse_scroll(GLFWwindow* pWindow, double nScrollDeltaY, double nScrollY);
 		static void cb_mouse_button(GLFWwindow* pWindow, Int32 nButton, Int32 nAction, Int32 nMode);
-		// Key callback functions
+		// --input_callbacks: keyboard
 		static void cb_keyboard(GLFWwindow* pWindow, Int32 nKey, Int32 nScanCode, Int32 nAction, Int32 nMode);
 		static void cb_keyboard_char(GLFWwindow* pWindow, UInt32 unChar);
-		// Window callback functions
+		// --input_callbacks: window
 		static void cb_window_close(GLFWwindow* pWindow);
 		static void cb_window_size(GLFWwindow* pWindow, Int32 nWidth, Int32 nHeight);
 		static void cb_window_focus(GLFWwindow* pWindow, Int32 nFocus);
-		// Other callbacks
+		// --other_callbacks: window
 		static void cb_error(Int32 nErrCode, const char* strErrMsg);
 	#endif // NW_WINDOW
 	};

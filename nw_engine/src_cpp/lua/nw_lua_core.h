@@ -20,11 +20,11 @@ namespace NW
 		StackTypesInfo StackTypes;
 	public:
 		LuaVMInfo() { memset(&StackTypes[0], LT_NON, sizeof(Int8)); }
-		// -- Getters
+		// --getters
 		inline Int8 GetStackType(UInt8 unIndex) { return StackTypes[unIndex]; }
 		inline Int8 GetLastType() { return unLevel == 0 ? LT_NIL : StackTypes[unLevel - 1]; }
 		inline UInt8 GetLevel() { return unLevel; }
-		// -- Setters
+		// --setters
 		inline void AddType(Int8 nType) { if (unLevel > StackTypes.size()) RemoveType(1); StackTypes[unLevel++] = nType; }
 		inline void RemoveType(UInt8 unCount) { while (unCount > 0 && unLevel > 0) { unCount--; unLevel--; StackTypes[unLevel] = LT_NON; } }
 		inline void Reset() { RemoveType(unLevel); }

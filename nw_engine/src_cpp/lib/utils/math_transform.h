@@ -35,7 +35,7 @@ namespace NW
 			m_xyzCoord_l(localCoord), m_xyzRotation_l(localRotation), m_xyzScale_l(localScale),
 			coord_g(globalCoord), rotat_g(globalRotation), scale_g(globalScale) {}
 	};
-	// ========<Matrices>========
+	// --==<matrices>==--
 	template <typename MT>
 	void MoveMtx(Mat4x4<MT>& inMtx, Vec3<MT> moveTo)
 	{
@@ -122,11 +122,8 @@ namespace NW
 		Mat4x4<MT> projMat;
 		return projMat;
 	}
-	// ========</Matrices\>========
+	// --==</Matrices\>==--
 #elif (NW_MATH & NW_MATH_GLM)
-	// ========<Matrices>========
-	// ========</Matrices\>========
-
 	/// Transform class
 	/// Interface:
 	/// -> Create -> Set coordinates, scale and rotation -> Setup -> get model matrix
@@ -141,9 +138,9 @@ namespace NW
 			xyzCrd(xyzCoord), xyzRtn(V3fRotation), nScale(nScale),
 			m_m4Model(Mat4f(1.0f)) {}
 
-		// -- Getters
+		// --getters
 		inline const Mat4f& GetModelMatrix() { UpdateData(); return m_m4Model; }
-		// -- Setters
+		// --setters
 		// -- Core Functions
 		void UpdateData()
 		{

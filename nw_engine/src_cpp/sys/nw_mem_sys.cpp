@@ -14,7 +14,7 @@ void operator delete[](void* pBlock, NW::Size szDealloc) throw() { ::operator de
 
 namespace NW
 {
-	// ========<Core Methods>========
+	// --==<core_methods>==--
 	void* MemSys::Alloc(Size szAlloc) {
 		SetAllocation(szAlloc, 1);
 		return malloc(szAlloc);
@@ -31,5 +31,5 @@ namespace NW
 		SetDeallocation(szDealloc, unDealloc);
 		free(pBlock);
 	}
-	// ========</Core Methods>========
+	// --==</core_methods>==--
 }

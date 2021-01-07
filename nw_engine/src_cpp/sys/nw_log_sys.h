@@ -36,14 +36,14 @@ namespace NW
 		using LogErr = std::ostream;
 		using LogStr= std::stringstream;
 	public:
-		// -- Getters
+		// --getters
 		static inline LogIn& GetLogIn() { return std::cin; }
 		static inline LogOut& GetLogOut() { return std::cout; }
 		static inline LogErr& GetLogErr() { return std::cerr; }
 		static inline LogStr& GetLogStr() { static LogStr s_LogStr; return s_LogStr; }
-		// -- Setters
+		// --setters
 
-		// -- Core Methods
+		// --core_methods
 		static String MakeFormatStr(const char* strFormat, va_list& vaList);
 		static void WriteStr(const char* strFormat, ...);
 		static void WriteFile(void* pFile, const char* strFormat, ...);

@@ -33,15 +33,15 @@ namespace NW
 	public:
 		~GCameraLad();
 
-		// -- Getters
+		// --getters
 		inline GCamera* GetGCamera() { return &m_GCamera; }
-		// -- Setters
+		// --setters
 
-		// -- Core Methods
+		// --core_methods
 		inline void UpdateCamera() { UpdateCamera(&m_GCamera); }
 		void UpdateCamera(GCamera* pGCamera);
 
-		// -- OnEvent Methods
+		// --on_event_methods
 		void OnEvent(MouseEvent& rmEvt);
 		void OnEvent(KeyboardEvent& rkEvt);
 		void OnEvent(WindowEvent& rwEvt);

@@ -80,10 +80,8 @@ in VS_OUT {
 	float texSlot;
 } gs_in;
 
-#define MAX_TEXTURES 7
-
 uniform vec4 unf_albedoClr;
-uniform sampler1D unf_textures[MAX_TEXTURES];
+uniform sampler1D unf_textures[7];
 
 void main()
 {

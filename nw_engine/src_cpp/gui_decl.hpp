@@ -13,7 +13,7 @@ namespace NW
 	class NW_API GuiText;
 	class NW_API GuiButton;
 	class NW_API GuiImage;
-	// -- Drawers
+	// -- GraphEngines
 	template <typename GuiOfType> struct NW_API AGuiOf;
 	struct  NW_API GuiOfEngine;
 	struct  NW_API GuiOfDataSys;

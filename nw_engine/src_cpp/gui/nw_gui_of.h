@@ -24,9 +24,9 @@ namespace NW
 		AGuiOf(AGuiOf& rCpy) = delete;
 		void operator=(AGuiOf& rCpy) = delete;
 		virtual ~AGuiOf() = default;
-		// -- Getters
+		// --getters
 		static inline GuiOfType& Get() { static GuiOfType s_GuiOf; return s_GuiOf; }
-		// -- Core Methods
+		// --core_methods
 		virtual void OnDraw() = 0;
 	};
 }
@@ -44,7 +44,7 @@ namespace NW
 		bool bWindow = false, bAppState = false, bLuaVM = false;
 	private:
 		AWindow* pWindow = nullptr;
-		EngineState* pEState = nullptr;
+		CoreState* pEState = nullptr;
 		Char strStateScript[1024] = "Script";
 		Char strWindowTitle[128] = "NW_Engine";
 	private:
@@ -98,10 +98,8 @@ namespace NW
 	struct NW_API GuiOfRender : public AGuiOf<GuiOfRender>
 	{
 	private:
-		bool bGApi = false, bGContext = false, bDrawerInfo = false;
-		Int32 szVertex = 0,
-			unMaxVtx = 0, szMaxVtx = 0,
-			unMaxInd = 0, szMaxInd = 0;
+		bool bGApi = false, bGContext = false, bGraphEngineInfo = false;
+		Int32 szMaxVtx = 0, szMaxIdx = 0, unTexCount = 0;
 		String strDrawMode = "MD_FILL";
 		float nLineW = 0.01f, nPixelSz = 0.01f;
 	public:
@@ -140,10 +138,10 @@ namespace NW
 	private:
 		GuiOfCodeEditor();
 	public:
-		// -- Setters
+		// --setters
 		void SetContext(ACodeChunk* pContext);
 		
-		// -- Core Methods
+		// --core_methods
 		virtual void OnDraw() override;
 	};
 	/// GuiOfSpriteEditor struct
@@ -155,11 +153,11 @@ namespace NW
 	private:
 		GuiOfSpriteEditor();
 	public:
-		// -- Getters
-		// -- Setters
+		// --getters
+		// --setters
 		void SetContext(ATexture2d* pContext);
 
-		// -- Core Methods
+		// --core_methods
 		virtual void OnDraw() override;
 	private:
 		ATexture2d* pContext = nullptr;
@@ -181,9 +179,9 @@ namespace NW
 		template <typename CBType> inline void OnDraw(AEntityCmp* pACmp, CBType& fnCallback);
 		template <class CmpType> inline void OnDraw(CmpType* pCmp);
 	public:
-		// -- Setters
+		// --setters
 		void SetContext(AEntity* pContext);
-		// -- Core Methods
+		// --core_methods
 		virtual void OnDraw() override;
 	private:
 		AEntity* pContext = nullptr;
@@ -200,7 +198,7 @@ namespace NW
 	private:
 		GuiOfSceneEditor();
 	public:
-		// -- Core Methods
+		// --core_methods
 		virtual void OnDraw() override;
 	private:
 		inline void OnDraw(RefEnts& rRefEnts);

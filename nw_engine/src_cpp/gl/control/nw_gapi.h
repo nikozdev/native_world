@@ -3,7 +3,7 @@
 
 #include <gl_decl.hpp>
 
-// ========<AGraphicsApi>========
+// --==<AGraphicsApi>==--
 #if (defined NW_GRAPHICS)	// This has to be defined anyway
 namespace NW
 {
@@ -21,11 +21,11 @@ namespace NW
 	public:
 		virtual ~AGraphicsApi() = default;
 		
-		// -- Getters
+		// --getters
 		virtual inline const GApiTypes GetType() const = 0;
 		virtual inline const DrawModes GetDrawMode() const = 0;
 		virtual inline const PrimitiveTypes GetPrimitiveType() const = 0;
-		// -- Setters
+		// --setters
 		virtual void SetModes(bool bEnable, ProcModes unModeId) = 0;
 		virtual void SetClearColor(const Pixel& rpxColor) = 0;
 		virtual void SetClearColor(float nRed, float nGreen, float nBlue, float nAlpha = 1.0f) = 0;
@@ -46,9 +46,9 @@ namespace NW
 	};
 }
 #endif	// NW_GRAPHICS
-// ========</AGraphicsApi>========
+// --==</AGraphicsApi>==--
 
-// ========<GraphicsApiOgl>========
+// --==<GraphicsApiOgl>==--
 #if (NW_GRAPHICS & NW_GRAPHICS_OGL)
 namespace NW
 {
@@ -63,11 +63,11 @@ namespace NW
 		GraphicsApiOgl();
 		~GraphicsApiOgl();
 
-		// -- Getters
+		// --getters
 		virtual inline const GApiTypes GetType() const override { return m_gapiType; }
 		virtual inline const DrawModes GetDrawMode() const override { return DrawModes(m_unDrawModeId); }
 		virtual inline const PrimitiveTypes GetPrimitiveType() const override { return PrimitiveTypes(m_unPrimitiveTypeId); }
-		// -- Setters
+		// --setters
 		virtual inline void SetPrimitiveType(PrimitiveTypes unPrimitiveId) override { m_unPrimitiveTypeId = unPrimitiveId; }
 		virtual void SetDrawMode(DrawModes unDrawModeId, FacePlanes unFacePlaneId) override;
 		
@@ -94,9 +94,9 @@ namespace NW
 
 }
 #endif	// NW_GRAPHICS
-// ========</GraphicsApiOgl>========
+// --==</GraphicsApiOgl>==--
 
-// ========<GraphicsApiCout>========
+// --==<GraphicsApiCout>==--
 #if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 #include <window/cn_CoutWindow.h>
 namespace NW
@@ -165,6 +165,6 @@ namespace NW
 	};
 }
 #endif	// NW_GRAPHICS
-// ========</GraphicsApiCout>========
+// --==</GraphicsApiCout>==--
 
 #endif // NW_AGRAPHICS_API_H

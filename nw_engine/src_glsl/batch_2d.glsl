@@ -35,12 +35,10 @@ in VS_OUT {
 	float texSlot;
 } vs_in;
 
-#define MAX_TEXTURES 7
-
-uniform sampler2D unf_textures[MAX_TEXTURES];
+uniform sampler2D textures[7];
 
 void main()
 {
-	ps_pxClr = vec4(texture(unf_textures[int(vs_in.texSlot)], vs_in.texCrd).rgba *
+	ps_pxClr = vec4(texture(textures[int(vs_in.texSlot)], vs_in.texCrd).rgba *
 	vs_in.vtxClr);
 }

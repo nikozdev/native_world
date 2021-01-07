@@ -5,15 +5,15 @@
 
 namespace NW
 {
-	//	========<Control>========
+	//	--==<Control>==--
 	class NW_API AGraphicsApi;
-	class NW_API Drawer;
+	class NW_API GraphEngine;
 	class NW_API GCameraLad;
-	//	========</Control>========
+	//	--==</Control>==--
 
-	//	========<Vision>========
+	//	--==<Vision>==--
 	class NW_API AShader;
-	class NW_API AGMaterial;
+	class NW_API GMaterial;
 
 	struct NW_API GCamera;
 
@@ -21,9 +21,9 @@ namespace NW
 	class NW_API DirectLight3d;
 	class NW_API PointLight3d;
 	class NW_API SpotLight3d;
-	//	========</Vision>========
+	//	--==</Vision>==--
 
-	//	========<Render>========
+	//	--==<Render>==--
 	class NW_API AFrameBuf;
 
 	class NW_API ATexture;
@@ -39,19 +39,20 @@ namespace NW
 	struct NW_API Rectangle;
 	struct NW_API Sprite;
 	struct NW_API Mesh3d;
-	//	========</Render>========
+	//	--==</Render>==--
 
-	//	========<GContext>========
+	//	--==<GContext>==--
 	class NW_API AWindow;
 	class NW_API AGContext;
-	//	========</GContext>========
+	//	--==</GContext>==--
 
-	//	========<Basic Types>========
+	//	--==<Basic Types>==--
 	class NW_API AVertexBuf;
 	class NW_API AIndexBuf;
-	//	========</Basic Types>========
+	class NW_API AShaderBuf;
+	//	--==</Basic Types>==--
 
-	//	========<Structs-Enums>========
+	//	--==<Structs-Enums>==--
 	struct NW_API FrameBufInfo;
 	struct NW_API ImageInfo;
 	struct NW_API TextureInfo;
@@ -84,13 +85,23 @@ namespace NW
 		GAPI_WIN = NW_GRAPHICS_WIN,
 		GAPI_OPENGL = NW_GRAPHICS_OGL
 	};
+	enum GraphicsBufTypes : UInt32 {
+		GBT_VERTEX = NW_GBUFFER_VERTEX,
+		GBT_INDEX = NW_GBUFFER_INDEX,
+		GBT_SHADER = NW_GBUFFER_SHADER
+	};
 	/// Data that can be loaded in a shader
 	enum ShaderDataTypes : UInt32
 	{
 		SDT_BOOL = NW_BOOL, SDT_INT8 = NW_INT8, SDT_UINT8 = NW_UINT8,
 		SDT_INT16 = NW_INT16, SDT_UINT16 = NW_UINT16,
 		SDT_INT32 = NW_INT32, SDT_UINT32 = NW_UINT32,
-		SDT_FLOAT32 = NW_FLOAT32, SDT_FLOAT64 = NW_FLOAT64
+		SDT_FLOAT32 = NW_FLOAT32, SDT_FLOAT64 = NW_FLOAT64,
+
+		//SDT_FLOAT32_VEC2 = NW_FLOAT32_VEC2, SDT_FLOAT32_VEC3 = NW_FLOAT32_VEC3, SDT_FLOAT32_VEC4 = NW_FLOAT32_VEC4,
+		//SDT_FLOAT32_MAT2 = NW_FLOAT32_MAT2, SDT_FLOAT32_MAT3 = NW_FLOAT32_MAT3, SDT_FLOAT32_MAT4 = NW_FLOAT32_MAT4
+		
+		SDT_SAMPLER = NW_SAMPLER_1D
 	};
 	/// Accessible (maintained) shader types
 	enum ShaderTypes : UInt32
@@ -170,9 +181,9 @@ namespace NW
 		TC_FORMAT_RED = NW_RED, TC_FORMAT_GREEN = NW_GREEN, TC_FORMAT_BLUE = NW_BLUE,
 		TC_FORMAT_RGB = NW_RGB, TC_FORMAT_RGBA = NW_RGBA, TC_FORMAT_RGBA8 = NW_RGBA8,
 	};
-	//	========</Structs-Enums>========
+	//	--==</Structs-Enums>==--
 
-	//	========<Specifications>========
+	//	--==<Specifications>==--
 #if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 	class NW_API WindowCout;
 	class NW_API GContextCout;
@@ -194,10 +205,10 @@ namespace NW
 	class NW_API AGMaterialOgl;
 	class NW_API Texture2dOgl;
 #endif	// NW_GRAPHICS
-	//	========</Specifications>========
+	//	--==</Specifications>==--
 }
 
-//	========<Outside types>========
+//	--==<Outside types>==--
 struct GLFWwindow;
 namespace NW
 {
@@ -210,9 +221,9 @@ using AppWindow = WindowCout;
 using NativeWindow = ::void*;
 #endif	// NW_WINDOW
 }
-//	========</Outside types>========
+//	--==</Outside types>==--
 
-#define NW_MAX_TEXTURES 7
+#define NW_MAX_TEXTURES 8
 #define NW_MIN_TEXTURES 1
 
 #define NW_MAX_DRAW_LAYERS 10

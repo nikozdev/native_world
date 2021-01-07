@@ -6,89 +6,46 @@
 
 namespace NW
 {
-	/// Abstract GraphicsMaterial Class
+	/// GraphicsMaterial Class
 	/// Description:
-	/// -- GMaterial has at least one texture and one shader
-	/// -- To use materials - make derived class and use abstract pointer to it's instances
-	class NW_API AGMaterial : public ADataRes
+	class NW_API GMaterial : public ADataRes
 	{
 	public:
-		AGMaterial(const char* strName);
-		virtual ~AGMaterial();
-
-		// -- Getters
-		virtual inline AShader* GetShader() = 0;
-		virtual inline ATexture* GetTexture(CString strType = "") = 0;
-		virtual inline V4f GetColor(CString strType = "") = 0;
-		// -- Setters
-		virtual void SetShader(AShader* pShader) = 0;
-		virtual void SetTexture(ATexture* pTex = nullptr, CString strType = "") = 0;
-		virtual void SetColor(V4f rgbaClr = V4f(1.0f), CString strType = "") = 0;
-		
-		// -- Core Methods
-		virtual void Enable() = 0;
-		virtual void Disable() = 0;
-		// -- Data Methods
-		virtual bool SaveF(const char* strFPath) = 0;
-		virtual bool LoadF(const char* strFPath) = 0;
+		using Textures = HashMap<String, ATexture*>;
 	public:
-		HashMap<const char*, ATexture*> m_Textures;
-	};
-	/// Default GraphicsMaterial 2d
-	class NW_API GMaterial2d : public AGMaterial
-	{
-	public:
-		GMaterial2d(const char* strName);
-		~GMaterial2d();
+		GMaterial(const char* strName);
+		virtual ~GMaterial();
 
-		// -- Getters
-		virtual inline AShader* GetShader() override { return m_pShader; }
-		virtual inline ATexture* GetTexture(CString strName = "") override { return m_pTex; }
-		virtual inline V4f GetColor(CString strType = "") override { return m_rgbaClr; }
-		// -- Setters
-		virtual void SetShader(AShader* pShader) override { m_pShader = pShader; }
-		virtual void SetTexture(ATexture* pTex = nullptr, CString strType = "") override { m_pTex = pTex; }
-		virtual void SetColor(V4f rgbaClr, CString strType = "") override { m_rgbaClr = rgbaClr; }
+		// --getters
+		inline AShader* GetShader() { return m_pShader; }
+		inline UInt8 GetTexCount() { return m_Textures.size(); }
+		inline const Textures& GetTextures(const char* strType = "") { return m_Textures; }
+		inline ATexture* GetTexture(const char* strType = "") {
+			auto itTex = m_Textures.find(&strType[0]); 
+			return itTex == m_Textures.end() ? nullptr : itTex->second;
+		}
+		// --setters
+		void SetShader(AShader* pShader);
+		void SetTexture(ATexture* pTex = nullptr, const char* strType = "");
+		// -- Predicates
+		Int8 HasTexture(ATexture* pTex) {
+			auto itTex = m_Textures.begin();
+			for (Int8 txi = 0; txi < GetTexCount(); txi++) {
+				if (itTex->second == pTex) { return txi; }
+				std::advance(itTex, 1);
+			}
+			return -1;
+		}
 
-		// -- Core Methods
-		virtual void Enable() override;
-		virtual void Disable() override;
-
+		// --core_methods
+		void Enable();
+		void Disable();
+		// --data_methods
 		virtual bool SaveF(const char* strFPath) override;
 		virtual bool LoadF(const char* strFPath) override;
-		// -- Data Methods
-	private:
-		AShader* m_pShader;
-		ATexture* m_pTex;
-		V4f m_rgbaClr;
-	};
-
-	class NW_API GMaterial3d : public AGMaterial
-	{
 	public:
-		GMaterial3d(const char* strName);
-		~GMaterial3d();
-
-		// -- Getters
-		virtual inline AShader* GetShader() override { return m_pShader; }
-		virtual inline ATexture* GetTexture(CString strName = "") override { return m_pTex; }
-		virtual inline V4f GetColor(CString strType = "") override { return m_rgbaClr; }
-		// -- Setters
-		virtual void SetShader(AShader* pShader) override { m_pShader = pShader; }
-		virtual void SetTexture(ATexture* pTex = nullptr, CString strType = "") override { m_pTex = pTex; }
-		virtual void SetColor(V4f rgbaClr, CString strType = "") override { m_rgbaClr = rgbaClr; }
-
-		// -- Core Methods
-		virtual void Enable() override;
-		virtual void Disable() override;
-
-		virtual bool SaveF(const char* strFPath) override;
-		virtual bool LoadF(const char* strFPath) override;
-		// -- Data Methods
-	private:
 		AShader* m_pShader;
-		ATexture* m_pTex;
-		V4f m_rgbaClr;
+		Textures m_Textures;
 	};
 }
 

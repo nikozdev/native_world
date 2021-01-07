@@ -74,7 +74,7 @@
 #define NW_LIBS_NATIVE_COLLECTION	0b0001'0000
 #define NW_LIBS_STD_COLLECTION		0b0010'0000
 
-#define NW_LIBS (NW_LIBS_STD_PTR | NW_LIBS_STD_STR | NW_LIBS_STD_COLLECTION)
+#define NW_LIBS (NW_LIBS_STD_PTR | NW_LIBS_STD_STR | NW_LIBS_NATIVE_STR | NW_LIBS_STD_COLLECTION)
 // --Standard libraries choice
 
 // --------</Configurations>--------

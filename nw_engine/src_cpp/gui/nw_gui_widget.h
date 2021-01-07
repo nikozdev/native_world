@@ -15,11 +15,11 @@ namespace NW
 		AGuiWidget();
 		virtual ~AGuiWidget();
 		
-		// -- Getters
+		// --getters
 		inline UInt32 GetId() const { return m_unId; }
 		virtual inline void GetSize() const = 0;
 		virtual inline V2f GetCoord() const = 0;
-		// -- Setters
+		// --setters
 		virtual void SetSize(float nWidth, float nHeight) = 0;
 	private:
 		static IdStack s_IdStack;

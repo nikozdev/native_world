@@ -30,7 +30,7 @@ namespace NW
 	}
 	GContextOgl::~GContextOgl() = default;
 
-	// ========<Core Methods>========
+	// --==<core_methods>==--
 	bool GContextOgl::OnInit()
 	{
 		glfwMakeContextCurrent(m_pNativeWindow);
@@ -64,7 +64,7 @@ namespace NW
 	{
 		glfwSwapBuffers(m_pNativeWindow);
 	}
-	// ========</Core Methods>========
+	// --==</core_methods>==--
 }
 #endif	// NW_GRAPHICS
 #if (NW_GRAPHICS & NW_GRAPHICS_COUT)
@@ -100,7 +100,7 @@ namespace NW
 		if (m_cfInfoEx.cbSize != 0) SetCurrentConsoleFontEx(m_pWindow->GetHCout(), TRUE, &m_cfInfoEx);
 	}
 
-	// ========<Core methods>========
+	// --==<Core methods>==--
 	bool GContextCout::OnInit()
 	{
 		GetCurrentConsoleFontEx(m_pWindow->GetHCout(), false, &m_cfInfoEx);
@@ -126,7 +126,7 @@ namespace NW
 	{
 		m_rBuffer->OnUpdate();
 	}
-	// ========</Core methods>========
+	// --==</Core methods>==--
 }
 
 #endif	// NW_GRAPHICS

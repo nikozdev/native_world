@@ -23,19 +23,19 @@ namespace NW
 		AFrameBuf(const char* strName, const FrameBufInfo& rFbInfo);
 		virtual ~AFrameBuf();
 	
-		// -- Getters
+		// --getters
 		inline const UInt32 GetRenderId() const { return m_unRId; }
 		inline const UInt32 GetRenderIdDepth() const { return m_unRIdDepth; }
 		inline ATexture2d* GetColorAttachment() { return m_ColorAttach; }
 		inline const FrameBufInfo& GetInfo() const { return m_Info; }
-		// -- Setters
+		// --setters
 		void SetSizeWH(UInt32 unWidth, UInt32 unHeight);
-		// -- Interface Methods
+		// --core_methods
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 		virtual void Remake() = 0;
 		virtual void Clear(UInt32 unAttachmentsMask = FB_COLOR | FB_DEPTH | FB_STENCIL) = 0;
-		// -- Core Methods
+		// --core_methods
 		virtual bool LoadF(const char* strFPath) = 0;
 		virtual bool SaveF(const char* strFPath) = 0;
 
@@ -58,12 +58,12 @@ namespace NW
 		FrameBufOgl(const char* strName, const FrameBufInfo& rFbInfo);
 		virtual ~FrameBufOgl();
 
-		// -- Core Methods
+		// --core_methods
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 		virtual void Remake() override;
 		virtual void Clear(UInt32 unAttachmentsMask = FB_COLOR | FB_DEPTH | FB_STENCIL) override;
-		// -- Data Methods
+		// --data_methods
 		virtual bool LoadF(const char* strFPath) override;
 		virtual bool SaveF(const char* strFPath) override;
 	};
@@ -142,7 +142,7 @@ namespace NW
 				xywhRectangle.Top >= m_xywhRect.Top && xywhRectangle.Bottom <= m_xywhRect.Bottom);
 		}
 
-		// Core Methods
+		// core_methods
 		virtual bool OnInit();
 		virtual void OnQuit();
 		virtual void OnUpdate(ChInfo* buffer = nullptr);

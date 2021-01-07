@@ -5,7 +5,7 @@
 #include <sys/nw_data_sys.h>
 
 #if (defined NW_GRAPHICS)
-#include <gl/control/nw_drawer.h>
+#include <core/nw_graph_engine.h>
 #include <gl/render/nw_texture.h>
 namespace NW
 {
@@ -18,12 +18,9 @@ namespace NW
 		m_ColorAttach = ATexture2d::Create(&strClrName[0]);
 		DataSys::AddDataRes<AFrameBuf>(this);
 	}
-	AFrameBuf::~AFrameBuf()
-	{
-		DataSys::RemoveDataRes<AFrameBuf>(GetName());
-	}
+	AFrameBuf::~AFrameBuf() { DataSys::RemoveDataRes<AFrameBuf>(GetName()); }
 
-	// -- Setters
+	// --setters
 	void AFrameBuf::SetSizeWH(UInt32 unWidth, UInt32 unHeight) {
 		m_Info.unWidth = unWidth; m_Info.unHeight = unHeight; Remake();
 	}
@@ -31,7 +28,7 @@ namespace NW
 	AFrameBuf* AFrameBuf::Create(const char* strName, const FrameBufInfo& rfbInfo)
 	{
 		AFrameBuf* pFB = nullptr;
-		switch (Drawer::GetGApi()->GetType())
+		switch (GraphEngine::GetGApi()->GetType())
 		{
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GApiTypes::GAPI_COUT:
@@ -67,7 +64,7 @@ namespace NW
 		glDeleteRenderbuffers(1, &m_unRIdDepth);
 	}
 
-	// ========<Core methods>========
+	// --==<Core methods>==--
 	void FrameBufOgl::Bind() const { glBindFramebuffer(GL_FRAMEBUFFER, m_unRId); }
 	void FrameBufOgl::Unbind() const { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
@@ -114,16 +111,16 @@ namespace NW
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	void FrameBufOgl::Clear(UInt32 unAttachmentsMask) { glClear(unAttachmentsMask); }
-	// ========</Core methods>========
+	// --==</Core methods>==--
 
-	// ========<Data methods>========
+	// --==<Data methods>==--
 	bool FrameBufOgl::LoadF(const char* strFPath) {
 		return true;
 	}
 	bool FrameBufOgl::SaveF(const char* strFPath) {
 		return true;
 	}
-	// ========</Data methods>========
+	// --==</Data methods>==--
 }
 #endif // NW_GRAPHICS
 #if (NW_GRAPHICS & NW_GRAPHICS_COUT)
@@ -141,8 +138,8 @@ namespace NW
 	{
 	}
 
-	// -- Getters
-	// -- Setters
+	// --getters
+	// --setters
 	bool CoutFrameBuf::SetSizeWH(Int16 sizeW, Int16 sizeH)
 	{
 		if (m_whSize.X == sizeW || m_whSize.Y == sizeH || !m_pWindow) return false;
@@ -157,7 +154,7 @@ namespace NW
 		return true;
 	}
 
-	// ========<Core Methods>========
+	// --==<core_methods>==--
 	bool CoutFrameBuf::OnInit()
 	{
 		if (!SetSizeWH(m_pWindow->GetWindowInfo().usiWidth, m_pWindow->GetWindowInfo().usiHeight))
@@ -191,7 +188,7 @@ namespace NW
 			{ m_xywhRect.Left, m_xywhRect.Top }, &m_xywhRect);
 	#endif
 	}
-	// ========</Core Methods>========
+	// --==</core_methods>==--
 	void CoutFrameBuf::Clear(UInt32 clearColor = 0)
 	{
 		ChInfo clearChar;

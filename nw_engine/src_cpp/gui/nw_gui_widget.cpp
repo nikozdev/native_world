@@ -21,6 +21,6 @@ namespace NW
 		}
 	}
 
-	// -- Getters
-	// -- Setters
+	// --getters
+	// --setters
 }

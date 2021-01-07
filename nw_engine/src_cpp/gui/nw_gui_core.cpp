@@ -11,7 +11,7 @@ namespace NW
 		m_pBitmap(nullptr) { }
 	BitmapFont::~BitmapFont() { }
 
-	// -- Setters
+	// --setters
 	void BitmapFont::SetInfo(const BitmapFontInfo& rFontInfo) {
 		m_Info = rFontInfo;
 		m_Glyphs.clear();
@@ -30,5 +30,5 @@ namespace NW
 	}
 	void BitmapFont::SetBitMap(ATexture2d* pBitmap) { m_pBitmap = pBitmap; }
 
-	// -- Core Methods
+	// --core_methods
 }

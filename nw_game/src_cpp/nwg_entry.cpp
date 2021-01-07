@@ -2,12 +2,12 @@
 
 #include <native_world.hpp>
 
-int main()
+int main(int nArgs, char* strArgs[])
 {
 	try {
-		NW::Engine* pEngine = &NW::Engine::Get();
-		if (!pEngine->Init()) return -1;
-		pEngine->Run();
+		NW::CoreEngine* pGameEngine = &NW::CoreEngine::Get();
+		if (!pGameEngine->Init()) return -1;
+		pGameEngine->Run();
 	} catch (std::exception ext){
 		NW_ERR(ext.what());
 	}

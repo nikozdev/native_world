@@ -551,8 +551,8 @@
     <ClInclude Include="ext\lua_lib\src\lvm.h" />
     <ClInclude Include="ext\lua_lib\src\lzio.h" />
     <ClInclude Include="src_cpp\core\nw_data_res.h" />
-    <ClInclude Include="src_cpp\core\nw_engine.h" />
-    <ClInclude Include="src_cpp\core\nw_engine_state.h" />
+    <ClInclude Include="src_cpp\core\nw_core_engine.h" />
+    <ClInclude Include="src_cpp\core\nw_core_state.h" />
     <ClInclude Include="src_cpp\core\nw_event.h" />
     <ClInclude Include="src_cpp\core\nw_singleton.h" />
     <ClInclude Include="src_cpp\ecs\nw_collider_cmp.h" />
@@ -564,7 +564,7 @@
     <ClInclude Include="src_cpp\ecs\nw_script_cmp.h" />
     <ClInclude Include="src_cpp\ecs\nw_transform_cmp.h" />
     <ClInclude Include="src_cpp\ecs_decl.hpp" />
-    <ClInclude Include="src_cpp\gl\control\nw_drawer.h" />
+    <ClInclude Include="src_cpp\core\nw_graph_engine.h" />
     <ClInclude Include="src_cpp\gl\control\nw_gapi.h" />
     <ClInclude Include="src_cpp\gl\control\nw_gcamera_lad.h" />
     <ClInclude Include="src_cpp\gl\gcontext\nw_framebuf.h" />
@@ -609,13 +609,14 @@
     <ClInclude Include="src_cpp\sys\nw_io_sys.h" />
     <ClInclude Include="src_cpp\sys\nw_log_sys.h" />
     <ClInclude Include="src_cpp\sys\nw_mem_sys.h" />
+    <ClInclude Include="src_cpp\core\nw_phys_engine.h" />
     <ClInclude Include="src_cpp\sys\nw_rand_sys.h" />
     <ClInclude Include="src_cpp\sys\nw_time_sys.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src_cpp\core\nw_data_res.cpp" />
-    <ClCompile Include="src_cpp\core\nw_engine.cpp" />
-    <ClCompile Include="src_cpp\core\nw_engine_state.cpp" />
+    <ClCompile Include="src_cpp\core\nw_core_engine.cpp" />
+    <ClCompile Include="src_cpp\core\nw_core_state.cpp" />
     <ClCompile Include="src_cpp\ecs\nw_collider_cmp.cpp" />
     <ClCompile Include="src_cpp\ecs\nw_entity.cpp" />
     <ClCompile Include="src_cpp\ecs\nw_entity_cmp.cpp" />
@@ -624,7 +625,7 @@
     <ClCompile Include="src_cpp\ecs\nw_scene.cpp" />
     <ClCompile Include="src_cpp\ecs\nw_script_cmp.cpp" />
     <ClCompile Include="src_cpp\ecs\nw_transform_cmp.cpp" />
-    <ClCompile Include="src_cpp\gl\control\nw_drawer.cpp" />
+    <ClCompile Include="src_cpp\core\nw_graph_engine.cpp" />
     <ClCompile Include="src_cpp\gl\control\nw_gapi.cpp" />
     <ClCompile Include="src_cpp\gl\control\nw_gcamera_lad.cpp" />
     <ClCompile Include="src_cpp\gl\gcontext\nw_framebuf.cpp" />
@@ -655,6 +656,7 @@
     <ClCompile Include="src_cpp\sys\nw_io_sys.cpp" />
     <ClCompile Include="src_cpp\sys\nw_log_sys.cpp" />
     <ClCompile Include="src_cpp\sys\nw_mem_sys.cpp" />
+    <ClCompile Include="src_cpp\core\nw_phys_engine.cpp" />
     <ClCompile Include="src_cpp\sys\nw_rand_sys.cpp" />
     <ClCompile Include="src_cpp\sys\nw_time_sys.cpp" />
   </ItemGroup>

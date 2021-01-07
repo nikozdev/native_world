@@ -5,16 +5,16 @@
 
 namespace NW
 {
-	// ========<ACodeChunk>========
+	// --==<code_chunk>==--
 	ACodeChunk::ACodeChunk(const char* strName) :
 		ADataRes(strName),
 		m_strCode("")
 	{ }
 	ACodeChunk::~ACodeChunk()
 	{ }
-	// ========</ACodeChunk>========
+	// --==</code_chunk>==--
 
-	// ========<LuaScript>========
+	// --==<lua_script>==--
 	LuaScript::LuaScript(const char* strName) :
 	ACodeChunk(strName)
 	{
@@ -22,7 +22,7 @@ namespace NW
 	}
 	LuaScript::~LuaScript() {}
 
-	// -- Core Methods
+	// --core_methods
 	bool LuaScript::Compile()
 	{
 		Char strBuf[128]{0};
@@ -56,7 +56,7 @@ namespace NW
 
 		return LuaVM::Get().RunScriptStr(&strResult[0]);
 	}
-	// -- Data Methods
+	// --data_methods
 	bool LuaScript::SaveF(const char* strFPath)
 	{
 		return true;
@@ -65,5 +65,5 @@ namespace NW
 	{
 		return true;
 	}
-	// ========</LuaScript>========
+	// --==</lua_script>==--
 }

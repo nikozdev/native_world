@@ -18,17 +18,17 @@ namespace NW
 		AEntityCmp(AEntityCmp& rCpy);
 		virtual ~AEntityCmp();
 
-		// -- Getters
+		// --getters
 		inline AEntity* GetEntity() { return m_pEntity; }
 		inline const UInt32 GetCmpId() { return m_TypeIndex.hash_code(); }
 		inline const CmpTypeId& GetTypeId() { return m_TypeIndex; }
 		inline const char* GetTypeName() { return &m_TypeIndex.name()[10]; }	// class_NW::{name}
-		// -- Setters
+		// --setters
 		virtual inline void SetEnabled(bool bIsEnabled) { m_bIsEnabled = bIsEnabled; }
 		// -- Predicates
 		inline bool IsEnabled() { return m_bIsEnabled; }
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void OnUpdate() = 0;
 
 		template <class CmpType, typename ... Args> static inline AEntityCmp* Create(Args ... Arguments) {

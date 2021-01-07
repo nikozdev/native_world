@@ -17,11 +17,11 @@ namespace NW
 		ACodeChunk(const char* strName);
 		virtual ~ACodeChunk();
 
-		// -- Getters
+		// --getters
 		inline const char* GetCode() { return &m_strCode[0]; }
-		// -- Setters
+		// --setters
 		inline void SetCode(const char* strCode) { m_strCode = strCode; }
-		// -- Interface Methods
+		// --core_methods
 		virtual bool Compile() = 0;
 		virtual bool SaveF(const char* strFPath) = 0;
 		virtual bool LoadF(const char* strFPath) = 0;
@@ -35,12 +35,12 @@ namespace NW
 		LuaScript(const char* strName);
 		~LuaScript();
 
-		// -- Getters
-		// -- Setters
+		// --getters
+		// --setters
 
-		// -- Interface Methods
+		// --core_methods
 		virtual bool Compile() override;
-		// -- Data Methods
+		// --data_methods
 		virtual bool SaveF(const char* strFPath) override;
 		virtual bool LoadF(const char* strFPath) override;
 	};

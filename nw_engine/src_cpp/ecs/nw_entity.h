@@ -24,7 +24,7 @@ namespace NW
 		explicit AEntity(const AEntity& rEnt);
 		virtual ~AEntity();
 
-		// -- Getters
+		// --getters
 		inline AEntity* GetOverEnt() { return m_pOverEnt; }
 		inline SubEnts& GetSubEnts() { return m_SubEnts; }
 		inline ACmps& GetAComponents() { return m_ACmps; }
@@ -42,7 +42,7 @@ namespace NW
 			ACmps::iterator itCmp = m_ACmps.find(CmpTypeId(typeid(CmpType)));
 			return itCmp == m_ACmps.end() ? nullptr : dynamic_cast<CmpType*>(itCmp->second);
 		}
-		// -- Setters
+		// --setters
 		void SetOverEnt(AEntity* pOverEnt);
 		void SetEnabled(bool bIsEnabled);
 		void AddSubEnt(AEntity* pSubEnt);
@@ -66,7 +66,7 @@ namespace NW
 		inline bool HasAComponent(const CmpTypeId& TypeIndex) { return m_ACmps.find(TypeIndex) != m_ACmps.end(); }
 		template <class CmpType> inline bool HasComponent() { return HasAComponent(CmpTypeId(typeid(CmpType))); }
 
-		// -- Data Methods
+		// --data_methods
 		virtual bool SaveF(const char* strFPath) override;
 		virtual bool LoadF(const char* strFPath) override;
 	private:	// Implementation Attributes

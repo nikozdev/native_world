@@ -7,14 +7,16 @@ layout(location = 2) in vec2 atb_texCrd;
 layout(location = 3) in float atb_texSlot;
 layout(location = 4) in mat4 atb_m4Transform;
 
+layout(std140) uniform unf_Matrices {
+	mat4 unf_m4Proj;
+	mat4 unf_m4View;
+};
+
 out VS_OUT {
 	vec4 vtxClr;
 	vec2 texCrd;
 	float texSlot;
 } vs_out;
-
-uniform mat4 unf_m4Proj;	// Order
-uniform mat4 unf_m4View;	// Is Extrimelly important
 
 void main()
 {
@@ -35,9 +37,7 @@ in VS_OUT {
 	float texSlot;
 } vs_in;
 
-#define MAX_TEXTURES 7
-
-uniform sampler2D unf_textures[MAX_TEXTURES];
+uniform sampler2D unf_textures[7];
 
 void main()
 {

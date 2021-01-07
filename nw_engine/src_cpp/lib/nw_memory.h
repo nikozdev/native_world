@@ -184,7 +184,7 @@ namespace NW
 	class NW_API MemLad
 	{
 	public:
-		// Core Methods
+		// core_methods
 		inline ValType* Alloc(UInt32 InstancesCount) {
 			return reinterpret_cast<ValType*>(malloc(sizeof(ValType) * InstancesCount));
 		}
@@ -231,12 +231,12 @@ namespace NW
 		}
 		~MemArena() { Reset(0); }
 
-		// -- Getters
+		// --getters
 		inline Size GetMinBlockSize(Size szBlock) { return szBlock < m_szBlock ? m_szBlock : szBlock; }
-		// -- Setters
+		// --setters
 		void Reset(Size szSpace);
 
-		// -- Core Methods
+		// --core_methods
 		void* Alloc(Size szAlloc);
 		void Dealloc(void* pBlock, Size szDealloc);
 		void* Realloc(void* pBlock, Size szOld, Size szNew);

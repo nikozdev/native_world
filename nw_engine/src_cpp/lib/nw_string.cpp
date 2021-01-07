@@ -24,11 +24,11 @@ namespace NW
 	}
 	inline Int32 StrFindR(const char* cSource, const char cFind)
 	{
-		UInt32 unCounter = StrLen(cSource);
-		while (unCounter != -1)
+		Int32 nCounter = StrLen(cSource);
+		while (nCounter != -1)
 		{
-			unCounter--;
-			if (cSource[unCounter] == cFind) return unCounter;
+			nCounter--;
+			if (cSource[nCounter] == cFind) return nCounter;
 		}
 		return -1;
 	}

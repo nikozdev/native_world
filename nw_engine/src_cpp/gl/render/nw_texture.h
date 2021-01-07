@@ -3,6 +3,8 @@
 
 #include <gl/nw_gl_core.h>
 
+#include <core/nw_data_res.h>
+
 #if (defined NW_GRAPHICS)
 namespace NW
 {
@@ -33,20 +35,20 @@ namespace NW
 		ATexture(const char* strName);
 		virtual ~ATexture();
 
-		// -- Getters
+		// --getters
 		inline UInt32 GetRenderId() const { return m_unRId; }
 		inline UInt32 GetTexSlot() const { return m_unTexSlot; }
 		inline const TextureInfo& GetTexInfo() const { return m_TexInfo; }
 		inline const ImageInfo& GetImgInfo() const { return m_ImgInfo; }
-		// -- Setters
+		// --setters
 		virtual void SetInfo(const TextureInfo& rTexInfo) = 0;
 		virtual void SetInfo(const ImageInfo& rImgInfo) = 0;
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void Bind(UInt32 unTexSlot) = 0;
 		virtual void Unbind() = 0;
 		virtual void Remake() = 0;
-		// -- Data Methods
+		// --data_methods
 		virtual bool SaveF(const char* strFPath) = 0;
 		virtual bool LoadF(const char* strFPath) = 0;
 	protected:
@@ -64,18 +66,18 @@ namespace NW
 		ATexture1d(const char* strName);
 		virtual ~ATexture1d();
 
-		// -- Getters
+		// --getters
 		inline UInt32 GetWidth() const { return m_ImgInfo.nWidth; }
-		// -- Setters
+		// --setters
 		virtual void SetInfo(const TextureInfo& rTexInfo) = 0;
 		virtual void SetInfo(const ImageInfo& rImgInfo) = 0;
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void Bind(UInt32 unTexSlot) = 0;
 		virtual void Unbind() = 0;
 		virtual void Remake() = 0;
 
-		// -- Data Methods
+		// --data_methods
 		virtual bool SaveF(const char* strFPath) override;
 		virtual bool LoadF(const char* strFPath) override;
 
@@ -88,14 +90,14 @@ namespace NW
 		ATexture2d(const char* strName);
 		virtual ~ATexture2d();
 
-		// -- Getters
+		// --getters
 		inline UInt32 GetWidth() const { return m_ImgInfo.nWidth; }
 		inline UInt32 GetHeight() const { return m_ImgInfo.nHeight; }
-		// -- Setters
+		// --setters
 		virtual void SetInfo(const TextureInfo& rTexInfo) = 0;
 		virtual void SetInfo(const ImageInfo& rImgInfo) = 0;
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void Bind(UInt32 unTexSlot) = 0;
 		virtual void Unbind() = 0;
 		virtual void Remake() = 0;
@@ -112,15 +114,15 @@ namespace NW
 		ATexture3d(const char* strName);
 		virtual ~ATexture3d();
 
-		// -- Getters
+		// --getters
 		inline UInt32 GetWidth() const { return m_ImgInfo.nWidth; }
 		inline UInt32 GetHeight() const { return m_ImgInfo.nHeight; }
 		inline UInt32 GetDepth() const { return m_ImgInfo.nDepth; }
-		// -- Setters
+		// --setters
 		virtual void SetInfo(const TextureInfo& rTexInfo) = 0;
 		virtual void SetInfo(const ImageInfo& rImgInfo) = 0;
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void Bind(UInt32 unTexSlot) = 0;
 		virtual void Unbind() = 0;
 		virtual void Remake() = 0;
@@ -141,7 +143,7 @@ namespace NW
 		Int32 nTexSize = 1;
 		ATexture1d* pOverTex = nullptr;
 	public:
-		// -- Getters
+		// --getters
 		inline float GetTexCoord_0_1() const {
 			return static_cast<float>(nTexCrd) / static_cast<float>(pOverTex->GetWidth());
 		}
@@ -157,7 +159,7 @@ namespace NW
 		V2i whTexSize = { 1, 1 };
 		ATexture2d* pOverTex = nullptr;
 	public:
-		// -- Getters
+		// --getters
 		inline V2f GetTexCoord_0_1() const {
 			return V2f{ static_cast<float>(xyTexCrd.x) / static_cast<float>(pOverTex->GetWidth()),
 				static_cast<float>(xyTexCrd.y) / static_cast<float>(pOverTex->GetHeight()) };
@@ -175,7 +177,7 @@ namespace NW
 		V3i whdTexSize = { 1, 1, 1};
 		ATexture3d* pOverTex = nullptr;
 	public:
-		// -- Getters
+		// --getters
 		inline V3f GetTexCoord_0_1() const {
 			return V3f{ static_cast<float>(xyzTexCrd.x) / static_cast<float>(pOverTex->GetWidth()),
 				static_cast<float>(xyzTexCrd.y) / static_cast<float>(pOverTex->GetHeight()),
@@ -199,11 +201,11 @@ namespace NW
 		Texture1dOgl(const char* strName);
 		~Texture1dOgl();
 
-		// -- Setters
+		// --setters
 		virtual void SetInfo(const TextureInfo& rTexImfo) override;
 		virtual void SetInfo(const ImageInfo& rImgInfo) override;
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void Bind(UInt32 unTexSlot) override;
 		virtual void Unbind() override;
 		virtual void Remake() override;
@@ -215,11 +217,11 @@ namespace NW
 		Texture2dOgl(const char* strName);
 		~Texture2dOgl();
 
-		// -- Setters
+		// --setters
 		virtual void SetInfo(const TextureInfo& rTexImfo) override;
 		virtual void SetInfo(const ImageInfo& rImgInfo) override;
 		
-		// -- Interface Methods
+		// --core_methods
 		virtual void Bind(UInt32 unTexSlot) override;
 		virtual void Unbind() override;
 		virtual void Remake() override;
@@ -231,11 +233,11 @@ namespace NW
 		Texture3dOgl(const char* strName);
 		~Texture3dOgl();
 
-		// -- Setters
+		// --setters
 		virtual void SetInfo(const TextureInfo& rTexImfo) override;
 		virtual void SetInfo(const ImageInfo& rImgInfo) override;
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void Bind(UInt32 unTexSlot) override;
 		virtual void Unbind() override;
 		virtual void Remake() override;
@@ -253,10 +255,10 @@ namespace NW
 		Texture2dCout();
 		~Texture2dCout();
 
-		// -- Getters
-		// -- Setters
+		// --getters
+		// --setters
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void Bind(UInt32 unTexSlot) const override;
 		virtual void Unbind() const override;
 		virtual bool MakeTexture(UInt32 bitMask = 0) override;

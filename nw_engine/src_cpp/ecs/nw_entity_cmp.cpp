@@ -6,7 +6,7 @@
 
 namespace NW
 {
-	// ========<AbstractEntityCmp>========
+	// --==<AbstractEntityCmp>==--
 	AEntityCmp::AEntityCmp(AEntity& rEntity, const CmpTypeId& TypeIndex) :
 		m_pEntity(&rEntity),
 		m_TypeIndex(TypeIndex), m_bIsEnabled(true)
@@ -24,5 +24,5 @@ namespace NW
 	{
 		Scene::Get().RemoveAComponent(GetCmpId());
 	}
-	// ========</AbstractEntityCmp>========
+	// --==</AbstractEntityCmp>==--
 }

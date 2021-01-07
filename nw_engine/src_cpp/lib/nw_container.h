@@ -14,7 +14,7 @@ namespace NW
 		SArrayId(SArrayId<IdCount>& rIdList) = default;
 		~SArrayId() = default;
 
-		// -- Getters
+		// --getters
 		inline UInt32 GetFreeId() {
 			for (UInt32 idi = 1; idi < IdCount; idi++) {
 				if (IsFree(idi)) return idi;
@@ -22,7 +22,7 @@ namespace NW
 		}
 		inline UInt32 GetLastOwned() { return m_unLastOwned; }
 		inline UInt32 GetSize() { return IdCount; }
-		// -- Setters
+		// --setters
 		inline void SetFree(UInt32 unId) {
 			m_bOwnedIds[unId - 1] = false;
 		}

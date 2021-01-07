@@ -51,7 +51,7 @@ namespace NW
 	{
 	}
 
-	// -- Setters
+	// --setters
 	void WindowOgl::SetTitle(const char* strTitle) {
 		m_WindowInfo.strTitle = strTitle;
 		glfwSetWindowTitle(m_pNative, strTitle);
@@ -62,7 +62,7 @@ namespace NW
 		m_WindowInfo.bVSync = enabled;
 	}
 
-	// ========<Core Functions>========
+	// --==<Core Functions>==--
 	bool WindowOgl::Init()
 	{
 		// init glfw and configure the window
@@ -98,7 +98,7 @@ namespace NW
 	{
 		m_pGContext->SwapBuffers();
 	}
-	// ========</Core Functions>========
+	// --==</Core Functions>==--
 }
 #endif // NW_WINDOW
 #if (NW_WINDOW & NW_WINDOW_CONSOLE)
@@ -123,13 +123,13 @@ namespace NW
 		OnQuit();
 	}
 
-	// -- Setters
+	// --setters
 	void CoutWindow::SetVSync(bool enabled)
 	{
 		m_windowInfo.bVSync = enabled;
 	}
 
-	// -- Core Methods
+	// --core_methods
 	bool CoutWindow::OnInit()
 	{
 		m_hCout = m_hOrigCout = GetStdHandle(STD_OUTPUT_HANDLE);

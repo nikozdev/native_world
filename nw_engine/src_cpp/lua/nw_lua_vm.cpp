@@ -24,7 +24,7 @@ namespace NW
 		DestroyLuaState(m_LState);
 	}
 
-	// -- Getters
+	// --getters
 	template <> Int32 LuaVM::GetLuaValueGlb<Int32>(const char* strName) {
 		Int32 nRes = 0;
 		if (LuaMoveTGlb(strName, LT_NUM)) {
@@ -58,7 +58,7 @@ namespace NW
 		LuaClear();
 		return nRes;
 	}
-	// -- Setters
+	// --setters
 	template <> bool LuaVM::SetLuaValueGlb<Int32>(const Int32& tValue, const char* strName) {
 		lua_pushnumber(m_LState, tValue);
 		m_Info.AddType(lua_type(m_LState, -1));
@@ -90,7 +90,7 @@ namespace NW
 		return true;
 	}
 
-	// ========<Core Methods>========
+	// --==<core_methods>==--
 	LuaRegTable LuaCmpSys::lrtCmpSys = LuaRegTable("cmp_sys");
 	LuaRegTable LuaEntSys::lrtEntSys = LuaRegTable("ent_sys");
 	LuaState* LuaVM::CreateLuaState()
@@ -273,9 +273,9 @@ namespace NW
 
 		return true;
 	}
-	// ========</Core Methods>========
+	// --==</core_methods>==--
 
-	// ========<Implementation Methods>========
+	// --==<Implementation Methods>==--
 	inline bool LuaVM::LuaMoveGlb(const char* strName)
 	{
 		lua_getglobal(m_LState, &strName[0]);
@@ -401,9 +401,9 @@ namespace NW
 		LuaClear();
 		NW_ERR(&strErrLog[0]);
 	}
-	// ========</Implementation Methods>========
+	// --==</Implementation Methods>==--
 
-	// ========<Lua Delegates>========
+	// --==<Lua Delegates>==--
 	int LuaVM::LuaWrite(LuaState* pState, void* pBlock, Size szData, void* pWriter)
 	{
 		return 0;
@@ -437,7 +437,7 @@ namespace NW
 		}
 		return pBlock;
 	}
-	// ========</Lua Delegates>========
+	// --==</Lua Delegates>==--
 }
 
 /// What are the functions I am going to add into the lua scripts?
@@ -449,7 +449,7 @@ namespace NW
 //	RegTables::iterator itRegTab = m_RegTables.find(strName);
 //	return itRegTab == m_RegTables.end() ? nullptr : &itRegTab->second;
 //}
-// -- Setters
+// --setters
 //void LuaVM::AddRegFunction(LuaRegFunc& rRegFunc) {
 //	if (HasRegFunction(&rRegFunc.strName[0]) || HasFunction(&rRegFunc.strName[0])) { return; }
 //	String strAbsName = "";

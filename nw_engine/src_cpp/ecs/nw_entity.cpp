@@ -32,8 +32,8 @@ namespace NW
 		while (!m_ACmps.empty()) { MemSys::DelT<AEntityCmp>(m_ACmps.begin()->second); m_ACmps.erase(m_ACmps.begin()); }
 	}
 
-	// -- Getters
-	// -- Setters
+	// --getters
+	// --setters
 	void AEntity::SetName(const char* strName) {
 		bool bRepeat = Scene::Get().GetEntity(strName) != nullptr;
 		m_strName = strName;
@@ -86,7 +86,7 @@ namespace NW
 			}
 		}
 	}
-	// -- Data Methods
+	// --data_methods
 	bool AEntity::SaveF(const char* strFPath)
 	{
 		String strFile = "";
@@ -98,6 +98,6 @@ namespace NW
 		if (DataSys::LoadF_string(strFPath, strFile) == false) { return false; }
 		return true;
 	}
-	// ========<Core Methods>========
-	// ========</Core Methods>========
+	// --==<core_methods>==--
+	// --==</core_methods>==--
 }

@@ -14,9 +14,9 @@ namespace NW
 	public:
 		static MemInfo s_MemInfo;
 	public:
-		// -- Getters
+		// --getters
 		static inline const MemInfo& GetInfo() { return s_MemInfo; }
-		// -- Setters
+		// --setters
 		static inline const void SetAllocation(Size szAlloc, UInt32 unAlloc) {
 			s_MemInfo.szAlloc += szAlloc; s_MemInfo.unAlloc += unAlloc;
 		}
@@ -24,7 +24,7 @@ namespace NW
 			s_MemInfo.szAlloc -= szAlloc; s_MemInfo.unAlloc -= unAlloc;
 		}
 
-		// -- Core Methods
+		// --core_methods
 		static void* Alloc(Size szAlloc);
 		static void* AllocArr(Size szAlloc, UInt32 unAlloc);
 		static void Dealloc(void* pBlock, Size szDealloc);

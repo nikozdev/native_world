@@ -7,7 +7,7 @@ NW::ADataRes::IdStack NW::ADataRes::s_unIdStack = DStack<UInt32>();
 
 namespace NW
 {
-	// ========<ADataRes>========
+	// --==<ADataRes>==--
 	ADataRes::ADataRes(const char* strName) :
 		m_unId(0), m_strName(strName)
 	{
@@ -31,5 +31,5 @@ namespace NW
 	void ADataRes::SetName(const char* strName) {
 		m_strName = strName;
 	}
-	// ========</ADataRes>========
+	// --==</ADataRes>==--
 }

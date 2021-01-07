@@ -9,8 +9,8 @@ namespace NW
 	/// GraphicsContextInfo struct
 	struct NW_API GContextInfo
 	{
-		CString strRenderer = "none", strVersion = "1.0.0", strVendor = "none",
-			strShadingLanguage = "none";
+		const char* strRenderer = "none", *strVersion = "1.0.0", *strVendor = "none",
+			*strShadingLanguage = "none";
 		Int32 nMaxVertexAttribs = 0;
 		Int32 nActiveTextureId = 0;
 		Int32 nMaxTextures = 0;
@@ -19,8 +19,8 @@ namespace NW
 			CString sVendor, CString sShadingLanguage) :
 			strRenderer(sRenderer), strVersion(sVersion),
 			strVendor(sVendor), strShadingLanguage(sShadingLanguage) { }
-		explicit GContextInfo(UCString sRenderer, UCString sVersion,
-			UCString sVendor, UCString sShadingLanguage) :
+		explicit GContextInfo(const UChar* sRenderer, const UChar* sVersion,
+			const UChar* sVendor, const UChar* sShadingLanguage) :
 			strRenderer((CString)sRenderer), strVersion((CString)sVersion),
 			strVendor((CString)sVendor), strShadingLanguage((CString)sShadingLanguage) { }
 	};
@@ -33,9 +33,9 @@ namespace NW
 	public:
 		virtual ~AGContext() = default;
 
-		// -- Getters
+		// --getters
 		virtual inline const GContextInfo& GetInfo() = 0;
-		// -- Setters
+		// --setters
 
 		// Interface Methods
 		virtual bool OnInit() = 0;
@@ -54,11 +54,11 @@ namespace NW
 		GContextOgl(GLFWwindow* pNativeWindow);
 		~GContextOgl();
 
-		// -- Getters
+		// --getters
 		virtual inline const GContextInfo& GetInfo() override { return m_GContextInfo; }
-		// -- Setters
+		// --setters
 
-		// -- Core Methods
+		// --core_methods
 		virtual bool OnInit() override;
 		virtual void OnQuit() override;
 
@@ -89,7 +89,7 @@ namespace NW
 		void SetPxSize(Int16 pxW, Int16 pxH);
 		void SetPxSize(const vsi2d& pxSizeWH);
 
-		// Core Methods
+		// core_methods
 		virtual bool OnInit() override;
 		virtual void OnQuit() override;
 

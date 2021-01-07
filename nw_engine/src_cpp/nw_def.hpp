@@ -4,7 +4,7 @@
 /// Firstly: specification codes
 /// Secondly: Engine codes equaled to previous
 
-// ========<Alias>========
+// --==<alias>==--
 namespace NW
 {
 	// --number
@@ -33,8 +33,6 @@ namespace NW
 	typedef unsigned char UChar;
 	typedef unsigned char UChar8;
 	typedef wchar_t Char16;
-	using CString = const Char8*;
-	using UCString = const UChar8*;
 	using String = std::string;
 	using WString = std::wstring;
 	// --stream
@@ -84,10 +82,10 @@ typedef float GLclampf;
 typedef double GLdouble;
 typedef double GLclampd;
 #endif // NW_GRAPHICS
-// ========</TypeDefs>========
+// --==</alias>==--
 
 #if (NW_WINDOW & NW_WINDOW_CONSOLE)
-// ========<KeyCodes_CN>========
+// --==<keyboard_NW>==--
 #define NW_KEY_NONE					0
 // Printable keys
 #define NW_KEY_SPACE_32				32
@@ -215,9 +213,9 @@ typedef double GLclampd;
 #define NW_KEY_ALT_RIGHT			18
 
 #define NW_KEY_LAST 256
-// ========<KeyCodes_CN>========
+// --==<keyboard_NW>==--
 
-// ========<DeviceCodes_CN>========
+// --==<DeviceCodes_NW>==--
 #define NW_MS_BTN_0         0
 #define NW_MS_BTN_1         1
 #define NW_MS_BTN_2         2
@@ -230,9 +228,9 @@ typedef double GLclampd;
 #define NW_MS_BTN_LEFT      NW_MS_BTN_0
 #define NW_MS_BTN_RIGHT     NW_MS_BTN_1
 #define NW_MS_BTN_MIDDLE    NW_MS_BTN_2
-// ========<DeviceCodes_CN>========
+// --==<DeviceCodes_NW>==--
 
-// ========<EventTypes_CN>========
+// --==<EventTypes_NW>==--
 #define NW_PRESS 0
 
 #define NW_MS_PRESS_LEFT 0x0001
@@ -252,11 +250,11 @@ typedef double GLclampd;
 #define NW_WND_SIZE_EVT 0x0004
 #define NW_MENU_EVT 0x0008
 #define NW_FOCUS_EVT 0x0010
-// ========</EventTypes_CN>========
+// --==</EventTypes_NW>==--
 #elif (NW_WINDOW & NW_WINDOW_GLFW)
-// ========<KeyCodes_GLFW>========
+// --==<keyboard_glfw>==--
 #define GLFW_KEY_UNKNOWN            -1
-// Printable keys
+// --keys_to_print
 #define GLFW_KEY_SPACE              32
 #define GLFW_KEY_APOSTROPHE         39
 #define GLFW_KEY_COMMA              44
@@ -307,7 +305,7 @@ typedef double GLclampd;
 #define GLFW_KEY_GRAVE_ACCENT       96 
 #define GLFW_KEY_WORLD_1            161
 #define GLFW_KEY_WORLD_2            162
-// Functional keys
+// --keys_to_control
 #define GLFW_KEY_ESCAPE             256
 #define GLFW_KEY_ENTER              257
 #define GLFW_KEY_TAB                258
@@ -380,10 +378,10 @@ typedef double GLclampd;
 #define GLFW_KEY_MENU               348
 
 #define GLFW_KEY_LAST               GLFW_KEY_MENU
-// ========</KeyCodes_GLFW>========
+// --==</keyborad_glfw>==--
 
-// ========<KeyCodes_CN>========
-// Printable keys
+// --==<keyboard_nw>==--
+// --keys_to_print
 #define NW_KEY_SPACE_32              GLFW_KEY_SPACE             
 #define NW_KEY_APOSTROPHE_39         GLFW_KEY_APOSTROPHE        
 #define NW_KEY_COMMA_44              GLFW_KEY_COMMA             
@@ -434,7 +432,7 @@ typedef double GLclampd;
 #define NW_KEY_GRAVE_ACCENT_96       GLFW_KEY_GRAVE_ACCENT      
 #define NW_KEY_WORLD_1_161           GLFW_KEY_WORLD_1           
 #define NW_KEY_WORLD_2_162           GLFW_KEY_WORLD_2           
-// Functional keys
+// keys_to_control
 #define NW_KEY_ESCAPE_27             GLFW_KEY_ESCAPE             
 #define NW_KEY_BACKSPACE_8          GLFW_KEY_BACKSPACE          
 #define NW_KEY_HTAB_9                GLFW_KEY_TAB                
@@ -507,9 +505,9 @@ typedef double GLclampd;
 #define NW_KEY_MENU               GLFW_KEY_MENU
 
 #define NW_KEY_LAST GLFW_KEY_LAST
-// ========</KeyCodes_CN>========
+// --==</keyboard_nw>==--
 
-// ========<DeviceCodes_GLFW>========
+// --==<mouse_glfw>==--
 #define GLFW_MOUSE_BUTTON_1         0
 #define GLFW_MOUSE_BUTTON_2         1
 #define GLFW_MOUSE_BUTTON_3         2
@@ -522,9 +520,9 @@ typedef double GLclampd;
 #define GLFW_MOUSE_BUTTON_LEFT      GLFW_MOUSE_BUTTON_1
 #define GLFW_MOUSE_BUTTON_RIGHT     GLFW_MOUSE_BUTTON_2
 #define GLFW_MOUSE_BUTTON_MIDDLE    GLFW_MOUSE_BUTTON_3
-// ========</DeviceCodes_GLFW>========
+// --==</mouse_glfw>==--
 
-// ========<DeviceCodes_CN>========
+// --==<mouse_nw>==--
 #define NW_MS_BTN_0         GLFW_MOUSE_BUTTON_1
 #define NW_MS_BTN_1         GLFW_MOUSE_BUTTON_2
 #define NW_MS_BTN_2         GLFW_MOUSE_BUTTON_3
@@ -537,9 +535,9 @@ typedef double GLclampd;
 #define NW_MS_BTN_LEFT      GLFW_MOUSE_BUTTON_1
 #define NW_MS_BTN_RIGHT     GLFW_MOUSE_BUTTON_2
 #define NW_MS_BTN_MIDDLE    GLFW_MOUSE_BUTTON_3
-// ========</DeviceCodes_CN>========
+// --==</mouse_nw>==--
 
-// ========<Events_CN>========
+// --==<events_nw>==--
 #define GLFW_RELEASE 0
 #define GLFW_PRESS 1
 #define GLFW_REPEAT 2
@@ -559,10 +557,10 @@ typedef double GLclampd;
 #define NW_MS_MOVED 1
 #define NW_MS_WHEELED 2
 #define NW_MS_HWHEELED 3
-// ========</Events_CN>========
+// --==</events_nw>==--
 
 #elif (NW_WINDOW & NW_WINDOW_WIN)
-// ========<KeyCodes_WIN>========
+// --==<keyboard_win>==--
 // Functional
 #define VK_LBUTTON        0x01
 #define VK_RBUTTON        0x02
@@ -643,9 +641,9 @@ typedef double GLclampd;
 #define VK_F22            0x85
 #define VK_F23            0x86
 #define VK_F24            0x87
-// ========</KeyCodes_WIN>========
+// --==</keyboard_WIN>==--
 
-// ========<KeyCodes_CN>========
+// --==<keyboard_NW>==--
 #define NW_KEY_NONE					'0'
 // Printable keys
 #define NW_KEY_SPACE_32				'32'
@@ -773,17 +771,17 @@ typedef double GLclampd;
 #define NW_KEY_RIGHT_ALT			''
 
 #define NW_KEY_LAST 256
-// ========</KeyCodes_CN>========
+// --==</keyboard_NW>==--
 
-// ========<DeviceCodes_WIN>========
+// --==<DeviceCodes_WIN>==--
 #define FROM_LEFT_1ST_BUTTON_PRESSED 0
 #define RIGHTMOST_BUTTON_PRESSED 1
 #define FROM_LEFT_2ND_BUTTON_PRESSED 2
 #define FROM_LEFT_3RD_BUTTON_PRESSED 3
 #define FROM_LEFT_4TH_BUTTON_PRESSED 4
-// ========</DeviceCodes_WIN>========
+// --==</DeviceCodes_WIN>==--
 
-// ========<DeviceCodes_CN>========
+// --==<DeviceCodes_NW>==--
 #define NW_MS_BTN_0         FROM_LEFT_1ST_BUTTON_PRESSED
 #define NW_MS_BTN_1         RIGHTMOST_BUTTON_PRESSED
 #define NW_MS_BTN_2         FROM_LEFT_2ND_BUTTON_PRESSED
@@ -796,9 +794,9 @@ typedef double GLclampd;
 #define NW_MS_BTN_LEFT      NW_MS_BTN_0
 #define NW_MS_BTN_RIGHT     NW_MS_BTN_1
 #define NW_MS_BTN_MIDDLE    NW_MS_BTN_2
-// ========</DeviceCodes_CN>========
+// --==</DeviceCodes_NW>==--
 
-// ========<Events_CN>========
+// --==<Events_NW>==--
 #define NW_PRESS 0
 
 #define NW_MS_PRESS_LEFT 0x0001
@@ -818,14 +816,14 @@ typedef double GLclampd;
 #define NW_WND_SIZE_EVT 0x0004
 #define NW_MENU_EVT 0x0008
 #define NW_FOCUS_EVT 0x0010
-// ========</Events_CN>========
+// --==</Events_NW>==--
 #endif // NW_WINDOW
 
 #if (NW_GRAPHICS & NW_GRAPHICS_COUT) || (NW_GRAPHICS & NW_GRAPHICS_WIN)
 // 5th bit from right + first 4 - default system types
 // 8th bit from right + first 4 - graphics types
 // 12th bit from right + second 4 - graphics operations & modes
-// ========<DataTypes_CN>========
+// --==<types_of_data_nw>==--
 #define NW_BOOL							0b0000'0001'0001
 #define NW_SINT							0b0000'0001'0010
 #define NW_USINT						0b0000'0001'0011
@@ -835,32 +833,32 @@ typedef double GLclampd;
 #define NW_UINT							0b0000'0001'1000
 #define NW_FLOAT						0b0000'0001'1001
 #define NW_DOUBLE						0b0000'0001'1010
-// ========</DataTypes_CN>========
+// --==</types_of_data_nw>==--
 
-// ========<ObjectTypes_CN>========
+// --==<ObjectTypes_NW>==--
 #define NW_BUFFER						0b0000'1000'0001
 #define NW_BUFFER_VERTEX				0b0000'1000'0010
 #define NW_BUFFER_INDEX					0b0000'1000'0011
 #define NW_ARRAY						0b0000'1000'0100
 #define NW_ARRAY_VERTEX					0b0000'1000'0101
-// ========</ObjectTypes_CN>========
+// --==</ObjectTypes_NW>==--
 
-// ========<ShaderTypes_CN>========
+// --==<ShaderTypes_NW>==--
 #define NW_SHADER						0b0000'1000'1000
 #define NW_SHADER_PROG					0b0000'1000'1001
 #define NW_SHADER_VERTEX				0b0000'1000'1010
 #define NW_SHADER_PIXEL					0b0000'1000'1100
-// ========<ShaderTypes_CN>========
+// --==<ShaderTypes_NW>==--
 
-// ========<Textures_CN>========
+// --==<Textures_NW>==--
 // --Types
 #define NW_TEXTURE_1D					0b0000'1001'0001
 #define NW_TEXTURE_2D					0b0000'1001'0010
 #define NW_TEXTURE_3D					0b0000'1001'0100
 // --Types
-// ========</Textures_CN>========
+// --==</Textures_NW>==--
 
-// ========<DrawModes_CN>========
+// --==<DrawModes_NW>==--
 #define NW_POINT						0b0000'0000'0000
 #define NW_LINE							0b0000'0000'0000
 #define NW_FILL							0b0000'0000'0000
@@ -877,12 +875,12 @@ typedef double GLclampd;
 #define NW_QUAD_STRIP					0b1000'1011'0000
 #define NW_POLYGON						0b1000'1100'0000
 // --Primitives
-// ========</DrawModes_CN>========
+// --==</DrawModes_NW>==--
 
-// ========<Configurations_CN>========
-// ========</Configurations_CN>========
+// --==<Configurations_NW>==--
+// --==</Configurations_NW>==--
 
-// ========<Expressions_CN>========
+// --==<Expressions_NW>==--
 // --Constants
 #define NW_NONE							0b0000'0000'0000
 #define NW_FALSE						0b0000'0000'0000
@@ -896,9 +894,9 @@ typedef double GLclampd;
 
 // --Logic
 // --Logic
-// ========</Expressions_CN>========
+// --==</Expressions_NW>==--
 
-// ========<Colors_CN>========
+// --==<Colors_NW>==--
 #define NW_COLOR						0b0000'0000'0000
 #define NW_RED							0b0000'0000'0000
 #define NW_GREEN						0b0000'0000'0000
@@ -906,26 +904,26 @@ typedef double GLclampd;
 #define NW_ALPHA						0b0000'0000'0000
 #define NW_RGB							0b0000'0000'0000
 #define NW_RGBA							0b0000'0000'0000
-// ========</Colors_CN>========
+// --==</Colors_NW>==--
 
-// ========<GBuffers_CN>========
+// --==<GBuffers_NW>==--
 #define NW_GBUFFER_VERTEX				0b0000'0000'0001
 #define NW_GBUFFER_INDEX				0b0000'0000'0001
-// ========</GBuffers_CN>========
+// --==</GBuffers_NW>==--
 
-// ========<Buffers_CN>========
+// --==<Buffers_NW>==--
 #define NW_BUFFER_COLOR_BIT				0b0000'0000'0001
 #define NW_BUFFER_DEPTH_BIT				0b0000'0000'0010
-// ========</Buffers_CN>========
+// --==</Buffers_NW>==--
 
 
-// ========<DataLoadTypes_CN>========
+// --==<DataLoadTypes_NW>==--
 #define NW_STATIC_DRAW					0b0001'1000'0000
 #define NW_STREAM_DRAW					0b0010'1000'0000
 #define NW_DYNAMIC_DRAW					0b0011'1000'0000
-// ========</DataLoadTypes_CN>========
+// --==</DataLoadTypes_NW>==--
 
-// ========<ErrorCodes_CN>========
+// --==<ErrorCodes_NW>==--
 #define NW_OK							0b0000'0000'0000
 #define NW_INVALID_ENUM					0b0001'0000'0000
 #define NW_INVALID_VALUE				0b0010'0000'0000
@@ -942,12 +940,12 @@ typedef double GLclampd;
 #define NW_STATUS						0b1111'0000'0000
 #define NW_COMPILE_STATUS				0b1110'0000'0000
 #define NW_LINK_STATUS					0b1100'0000'0000
-// ========</ErrorCodes_CN>========
+// --==</ErrorCodes_NW>==--
 
-// ========<Info_OGL>========
-// ========</Info_CN>========
+// --==<Info_OGL>==--
+// --==</Info_NW>==--
 #elif (NW_GRAPHICS & NW_GRAPHICS_OGL)
-// ========<DataTypes_OGL>========
+// --==<DataTypes_OGL>==--
 #define GL_BOOL								0x8B56
 #define GL_BYTE								0x1400
 #define GL_UNSIGNED_BYTE					0x1401
@@ -957,9 +955,10 @@ typedef double GLclampd;
 #define GL_UNSIGNED_INT						0x1405
 #define GL_FLOAT							0x1406
 #define GL_DOUBLE							0x140A
-// ========</DataTypes_OGL>========
+#define GL_SAMPLER_1D 0x8B5D
+// --==</DataTypes_OGL>==--
 
-// ========<DataTypes_CN>========
+// --==<types_of_data_nw>==--
 #define NW_BOOL			GL_BOOL
 #define NW_INT16		GL_SHORT
 #define NW_UINT16		GL_UNSIGNED_SHORT
@@ -969,9 +968,16 @@ typedef double GLclampd;
 #define NW_UINT32		GL_UNSIGNED_INT
 #define NW_FLOAT32		GL_FLOAT
 #define NW_FLOAT64		GL_DOUBLE
-// ========</DataTypes_CN>========
+#define NW_FLOAT32_VEC2	(NW_FLOAT32 + 0x0020)
+#define NW_FLOAT32_VEC3	(NW_FLOAT32 + 0x0030)
+#define NW_FLOAT32_VEC4	(NW_FLOAT32 + 0x0040)
+#define NW_FLOAT32_MAT2	(NW_FLOAT32 + 0x0100)
+#define NW_FLOAT32_MAT3	(NW_FLOAT32 + 0x0200)
+#define NW_FLOAT32_MAT4	(NW_FLOAT32 + 0x0300)
+#define NW_SAMPLER_1D	GL_SAMPLER_1D
+// --==</types_of_data_nw>==--
 
-// ========<DrawModes_OGL>========
+// --==<DrawModes_OGL>==--
 #define GL_POINT 0x1B00
 #define GL_LINE 0x1B01
 #define GL_FILL 0x1B02
@@ -988,8 +994,8 @@ typedef double GLclampd;
 #define GL_QUAD_STRIP 0x0008
 #define GL_POLYGON 0x0009
 // --Primitives
-// ========</DrawModes_OGL>========
-// ========<DrawModes_CN>========
+// --==</DrawModes_OGL>==--
+// --==<DrawModes_NW>==--
 #define NW_POINT 0x1B00
 #define NW_LINE 0x1B01
 #define NW_FILL 0x1B02
@@ -1006,24 +1012,24 @@ typedef double GLclampd;
 #define NW_QUAD_STRIP 0x0008
 #define NW_POLYGON 0x0009
 // --Primitives
-// ========</DrawModes_CN>========
+// --==</DrawModes_NW>==--
 
-// ========<Planes_OGL>========
+// --==<Planes_OGL>==--
 #define GL_FRONT 0x0404
 #define GL_BACK 0x0405
 #define GL_LEFT 0x0406
 #define GL_RIGHT 0x0407
 #define GL_FRONT_AND_BACK 0x0408
-// ========</Planes_OGL>========
-// ========<Planes_CN>========
+// --==</Planes_OGL>==--
+// --==<Planes_NW>==--
 #define NW_FRONT GL_FRONT
 #define NW_BACK GL_BACK
 #define NW_LEFT GL_LEFT
 #define NW_RIGHT GL_RIGHT
 #define NW_FRONT_AND_BACK GL_FRONT_AND_BACK
-// ========</Planes_OGL>========
+// --==</Planes_OGL>==--
 
-// ========<Shaders_OGL>========
+// --==<Shaders_OGL>==--
 #define GL_SHADER 0x82E1
 #define GL_PROGRAM 0x82E2
 #define GL_FRAGMENT_SHADER 0x8B30
@@ -1034,8 +1040,8 @@ typedef double GLclampd;
 #define GL_LINK_STATUS 0x8B82
 #define GL_INFO_LOG_LENGTH 0x8B84
 #define GL_ATTACHED_SHADERS 0x8B85
-// ========<Shaders_OGL>========
-// ========<Shaders_CN>========
+// --==<Shaders_OGL>==--
+// --==<Shaders_NW>==--
 #define NW_SHADER				GL_PROGRAM
 #define NW_SHADER_VERTEX		GL_VERTEX_SHADER
 #define NW_SHADER_GEOMETRY		GL_GEOMETRY_SHADER
@@ -1043,9 +1049,9 @@ typedef double GLclampd;
 
 #define NW_COMPILE_STATUS		GL_COMPILE_STATUS
 #define NW_LINK_STATUS			GL_LINK_STATUS
-// ========</Shaders_CN>========
+// --==</Shaders_NW>==--
 
-// ========<Configurations_OGL>========
+// --==<Configurations_OGL>==--
 #define GL_SRC_COLOR 0x0300
 #define GL_ONE_MINUS_SRC_COLOR 0x0301
 #define GL_SRC_ALPHA 0x0302
@@ -1074,9 +1080,9 @@ typedef double GLclampd;
 #define GL_BLEND_DST 0x0BE0
 #define GL_BLEND_SRC 0x0BE1
 #define GL_BLEND 0x0BE2
-// ========</Configurations_OGL>========
+// --==</Configurations_OGL>==--
 
-// ========<Configurations_CN>========
+// --==<Configurations_NW>==--
 #define NW_SRC_COLOR GL_SRC_COLOR
 #define NW_ONE_MINUS_SRC_COLOR GL_ONE_MINUS_SRC_COLOR
 #define NW_SRC_ALPHA GL_SRC_ALPHA
@@ -1105,9 +1111,9 @@ typedef double GLclampd;
 #define NW_BLEND_DST		GL_BLEND_DST
 #define NW_BLEND_SRC		GL_BLEND_SRC
 #define NW_BLEND			GL_BLEND
-// ========</Configurations_CN>========
+// --==</Configurations_NW>==--
 
-// ========<Expressions_OGL>========
+// --==<Expressions_OGL>==--
 // --Constants
 #define GL_NONE 0
 #define GL_FALSE 0
@@ -1141,9 +1147,9 @@ typedef double GLclampd;
 #define GL_OR_INVERTED 0x150D
 #define GL_NAND 0x150E
 // --Logic
-// ========</Expressions_OGL>========
+// --==</Expressions_OGL>==--
 
-// ========<Colors_OGL>========
+// --==<Colors_OGL>==--
 #define GL_COLOR 0x1800
 #define GL_RED 0x1903
 #define GL_GREEN 0x1904
@@ -1152,9 +1158,9 @@ typedef double GLclampd;
 #define GL_RGB 0x1907
 #define GL_RGBA 0x1908
 #define GL_RGBA8 0x8058
-// ========</Colors_OGL>========
+// --==</Colors_OGL>==--
 
-// ========<Colors_CN>========
+// --==<Colors_NW>==--
 #define NW_COLOR		GL_COLOR
 #define NW_RED			GL_RED
 #define NW_GREEN		GL_GREEN
@@ -1163,9 +1169,9 @@ typedef double GLclampd;
 #define NW_RGB			GL_RGB
 #define NW_RGBA			GL_RGBA
 #define NW_RGBA8		GL_RGBA8
-// ========</Colors_CN>========
+// --==</Colors_NW>==--
 
-// ========<Textures_OGL>========
+// --==<Textures_OGL>==--
 // --Types
 #define GL_TEXTURE_1D 0x0DE0
 #define GL_TEXTURE_2D 0x0DE1
@@ -1186,9 +1192,9 @@ typedef double GLclampd;
 #define GL_CLAMP 0x2900
 #define GL_REPEAT 0x2901
 // --Wrappers
-// ========</Textures_OGL>========
+// --==</Textures_OGL>==--
 
-// ========<Textures_OGL>========
+// --==<Textures_OGL>==--
 // --Types
 #define NW_TEXTURE_1D	GL_TEXTURE_1D
 #define NW_TEXTURE_2D	GL_TEXTURE_2D
@@ -1209,45 +1215,47 @@ typedef double GLclampd;
 #define NW_TEXTURE_WRAP_CLAMP		GL_CLAMP
 #define NW_TEXTURE_WRAP_REPEAT		GL_REPEAT
 // --Wrappers
-// ========</Textures_OGL>========
+// --==</Textures_OGL>==--
 
-// ========<GBuffers_OGL>========
+// --==<GBuffers_OGL>==--
 #define GL_ARRAY_BUFFER 0x8892
 #define GL_ELEMENT_ARRAY_BUFFER 0x8893
-// ========</GBuffers_OGL>========
+#define GL_UNIFORM_BUFFER 0x8A11
+// --==</GBuffers_OGL>==--
 
-// ========<Buffers_OGL>========
+// --==<Buffers_OGL>==--
 #define GL_COLOR_BUFFER_BIT					0x00004000
 #define GL_DEPTH_BUFFER_BIT					0x00000100
 #define GL_ACCUM_BUFFER_BIT					0x00000200
 #define GL_STENCIL_BUFFER_BIT				0x00000400
-// ========</Buffers_OGL>========
+// --==</Buffers_OGL>==--
 
 
-// ========<GBuffers_CN>========
+// --==<GBuffers_NW>==--
 #define NW_GBUFFER_VERTEX GL_ARRAY_BUFFER
 #define NW_GBUFFER_INDEX GL_ELEMENT_ARRAY_BUFFER
-// ========</GBuffers_CN>========
+#define NW_GBUFFER_SHADER GL_UNIFORM_BUFFER
+// --==</GBuffers_NW>==--
 
-// ========<Buffers_CN>========
+// --==<Buffers_NW>==--
 #define NW_BUFFER_COLOR_BIT					GL_COLOR_BUFFER_BIT
 #define NW_BUFFER_DEPTH_BIT					GL_DEPTH_BUFFER_BIT
 #define NW_BUFFER_STENCIL_BIT				GL_STENCIL_BUFFER_BIT
-// ========</Buffers_CN>========
+// --==</Buffers_NW>==--
 
-// ========<DataLoadTypes_OGL>========
+// --==<DataLoadTypes_OGL>==--
 #define GL_STATIC_DRAW 0x88E4
 #define GL_STREAM_DRAW 0x88E0
 #define GL_DYNAMIC_DRAW 0x88E8
-// ========</DataLoadTypes_OGL>========
+// --==</DataLoadTypes_OGL>==--
 
-// ========<DataLoadTypes_CN>========
+// --==<DataLoadTypes_NW>==--
 #define NW_STATIC_DRAW		GL_STATIC_DRAW 
 #define NW_STREAM_DRAW		GL_STREAM_DRAW 
 #define NW_DYNAMIC_DRAW		GL_DYNAMIC_DRAW
-// ========</DataLoadTypes_CN>========
+// --==</DataLoadTypes_NW>==--
 
-// ========<ErrorCodes_OGL>========
+// --==<ErrorCodes_OGL>==--
 #define GL_NO_ERROR                       0
 #define GL_INVALID_ENUM                   0x0500
 #define GL_INVALID_VALUE                  0x0501
@@ -1255,9 +1263,9 @@ typedef double GLclampd;
 #define GL_STACK_OVERFLOW                 0x0503
 #define GL_STACK_UNDERFLOW                0x0504
 #define GL_OUT_OF_MEMORY                  0x0505
-// ========</ErrorCodes_OGL>========
+// --==</ErrorCodes_OGL>==--
 
-// ========<ErrorCodes_CN>========
+// --==<ErrorCodes_NW>==--
 #define NW_OK							GL_NO_ERROR         
 #define NW_INVALID_ENUM					GL_INVALID_ENUM     
 #define NW_INVALID_VALUE				GL_INVALID_VALUE    
@@ -1281,14 +1289,14 @@ typedef double GLclampd;
 #define NW_ERR_SHADER_LOAD_FAIL			0b1001'0000'0000
 #define NW_ERR_SHADER_LINK				0b1011'0000'0000
 #define NW_ERR_SHADER_COMPILE			0b1100'0000'0000
-// ========</ErrorCodes_CN>========
+// --==</ErrorCodes_NW>==--
 
-// ========<Info_OGL>========
+// --==<Info_OGL>==--
 #define GL_VENDOR                         0x1F00
 #define GL_RENDERER                       0x1F01
 #define GL_VERSION                        0x1F02
 #define GL_EXTENSIONS                     0x1F03
-// ========</Info_OGL>========
+// --==</Info_OGL>==--
 #elif (NW_GRAPHICS & NW_GRAPHICS_DX)
 // Nothing for now... 08.11.20
 #endif // NW_GRAPHICS

@@ -13,13 +13,13 @@ namespace NW
 		ACollider2dCmp(AEntity& rEntity) : AEntityCmp(rEntity, std::type_index(typeid(ACollider2dCmp))) { }
 		virtual ~ACollider2dCmp() = default;
 
-		// -- Getters
+		// --getters
 		virtual inline ADrawable* GetShape() = 0;
 		virtual inline bool GetCollision() = 0;
-		// -- Setters
+		// --setters
 		virtual inline void SetCollision(bool bIsCollided) = 0;
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void OnUpdate() = 0;
 	};
 	/// Collider2dRectComponent class
@@ -31,13 +31,13 @@ namespace NW
 		Collider2dRectCmp(AEntity& rEntity);
 		~Collider2dRectCmp() = default;
 
-		// -- Getters
+		// --getters
 		virtual inline ADrawable* GetShape() override { return &m_Rect; }
 		virtual inline bool GetCollision() override { return m_bCollision; }
-		// -- Setters
+		// --setters
 		virtual inline void SetCollision(bool bIsCollided) override { m_bCollision = bIsCollided; }
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void OnUpdate() override;
 	private:
 		Rectangle m_Rect = Rectangle(V2f{ 1.0f, 1.0f });
@@ -50,13 +50,13 @@ namespace NW
 		Collider2dPolyCmp(AEntity& rEntity);
 		~Collider2dPolyCmp() = default;
 
-		// -- Getters
+		// --getters
 		virtual inline ADrawable* GetShape() override { return &m_Polygons; }
 		virtual inline bool GetCollision() override { return m_bCollision; }
-		// -- Setters
+		// --setters
 		virtual inline void SetCollision(bool bIsCollided) override { m_bCollision = bIsCollided; }
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void OnUpdate() override;
 	private:
 		Polygons m_Polygons = Polygons();

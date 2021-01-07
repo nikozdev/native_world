@@ -5,28 +5,28 @@
 
 namespace NW
 {
-	// ========<Global>========
-	class NW_API Engine;
-	class NW_API EngineState;
-	// -- Systems
+	// --==<global>==--
+	class NW_API CoreEngine;
+	class NW_API CoreState;
+	// --systems
 	class NW_API EvSys;
 	class NW_API IOSys;
 	class NW_API TimeSys;
 	class NW_API MemSys;
 	class NW_API DataSys;
 	class NW_API GuiSys;
-	// -- Objects
+	// --objects
 	class NW_API ADataRes;
-	// ========</Global>========
+	// --==</global>==--
 
-	// ========<Events>========
+	// --==<events>==--
 	struct NW_API AEvent;
 	struct NW_API WindowEvent;
 	struct NW_API MouseEvent;
 	struct NW_API KeyboardEvent;
-	// ========</Events>========
+	// --==</events>==--
 	
-	// ========<Enums>========
+	// --==<enums>==--
 	enum EventTypes : UInt32 {
 		ET_NONE = 0,
 		ET_WINDOW_CLOSE, ET_WINDOW_RESIZE, ET_WINDOW_MOVE, ET_WINDOW_FOCUS,
@@ -55,7 +55,7 @@ namespace NW
 		RETURN, SCROLL,
 		NP_MUL, NP_DIV, NP_ADD, NP_SUB, NP_DECIMAL, PERIOD
 	};
-	// ========<Enums>========
+	// --==<enums>==--
 }
 
 #endif // NW_DECL_H

@@ -10,33 +10,32 @@ namespace NW
 {
 	/// Abstract Drawable class
 	/// Description:
-	/// -- Drawer needs objects to draw. That objects has to be a bunch of data
+	/// -- GraphEngine needs objects to draw. That objects has to be a bunch of data
 	/// -- We need to save that "drawable" objects with their vertex data.
 	/// -- Also, we need to derrive a classes from it. They should be as simple with their data as it's possible
 	/// -- This class contatins all the vertex and index data for drawing
 	/// + Reference to material and other drawing stuff
 	/// Interface:
-	/// -> Create an instance -> Set the attributes -> Give it to the Drawer
+	/// -> Create an instance -> Set the attributes -> Give it to the GraphEngine
 	class NW_API ADrawable
 	{
 	public:
 		Mat4f m4Transform = Mat4f(1.0f);
+		GMaterial* pGMtl = nullptr;
 	public:
 		virtual ~ADrawable() = default;
 
-		// -- Getters
-		virtual inline void* GetVData() = 0;
+		// --getters
+		virtual inline const void* GetVData() const = 0;
 		virtual inline UInt32 GetVDataCount() const = 0;
 		virtual inline Size GetVDataSize() const = 0;
 		virtual inline UInt32 GetVertexSize() const = 0;
-		virtual inline UInt32* GetIData() = 0;
+		
+		virtual inline const UInt32* GetIData() const = 0;
+		virtual inline Size GetIDataSize() = 0;
 		virtual inline UInt32 GetIDataCount() const = 0;
-		virtual inline AGMaterial* GetGMaterial() = 0;
 
-		// -- Setters
-		virtual void SetGMaterial(AGMaterial* pGMtl) = 0;
-
-		// -- Core Methods
+		// --core_methods
 		virtual void UpdateVData() = 0;
 		virtual void UpdateIData() = 0;
 	};
@@ -44,7 +43,7 @@ namespace NW
 
 namespace NW
 {
-	// ========</Drawables>========
+	// --==</Drawables>==--
 	struct NW_API Particle {
 		V3f xyzCrd;
 		V3f xyzScale;
@@ -65,25 +64,24 @@ namespace NW
 	public:
 		Particles();
 
-		// -- Getters
-		virtual inline void* GetVData() override { UpdateVData(); return &vtxVData[0]; }
+		// --getters
+		virtual inline const void* GetVData() const override { return &vtxVData[0]; }
 		virtual inline UInt32 GetVDataCount() const override { return vtxVData.size(); };
 		virtual inline Size GetVDataSize() const override { return GetVDataCount() * GetVertexSize(); }
 		virtual inline UInt32 GetVertexSize() const override { return sizeof(VertexBatch1d); }
-		virtual inline UInt32* GetIData() override { UpdateIData(); return &indIData[0]; }
+		
+		virtual inline const UInt32* GetIData() const override { return &indIData[0]; }
 		virtual inline UInt32 GetIDataCount() const override { return indIData.size(); }
-		virtual inline AGMaterial* GetGMaterial() override { return m_pGMtl; }
+		virtual inline Size GetIDataSize() override { return GetIDataCount() * sizeof(UInt32); }
 
-		// -- Setters
-		virtual void SetGMaterial(AGMaterial* pGMtl) override { m_pGMtl = pGMtl; }
+		// --setters
 
-		// -- Core Methods
+		// --core_methods
 		virtual void UpdateVData() override;
 		virtual void UpdateIData() override;
 	private:
 		DArray<VertexBatch1d> vtxVData;
 		DArray<UInt32> indIData;
-		AGMaterial* m_pGMtl;
 	};
 	/// PolyLine class
 	class NW_API PolyLine : public ADrawable
@@ -96,23 +94,19 @@ namespace NW
 	public:
 		PolyLine();
 		
-		// -- Getters
-		virtual inline void* GetVData() override { UpdateVData(); return &vtxVData[0]; }
+		// --getters
+		virtual inline const void* GetVData() const override { return &vtxVData[0]; }
 		virtual inline UInt32 GetVDataCount() const override { return vtxVData.size(); };
 		virtual inline Size GetVDataSize() const override { return GetVDataCount() * GetVertexSize(); }
 		virtual inline UInt32 GetVertexSize() const override { return sizeof(VertexBatch1d); }
-		virtual inline UInt32* GetIData() override { UpdateIData(); return &indIData[0]; }
+		
+		virtual inline const UInt32* GetIData() const override { return &indIData[0]; }
 		virtual inline UInt32 GetIDataCount() const override { return indIData.size(); }
-		virtual inline AGMaterial* GetGMaterial() override { return m_pGMtl; }
+		virtual inline Size GetIDataSize() override { return GetIDataCount() * sizeof(UInt32); }
 
-		// -- Setters
-		virtual void SetGMaterial(AGMaterial* pGMtl) override { m_pGMtl = pGMtl; }
-
-		// -- Core Methods
+		// --core_methods
 		virtual void UpdateVData() override;
 		virtual void UpdateIData() override;
-	private:
-		AGMaterial* m_pGMtl;
 	};
 	/// Polygon class
 	class NW_API Polygons : public ADrawable
@@ -126,31 +120,28 @@ namespace NW
 	public:
 		Polygons();
 
-		// -- Getters
-		virtual inline void* GetVData() override { UpdateVData(); return &vtxVData[0]; }
+		// --getters
+		virtual inline const void* GetVData() const override { return &vtxVData[0]; }
 		virtual inline UInt32 GetVDataCount() const override { return vtxVData.size(); };
 		virtual inline Size GetVDataSize() const override { return GetVDataCount() * GetVertexSize(); }
 		virtual inline UInt32 GetVertexSize() const override { return sizeof(VertexBatch1d); }
-		virtual inline UInt32* GetIData() override { UpdateIData(); return &indIData[0]; }
+		
+		virtual inline const UInt32* GetIData() const override { return &indIData[0]; }
 		virtual inline UInt32 GetIDataCount() const override { return indIData.size(); }
-		virtual inline AGMaterial* GetGMaterial() override { return m_pGMtl; }
+		virtual inline Size GetIDataSize() override { return GetIDataCount() * sizeof(UInt32); }
 
-		// -- Setters
-		virtual void SetGMaterial(AGMaterial* pGMtl) override { m_pGMtl = pGMtl; }
-
-		// -- Core Methods
+		// --core_methods
 		virtual void UpdateVData() override;
 		virtual void UpdateIData() override;
 	private:
 		DArray<VertexBatch3d> vtxVData;
 		DArray<UInt32> indIData;
-		AGMaterial* m_pGMtl;
 	};
-	// ========</Drawables>========
+	// --==</Drawables>==--
 }
 namespace NW
 {
-	// ========<Shapes2d>========
+	// --==<Shapes2d>==--
 	/// Triangle class
 	class NW_API Triangle : public ADrawable
 	{
@@ -159,25 +150,22 @@ namespace NW
 	public:
 		Triangle();
 		Triangle(const V2f& xyV0, const V2f& xyV1, const V2f& xyV2);
-		// -- Getters
-		virtual inline void* GetVData() override { UpdateVData(); return &vtxVData[0]; }
+		// --getters
+		virtual inline const void* GetVData() const override { return &vtxVData[0]; }
 		virtual inline UInt32 GetVDataCount() const override { return 3; };
 		virtual inline Size GetVDataSize() const override { return GetVDataCount() * GetVertexSize(); }
 		virtual inline UInt32 GetVertexSize() const override { return sizeof(VertexBatch3d); }
-		virtual inline UInt32* GetIData() override { UpdateIData(); return &indIData[0]; }
+		
+		virtual inline const UInt32* GetIData() const override { return &indIData[0]; }
 		virtual inline UInt32 GetIDataCount() const override { return 3; }
-		virtual inline AGMaterial* GetGMaterial() override { return m_pGMtl; }
+		virtual inline Size GetIDataSize() override { return GetIDataCount() * sizeof(UInt32); }
 
-		// -- Setters
-		virtual void SetGMaterial(AGMaterial* pGMtl) override { m_pGMtl = pGMtl; }
-
-		// -- Core Methods
+		// --core_methods
 		virtual void UpdateVData() override;
 		virtual void UpdateIData() override;
 	private:
 		VertexBatch3d vtxVData[3];
 		UInt32 indIData[3];
-		AGMaterial* m_pGMtl;
 	};
 	/// Rectangle class
 	class NW_API Rectangle : public ADrawable
@@ -188,17 +176,15 @@ namespace NW
 	public:
 		Rectangle(const V2f& whSize = V2f{ 1.0f, 1.0f });
 		
-		// -- Getters
-		virtual inline void* GetVData() override { UpdateVData(); return &vtxVData[0]; }
+		// --getters
+		virtual inline const void* GetVData() const override { return &vtxVData[0]; }
 		virtual inline UInt32 GetVDataCount() const override { return 4; };
 		virtual inline Size GetVDataSize() const override { return GetVDataCount() * GetVertexSize(); }
 		virtual inline UInt32 GetVertexSize() const override { return sizeof(VertexBatch3d); }
-		virtual inline UInt32* GetIData() override { UpdateIData(); return &indIData[0]; }
+		
+		virtual inline const UInt32* GetIData() const override { return &indIData[0]; }
 		virtual inline UInt32 GetIDataCount() const override { return 6; }
-		virtual inline AGMaterial* GetGMaterial() override { return m_pGMtl; }
-
-		// -- Setters
-		virtual void SetGMaterial(AGMaterial* pGMtl) override { m_pGMtl = pGMtl; }
+		virtual inline Size GetIDataSize() override { return GetIDataCount() * sizeof(UInt32); }
 
 		// -- InterfaceMethods
 		virtual void UpdateVData() override;
@@ -207,7 +193,6 @@ namespace NW
 		VertexBatch3d vtxVData[4];
 		UInt32 indIData[6];
 		V2f vtxCrds[4];
-		AGMaterial* m_pGMtl;
 	};
 	/// Sprite struct
 	struct NW_API Sprite : public Rectangle
@@ -220,11 +205,11 @@ namespace NW
 		// -- InterfaceMethods
 		virtual void UpdateVData() override;
 	};
-	// ========</Shapes2d>========
+	// --==</Shapes2d>==--
 }
 namespace NW
 {
-	// ========<Shapes3d>========
+	// --==<Shapes3d>==--
 	/// Mesh3d struct : public AShape3d
 	/// Description:
 	/// -- Mesh has default set of data: vertex, normal, and texture coords
@@ -237,20 +222,18 @@ namespace NW
 		Mesh3d();
 		~Mesh3d();
 
-		// -- Getters
-		// -- Setters
+		// --getters
+		// --setters
 		void SetData(VertexShape3d* pVtxData, UInt32 unVtxCount, UInt32* punIndData, UInt32 unIndCount);
-		virtual void SetGMaterial(AGMaterial* pGMtl) override { m_pGMtl = pGMtl; }
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void UpdateVData() override;
 		virtual void UpdateIData() override;
 	private:
 		DArray<VertexShape3d> vtxVData;
 		DArray<UInt32> indIData;
-		AGMaterial *m_pGMtl = nullptr;
 	};
-	// ========</Shapes3d>========
+	// --==</Shapes3d>==--
 }
 
 #endif // NW_ADRAWABLE_H

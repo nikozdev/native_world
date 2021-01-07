@@ -27,18 +27,18 @@ namespace NW
 	public:
 		~LuaVM();
 
-		// -- Getters
+		// --getters
 		inline LuaState* GetLuaState() { return m_LState; }
 		inline const LuaVMInfo& GetInfo() const { return m_Info; }
 		template <typename ValType> ValType GetLuaValueGlb(const char* strName);
 		template <typename ValType> ValType GetLuaValueLoc(const char* strName);
 		template <typename ValType> ValType GetLuaValue(const char* strLoc, const char* strName);
-		// -- Setters
+		// --setters
 		template <typename ValType> bool SetLuaValueGlb(const ValType& tValue, const char* strName);
 		template <typename ValType> bool SetLuaValueLoc(const ValType& tValue, const char* strName);
 		template <typename ValType> bool SetLuaValue(const ValType& tValue, const char* strLoc, const char* strName);
 
-		// -- Core Methods
+		// --core_methods
 		LuaState* CreateLuaState();
 		void DestroyLuaState(LuaState* pLState);
 

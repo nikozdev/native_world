@@ -6,35 +6,38 @@
 
 #include <sys/nw_data_sys.h>
 
-// ========<Drawable>========
+// --==<Drawable>==--
 namespace NW
 {
-	// ========<Particles>========
+	// --==<Particles>==--
 	Particles::Particles() :
 		ADrawable(),
 		unPartCount(0), unPartScale(0.0f),
 		DrawPrimitive(PT_POINTS)
 	{
+		pGMtl = DataSys::GetDataRes<GMaterial>("gmt_batch_particles");
+
 		UpdateVData(); UpdateIData();
 	}
 
-	// -- Interface Methods
+	// --core_methods
 	void Particles::UpdateVData()
 	{
 	}
 	void Particles::UpdateIData()
 	{
 	}
-	// ========</Particles>========
+	// --==</Particles>==--
 	
-	// ========<PolyLine>========
+	// --==<PolyLine>==--
 	PolyLine::PolyLine() :
 		ADrawable()
 	{
+		pGMtl = DataSys::GetDataRes<GMaterial>("gmt_batch_lines");
 		UpdateVData(); UpdateIData();
 	}
 
-	// -- Interface Methods
+	// --core_methods
 	void PolyLine::UpdateVData()
 	{
 		UInt32 vCount = vtxCrds.size();
@@ -44,10 +47,10 @@ namespace NW
 				for (UInt8 vti = 0; vti < vCount; vti++) {
 					vtxVData[vti].vtxCrd = vtxCrds[vti];
 					vtxVData[vti].texCrd = 1.0f / vti;
-					if (ATexture* pTex = m_pGMtl->GetTexture()) {
+					if (ATexture* pTex = pGMtl->GetTexture()) {
 						vtxVData[vti].nTexSlot = static_cast<float>(pTex->GetTexSlot());
 					}
-					vtxVData[vti].vtxClr = m_pGMtl->GetColor();
+					//vtxVData[vti].vtxClr = pGMtl->GetColor();
 				}
 			}
 		}
@@ -65,16 +68,17 @@ namespace NW
 			}
 		}
 	}
-	// ========</PolyLine>========
+	// --==</PolyLine>==--
 
-	// ========<Polygons>========
+	// --==<Polygons>==--
 	Polygons::Polygons() : ADrawable(),
 		xyzCrd{ 0.0f, 0.0f, 0.0f }, xyzRtn{ 0.0f, 0.0f, 0.0f }, xyzScale{ 1.0f, 1.0f, 1.0f },
 		rgbaClr{ 1.0f, 1.0f, 1.0f, 1.0f }
 	{
+		pGMtl = DataSys::GetDataRes<GMaterial>("gmt_batch_3d");
 	}
 
-	// -- Interface Methods
+	// --core_methods
 	void Polygons::UpdateVData()
 	{
 		UInt32 vCount = vtxCrds.size();
@@ -85,7 +89,7 @@ namespace NW
 					for (UInt32 vti = 0; vti < vCount; vti++) {
 						vtxVData[vti].vtxCrd = vtxCrds[vti];
 						vtxVData[vti].texCrd = V2f{ 1.0f / (vti + 1), 1.0f / (vti + 1) };
-						if (ATexture* pTex = m_pGMtl->GetTexture()) {
+						if (ATexture* pTex = pGMtl->GetTexture()) {
 							vtxVData[vti].nTexSlot = static_cast<float>(pTex->GetTexSlot());
 						}
 						vtxVData[vti].vtxClr = rgbaClr;
@@ -112,14 +116,14 @@ namespace NW
 			}
 		}
 	}
-	// ========</Polygons>========
+	// --==</Polygons>==--
 }
-// ========</Drawable>========
+// --==</Drawable>==--
 
-// ========<Shapes2d>========
+// --==<Shapes2d>==--
 namespace NW
 {
-	// ========<Triangle>========
+	// --==<Triangle>==--
 	Triangle::Triangle() :
 		ADrawable(),
 		vtxCrds{ {-0.5f, -0.5f}, { 0.25f, 0.5f }, {0.5f, -0.5f} }
@@ -135,15 +139,15 @@ namespace NW
 		UpdateIData();
 	}
 
-	// -- Interface Methods
+	// --core_methods
 	void Triangle::UpdateVData()
 	{
 		for (UInt8 vti = 0; vti < 3; vti++) {
 			vtxVData[vti].vtxCrd = V3f{ vtxCrds[vti].x, vtxCrds[vti].y, 0.0f };
-			if (ATexture* pTex = m_pGMtl->GetTexture()) {
+			if (ATexture* pTex = pGMtl->GetTexture()) {
 				vtxVData[vti].nTexSlot = static_cast<float>(pTex->GetTexSlot());
 			}
-			vtxVData[vti].vtxClr = m_pGMtl->GetColor();
+			//vtxVData[vti].vtxClr = pGMtl->GetColor();
 			vtxVData[vti].m4Transform = m4Transform;
 		}
 	}
@@ -151,18 +155,19 @@ namespace NW
 	{
 		indIData[0] = 0; indIData[1] = 1; indIData[2] = 2;
 	}
-	// ========</Triangle>========
+	// --==</Triangle>==--
 
-	// ========<Rectangle>========
+	// --==<Rectangle>==--
 	Rectangle::Rectangle(const V2f& whSize) :
 		ADrawable(),
 		whSize(whSize), xyPivot{ V2f{ 0.5f, 0.5f } }
 	{
+		pGMtl = DataSys::GetDataRes<GMaterial>("gmt_batch_3d");
 		UpdateVData();
 		UpdateIData();
 	}
 
-	// -- Interface Methods
+	// --core_methods
 	void Rectangle::UpdateVData()
 	{
 		vtxCrds[0] = V2f{ xyPivot.x * whSize.x - ((1.0f - xyPivot.x) * whSize.x), xyPivot.y * whSize.y - ((1.0f - xyPivot.y) * whSize.y) };
@@ -171,10 +176,10 @@ namespace NW
 		vtxCrds[3] = V2f{ xyPivot.x * whSize.x + ((1.0f + xyPivot.x) * whSize.x), xyPivot.y * whSize.y - ((1.0f - xyPivot.y) * whSize.y) };
 		for (UInt8 vti = 0; vti < 4; vti++) {
 			vtxVData[vti].vtxCrd = V3f{ vtxCrds[vti].x, vtxCrds[vti].y, 0.0f };
-			if (ATexture* pTex = m_pGMtl->GetTexture()) {
+			if (ATexture* pTex = pGMtl->GetTexture()) {
 				vtxVData[vti].nTexSlot = static_cast<float>(pTex->GetTexSlot());
 			}
-			vtxVData[vti].vtxClr = m_pGMtl->GetColor();
+			//vtxVData[vti].vtxClr = pGMtl->GetColor();
 			vtxVData[vti].m4Transform = m4Transform;
 		}
 	}
@@ -183,18 +188,18 @@ namespace NW
 		indIData[0] = 0; indIData[1] = 1; indIData[2] = 2;
 		indIData[3] = 2; indIData[4] = 3; indIData[5] = 0;
 	}
-	// ========</Rectangle>========
+	// --==</Rectangle>==--
 
-	// ========<Sprite>========
+	// --==<Sprite>==--
 	Sprite::Sprite() :
 		Rectangle({ 1.0f, 1.0f }),
 		SubTex(SubTexture2d()) { }
 
-	// -- Interface Methods
+	// --core_methods
 	void Sprite::UpdateVData()
 	{
 		V2f xyTexCrd = {0.0f, 0.0f}, whTexSize = { 1.0f, 1.0f };
-		if (ATexture2d* pTex = dynamic_cast<ATexture2d*>(m_pGMtl->GetTexture())) {
+		if (ATexture2d* pTex = dynamic_cast<ATexture2d*>(pGMtl->GetTexture())) {
 			if (SubTex.pOverTex != pTex) {
 				SubTex.pOverTex = pTex;
 				SubTex.xyTexCrd = { 0, 0 };
@@ -209,19 +214,19 @@ namespace NW
 		vtxVData[2].texCrd = V2f{ xyTexCrd.x + whTexSize.x, xyTexCrd.y };					// { right; up } == { width, yCoord }
 		vtxVData[3].texCrd = V2f{ xyTexCrd.x + whTexSize.x, xyTexCrd.y + whTexSize.y };		// { right; bottom } == { width, height }
 	}
-	// ========</Sprite>========
+	// --==</Sprite>==--
 }
-// ========</Shape2d>========
+// --==</Shape2d>==--
 
-// ========<Shape3d>========
+// --==<Shape3d>==--
 namespace NW
 {
 	Mesh3d::Mesh3d() :
 		ADrawable() { }
 	Mesh3d::~Mesh3d() = default;
 
-	// -- Getters
-	// -- Setters
+	// --getters
+	// --setters
 	void Mesh3d::SetData(VertexShape3d * pVData, UInt32 unVCount, UInt32 * punIndData, UInt32 unIndCount)
 	{
 		vtxVData.reserve(unVCount);
@@ -235,7 +240,7 @@ namespace NW
 			indIData.emplace_back(punIndData[idi]);
 		}
 	}
-	// -- Interface Methods
+	// --core_methods
 	void Mesh3d::UpdateVData()
 	{
 	}
@@ -243,4 +248,4 @@ namespace NW
 	{
 	}
 }
-// ========</Shape3d>========
+// --==</Shape3d>==--

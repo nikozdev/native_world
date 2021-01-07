@@ -45,13 +45,13 @@ namespace NW
 	public:
 		virtual ~AWindow() = default;
 
-		// -- Getters
+		// --getters
 		virtual UInt16 GetWidth() const = 0;
 		virtual UInt16 GetHeight() const = 0;
 		virtual void* GetNativeWindow() = 0;
 		virtual const WindowInfo& GetWindowInfo() = 0;
 		virtual AGContext* GetGContext() = 0;
-		// -- Setters
+		// --setters
 		virtual void SetTitle(const char* strTitle) = 0;
 		virtual void SetEventCallback(const EventCallback& fnEvCallback) = 0;
 		virtual void SetVSync(bool enabled) = 0;
@@ -118,7 +118,7 @@ namespace NW
 		CoutWindow(const WindowInfo& rWindowInfo = { "Console Window", 50, 30 });
 		~CoutWindow();
 
-		// -- Getters
+		// --getters
 		virtual inline USInt GetWidth() const override { return m_WindowInfo.usiWidth; };
 		virtual inline USInt GetHeight() const override { return m_WindowInfo.usiHeight; };
 		virtual inline const WindowInfo& GetWindowInfo() override { return m_WindowInfo; }
@@ -127,13 +127,13 @@ namespace NW
 		inline void* GetHCout() const { return m_hCout; }
 		inline GContextCout* GetGContextCout() { return m_rGContext.get(); }
 		inline vsi4d& GetRect() { return m_xywhRect; }
-		// -- Setters
+		// --setters
 		virtual void SetEventCallback(const ev_Callback& rOnEventFn) override { m_WindowInfo.ev_Callback = rOnEventFn; };
 		virtual void SetVSync(bool bEnabled) override;
 		// -- Predicates
 		virtual bool IsVSync() const override { return false; };
 
-		// -- Core Methods
+		// --core_methods
 		/// Entire Initialization Implementation:
 		/// -> Get Console Handlers -> Check them for INVALID_VALUE
 		/// -> SetConsoleWindowInfoRect to 0,0,1,1

@@ -5,7 +5,7 @@
 
 #include <gl/gcontext/nw_window.h>
 
-#include <core/nw_engine.h>
+#include <core/nw_core_engine.h>
 
 #include <sys/nw_gui_sys.h>
 #include <sys/nw_log_sys.h>
@@ -23,10 +23,10 @@ namespace NW
 }
 namespace NW
 {
-    // ========<Core Methods>========
+    // --==<core_methods>==--
     bool EvSys::OnInit()
     {
-        s_pAppWindow = dynamic_cast<WindowOgl*>(Engine::Get().GetWindow());
+        s_pAppWindow = dynamic_cast<WindowOgl*>(CoreEngine::Get().GetWindow());
         s_pNativeWindow = (NativeWindow)(s_pAppWindow->GetNativeWindow());
     #if (NW_WINDOW & NW_WINDOW_GLFW)
         if (s_pNativeWindow == nullptr || s_pAppWindow == nullptr) return false;
@@ -56,10 +56,10 @@ namespace NW
         glfwPollEvents();
     #endif // NW_WINDOW
     }
-    // ========</Core Methods>========
+    // --==</core_methods>==--
 
 #if (NW_WINDOW & NW_WINDOW_CONSOLE)
-    // ========<Console Callback functions>========
+    // --==<Console Callback functions>==--
     // Windows callbacks
     void EvSys::cb_menu(Int32 nCmdId)
     {
@@ -101,10 +101,10 @@ namespace NW
     void EvSys::cb_key_char(UInt32 unChar)
     {
     }
-    // ========</Console Callback functions>========
+    // --==</Console Callback functions>==--
 #endif // NW_WINDOW
 #if (NW_WINDOW & NW_WINDOW_GLFW)
-    // ========<GLFW Callback functions>========
+    // --==<GLFW Callback functions>==--
     // Input callbacks
     void EvSys::cb_mouse_coord(GLFWwindow* pWindow,
         double nCoordX, double nCoordY)
@@ -207,6 +207,6 @@ namespace NW
     {
         LogSys::WriteErrStr(errId, "{str}", errMsg);
     }
-    // ========</GLFW Callback functions>========
+    // --==</GLFW Callback functions>==--
 #endif // NW_WINDOW
 }

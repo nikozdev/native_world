@@ -15,7 +15,7 @@ namespace NW
 		whBounds{ 800.0f, 600.0f } { }
 	GCameraLad::~GCameraLad() = default;
 
-	// ========<Core Methods>========
+	// --==<core_methods>==--
 	void GCameraLad::UpdateCamera(GCamera* pGCamera)
 	{
 		float MoveSpeed = this->nMoveSpeed * TimeSys::GetRealDelta();
@@ -57,9 +57,9 @@ namespace NW
 			}
 		}
 	}
-	// ========</Core Methods>========
+	// --==</core_methods>==--
 
-	// ========<OnEvent Methods>========
+	// --==<--on_event_methods>==--
 	void GCameraLad::OnEvent(MouseEvent& rmEvt)
 	{
 		switch (rmEvt.EvtType) {
@@ -139,5 +139,5 @@ namespace NW
 			break;
 		}
 	}
-	// ========</OnEvent Methods>========
+	// --==</--on_event_methods>==--
 }

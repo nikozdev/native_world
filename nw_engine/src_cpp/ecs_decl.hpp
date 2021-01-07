@@ -5,19 +5,17 @@
 
 namespace NW
 {
-	// ========<Scenes>========
-	class NW_API Scene;
-	// -- Entities
+	// --entities
 	class NW_API AEntity;
-	// -- Components
+	// --components
 	class NW_API AEntityCmp;
 	class NW_API ATransformCmp;
 	class NW_API AGraphicsCmp;
 	class NW_API ACollider2dCmp;
 	class NW_API Physics2dCmp;
 	class NW_API LuaScriptCmp;
-	// -- Systems
-	// ========</Scenes>========
+	// --systems
+	class NW_API Scene;
 }
 
 #endif	// ECS_DECL_HPP

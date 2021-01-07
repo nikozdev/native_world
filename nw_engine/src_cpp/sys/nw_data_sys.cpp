@@ -1,7 +1,7 @@
 #include <nw_pch.hpp>
 #include "nw_data_sys.h"
 
-#include <core/nw_engine_state.h>
+#include <core/nw_core_state.h>
 #include <ecs/nw_scene.h>
 #include <lua/nw_lua_vm.h>
 
@@ -24,13 +24,13 @@
 #endif  // NW_PLATFORM
 
 NW::DataSys::ADRs NW::DataSys::s_ADRs;
-NW::String NW::DataSys::s_strRscDir = "D:\\dev\\CheerNik\\bin\\resources";
+NW::String NW::DataSys::s_strRscDir = "D:\\dev\\native_world\\bin\\resources";
 std::stringstream NW::DataSys::s_strStream;
 std::fstream NW::DataSys::s_fStream;
 
 namespace NW
 {
-    // -- Getters
+    // --getters
     template <> static inline DataSys::DRs<Scene>& DataSys::GetDataResources() = delete;
     template <> Scene* DataSys::GetDataRes<Scene>(const char* strName) = delete;
 
@@ -41,7 +41,7 @@ namespace NW
         }
         return nullptr;
     }
-    // -- Setters
+    // --setters
 
     void DataSys::AddADataRes(ADataRes* pDataRes) {
         if (pDataRes == nullptr) return;
@@ -54,34 +54,29 @@ namespace NW
         s_ADRs.erase(itDR);
     }
 
-    // ========<Core Methods>=========
+    // --==<core_methods>==--=
     bool DataSys::OnInit()
     {
         s_fStream.exceptions(std::ios::badbit | std::ios::failbit);
 
         if (true) {
-            AShader::Create("shd_batch_points");
-            GetDataRes<AShader>("shd_batch_points")->LoadF("D:/dev/CheerNik/NW_Engine/src_glsl/batch_points.glsl");
-            AShader::Create("shd_batch_lines");
-            GetDataRes<AShader>("shd_batch_lines")->LoadF("D:/dev/CheerNik/NW_Engine/src_glsl/batch_lines.glsl");
             AShader::Create("shd_batch_3d");
-            GetDataRes<AShader>("shd_batch_3d")->LoadF("D:/dev/CheerNik/NW_Engine/src_glsl/batch_3d.glsl");
+            GetDataRes<AShader>("shd_batch_3d")->LoadF("D:/dev/native_world/nw_engine/src_glsl/batch_3d.glsl");
         }
         if (true) {
             ATexture2d::Create("tex_white_solid");
             GetDataRes<ATexture2d>("tex_white_solid")->LoadF("");
             ATexture2d::Create("tex_white_frame");
-            GetDataRes<ATexture2d>("tex_white_frame")->LoadF("D:/dev/CheerNik/bin/resources/gl/images/tex_white_frame.png");
+            GetDataRes<ATexture2d>("tex_white_frame")->LoadF("D:/dev/native_world/bin/resources/graphics/images/tex_white_frame.png");
             ATexture2d::Create("tex_white_circle");
-            GetDataRes<ATexture2d>("tex_white_circle")->LoadF("D:/dev/CheerNik/bin/resources/gl/images/tex_white_circle.png");
+            GetDataRes<ATexture2d>("tex_white_circle")->LoadF("D:/dev/native_world/bin/resources/graphics/images/tex_white_circle.png");
             ATexture2d::Create("fnt_cheer0");
-            GetDataRes<ATexture2d>("fnt_cheer0")->LoadF("D:/dev/CheerNik/bin/resources/gl/fonts/fnt_cheer0.png");
-            ATexture2d::Create("fnt_cheer1");
-            GetDataRes<ATexture2d>("fnt_cheer1")->LoadF("D:/dev/CheerNik/bin/resources/gl/fonts/fnt_cheer1.png");
-            ATexture2d::Create("fnt_aseprite0");
-            GetDataRes<ATexture2d>("fnt_aseprite0")->LoadF("D:/dev/CheerNik/bin/resources/gl/fonts/fnt_aseprite0.png");
+            GetDataRes<ATexture2d>("fnt_cheer0")->LoadF("D:/dev/native_world/bin/resources/graphics/fonts/fnt_cheer0.png");
             ATexture2d::Create("spt_ground0");
-            GetDataRes<ATexture2d>("spt_ground0")->LoadF("D:/dev/CheerNik/bin/resources/gl/images/spt_iso_ground0_0.png");
+            GetDataRes<ATexture2d>("spt_ground0")->LoadF("D:/dev/native_world/bin/resources/graphics/images/spt_iso_ground0_0.png");
+        }
+        if (true) {
+            GMaterial* pGMtl = MemSys::NewT<GMaterial>("gmt_batch_3d");
         }
         return true;
     }
@@ -89,37 +84,17 @@ namespace NW
     void DataSys::OnQuit()
     {
         if (true) {
-            {
-                DRs<ATexture>& s_DRs = GetDataResources<ATexture>();
-                while (s_DRs.begin() != s_DRs.end()) {
-                    MemSys::DelT<ATexture>(s_DRs.begin()->second);
-                }
-            }
-            {
-                DRs<ATexture1d>& s_DRs = GetDataResources<ATexture1d>();
-                while (s_DRs.begin() != s_DRs.end()) {
-                    MemSys::DelT<ATexture>(s_DRs.begin()->second);
-                }
-            }
-            {
-                DRs<ATexture2d>& s_DRs = GetDataResources<ATexture2d>();
-                while (s_DRs.begin() != s_DRs.end()) {
-                    MemSys::DelT<ATexture>(s_DRs.begin()->second);
-                }
-            }
-            {
-                DRs<ATexture3d>& s_DRs = GetDataResources<ATexture3d>();
-                while (s_DRs.begin() != s_DRs.end()) {
-                    MemSys::DelT<ATexture>(s_DRs.begin()->second);
-                }
-            }
+            MemSys::DelT<AShader>(GetDataRes<AShader>("shd_batch_3d"));
         }
-
         if (true) {
-            DRs<AShader>& s_DRs = GetDataResources<AShader>();
-            while (s_DRs.begin() != s_DRs.end()) {
-                MemSys::DelT<AShader>(s_DRs.begin()->second);
-            }
+            MemSys::DelT<ATexture2d>(GetDataRes<ATexture2d>("tex_white_solid"));
+            MemSys::DelT<ATexture2d>(GetDataRes<ATexture2d>("tex_white_frame"));
+            MemSys::DelT<ATexture2d>(GetDataRes<ATexture2d>("tex_white_circle"));
+            MemSys::DelT<ATexture2d>(GetDataRes<ATexture2d>("fnt_cheer0"));
+            MemSys::DelT<ATexture2d>(GetDataRes<ATexture2d>("spt_ground0"));
+        }
+        if (true) {
+            MemSys::DelT<GMaterial>(GetDataRes<GMaterial>("gmt_batch_3d"));
         }
     }
     // -- File Dialogs
@@ -294,9 +269,9 @@ namespace NW
             return false;
         }
     }
-    // ========</Core Methods>=========
+    // --==</core_methods>==--=
 
-    // ========<Implementation Methods>=========
+    // --==<Implementation Methods>==--=
     bool DataSys::LoadF_mesh_obj(const String& strFileData, DArray<UInt32>& arrIndicesDest,
         DArray<float>& vtxCoordsDest, DArray<float>& texCoordsDest, DArray<float>& normCoordsDest)
     {
@@ -517,5 +492,5 @@ namespace NW
         return true;
 
     }
-    // ========</Implementation Methods>=========
+    // --==</Implementation Methods>==--=
 }

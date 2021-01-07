@@ -18,11 +18,11 @@ namespace NW
 	class NW_API GuiSys
 	{
 	public:
-		// -- Getters
+		// --getters
 		static inline GuiIO& GetGuiIO() { return s_GuiIO; }
 		static inline GuiStyle& GetGuiStyle() { return s_GuiStyle; }
 		static inline GuiWindow* GetWindow() { return s_pCurrWindow; }
-		// -- Setters
+		// --setters
 		static void SetWindow(GuiWindow* pWindow);
 		// -- Predicates
 		static inline bool IsDrawing() { return s_bIsDrawing; }

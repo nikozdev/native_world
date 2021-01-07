@@ -19,10 +19,10 @@ namespace NW
 			AEntityCmp(rEntity, std::type_index(typeid(AGraphicsCmp))) { }
 		virtual ~AGraphicsCmp() = default;
 
-		// -- Getters
+		// --getters
 		virtual inline ADrawable* GetDrawable() = 0;
-		// -- Setters
-		// -- Interface Methods
+		// --setters
+		// --core_methods
 		virtual void OnUpdate() = 0;
 	protected:
 	};
@@ -33,11 +33,11 @@ namespace NW
 		DrawPolyLineCmp(AEntity& rEntity);
 		~DrawPolyLineCmp() = default;
 
-		// -- Getters
+		// --getters
 		virtual inline ADrawable* GetDrawable() override { return &m_PolyLine; }
-		// -- Setters
+		// --setters
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void OnUpdate() override;
 	private:
 		PolyLine m_PolyLine;
@@ -49,11 +49,11 @@ namespace NW
 		DrawPolygonsCmp(AEntity& rEntity);
 		~DrawPolygonsCmp() = default;
 
-		// -- Getters
+		// --getters
 		virtual inline ADrawable* GetDrawable() override { return &m_Polygons; }
-		// -- Setters
+		// --setters
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void OnUpdate() override;
 	private:
 		Polygons m_Polygons;
@@ -65,11 +65,11 @@ namespace NW
 		Graphics2dCmp(AEntity& rEntity);
 		~Graphics2dCmp() = default;
 
-		// -- Getters
+		// --getters
 		virtual inline ADrawable* GetDrawable() override { return &m_Sprite; }
-		// -- Setters
+		// --setters
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void OnUpdate() override;
 	private:
 		Sprite m_Sprite;

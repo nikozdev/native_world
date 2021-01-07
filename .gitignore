@@ -2,6 +2,7 @@
 .vs/
 bin/
 .git/
-CN_Engine/extern/LuaJIT-2.0.5/
+native_world/ext//
 # Files
-*.user
+**.vcxproj**
+*.sln

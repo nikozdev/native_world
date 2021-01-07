@@ -13,19 +13,19 @@ namespace NW
 		ATransformCmp(AEntity& rEntity) : AEntityCmp(rEntity, std::type_index(typeid(ATransformCmp))) { }
 		~ATransformCmp() = default;
 
-		// -- Getters
+		// --getters
 		virtual inline Mat4f GetTransformMatrix() const = 0;
 		virtual inline V3f GetCoord() const = 0;
 		virtual inline V3f GetRotation() const = 0;
 		virtual inline V3f GetScale() const = 0;
-		// -- Setters
+		// --setters
 		virtual inline void SetCoord(const V3f& xyzCrd) = 0;
 		virtual inline void SetRotation(const V3f& xyzRtn) = 0;
 		virtual inline void SetScale(const V3f& xyzScl) = 0;
 
 		virtual inline void Reset() = 0;
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void OnUpdate() = 0;
 	};
 	/// Transform2dComponent class
@@ -35,18 +35,18 @@ namespace NW
 		Transform2dCmp(AEntity& rEntity);
 		~Transform2dCmp() = default;
 
-		// -- Getters
+		// --getters
 		virtual inline Mat4f GetTransformMatrix() const override;
 		virtual inline V3f GetCoord() const override { return V3f{ m_xyCrd.x, m_xyCrd.y, 0.0f }; }
 		virtual inline V3f GetRotation() const override { return V3f{ 0.0f, 0.0f, m_zRtn }; }
 		virtual inline V3f GetScale() const override { return V3f{ m_xyScl.x, m_xyScl.y, 1.0f }; }
-		// -- Setters
+		// --setters
 		virtual inline void SetCoord(const V3f& xyzCrd) override { m_xyCrd = V2f{ xyzCrd.x, xyzCrd.y }; }
 		virtual inline void SetRotation(const V3f& xyzRtn)override { m_zRtn = xyzRtn.z; }
 		virtual inline void SetScale(const V3f& xyzScl) override { m_xyScl = V2f{ xyzScl.x, xyzScl.y }; }
 		virtual inline void Reset() override { m_xyCrd = V2f(0.0f); m_zRtn = 0.0f; m_xyScl = V2f{ 1.0f, 1.0f }; }
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void OnUpdate() override;
 	private:
 		V2f m_xyCrd;
@@ -60,12 +60,12 @@ namespace NW
 		Transform3dCmp(AEntity& rEntity);
 		~Transform3dCmp() = default;
 
-		// -- Getters
+		// --getters
 		virtual inline Mat4f GetTransformMatrix() const override;
 		virtual inline V3f GetCoord() const override { return m_xyzCrd; }
 		virtual inline V3f GetRotation() const override { return m_xyzRtn; }
 		virtual inline V3f GetScale() const override { return m_xyzScl; }
-		// -- Setters
+		// --setters
 		virtual inline void SetCoord(const V3f& xyzCrd) override { m_xyzCrd = xyzCrd; }
 		virtual inline void SetRotation(const V3f& xyzRtn) override { m_xyzRtn = xyzRtn; }
 		virtual inline void SetScale(const V3f& xyzScl) override { m_xyzScl = xyzScl; }
@@ -75,7 +75,7 @@ namespace NW
 			m_xyzScl = V3f{ 1.0f, 1.0f, 1.0f };
 		}
 
-		// -- Interface Methods
+		// --core_methods
 		virtual void OnUpdate() override;
 	private:
 		V3f m_xyzCrd;

@@ -1,8 +1,8 @@
 #include <nw_pch.hpp>
 #include <ecs/nw_scene.h>
 
-#include <core/nw_engine.h>
-#include <core/nw_engine_state.h>
+#include <core/nw_core_engine.h>
+#include <core/nw_core_state.h>
 #include <lua/nw_lua_vm.h>
 
 #include <lua.hpp>
@@ -20,7 +20,7 @@ namespace NW
 		m_Script.Compile();
 	}
 
-	// -- Setters
+	// --setters
 	void LuaScriptCmp::SetEnabled(bool bIsEnabled) {
 		AEntityCmp::SetEnabled(bIsEnabled);
 		if (bIsEnabled) { OnEnable(); }
@@ -31,7 +31,7 @@ namespace NW
 		m_Script.Compile();
 	}
 
-	// ========<Interface Methods>========
+	// --==<Interface Methods>==--
 	void LuaScriptCmp::OnUpdate()
 	{
 		sprintf(&m_strBuf[0], "%s_update\0", &m_Script.GetName()[0]);
@@ -47,5 +47,5 @@ namespace NW
 		sprintf(&m_strBuf[0], "%s_on_disable\0", &m_Script.GetName()[0]);
 		LuaVM::Get().CallFunctionGlb(&m_strBuf[0]);
 	}
-	// ========</Interface Methods>========
+	// --==</Interface Methods>==--
 }

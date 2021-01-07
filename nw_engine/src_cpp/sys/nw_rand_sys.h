@@ -13,7 +13,7 @@ namespace NW
 	class NW_API RandSys
 	{
 	public:
-		// -- Getters
+		// --getters
 		static inline bool GetBool() {
 			return  static_cast<bool>(GetInt(0, 1));
 		}
@@ -38,9 +38,9 @@ namespace NW
 			constexpr Float64 nFraction = 1.0 / (static_cast<Float64>(s_RandEngine.max()));
 			return  static_cast<Float64>(static_cast<Float64>(s_RandEngine()) * nFraction * (nMax - nMin)) + nMin;
 		}
-		// -- Setters
+		// --setters
 
-		// -- Core Methods
+		// --core_methods
 	private:
 		static std::mt19937 s_RandEngine;
 	};

@@ -43,7 +43,7 @@ namespace NW
 		BitmapFont(const char* strName);
 		~BitmapFont();
 
-		// -- Getters
+		// --getters
 		inline const char* GetName() const { return m_strName; }
 		inline const BitmapFontInfo& GetInfo() const { return m_Info; }
 		inline const ATexture2d* GetBitmap() const { return m_pBitmap; }
@@ -51,10 +51,10 @@ namespace NW
 			auto itGlyph = m_Glyphs.find(cGlyph);
 			return itGlyph == m_Glyphs.end() ? nullptr : &(itGlyph->second);
 		}
-		// -- Setters
+		// --setters
 		void SetInfo(const BitmapFontInfo& rFontInfo);
 		void SetBitMap(ATexture2d* pBitmap);
-		// -- Core Methods
+		// --core_methods
 	};
 }
 namespace NW
@@ -71,7 +71,7 @@ namespace NW
 	{
 	public:
 		List2<BitmapFont> bmFont;
-		AGMaterial* pGMtlWidgets = nullptr;
+		GMaterial* pGMtlWidgets = nullptr;
 	};
 }
 

@@ -23,16 +23,16 @@ namespace NW
 		ADataRes(const ADataRes& rDataRes);
 		virtual ~ADataRes();
 
-		// -- Getters
+		// --getters
 		inline UInt32 GetId() const { return m_unId; }
 		inline const char* GetName() const { return &m_strName[0]; }
-		// -- Setters
+		// --setters
 		virtual void SetName(const char* strName);
 
-		// -- Interface methods
+		// --core_methods
 		virtual bool SaveF(const char* strFPath) = 0;
 		virtual bool LoadF(const char* strFPath) = 0;
-	protected:	// Implementation Attribs
+	protected:
 		UInt32 m_unId;
 		String m_strName;
 

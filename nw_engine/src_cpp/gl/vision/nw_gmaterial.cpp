@@ -9,43 +9,60 @@
 
 namespace NW
 {
-	// ========<AGMaterial>========
-	AGMaterial::AGMaterial(const char* strName) :
+	// --==<GMaterial>==--
+	GMaterial::GMaterial(const char* strName) :
 		ADataRes(strName)
 	{
-		DataSys::AddDataRes<AGMaterial>(this);
+		SetShader(DataSys::GetDataRes<AShader>("shd_batch_3d"));
+		m_Textures[""] = DataSys::GetDataRes<ATexture2d>("tex_white_solid");
+		DataSys::AddDataRes<GMaterial>(this);
 	}
-	AGMaterial::~AGMaterial() { DataSys::RemoveDataRes<AGMaterial>(GetName()); }
-	// ========</AGMaterial>========
+	GMaterial::~GMaterial() { DataSys::RemoveDataRes<GMaterial>(GetName()); }
 	
-	// ========<GMaterial2d>========
-	GMaterial2d::GMaterial2d(const char* strName) :
-		AGMaterial(strName)
-	{
-		SetTexture(DataSys::GetDataRes<ATexture2d>("tex_white_solid"));
+	// --setters
+	void GMaterial::SetShader(AShader* pShader) {
+		m_pShader = pShader;
+		m_Textures.clear();
+		if (pShader == nullptr) { return; }
+		for (auto& itElem : pShader->GetShdLayout().GetElems()) {
+			if (itElem.sdType == SDT_SAMPLER) {
+				for (Int8 txi = itElem.unCount; txi > 0; txi--) {
+					m_Textures[itElem.strName] = nullptr;
+				}
+			}
+			else { }
+		}
 	}
-	GMaterial2d::~GMaterial2d()
-	{
+	void GMaterial::SetTexture(ATexture* pTex, const char* strType) {
+		if (m_Textures.find(strType) == m_Textures.end()) { return; }
+		m_Textures[&strType[0]] = pTex;
 	}
 
-	// -- Core Methods
-	void GMaterial2d::Enable()
+	// --core_methods
+	void GMaterial::Enable()
 	{
-		//
+		DArray<Int32> nTexSlots(m_Textures.size());
+		
+		for (auto& itTex : m_Textures) {
+			itTex.second->Bind(itTex.second->GetTexSlot());
+			nTexSlots.push_back(itTex.second->GetTexSlot());
+		}
+		m_pShader->Enable();
 	}
-	void GMaterial2d::Disable()
+	void GMaterial::Disable()
 	{
-		//
+		for (auto& itTex : m_Textures) { itTex.second->Unbind(); }
+		m_pShader->Disable();
 	}
 
-	// -- Data Methods
-	bool GMaterial2d::SaveF(const char* strFPath)
+	// --data_methods
+	bool GMaterial::SaveF(const char* strFPath)
 	{
 		return true;
 	}
-	bool GMaterial2d::LoadF(const char* strFPath)
+	bool GMaterial::LoadF(const char* strFPath)
 	{
 		return true;
 	}
-	// ========</GMaterial2d>========
+	// --==</GMaterial>==--
 }

@@ -7,7 +7,7 @@ NW::LogSys::ErrStack NW::LogSys::s_ErrStack;
 
 namespace NW
 {
-	// ========<Core Methods>========
+	// --==<core_methods>==--
 	String LogSys::MakeFormatStr(const char* strFormat, va_list& valArgs)
 	{
 		String strProc;		// string for processing
@@ -67,11 +67,11 @@ namespace NW
 		NW_BREAK();
 		va_end(valArgs);					// Essentialy close the list
 	}
-	// ========</Core Methods>========
+	// --==</core_methods>==--
 }
-// ========<Log Streams>========
+// --==<Log Streams>==--
 namespace NW
 {
 	LogSys::LogOut& operator<<(LogSys::LogOut& rOStream, const LuaVMInfo& rLuaInfo) { return rLuaInfo.operator<<(rOStream); }
 }
-// ========</Log Streams>========
+// --==</Log Streams>==--

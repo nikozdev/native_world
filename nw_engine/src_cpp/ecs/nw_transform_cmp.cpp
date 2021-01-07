@@ -3,12 +3,12 @@
 
 namespace NW
 {
-	// ========<Transform2dCmp>========
+	// --==<Transform2dCmp>==--
 	Transform2dCmp::Transform2dCmp(AEntity& rEntity) :
 		ATransformCmp(rEntity),
 		m_xyCrd{ 0.0f, 0.0f }, m_zRtn{ 0.0f }, m_xyScl{ 1.0f, 1.0f } {}
 
-	// -- Getters
+	// --getters
 	inline Mat4f Transform2dCmp::GetTransformMatrix() const {
 		Mat4f m4TForm = Mat4f(1.0f);
 		m4TForm = glm::translate(m4TForm, V3f{ m_xyCrd.x, m_xyCrd.y, 0.0f });
@@ -17,7 +17,7 @@ namespace NW
 		return m4TForm;
 	}
 
-	// -- Interface Methods
+	// --core_methods
 	void Transform2dCmp::OnUpdate()
 	{
 		Mat4f m4TForm = GetTransformMatrix();
@@ -33,14 +33,14 @@ namespace NW
 		if (AGraphicsCmp* pGCmp = GetEntity()->GetComponent<AGraphicsCmp>())
 			pGCmp->GetDrawable()->m4Transform = m4TForm;
 	}
-	// ========</Transform2dCmp>========
+	// --==</Transform2dCmp>==--
 
-	// ========<Transform3dCmp>========
+	// --==<Transform3dCmp>==--
 	Transform3dCmp::Transform3dCmp(AEntity& rEntity) :
 		ATransformCmp(rEntity),
 		m_xyzCrd{ 0.0f, 0.0f, 0.0f }, m_xyzRtn{ 0.0f, 0.0f, 0.0f }, m_xyzScl{ 1.0f, 1.0f, 1.0f } {}
 
-	// -- Getters
+	// --getters
 	inline Mat4f Transform3dCmp::GetTransformMatrix() const {
 		Mat4f m4TForm = Mat4f(1.0f);
 		m4TForm = glm::translate(m4TForm, m_xyzCrd);
@@ -51,7 +51,7 @@ namespace NW
 		return m4TForm;
 	}
 
-	// -- Interface Methods
+	// --core_methods
 	void Transform3dCmp::OnUpdate()
 	{
 		Mat4f m4TForm = GetTransformMatrix();
@@ -69,6 +69,6 @@ namespace NW
 		if (AGraphicsCmp* pGCmp = GetEntity()->GetComponent<AGraphicsCmp>())
 			pGCmp->GetDrawable()->m4Transform = m4TForm;
 	}
-	// ========</Transform3dCmp>========
+	// --==</Transform3dCmp>==--
 
 }
