@@ -8,7 +8,7 @@
 #include <gl/vision/nw_gcamera.h>
 #include <gl/vision/nw_gmaterial.h>
 
-#include <core/nw_graph_engine.h>
+#include <gl/control/nw_draw_engine.h>
 #include <gl/gcontext/nw_gcontext.h>
 #include <gl/gcontext/nw_framebuf.h>
 #include <gl/control/nw_gapi.h>
@@ -68,7 +68,7 @@ namespace NW
 	// --==<core_methods>==--
 	void GuiSys::OnInit()
 	{
-		AGraphicsApi* pGApi = GraphEngine::GetGApi();
+		AGraphicsApi* pGApi = DrawEngine::GetGApi();
 		if (pGApi == nullptr) { return; }
 		AWindow* pWindow = CoreEngine::Get().GetWindow();
 		if (pWindow == nullptr) {

@@ -1,6 +1,6 @@
 #ifndef NW_EVENT_SYSTEM_H
 #define NW_EVENT_SYSTEM_H
-#include <core/nw_event.h>
+#include <lib/nw_event.h>
 
 #include <nw_decl.hpp>
 #include <gl_decl.hpp>

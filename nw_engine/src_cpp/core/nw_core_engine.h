@@ -1,7 +1,7 @@
 #ifndef NW_CORE_ENGINE_H
 #define NW_CORE_ENGINE_H
 
-#include <core/nw_singleton.h>
+#include <lib/nw_singleton.h>
 
 #include <nw_decl.hpp>
 #include <gl_decl.hpp>

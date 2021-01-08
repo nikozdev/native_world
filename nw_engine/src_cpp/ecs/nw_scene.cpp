@@ -1,7 +1,7 @@
 #include <nw_pch.hpp>
 #include "nw_scene.h"
 
-#include <core/nw_graph_engine.h>
+#include <gl/control/nw_draw_engine.h>
 #include <gl/vision/nw_gcamera.h>
 #include <gl/gcontext/nw_framebuf.h>
 
@@ -44,22 +44,22 @@ namespace NW
             m_Ents.erase(m_DestroyEnts.back());
             m_DestroyEnts.pop_back();
         }
-
-        GetGCamera()->nAspectRatio = (m_xywhViewport.z - m_xywhViewport.x) / (m_xywhViewport.w - m_xywhViewport.y);
-        m_pFrameBuf->Bind();
-        m_pFrameBuf->Clear(FB_COLOR | FB_DEPTH | FB_STENCIL);
-        GraphEngine::GetGApi()->SetViewport(m_xywhViewport.x, m_xywhViewport.y, m_xywhViewport.z, m_xywhViewport.w);
-        //GraphEngine::BeginDraw();
+        
+        DrawEngine::GetState("des_scene").pGCamera = m_pGCamera;
+        DrawEngine::GetState("des_scene").pFrameBuf = m_pFrameBuf;
+        DrawEngine::GetState("des_scene").xywhViewport = m_xywhViewport;
+        DrawEngine::GetState("des_scene").unDrawOrder = 0;
+        DrawEngine::GetState("des_scene").DPrimitive = PT_TRIANGLES;
+        
         for (auto pCmp : m_ACmps) {
             if (!pCmp->IsEnabled()) continue;
             pCmp->OnUpdate();
         }
-        //GraphEngine::EndDraw();
-        m_pFrameBuf->Unbind();
+
     }
 	// --==</core_methods>==--
     
-	// --==<Interface Methods>==--
+	// --==<data_methods>==--
 	bool Scene::SaveF(const char* strFPath)
 	{   // Very temporaty: here is too much string processing, but I simply need some way to serialize a scene
         std::stringstream strStream;
@@ -102,5 +102,5 @@ namespace NW
         }
         return true;
 	}
-	// --==</Interface Methods>==--
+	// --==</data_methods>==--
 }

@@ -9,70 +9,79 @@
 // Functions
 namespace NW
 {
-	inline UInt32 SDType_GetSize(ShaderDataTypes sDataType) {
+	inline Size SDType_GetSize(ShaderDataTypes sDataType, UInt32 unCount = 1) {
+		Size szData = 0;
 		switch (sDataType) {
-		case SDT_BOOL: case SDT_INT8: case SDT_UINT8:			return 1;
-		case SDT_INT16: case SDT_UINT16:						return 2;
-		case SDT_INT32: case SDT_UINT32: case SDT_FLOAT32:		return 4;
-		case SDT_SAMPLER:		return 4;
+		case SDT_BOOL:	case SDT_INT8:		case SDT_UINT8:		szData = 1;	break;
+		case SDT_INT16:	case SDT_UINT16:	case SDT_SAMPLER:	szData = 4;	break;
+		case SDT_INT32:	case SDT_UINT32:	case SDT_FLOAT32:	szData = 4;	break;
+		case SDT_FLOAT64:										szData = 8;	break;
+		default:	NW_ERR("Invalid shader data type");			szData = 0;	break;
 		}
-		NW_ERR("Inaccessible shader data type");
-		return 0;
+		return szData * unCount;
 	}
-	inline UInt32 SDType_GetAllignedSize(ShaderDataTypes sDataType, UInt32 unCount) {
+	inline Size SDType_GetAllignedSize(ShaderDataTypes sDataType, UInt32 unCount = 1) {
+		Size szAll = 0;
 		switch (sDataType) {
-		case SDT_BOOL: case SDT_INT8: case SDT_UINT8:
-		case SDT_INT16: case SDT_UINT16: case SDT_INT32:
-		case SDT_UINT32: case SDT_FLOAT32: return 4 * unCount;
+		case SDT_BOOL:	case SDT_INT8:	case SDT_UINT8:			szAll = 4;	break;
+		case SDT_INT16:	case SDT_UINT16:						szAll = 4;	break;
+		case SDT_INT32:	case SDT_UINT32:	case SDT_FLOAT32:	szAll = 4;	break;
+		case SDT_FLOAT64:										szAll = 8;	break;
+		default:	NW_ERR("Invalid shader data type");			szAll = 0;	break;
 		}
-		NW_ERR("Inaccessible shader data type");
+		return szAll * (( unCount + (szAll - 1)) & ~(szAll - 1) );
 	}
 }
-// BufferLayout
+// VertexBufLayout
 namespace NW
 {
 	/// BufferElement structure
 	/// --Contains all relevant data for shader usage of vertex buffer data
 	struct NW_API BufferElement
 	{
-		const char* strName;
+	public:
+		Char strName[128];
 		ShaderDataTypes sdType;
 		UInt32 unCount;
 		bool bNormalized;
 		UInt32 unOffset;
-
-		BufferElement() = default;
+	public:
+		BufferElement() : strName(""), sdType(SDT_NONE), unCount(0), bNormalized(false), unOffset(0) { }
 		BufferElement(const char* sName, ShaderDataTypes shaderDataType, UInt32 Count, bool Normalized) :
-			strName(&sName[0]),
-			sdType(shaderDataType), unCount(Count),
-			bNormalized(Normalized), unOffset(0) {}
+			strName(""), sdType(shaderDataType), unCount(Count),
+			bNormalized(Normalized), unOffset(0) { strcpy(strName, sName); }
 	};
-	/// BufferLayout class
-	class NW_API BufferLayout
+	struct NW_API ShaderBlock
 	{
 	public:
-		BufferLayout() :
-			m_unStride(0) { }
-		BufferLayout(const DArray<BufferElement>& rBufElems) :
+		Char strName[128];
+		UInt8 unBindPoint;
+		DArray<BufferElement> BufElems;
+		Size szOffset;
+		Size szAll;
+	public:
+		ShaderBlock() : strName(""), unBindPoint(0), szOffset(0), szAll(0) {};
+		ShaderBlock(const char* sName, UInt8 BindPoint) :
+			strName(""),
+			unBindPoint(BindPoint), szAll(0), szOffset(0) { strcpy(strName, sName); }
+	};
+	/// VertexBufLayout class
+	class NW_API VertexBufLayout
+	{
+	public:
+		VertexBufLayout() : m_unStride(0) { }
+		VertexBufLayout(const DArray<BufferElement>& rBufElems) :
 			m_unStride(0) { SetElements(rBufElems); }
 
+		// --getters
 		inline const BufferElement& GetElem(UInt8 unIdx) const { return m_BufElems.at(unIdx); }
 		inline const DArray<BufferElement>& GetElems() const { return m_BufElems; }
 		inline const UInt32 GetStride() const { return m_unStride; }
-
 		// --setters
 		inline void SetElements(const DArray<BufferElement>& rBufElems) { m_BufElems = rBufElems; Update(); }
+		inline void AddElement(const BufferElement& rBufElem, Int8 nElems = 1) { while (nElems-- > 0) { m_BufElems.push_back(rBufElem); } Update(); }
 		inline void AddElement(const char* strName, ShaderDataTypes sdType, UInt8 unCount, Int8 nElems = 1) {
-			while (nElems-- > 0) { 
-				char strBuf[256]{ 0 };
-				sprintf(&strBuf[0], "%s[%d]", &strName[0], nElems);
-				m_BufElems.push_back(BufferElement(&strBuf[0], sdType, unCount, false));
-			}
-			Update();
-		}
-		inline void AddElement(const BufferElement& rBufElem, Int8 nElems = 1) {
-			while (nElems-- > 0) { m_BufElems.push_back(rBufElem); }
-			Update();
+			AddElement(BufferElement(strName, sdType, unCount, false), nElems);
 		}
 		inline void Reset() { m_unStride = 0; m_BufElems.clear(); }
 	private:
@@ -83,7 +92,47 @@ namespace NW
 			m_unStride = 0;
 			for (auto& rBufElem : m_BufElems) {
 				rBufElem.unOffset = m_unStride;
-				m_unStride += rBufElem.unCount * SDType_GetSize(rBufElem.sdType);
+				m_unStride += SDType_GetSize(rBufElem.sdType, rBufElem.unCount);
+			}
+		}
+	};
+	/// ShaderBufLayout class
+	class NW_API ShaderBufLayout
+	{
+	public:
+		ShaderBufLayout() : m_szData(0) { }
+		ShaderBufLayout(const DArray<ShaderBlock>& rBlocks) :
+			m_szData(0) { SetBlocks(rBlocks); }
+		// --getters
+		inline Size GetSize() const { return m_szData; }
+		inline const DArray<BufferElement>& GetGlobals() const { return m_Globals; }
+		inline const ShaderBlock& GetBlock(UInt8 unIdx) const { return m_Blocks.at(unIdx); }
+		inline const DArray<ShaderBlock>& GetBlocks() const { return m_Blocks; }
+		// --setters
+		inline void AddGlobalElem(const BufferElement& rBufElem) {
+			m_Globals.push_back(rBufElem);
+			m_szGlobal += SDType_GetAllignedSize(rBufElem.sdType, rBufElem.unCount);
+		}
+		inline void SetBlocks(const DArray<ShaderBlock>& rBlocks) { m_Blocks = rBlocks; Update(); }
+		inline void AddBlock(const ShaderBlock& rBlock, Int8 nElems = 1) { while (nElems-- > 0) { m_Blocks.push_back(rBlock); } Update(); }
+		inline void Reset() { m_szData = 0; m_Blocks.clear(); }
+	private:
+		DArray<BufferElement> m_Globals;
+		Size m_szGlobal;
+		DArray<ShaderBlock> m_Blocks;
+		Size m_szData;
+	private:
+		inline void Update() {
+			m_szData = 0;
+			for (UInt8 bi = 0; bi < m_Blocks.size(); bi++) {
+				auto& rBlock = m_Blocks[bi];
+				rBlock.unBindPoint = bi;
+				rBlock.szOffset = m_szData;
+				for (auto& rElem : rBlock.BufElems) {
+					rElem.unOffset += rBlock.szAll;
+					rBlock.szAll += SDType_GetAllignedSize(rElem.sdType, rElem.unCount);
+				}
+				m_szData += rBlock.szAll;
 			}
 		}
 	};
@@ -147,35 +196,15 @@ namespace NW
 // Drawing data
 namespace NW
 {
-	/// DrawObjectData struct
-	/// -- GraphicsEngine requires this data to draw anything
-	/// -- We can specify:
-	/// what is the object we want to draw
-	/// what is the material of that object
-	/// which camera will show this
-	/// in what order some object will be drawn
-	struct NW_API DrawObjectData
-	{
-	public:
-		ADrawable* pDrawable = nullptr;
-		UInt8 unDrawOrder = 0;
-		PrimitiveTypes DrawPrimitive = PT_TRIANGLES;
-		inline bool operator>(const DrawObjectData& rDOD) { return rDOD.unDrawOrder > unDrawOrder; }
-		inline bool operator>=(const DrawObjectData& rDOD) { return rDOD.unDrawOrder >= unDrawOrder; }
-		inline bool operator==(const DrawObjectData& rDOD) { return rDOD.unDrawOrder == unDrawOrder; }
-		inline bool operator<=(const DrawObjectData& rDOD) { return rDOD.unDrawOrder <= unDrawOrder; }
-		inline bool operator<(const DrawObjectData& rDOD) { return rDOD.unDrawOrder < unDrawOrder; }
-	};
 	/// DrawSceneData struct
 	struct NW_API DrawSceneData
 	{
-	public:
 		GCamera* pGCamera = nullptr;
 	};
 	/// RenderAttributes struct
 	/// Description:
 	/// -- Check and change renderer attributes for more or less performance/resource usage
-	struct NW_API GraphEngineInfo
+	struct NW_API DrawEngineInfo
 	{
 	public:
 		// Configurations
@@ -352,16 +381,16 @@ namespace NW
 
 		// --getters
 		virtual inline Size GetDataSize() const = 0;
-		virtual inline const BufferLayout& GetLayout() = 0;
+		virtual inline const VertexBufLayout& GetLayout() = 0;
 		// --setters
-		virtual void SetData(Size szData, void* pVtxData = nullptr) = 0;
-		virtual void SetSubData(Size szData, void* pVtxData, Size szOffset = 0) = 0;
-		virtual void SetLayout(const BufferLayout& rBufLayout) = 0;
+		virtual void SetData(Size szData, const void* pVtxData = nullptr) = 0;
+		virtual void SetSubData(Size szData, const void* pVtxData, Size szOffset = 0) = 0;
+		virtual void SetLayout(const VertexBufLayout& rBufLayout) = 0;
 		// --core_methods
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		static AVertexBuf* Create(Size szAlloc, void* pVtxData = nullptr);
+		static AVertexBuf* Create(Size szAlloc, const void* pVtxData = nullptr);
 	};
 	/// Abstract IndexBuffer Class
 	/// Interface:
@@ -378,13 +407,13 @@ namespace NW
 		// --getters
 		virtual inline Size GetDataSize() const = 0;
 		// --setters
-		virtual void SetData(Size szAlloc, void* pIdxData = nullptr) = 0;
-		virtual void SetSubData(Size szData, void* pIdxData, Size szOffset = 0) = 0;
+		virtual void SetData(Size szAlloc, const void* pIdxData = nullptr) = 0;
+		virtual void SetSubData(Size szData, const void* pIdxData, Size szOffset = 0) = 0;
 		// --core_methods
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 		
-		static AIndexBuf* Create(Size szAlloc, void* pIdxData = nullptr);
+		static AIndexBuf* Create(Size szAlloc, const void* pIdxData = nullptr);
 	};
 	/// Abstract ShaderBuffer class
 	/// Description:
@@ -396,16 +425,17 @@ namespace NW
 
 		// --getters
 		virtual inline Size GetDataSize() const = 0;
-		virtual inline const DArray<BufferLayout>& GetLayouts() = 0;
+		virtual inline const ShaderBufLayout& GetLayout() = 0;
 		// --setters
-		virtual void SetData(Size szData, void* pData = nullptr) = 0;
-		virtual void SetSubData(Size szData, void* pData, Size szOffset = 0) = 0;
+		virtual void SetData(Size szData, const void* pData = nullptr) = 0;
+		virtual void SetSubData(Size szData, const void* pData, Size szOffset = 0) = 0;
+		virtual void SetLayout(const ShaderBufLayout& rShdLayout) = 0;
 		// --core_methods
 		virtual void Bind(UInt32 unPoint) const = 0;
 		virtual void Bind(UInt32 unPoint, Size szData, Size szOffset = 0) const = 0;
 		virtual void Unbind() const = 0;
 
-		static AShaderBuf* Create(Size szAlloc, void* pShaderData = nullptr);
+		static AShaderBuf* Create(Size szAlloc, const void* pShaderData = nullptr);
 	};
 }
 #endif	// NW_GRAPHICS
@@ -421,11 +451,11 @@ namespace NW
 
 		// --setters
 		virtual inline Size GetDataSize() const override { return m_szData; }
-		virtual inline BufferLayout& GetLayout() override { return m_BufLayout; }
+		virtual inline VertexBufLayout& GetLayout() override { return m_BufLayout; }
 		// --setters
-		virtual void SetData(Size szAlloc, void* pVtxData = nullptr) override;
-		virtual void SetSubData(Size szAlloc, void* pVtxData, Size szOffset = 0) override;
-		virtual void SetLayout(const BufferLayout& rBufLayout) override;
+		virtual void SetData(Size szAlloc, const void* pVtxData = nullptr) override;
+		virtual void SetSubData(Size szAlloc, const void* pVtxData, Size szOffset = 0) override;
+		virtual void SetLayout(const VertexBufLayout& rBufLayout) override;
 		
 		// --core_methods
 		virtual void Bind() const override;
@@ -435,7 +465,7 @@ namespace NW
 		UInt32 m_unRIdVA;
 		Size m_szData;
 
-		BufferLayout m_BufLayout;
+		VertexBufLayout m_BufLayout;
 	};
 	/// IndexBufOgl class
 	class NW_API IndexBufOgl : public AIndexBuf
@@ -449,8 +479,8 @@ namespace NW
 		// --setters
 
 		// --core_methods
-		virtual void SetData(Size szData, void* pIdxData = nullptr) override;
-		virtual void SetSubData(Size szData, void* pIdxData, Size szOffset = 0) override;
+		virtual void SetData(Size szData, const void* pIdxData = nullptr) override;
+		virtual void SetSubData(Size szData, const void* pIdxData, Size szOffset = 0) override;
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 	private:
@@ -466,11 +496,11 @@ namespace NW
 
 		// --getters
 		virtual inline Size GetDataSize() const override { return m_szData; }
-		virtual inline DArray<BufferLayout>& GetLayouts() override { return m_BufLayouts; }
+		virtual inline const ShaderBufLayout& GetLayout() override { return m_BufLayout; }
 		// --setters
-		virtual void SetData(Size szAlloc, void* pVtxData = nullptr) override;
-		virtual void SetSubData(Size szAlloc, void* pVtxData, Size szOffset = 0) override;
-
+		virtual void SetData(Size szAlloc, const void* pVtxData = nullptr) override;
+		virtual void SetSubData(Size szAlloc, const void* pVtxData, Size szOffset = 0) override;
+		virtual void SetLayout(const ShaderBufLayout& rBufLayout) override;
 		// --core_methods
 		virtual void Bind(UInt32 unPoint) const override;
 		virtual void Bind(UInt32 unPoint, Size szData, Size szOffset = 0) const override;
@@ -479,7 +509,7 @@ namespace NW
 		UInt32 m_unRId;
 		Size m_szData;
 
-		DArray<BufferLayout> m_BufLayouts;
+		ShaderBufLayout m_BufLayout;
 	};
 }
 #endif // NW_GRAPHICS
@@ -506,7 +536,7 @@ namespace NW
 		{
 			return m_daVData.capacity() * sizeof(char);
 		}
-		virtual inline BufferLayout& GetLayout() override
+		virtual inline VertexBufLayout& GetLayout() override
 		{
 			return m_bufLayout;
 		}
@@ -515,7 +545,7 @@ namespace NW
 			return m_daVData;
 		}
 		// Setters
-		virtual inline void SetLayout(const BufferLayout& bLayout) override
+		virtual inline void SetLayout(const VertexBufLayout& bLayout) override
 		{
 			m_bufLayout = bLayout;
 		}
@@ -525,7 +555,7 @@ namespace NW
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 	private:
-		BufferLayout m_bufLayout;
+		VertexBufLayout m_bufLayout;
 		DArray<char> m_daVData;
 	};
 	/// IndexBufCout class

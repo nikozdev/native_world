@@ -1,7 +1,7 @@
 #include <nw_pch.hpp>
 #include "nw_ev_sys.h"
 
-#include <core/nw_event.h>
+#include <lib/nw_event.h>
 
 #include <gl/gcontext/nw_window.h>
 

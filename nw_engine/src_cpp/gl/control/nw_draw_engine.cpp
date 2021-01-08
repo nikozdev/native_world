@@ -1,5 +1,5 @@
 #include <nw_pch.hpp>
-#include "nw_graph_engine.h"
+#include "nw_draw_engine.h"
 
 #include <gl/control/nw_gapi.h>
 #include <gl/gcontext/nw_gcontext.h>
@@ -29,6 +29,9 @@ namespace NW
 		UByte* pShdData = nullptr;
 		UByte* pShdIter = nullptr;
 		Size szShdData = 0;
+		// --texture_data
+		ATexture* pTextures[NW_MAX_TEXTURES];
+		UInt8 unTexCount = 0;
 		// --objects
 		GMaterial* pGMtl = nullptr;
 		AVertexBuf* pVtxBuf = nullptr;
@@ -42,58 +45,60 @@ namespace NW
 			szIdxData = unIdxData = 0;
 			pShdIter = &pShdData[0];
 			szShdData = 0;
+			for (UInt8 txi = 0; txi < unTexCount; txi++) { pTextures[txi] = nullptr; }
+			unTexCount = 0;
 		}
 	};
-	static DrawSceneData s_DSData;
-	static HashMap<GMaterial*, DArray<DrawObjectData>> s_DOData;
-	static DArray<DrawObjectData>::iterator s_DODataIter;
 	static DrawTools s_DTools = { 0 };
+	static DrawEngine::States::iterator s_DState;
 
-	RefOwner<AGraphicsApi> GraphEngine::s_pGApi(nullptr);
-	GraphEngineInfo GraphEngine::s_DInfo = { 0 };
-	bool GraphEngine::s_bIsDrawing = false;
+	AGraphicsApi* DrawEngine::s_pGApi(nullptr);
+	DrawEngine::States DrawEngine::s_DStates;
+	DrawEngineInfo DrawEngine::s_DInfo = { 0 };
+	bool DrawEngine::s_bIsDrawing = false;
 }
 
 namespace NW
 {
 	// --setters
-	void GraphEngine::SetMaxVtxSize(Size szMaxVtx) {
+	void DrawEngine::SetMaxVtxSize(Size szMaxVtx) {
 		MemSys::DelTArr<UByte>(s_DTools.pVtxData, s_DInfo.szMaxVtx);
 		s_DInfo.szMaxVtx = szMaxVtx;
 		s_DTools.pVtxData = nullptr;
+		s_DTools.pVtxBuf->SetData(szMaxVtx, nullptr);
 		if (szMaxVtx > 0) { s_DTools.pVtxData = MemSys::NewTArr<UByte>(szMaxVtx); }
 	}
-	void GraphEngine::SetMaxIdxSize(Size szMaxIdx) {
+	void DrawEngine::SetMaxIdxSize(Size szMaxIdx) {
 		MemSys::DelTArr(s_DTools.pIdxData, s_DInfo.szMaxIdx / sizeof(UInt32));
 		s_DTools.pIdxData = nullptr;
 		s_DInfo.szMaxIdx = szMaxIdx;
+		s_DTools.pIdxBuf->SetData(szMaxIdx, nullptr);
 		if (szMaxIdx > 0) { s_DTools.pIdxData = MemSys::NewTArr<UInt32>(szMaxIdx); }
 	}
-	void GraphEngine::SetMaxShdSize(Size szMaxShd) {
+	void DrawEngine::SetMaxShdSize(Size szMaxShd) {
 		MemSys::DelTArr(s_DTools.pShdData, s_DInfo.szMaxShd);
 		s_DTools.pShdData = nullptr;
 		s_DInfo.szMaxShd = szMaxShd;
+		s_DTools.pShdBuf->SetData(szMaxShd, nullptr);
 		if (szMaxShd > 0) { s_DTools.pShdData = MemSys::NewTArr<UByte>(szMaxShd); }
 	}
-	void GraphEngine::SetMaxTexCount(UInt8 unMaxTex) {
+	void DrawEngine::SetMaxTexCount(UInt8 unMaxTex) {
 		if (unMaxTex > NW_MAX_TEXTURES || unMaxTex < NW_MIN_TEXTURES) { NW_ERR("We can not set this amount of slots"); return; }
 		s_DInfo.unMaxTex = unMaxTex;
 	}
 
 	// --==<core_methods>==--
-	bool GraphEngine::Init(GApiTypes GraphicsApiType)
+	bool DrawEngine::Init(GApiTypes GraphicsApiType)
 	{
-		s_pGApi.reset(AGraphicsApi::Create(GraphicsApiType));
+		s_pGApi = AGraphicsApi::Create(GraphicsApiType);
 
-		s_DTools.pGMtl = MemSys::NewT<GMaterial>("gmt_of_drawer");
-		
 		s_DTools.pVtxBuf = AVertexBuf::Create(0);
 		s_DTools.pIdxBuf = AIndexBuf::Create(0);
 		s_DTools.pShdBuf = AShaderBuf::Create(0);
 
 		SetMaxVtxSize(2 << 8);
 		SetMaxIdxSize(s_DInfo.szMaxVtx << 2);
-		SetMaxShdSize(2 << 10);
+		SetMaxShdSize(2 << 8);
 		SetMaxTexCount(NW_MAX_TEXTURES);
 		
 		s_DTools.ResetData();
@@ -102,7 +107,7 @@ namespace NW
 
 		return true;
 	}
-	void GraphEngine::OnQuit()
+	void DrawEngine::OnQuit()
 	{
 		SetMaxVtxSize(0);
 		SetMaxIdxSize(0);
@@ -112,58 +117,73 @@ namespace NW
 		if (s_DTools.pIdxBuf != nullptr) { MemSys::DelT<AIndexBuf>(s_DTools.pIdxBuf); s_DTools.pIdxBuf = nullptr; }
 		if (s_DTools.pShdBuf != nullptr) { MemSys::DelT<AShaderBuf>(s_DTools.pShdBuf); s_DTools.pShdBuf = nullptr; }
 		
-		s_pGApi.reset(nullptr);
+		s_DStates.clear();
+
+		MemSys::DelT<AGraphicsApi>(s_pGApi);
 	}
-	void GraphEngine::Update()
+	void DrawEngine::Update()
 	{
 		s_DInfo.Reset();
 	}
 	// --==<Drawing>==--
-	void GraphEngine::BeginDraw(const DrawSceneData& rDSData)
-	{
+	void DrawEngine::BeginDraw() {
 		bool bCanDraw = !s_bIsDrawing;
 		if (!bCanDraw) { NW_ERR("Can not Draw now"); return; }
 		s_bIsDrawing = true;
-
-		s_DSData = rDSData;
 	}
-	void GraphEngine::OnDraw(const DrawObjectData& rDOData)
+	void DrawEngine::OnDraw(ADrawable* pDrb, const char* strStateName)
 	{
-		bool bCanDraw = s_bIsDrawing && rDOData.pDrawable != nullptr;
+		bool bCanDraw = s_bIsDrawing && pDrb != nullptr;
 		if (!bCanDraw) { NW_ERR("Can not Draw now"); return; }
 
-		s_DOData[rDOData.pDrawable->pGMtl].push_back(rDOData);
+		GetState(strStateName).AddDrawable(pDrb);
 	}
-	void GraphEngine::EndDraw()
+	void DrawEngine::EndDraw()
 	{
 		bool bCanDraw = s_bIsDrawing;
 		if (!bCanDraw) { NW_ERR("Can not Draw now"); return; }
 		
-		Byte* pData = nullptr;
-		Mat4f m4Cam = s_DSData.pGCamera->GetProjMatrix();
-		memcpy(s_DTools.pShdIter, reinterpret_cast<Byte*>(&m4Cam), sizeof(Mat4f));
-		s_DTools.pShdIter += sizeof(Mat4f);
-		m4Cam = s_DSData.pGCamera->GetViewMatrix();
-		memcpy(s_DTools.pShdIter, reinterpret_cast<Byte*>(&m4Cam), sizeof(Mat4f));
-		s_DTools.pShdIter += sizeof(Mat4f);
-		
-		s_DTools.szShdData += sizeof(Mat4f) * 2;
+		DArray<DrawState*> DStatesOrder;
+		DStatesOrder.reserve(16);
 
-		for (auto itDODatas : s_DOData) {
-			std::sort(itDODatas.second.begin(), itDODatas.second.end(), std::greater());
-			for (s_DODataIter = itDODatas.second.begin();
-				s_DODataIter != itDODatas.second.end(); s_DODataIter++) {
-				UploadVtxData(s_DODataIter->pDrawable);
-			}
-			s_pGApi->SetPrimitiveType(s_DOData.begin()->second.begin()->DrawPrimitive);
-			s_DTools.pGMtl = itDODatas.first;
-			DrawCall();
+		for (auto& itDState : s_DStates) {
+			DStatesOrder.push_back(&itDState.second);
 		}
-		s_DOData.clear();
+		std::sort(DStatesOrder.begin(), DStatesOrder.end());
+
+		for (auto itDState : DStatesOrder) {
+			const V4f& xywhViewport = itDState->xywhViewport;
+
+			itDState->pGCamera->nAspectRatio = (xywhViewport.z - xywhViewport.x) / (xywhViewport.w - xywhViewport.y);
+			
+			s_pGApi->SetPrimitiveType(itDState->DPrimitive);
+			DrawEngine::GetGApi()->SetViewport(xywhViewport.x, xywhViewport.y, xywhViewport.z, xywhViewport.w);
+			
+			memcpy(s_DTools.pShdIter, &itDState->pGCamera->GetProjMatrix(), sizeof(Mat4f));
+			s_DTools.pShdIter += (s_DTools.szShdData += sizeof(Mat4f));
+			memcpy(s_DTools.pShdIter, &itDState->pGCamera->GetViewMatrix(), sizeof(Mat4f));
+			s_DTools.pShdIter += (s_DTools.szShdData += sizeof(Mat4f));
+
+			itDState->pFrameBuf->Bind();
+			itDState->pFrameBuf->Clear(FB_COLOR | FB_DEPTH | FB_STENCIL);
+
+			for (auto& itDData : itDState->m_DData) {
+				s_DTools.pGMtl = itDData.first;
+				std::sort(itDData.second.begin(), itDData.second.end());
+				for (auto& pDrb : itDData.second) { UploadVtxData(pDrb); }
+				DrawCall();
+			}
+			itDState->pFrameBuf->Unbind();
+			itDState->Reset();
+			DStatesOrder.pop_back();
+
+			s_DTools.ResetData();
+		}
+
 		s_bIsDrawing = false;
 	}
 
-	inline void GraphEngine::UploadVtxData(ADrawable* pDrawable)
+	inline void DrawEngine::UploadVtxData(ADrawable* pDrawable)
 	{
 		UInt32 szVtx = pDrawable->GetVDataSize();
 		UInt32 unVtx = pDrawable->GetVDataCount();
@@ -174,15 +194,9 @@ namespace NW
 
 		if (s_DTools.szVtxData + szVtx > s_DInfo.szMaxVtx ||
 			s_DTools.szIdxData + szIdx > s_DInfo.szMaxIdx ||
-			s_DTools.pGMtl->GetTexCount() >= NW_MAX_TEXTURES) {
-			DrawCall();
-		}
+			s_DTools.unTexCount >= NW_MAX_TEXTURES) { DrawCall(); }
+
 	TextureData:
-		if (ATexture* pTex = pDrawable->pGMtl->GetTexture())
-		{
-			if (Int32 txi = s_DTools.pGMtl->HasTexture(pTex) != -1) { goto VertexData; }
-			else { s_DTools.pGMtl->SetTexture(pTex, ""); }
-		}
 	VertexData:
 		pDrawable->UpdateVData();
 		for (UInt32 vti = 0; vti < szVtx; vti++) { *s_DTools.pVtxIter++ = pVData[vti]; }
@@ -195,24 +209,24 @@ namespace NW
 		s_DTools.szIdxData += szIdx;
 		s_DTools.unIdxData += unIdx;
 	}
-	inline void GraphEngine::UploadShdData()
+	inline void DrawEngine::UploadShdData()
 	{
 	}
-	inline void GraphEngine::DrawCall()
+	inline void DrawEngine::DrawCall()
 	{
 		s_DTools.pGMtl->Enable();
 
-		s_DTools.pVtxBuf->SetLayout(s_DTools.pGMtl->GetShader()->GetVertexLayout());
 		s_DTools.pShdBuf->SetSubData(s_DTools.szShdData, &s_DTools.pShdData[0]);
 		s_DTools.pVtxBuf->SetSubData(s_DTools.szVtxData, &s_DTools.pVtxData[0]);
 		s_DTools.pIdxBuf->SetSubData(s_DTools.szIdxData, &s_DTools.pIdxData[0]);
 
-		s_DTools.pShdBuf->Bind(1, sizeof(Mat4f) * 2, 0);
+		s_DTools.pShdBuf->SetLayout(s_DTools.pGMtl->GetShader()->GetShdLayout());
+		s_DTools.pVtxBuf->SetLayout(s_DTools.pGMtl->GetShader()->GetVertexLayout());
 		s_DTools.pVtxBuf->Bind();
 		s_DTools.pIdxBuf->Bind();
 		s_pGApi->DrawIndexed(s_DTools.szIdxData / sizeof(UInt32));
-		s_DTools.pVtxBuf->Unbind();
 		s_DTools.pIdxBuf->Unbind();
+		s_DTools.pVtxBuf->Unbind();
 		s_DTools.pShdBuf->Unbind();
 
 		s_DTools.pGMtl->Disable();
@@ -230,8 +244,8 @@ namespace NW
 /// OnDraw (AShape)
 	/// Description:
 	/// -- Shapes have a vertex data, indices and bound AGMaterial
-	/// -- GraphEngine collects all the Vertex and Index data into some arrays from given object
-	/// -- AGMaterial of the object provides GraphEngine's AGMaterial with textures
+	/// -- DrawEngine collects all the Vertex and Index data into some arrays from given object
+	/// -- AGMaterial of the object provides DrawEngine's AGMaterial with textures
 	/// -- Every new texture from new AGMaterial will be bound to the current GMtl
 	/// -- In the EndDraw it will bind all owned textures and will set their samplerIDs to the own shader
 	/// -- There is also default white texture which will be used if we don not have other textures

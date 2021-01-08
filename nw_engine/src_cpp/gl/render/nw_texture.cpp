@@ -5,7 +5,7 @@
 #include <sys/nw_mem_sys.h>
 
 #if (defined NW_GRAPHICS)
-#include <core/nw_graph_engine.h>
+#include <gl/control/nw_draw_engine.h>
 
 #include <sys/nw_log_sys.h>
 
@@ -142,7 +142,7 @@ namespace NW
 
 	ATexture1d* ATexture1d::Create(const char* strName) {
 		ATexture1d* pTex = nullptr;
-		switch (GraphEngine::GetGApi()->GetType()) {
+		switch (DrawEngine::GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GAPI_COUT:
 			pTex = MemSys::NewT<Texture1dCout>(strName);
@@ -159,7 +159,7 @@ namespace NW
 	}
 	ATexture2d* ATexture2d::Create(const char* strName) {
 		ATexture2d* pTex = nullptr;
-		switch (GraphEngine::GetGApi()->GetType()) {
+		switch (DrawEngine::GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GAPI_COUT:
 			pTex = MemSys::NewT<Texture2dCout>(strName);
@@ -176,7 +176,7 @@ namespace NW
 	}
 	ATexture3d* ATexture3d::Create(const char* strName) {
 		ATexture3d* pTex = nullptr;
-		switch (GraphEngine::GetGApi()->GetType()) {
+		switch (DrawEngine::GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GAPI_COUT:
 			pTex = MemSys::NewT<Texture3dCout>(strName);

@@ -3,7 +3,7 @@
 
 #include <gl/vision/nw_gcamera.h>
 
-#include <core/nw_singleton.h>
+#include <lib/nw_singleton.h>
 
 #include <nw_decl.hpp>
 

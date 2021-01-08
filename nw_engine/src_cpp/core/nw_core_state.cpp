@@ -8,7 +8,7 @@
 #include <gui/nw_gui_core.h>
 #include <gui/nw_gui_widget.h>
 
-#include <core/nw_graph_engine.h>
+#include <gl/control/nw_draw_engine.h>
 #include <gl/control/nw_gcamera_lad.h>
 
 #include <sys/nw_gui_sys.h>

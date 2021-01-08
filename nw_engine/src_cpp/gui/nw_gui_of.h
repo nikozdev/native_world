@@ -98,7 +98,7 @@ namespace NW
 	struct NW_API GuiOfRender : public AGuiOf<GuiOfRender>
 	{
 	private:
-		bool bGApi = false, bGContext = false, bGraphEngineInfo = false;
+		bool bGApi = false, bGContext = false, bDrawEngineInfo = false;
 		Int32 szMaxVtx = 0, szMaxIdx = 0, unTexCount = 0;
 		String strDrawMode = "MD_FILL";
 		float nLineW = 0.01f, nPixelSz = 0.01f;

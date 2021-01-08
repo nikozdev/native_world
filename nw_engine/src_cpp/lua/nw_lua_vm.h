@@ -1,7 +1,7 @@
 #ifndef LUA_VIRTUAL_MACHIENE_H
 #define LUA_VIRTUAL_MACHIENE_H
 
-#include <core/nw_singleton.h>
+#include <lib/nw_singleton.h>
 
 #include <lib/nw_memory.h>
 

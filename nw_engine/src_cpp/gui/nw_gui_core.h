@@ -3,7 +3,7 @@
 
 #include <gl/render/nw_texture.h>
 
-#include <core/nw_event.h>
+#include <lib/nw_event.h>
 
 #include <gui_decl.hpp>
 #include <gl_decl.hpp>

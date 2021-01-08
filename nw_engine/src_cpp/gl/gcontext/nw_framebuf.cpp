@@ -5,7 +5,7 @@
 #include <sys/nw_data_sys.h>
 
 #if (defined NW_GRAPHICS)
-#include <core/nw_graph_engine.h>
+#include <gl/control/nw_draw_engine.h>
 #include <gl/render/nw_texture.h>
 namespace NW
 {
@@ -28,7 +28,7 @@ namespace NW
 	AFrameBuf* AFrameBuf::Create(const char* strName, const FrameBufInfo& rfbInfo)
 	{
 		AFrameBuf* pFB = nullptr;
-		switch (GraphEngine::GetGApi()->GetType())
+		switch (DrawEngine::GetGApi()->GetType())
 		{
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GApiTypes::GAPI_COUT:

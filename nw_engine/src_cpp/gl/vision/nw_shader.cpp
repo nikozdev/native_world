@@ -6,7 +6,7 @@
 #include <sys/nw_log_sys.h>
 
 #if (defined NW_GRAPHICS)
-#include <core/nw_graph_engine.h>
+#include <gl/control/nw_draw_engine.h>
 #include <gl/vision/nw_light_source.h>
 namespace NW
 {
@@ -19,18 +19,13 @@ namespace NW
 	ASubShader* ASubShader::Create(const char* strName, ShaderTypes sdType)
 	{
 		ASubShader* pSubShader = nullptr;
-		switch (GraphEngine::GetGApi()->GetType()) {
+		switch (DrawEngine::GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-		case GAPI_COUT:
-			pSubShader = MemSys::NewT<ShaderCout>(strName, sdType);
-			break;
+		case GAPI_COUT: break;
 	#elif (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GAPI_OPENGL:
-			pSubShader = MemSys::NewT<SubShaderOgl>(strName, sdType);
-			break;
+		case GAPI_OPENGL: pSubShader = MemSys::NewT<SubShaderOgl>(strName, sdType); break;
 	#endif // NW_GRAPHICS
-		default:
-			NW_ERR("Graphics Api is not defined");
+		default: NW_ERR("Graphics Api is not defined"); break;
 		}
 		return pSubShader;
 	}
@@ -45,18 +40,13 @@ namespace NW
 	AShader* AShader::Create(const char* strName)
 	{
 		AShader* pShader = nullptr;
-		switch (GraphEngine::GetGApi()->GetType()) {
+		switch (DrawEngine::GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-		case GAPI_COUT:
-			pShader = MemSys::NewT<ShaderCout>(strName);
-			break;
+		case GAPI_COUT: break;
 	#elif (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GAPI_OPENGL:
-			pShader = MemSys::NewT<ShaderOgl>(strName);
-			break;
+		case GAPI_OPENGL: pShader = MemSys::NewT<ShaderOgl>(strName); break;
 	#endif // NW_GRAPHICS
-		default:
-			NW_ERR("Graphics Api is not defined");
+		default: NW_ERR("Graphics Api is not defined"); break;
 		}
 		return pShader;
 	}
@@ -70,7 +60,7 @@ namespace NW
 	// Constructor&Destructor
 	SubShaderOgl::SubShaderOgl(const char* strName, ShaderTypes sdType) :
 		ASubShader(strName, sdType),
-		m_pOverShader(nullptr) { m_unRId = glCreateShader(m_shdType); }
+		m_pOverShader(nullptr) { Reset(); }
 	SubShaderOgl::~SubShaderOgl(){ Reset(); }
 
 	// getters
@@ -86,10 +76,11 @@ namespace NW
 
 	bool SubShaderOgl::Compile()
 	{
-		const char* cstrSource = &m_strCode[0];
-		glShaderSource(m_unRId, 1, &cstrSource, nullptr);
+		if (!CodeProc()) { return false; }
+		const char* strSource = &m_strCode[0];
+		glShaderSource(m_unRId, 1, &strSource, nullptr);
 		glCompileShader(m_unRId);
-		if (OGL_ErrLog_Shader(m_shdType, m_unRId) != 0) return false;
+		if (OGL_ErrLog_Shader(m_shdType, m_unRId) != 0) { return false; }
 		return true;
 	}
 	void SubShaderOgl::Reset() {
@@ -114,61 +105,83 @@ namespace NW
 		StringStream strCodeStream(m_strCode);
 		String strToken("", 256);
 		String strLine("", 256);
+		String strName("", 128);
+		Int32 nCurr = 0;
 
-		while (!strCodeStream.eof()) {	// Read the entire shader code
+		while (!strCodeStream.eof()) {		// parse the entire shader code
 			strCodeStream >> strToken;
-			if (strToken == "#version") {	// #version {ver_num}[ core]
+			if (strToken == "#version") {	// #version %num[ %core]
 				strCodeStream >> strToken;
 				m_strName += "_ver" + strToken;
 				strCodeStream >> strToken;
 				if (strToken == "core") m_strName += strToken;
 			}
-			else if (strToken.find("layout") != -1) {		// layout(...) )in/)uniform {
-				std::getline(strCodeStream, strToken, ')');	// everything in there doesn't really matter
+			else if (strToken.find("layout") != -1) {		// layout(location=%x/%std140)in /uniform{
+				if ((nCurr = strToken.find(')')) != -1) {}
+				else { std::getline(strCodeStream, strToken, ')'); }
 				strCodeStream >> strToken;
-				Int32 nCurr = 0;
-				if (strToken == "in") {		// layout(location = {loc}) in {type} {name};
+				if (strToken == "in") {		// layout(location=%loc)in %type %name;
 					strCodeStream >> strToken;
-					String strName("", 128);
 				/// --<macro_helper>--
-#define MAKE_BUF_ELEM(expr, type, count)										\
+#define MAKE_BUF_ELEM(expr, type, count, command)								\
 	if (expr) { if (nCurr < 0) { nCurr = 0; }	strCodeStream >> strName;		\
 	BufferElement BufElem(&strName[0], type, count, false);						\
 	if ((nCurr = strToken.find("[", nCurr)) != -1)								\
 	{ BufElem.unCount *= atoi(&strToken[nCurr]); }								\
-	m_pOverShader->m_vtxLayout.AddElement(BufElem); }
+	command(BufElem); }
 				/// --<macro_helper>--
-					MAKE_BUF_ELEM(strToken == "bool", SDT_BOOL, 1)
-					MAKE_BUF_ELEM(strToken == "short", SDT_INT16, 1)
-					MAKE_BUF_ELEM(strToken == "int", SDT_INT32, 1)
-					MAKE_BUF_ELEM(strToken == "sampler1D" || strToken == "sampler2D" || strToken == "sampler3D", SDT_INT32, 1)
-					MAKE_BUF_ELEM(strToken == "float", SDT_FLOAT32, 1)
-					MAKE_BUF_ELEM(strToken == "vec2", SDT_FLOAT32, 2)
-					MAKE_BUF_ELEM(strToken == "vec3", SDT_FLOAT32, 3)
-					MAKE_BUF_ELEM(strToken == "vec4", SDT_FLOAT32, 4)
-					MAKE_BUF_ELEM(strToken == "mat2", SDT_FLOAT32, 2 * 2)
-					MAKE_BUF_ELEM(strToken == "mat3", SDT_FLOAT32, 3 * 3)
-					MAKE_BUF_ELEM(strToken == "mat4", SDT_FLOAT32, 4 * 4)
+					MAKE_BUF_ELEM(strToken == "bool", SDT_BOOL, 1,			m_pOverShader->m_vtxLayout.AddElement)
+					MAKE_BUF_ELEM(strToken == "short", SDT_INT16, 1,		m_pOverShader->m_vtxLayout.AddElement)
+					MAKE_BUF_ELEM(strToken == "int", SDT_INT32, 1,			m_pOverShader->m_vtxLayout.AddElement)
+					MAKE_BUF_ELEM(strToken == "float", SDT_FLOAT32, 1,		m_pOverShader->m_vtxLayout.AddElement)
+					MAKE_BUF_ELEM(strToken == "vec2", SDT_FLOAT32, 2,		m_pOverShader->m_vtxLayout.AddElement)
+					MAKE_BUF_ELEM(strToken == "vec3", SDT_FLOAT32, 3,		m_pOverShader->m_vtxLayout.AddElement)
+					MAKE_BUF_ELEM(strToken == "vec4", SDT_FLOAT32, 4,		m_pOverShader->m_vtxLayout.AddElement)
+					if (strToken == "mat4") {
+						strCodeStream >> strName;
+						m_pOverShader->m_vtxLayout.AddElement(BufferElement{&strName[0], SDT_FLOAT32, 4, false});
+						m_pOverShader->m_vtxLayout.AddElement(BufferElement{&strName[0], SDT_FLOAT32, 4, false});
+						m_pOverShader->m_vtxLayout.AddElement(BufferElement{&strName[0], SDT_FLOAT32, 4, false});
+						m_pOverShader->m_vtxLayout.AddElement(BufferElement{&strName[0], SDT_FLOAT32, 4, false});
+					}
 				}
-				else if (strToken == "uniform") {	// uniform {name} {elements};
-					m_pOverShader->m_Blocks[strToken] = m_pOverShader->m_Blocks.size();
+				else if (strToken == "uniform") {	// uniform %name {%elements};
+					strCodeStream >> strName;
+					if ((nCurr = strName.find("{")) != -1) { strName = strName.substr(0, nCurr); }
+					ShaderBlock shdBlock(&strName[0], m_pOverShader->m_shdLayout.GetBlocks().size());
+					while (!strCodeStream.eof()) {
+						strCodeStream >> strToken;
+						if (strToken.find('{') != -1) { continue; }
+						if (strToken.find('}') != -1) { break; }
+						MAKE_BUF_ELEM(strToken == "bool", SDT_BOOL, 1, shdBlock.BufElems.push_back)
+						MAKE_BUF_ELEM(strToken == "short", SDT_INT16, 1, shdBlock.BufElems.push_back)
+						MAKE_BUF_ELEM(strToken == "int", SDT_INT32, 1, shdBlock.BufElems.push_back)
+						MAKE_BUF_ELEM(strToken == "float", SDT_FLOAT32, 1, shdBlock.BufElems.push_back)
+						MAKE_BUF_ELEM(strToken == "vec2", SDT_FLOAT32, 2, shdBlock.BufElems.push_back)
+						MAKE_BUF_ELEM(strToken == "vec3", SDT_FLOAT32, 4, shdBlock.BufElems.push_back)
+						MAKE_BUF_ELEM(strToken == "vec4", SDT_FLOAT32, 4, shdBlock.BufElems.push_back)
+						MAKE_BUF_ELEM(strToken == "mat2", SDT_FLOAT32, 2 * 2, shdBlock.BufElems.push_back)
+						MAKE_BUF_ELEM(strToken == "mat3", SDT_FLOAT32, 3 * 4, shdBlock.BufElems.push_back)
+						MAKE_BUF_ELEM(strToken == "mat4", SDT_FLOAT32, 4 * 4, shdBlock.BufElems.push_back)
+					}
+					m_pOverShader->m_shdLayout.AddBlock(shdBlock);
+					m_pOverShader->m_Blocks[&shdBlock.strName[0]] = shdBlock.unBindPoint;
 				}
 			}
 			else if (strToken == "uniform") {	// uniform {type} {name};
-				Int32 nCurr = 0;
 				strCodeStream >> strToken;
-				std::getline(strCodeStream, strToken, '\n');
-				if (strToken.find(';') != -1) {		// simple uniform
-					String strName = strToken.substr(0, nCurr - 2);
-					if ((nCurr = strToken.find("[")) == -1) {	// it is not array
-						m_pOverShader->m_Attribs[strName] = m_pOverShader->m_Attribs.size();
-					}
-					else {		// here is an array
-						Int32 nCount = atoi(&strToken[nCurr + 1]);
-						m_pOverShader->m_Attribs[strName] = m_pOverShader->m_Attribs.size();
-						m_pOverShader->m_shdLayout.AddElement(&strName[0], SDT_SAMPLER, 1, nCount);
-					}
-				}
+				strCodeStream >> strToken;
+				MAKE_BUF_ELEM(strToken == "bool", SDT_BOOL, 1, m_pOverShader->m_shdLayout.AddGlobalElem)
+				MAKE_BUF_ELEM(strToken == "short", SDT_INT16, 1, m_pOverShader->m_shdLayout.AddGlobalElem)
+				MAKE_BUF_ELEM(strToken == "int", SDT_INT32, 1, m_pOverShader->m_shdLayout.AddGlobalElem)
+				MAKE_BUF_ELEM(strToken == "float", SDT_FLOAT32, 1, m_pOverShader->m_shdLayout.AddGlobalElem)
+				MAKE_BUF_ELEM(strToken == "vec2", SDT_FLOAT32, 2, m_pOverShader->m_shdLayout.AddGlobalElem)
+				MAKE_BUF_ELEM(strToken == "vec3", SDT_FLOAT32, 3, m_pOverShader->m_shdLayout.AddGlobalElem)
+				MAKE_BUF_ELEM(strToken == "vec4", SDT_FLOAT32, 4, m_pOverShader->m_shdLayout.AddGlobalElem)
+				MAKE_BUF_ELEM(strToken == "mat2", SDT_FLOAT32, 2 * 2, m_pOverShader->m_shdLayout.AddGlobalElem)
+				MAKE_BUF_ELEM(strToken == "mat3", SDT_FLOAT32, 3 * 3, m_pOverShader->m_shdLayout.AddGlobalElem)
+				MAKE_BUF_ELEM(strToken == "mat4", SDT_FLOAT32, 4 * 4, m_pOverShader->m_shdLayout.AddGlobalElem)
+				m_pOverShader->m_Params[strName] = m_pOverShader->m_Params.size();
 			}
 		}
 		return true;
@@ -178,37 +191,39 @@ namespace NW
 namespace NW
 {
 	ShaderOgl::ShaderOgl(const char* strName) :
-		AShader(strName)
-	{ m_unRId = glCreateProgram(); }
+		AShader(strName) { }
 	ShaderOgl::~ShaderOgl() { }
 
 	// --==<core_methods>==--
 	void ShaderOgl::Enable() {
 		glUseProgram(m_unRId);
-		auto itBlock = m_Blocks.begin();
-		for (Int32 nBind = 0; itBlock != m_Blocks.end(); nBind++, itBlock++) {
-			glUniformBlockBinding(m_unId, itBlock->second, nBind);
+		for (UInt8 bi = 0; bi < m_shdLayout.GetBlocks().size(); bi++) {
+			glUniformBlockBinding(m_unRId, bi, m_shdLayout.GetBlock(bi).unBindPoint);
 		}
 	}
 	void ShaderOgl::Disable() { glUseProgram(0); }
 
 	bool ShaderOgl::Compile()
 	{
-		if (m_SubShaders.size() != 0) { Reset(); }
-		if (!CodeProc()) { NW_ERR("ShaderOgl is not linked"); return false; }
-
-		GL_CALL(glLinkProgram(m_unRId));
-		if (GL_DEBUG_ERR_LOG(ST_SHADER, m_unRId) != 0) return false;
-
+		Reset();
+		if (!CodeProc()) { return false; }
+		for (auto& rSub : m_SubShaders) {
+			rSub.Attach(this);
+			if (!rSub.Compile()) { return false; }
+		}
+		glLinkProgram(m_unRId);
+		if (OGL_ErrLog_Shader(ST_SHADER, m_unRId) != 0) return false;
+		
 		return true;
 	}
 	void ShaderOgl::Reset()
 	{
-		if (m_unRId != 0) glDeleteProgram(m_unRId);
+		if (m_unRId != 0) { glDeleteProgram(m_unRId); m_unRId = 0; }
 		m_unRId = glCreateProgram();
 		m_SubShaders.clear();
-		m_Attribs.clear();
+		m_Params.clear();
 		m_vtxLayout.Reset();
+		m_shdLayout.Reset();
 	}
 	// --==</core_methods>==--
 
@@ -225,31 +240,31 @@ namespace NW
 	{
 		bool bSuccess = false;
 		if (DataSys::LoadF_string(strFPath, m_strCode)) {	// try to load source code from file
-			if (!Compile()) {									// try to use the string as a formated cn_file
+			if (!Compile()) {								// try to use the string as a formated cn_file
 				String strFile = m_strCode;
 				bSuccess = false;
 			}
-			else { bSuccess = false; }
+			else { bSuccess = true; }
 		}
 		return bSuccess;
 	}
 	// --==</data_methods>==--
 
 	// --==<setters>==--
-	void ShaderOgl::SetBool(const char* name, bool value) const { glUniform1i(GetAttribLoc(name), value); }
-	void ShaderOgl::SetInt(const char* name, int value) const { glUniform1i(GetAttribLoc(name), value); }
-	void ShaderOgl::SetIntArray(const char* name, Int32* pIntArr, UInt32 unCount) const { glUniform1iv(GetAttribLoc(name), unCount, pIntArr); }
-	void ShaderOgl::SetUIntArray(const char* name, UInt32* pUIntArr, UInt32 unCount) const { glUniform1uiv(GetAttribLoc(name), unCount, pUIntArr); }
-	void ShaderOgl::SetFloat(const char* name, float value) const { glUniform1f(GetAttribLoc(name), value); }
-	void ShaderOgl::SetFloatArray(const char* name, float* pFloatArr, UInt32 unCount) const { glUniform1fv(GetAttribLoc(name), unCount, pFloatArr); }
-	void ShaderOgl::SetV2f(const char* name, const V2f& value) const { glUniform2fv(GetAttribLoc(name), 1, &(value[0])); }
-	void ShaderOgl::SetV3f(const char* name, const V3f& value) const { glUniform3fv(GetAttribLoc(name), 1, &(value[0])); }
-	void ShaderOgl::SetV4f(const char* name, const V4f& value) const { glUniform4fv(GetAttribLoc(name), 1, &(value[0])); }
-	void ShaderOgl::SetM4f(const char* name, const Mat4f& value) const { glUniformMatrix4fv(GetAttribLoc(name), 1, GL_FALSE, &value[0][0]); }
+	void ShaderOgl::SetBool(const char* name, bool value) const { glUniform1i(GetUniformLoc(name), value); }
+	void ShaderOgl::SetInt(const char* name, int value) const { glUniform1i(GetUniformLoc(name), value); }
+	void ShaderOgl::SetIntArray(const char* name, Int32* pIntArr, UInt32 unCount) const { glUniform1iv(GetUniformLoc(name), unCount, pIntArr); }
+	void ShaderOgl::SetUIntArray(const char* name, UInt32* pUIntArr, UInt32 unCount) const { glUniform1uiv(GetUniformLoc(name), unCount, pUIntArr); }
+	void ShaderOgl::SetFloat(const char* name, float value) const { glUniform1f(GetUniformLoc(name), value); }
+	void ShaderOgl::SetFloatArray(const char* name, float* pFloatArr, UInt32 unCount) const { glUniform1fv(GetUniformLoc(name), unCount, pFloatArr); }
+	void ShaderOgl::SetV2f(const char* name, const V2f& value) const { glUniform2fv(GetUniformLoc(name), 1, &(value[0])); }
+	void ShaderOgl::SetV3f(const char* name, const V3f& value) const { glUniform3fv(GetUniformLoc(name), 1, &(value[0])); }
+	void ShaderOgl::SetV4f(const char* name, const V4f& value) const { glUniform4fv(GetUniformLoc(name), 1, &(value[0])); }
+	void ShaderOgl::SetM4f(const char* name, const Mat4f& value) const { glUniformMatrix4fv(GetUniformLoc(name), 1, GL_FALSE, &value[0][0]); }
 	// --==</setters>==--
 
 	// --==<core_methods>==--
-	bool ShaderOgl::CodeProc()
+	inline bool ShaderOgl::CodeProc()
 	{
 		StringStream strStream(m_strCode), strCodeStream;
 		String strToken = "", strLine = "";
@@ -268,37 +283,31 @@ namespace NW
 				}
 			}
 
-			if (strToken == "vertex") { m_SubShaders.push_back(SubShaderOgl(&(m_strName + "_" + strToken)[0], ShaderTypes::ST_VERTEX)); }
-			else if (strToken == "geometry") { m_SubShaders.push_back(SubShaderOgl(&(m_strName + "_" + strToken)[0], ShaderTypes::ST_GEOMETRY)); }
-			else if (strToken == "pixel" || strToken == "fragment") { m_SubShaders.push_back(SubShaderOgl(&(m_strName + "_" + strToken)[0], ShaderTypes::ST_PIXEL)); }
+			if (strToken == "vertex") { m_SubShaders.push_back(SubShaderOgl(&(m_strName + "_" + strToken)[0], ST_VERTEX)); }
+			else if (strToken == "geometry") { m_SubShaders.push_back(SubShaderOgl(&(m_strName + "_" + strToken)[0], ST_GEOMETRY)); }
+			else if (strToken == "pixel" || strToken == "fragment") { m_SubShaders.push_back(SubShaderOgl(&(m_strName + "_" + strToken)[0], ST_PIXEL)); }
 			else { continue; }
 
 			auto& rSub = m_SubShaders.back();
 			rSub.SetCode(&strCodeStream.str()[0]);
-			rSub.Attach(this);
-			if (!rSub.CodeProc()) { return false; }
-			if (!rSub.Compile()) { return false; }
-			
 			strCodeStream = std::stringstream();
 		}
 
 		return true;
 	}
 
-	Int32 ShaderOgl::GetAttribLoc(const char* strName) const
-	{
-		for (auto& name_loc : m_Attribs) { if (&name_loc.first[0] == strName) { return name_loc.second; } }
+	inline Int32 ShaderOgl::GetUniformLoc(const char* strName) const {
+		for (auto& itPar : m_Params) { if (strcmp(itPar.first.c_str(), strName) == 0) { return itPar.second; } }
 		
-		Int32 nLoc = glGetAttribLocation(m_unRId, &strName[0]);
-		m_Attribs[&strName[0]] = nLoc;
+		Int32 nLoc = glGetUniformLocation(m_unRId, strName);
+		m_Params[strName] = nLoc;
 		return nLoc;
 	}
-	inline Int32 ShaderOgl::GetBlockIdx(const char* strName) const
-	{
-		for (auto& name_loc : m_Blocks) { if (&name_loc.first[0] == strName) { return name_loc.second; } }
+	inline Int32 ShaderOgl::GetBlockIdx(const char* strName) const {
+		for (auto& itBlk : m_Blocks) { if (strcmp(itBlk.first.c_str(), strName) == 0) { return itBlk.second; } }
 		
 		Int32 nIdx = glGetUniformBlockIndex(m_unRId, &strName[0]);
-		m_Attribs[&strName[0]] = nIdx;
+		m_Blocks[strName] = nIdx;
 		return nIdx;
 	}
 	// --==</core_methods>==--

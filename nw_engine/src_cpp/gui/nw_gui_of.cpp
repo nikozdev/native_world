@@ -5,7 +5,7 @@
 #include <ecs/nw_entity.h>
 #include <ecs/nw_entity_cmp.h>
 
-#include <core/nw_graph_engine.h>
+#include <gl/control/nw_draw_engine.h>
 #include <gl/control/nw_gapi.h>
 #include <gl/control/nw_gcamera_lad.h>
 #include <gl/gcontext/nw_gcontext.h>
@@ -226,35 +226,35 @@ namespace NW
 		}
 		bGApi = ImGui::TreeNodeEx("--==<Graphics Api>==--", GUI_DEFAULT_TREE_FLAGS);
 		if (bGApi) {
-			AGraphicsApi* pGApi = GraphEngine::GetGApi();
+			AGraphicsApi* pGApi = DrawEngine::GetGApi();
 			ImGui::Text("Type: %s",
 				pGApi->GetType() == GApiTypes::GAPI_OPENGL ? "OpenGL" : pGApi->GetType() == GApiTypes::GAPI_COUT ? "Console" :
 				pGApi->GetType() == GApiTypes::GAPI_WIN ? "Windows" :
 				"None");
-			if (ImGui::DragFloat("Line Width", &nLineW, 0.1f)) GraphEngine::GetGApi()->SetLineWidth(nLineW);
-			if (ImGui::DragFloat("Pixel size", &nPixelSz, 0.1f)) GraphEngine::GetGApi()->SetPixelSize(nPixelSz);
+			if (ImGui::DragFloat("Line Width", &nLineW, 0.1f)) DrawEngine::GetGApi()->SetLineWidth(nLineW);
+			if (ImGui::DragFloat("Pixel size", &nPixelSz, 0.1f)) DrawEngine::GetGApi()->SetPixelSize(nPixelSz);
 			if (ImGui::BeginCombo("DrawMode", &strDrawMode[0])) {
 				if (ImGui::Selectable("MD_FILL")) {
 					strDrawMode = "MD_FILL";
-					GraphEngine::GetGApi()->SetDrawMode(DrawModes::DM_FILL, FacePlanes::FP_FRONT_AND_BACK);
+					DrawEngine::GetGApi()->SetDrawMode(DrawModes::DM_FILL, FacePlanes::FP_FRONT_AND_BACK);
 				}
 				else if (ImGui::Selectable("MD_LINE")) {
 					strDrawMode = "MD_LINE";
-					GraphEngine::GetGApi()->SetDrawMode(DrawModes::DM_LINE, FacePlanes::FP_FRONT_AND_BACK);
+					DrawEngine::GetGApi()->SetDrawMode(DrawModes::DM_LINE, FacePlanes::FP_FRONT_AND_BACK);
 				}
 				ImGui::EndCombo();
 			} ImGui::Separator();
 			ImGui::TreePop();
 		}
-		bGraphEngineInfo = ImGui::TreeNodeEx("--==<Draw Info>==--", GUI_DEFAULT_TREE_FLAGS);
-		if (bGraphEngineInfo) {
-			const GraphEngineInfo& rDInfo = GraphEngine::GetInfo();
+		bDrawEngineInfo = ImGui::TreeNodeEx("--==<Draw Info>==--", GUI_DEFAULT_TREE_FLAGS);
+		if (bDrawEngineInfo) {
+			const DrawEngineInfo& rDInfo = DrawEngine::GetInfo();
 			ImGui::Text("Vertex data\n::Count: %d;\n::Size in Bytes: %d/%d;\n",
 				rDInfo.unVtx,
 				rDInfo.szVtx, rDInfo.szMaxVtx);
 
 			ImGui::InputInt("New MaxVtxSize", &szMaxVtx);
-			if (ImGui::Button("Change MaxVtxSize")) GraphEngine::SetMaxVtxSize(szMaxVtx);
+			if (ImGui::Button("Change MaxVtxSize")) DrawEngine::SetMaxVtxSize(szMaxVtx);
 			
 			szMaxIdx = rDInfo.szMaxIdx;
 			ImGui::Text("Index data\n::Count: %d;\n::Size in Bytes: %d/%d;\n",
@@ -262,13 +262,13 @@ namespace NW
 				rDInfo.szIdx, rDInfo.szMaxIdx);
 
 			ImGui::InputInt("New MaxIndexSize", &szMaxIdx);
-			if (ImGui::Button("Change MaxIndexSize")) GraphEngine::SetMaxIdxSize(szMaxIdx);
+			if (ImGui::Button("Change MaxIndexSize")) DrawEngine::SetMaxIdxSize(szMaxIdx);
 			ImGui::Text("Textures\n::Slots: %d/%d;",
 				rDInfo.unTex, rDInfo.unMaxTex);
 
 			unTexCount = rDInfo.unMaxTex;
 			ImGui::InputInt("New MaxTexCount", &unTexCount);
-			if (ImGui::Button("Change MaxTexCount")) GraphEngine::SetMaxTexCount(unTexCount);
+			if (ImGui::Button("Change MaxTexCount")) DrawEngine::SetMaxTexCount(unTexCount);
 
 			ImGui::Text("Performance\n::Draw calls per frame: %d;",
 				rDInfo.unDrawCalls);
@@ -411,7 +411,7 @@ namespace NW
 			auto& rBufElems = pContextShd->GetVertexLayout().GetElems();
 			for (UInt16 bei = 0; bei < rBufElems.size(); bei++) {
 				auto& rBE = rBufElems[bei];
-				ImGui::Text("%dth layout element:\nName: %s;\tType: %s;\nCount = %d;\tIs%snormalized", bei,
+				ImGui::Text("%dth attribute:\nName: %s;\tType: %s;\nCount = %d;\tIs%snormalized", bei,
 					&rBE.strName[0],
 					rBE.sdType == SDT_BOOL ? "boolean" :
 					rBE.sdType == SDT_INT8 ? "byte" : rBE.sdType == SDT_UINT8 ? "unsigned byte" :
@@ -421,8 +421,8 @@ namespace NW
 					"unknown",
 					rBE.unCount, rBE.bNormalized ? " " : " not ");
 			}
-			auto& rAttribs = pContextShd->GetAttribs();
-			for (auto& rAtb : rAttribs) { ImGui::Text("%dth attribute: %s", rAtb.second, rAtb.first); }
+			auto& rAttribs = pContextShd->GetParams();
+			for (auto& rAtb : rAttribs) { ImGui::Text("%dth parameter: %s", rAtb.second, rAtb.first); }
 			auto& rBlocks = pContextShd->GetBlocks();
 			for (auto& rBlk: rBlocks) { ImGui::Text("%dth block: %s", rBlk.second, rBlk.first); }
 			ImGui::PopID();
@@ -451,7 +451,7 @@ namespace NW
 		};
 		pIndBuf.reset(AIndexBuf::Create(sizeof(IndData) / sizeof(UInt32), &IndData[0]));
 		
-		pShader->LoadF("D:\\dev\\native_world\\nw_engine\\src_glsl\\display_img0.glsl");
+		pShader->LoadF("D:\\dev\\native_world\\nw_engine\\src_glsl\\display_img.glsl");
 		pVtxBuf->SetLayout(pShader->GetVertexLayout());
 
 		FrameBufInfo fbInfo;
@@ -496,7 +496,7 @@ namespace NW
 
 		pVtxBuf->Bind();
 		pIndBuf->Bind();
-		GraphEngine::GetGApi()->DrawIndexed(pIndBuf->GetDataSize() / sizeof(UInt32));
+		DrawEngine::GetGApi()->DrawIndexed(pIndBuf->GetDataSize() / sizeof(UInt32));
 		pIndBuf->Unbind();
 		pVtxBuf->Unbind();
 		

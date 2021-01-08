@@ -6,7 +6,6 @@
 #include <core/nw_core_engine.h>
 #include <core/nw_core_state.h>
 #include <core/nw_data_res.h>
-#include <core/nw_graph_engine.h>
 // --==</engine_core>==--
 
 // --==<systems>==--
@@ -20,10 +19,11 @@
 // --==</systems>==--
 
 // --==<graphics_library>==--
+#include <gl/control/nw_gapi.h>
+#include <gl/control/nw_draw_engine.h>
+
 #include <gl/gcontext/nw_window.h>
 #include <gl/gcontext/nw_gcontext.h>
-
-#include <gl/control/nw_gapi.h>
 
 #include <gl/vision/nw_shader.h>
 #include <gl/vision/nw_gmaterial.h>

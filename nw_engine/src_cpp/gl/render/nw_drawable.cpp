@@ -193,7 +193,7 @@ namespace NW
 	// --==<Sprite>==--
 	Sprite::Sprite() :
 		Rectangle({ 1.0f, 1.0f }),
-		SubTex(SubTexture2d()) { }
+		SubTex(SubTexture2d()) { SubTex.pOverTex = DataSys::GetDataRes<ATexture2d>("tex_white_solid"); }
 
 	// --core_methods
 	void Sprite::UpdateVData()

@@ -1,7 +1,7 @@
 #include <nw_pch.hpp>
 #include "nw_gcamera_lad.h"
 
-#include <core/nw_event.h>
+#include <lib/nw_event.h>
 
 #include <sys/nw_time_sys.h>
 #include <sys/nw_io_sys.h>

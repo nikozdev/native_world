@@ -3,7 +3,7 @@
 
 #include <core/nw_core_state.h>
 
-#include <core/nw_graph_engine.h>
+#include <gl/control/nw_draw_engine.h>
 #include <gl/gcontext/nw_window.h>
 
 #include <ecs/nw_scene.h>
@@ -84,15 +84,15 @@ namespace NW
 		GApiType = GApiTypes::GAPI_COUT;
 		#endif
 	#endif	// NW_GRAPHICS
-		if (!GraphEngine::Init(GApiType)) {
-			LogSys::WriteErrStr(NW_ERR_NO_INIT, "GraphEngine is not initialized!");
-			GraphEngine::OnQuit();
+		if (!DrawEngine::Init(GApiType)) {
+			LogSys::WriteErrStr(NW_ERR_NO_INIT, "DrawEngine is not initialized!");
+			DrawEngine::OnQuit();
 			m_pWindow->OnQuit();
 			return false;
 		}
 
-		EvSys::OnInit();
 		DataSys::OnInit();
+		EvSys::OnInit();
 		GuiSys::OnInit();
 
 		return true;
@@ -117,21 +117,24 @@ namespace NW
 		DataSys::OnQuit();
 		GuiSys::OnQuit();
 
-		GraphEngine::OnQuit();
+		DrawEngine::OnQuit();
 		m_pWindow->OnQuit();
 
 		system("\a");
 		LogSys::WriteStr("NW_CoreEngine has been quited");
 	}
 	inline void CoreEngine::Update()
-	{	
+	{
+		DrawEngine::BeginDraw();
 		GuiSys::BeginDraw();
 		GuiSys::Update();
+		
 		m_pCurrState->Update();
-		GuiSys::EndDraw();
-
 		m_pWindow->Update();
-		GraphEngine::Update();
+		
+		GuiSys::EndDraw();
+		DrawEngine::Update();
+		DrawEngine::EndDraw();
 	
 		IOSys::Update();
 		TimeSys::Update();

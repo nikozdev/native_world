@@ -76,6 +76,9 @@
     <Filter Include="src_cpp\lua">
       <UniqueIdentifier>{E0255F2B-4CDB-D720-D5CF-D1F74184CE24}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src_cpp\phys">
+      <UniqueIdentifier>{A2DF4597-8E42-D53B-37C8-0DF2230AA1BE}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src_cpp\sys">
       <UniqueIdentifier>{3D445F2B-A9F9-D720-32EE-D1F79EA2CE24}</UniqueIdentifier>
     </Filter>
@@ -1437,13 +1440,13 @@
     <ClInclude Include="ext\lua_lib\src\lzio.h">
       <Filter>ext\lua_lib\src</Filter>
     </ClInclude>
+    <ClInclude Include="src_cpp\core\nw_core_engine.h">
+      <Filter>src_cpp\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\core\nw_core_state.h">
+      <Filter>src_cpp\core</Filter>
+    </ClInclude>
     <ClInclude Include="src_cpp\core\nw_data_res.h">
-      <Filter>src_cpp\core</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\core\nw_event.h">
-      <Filter>src_cpp\core</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\core\nw_singleton.h">
       <Filter>src_cpp\core</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\ecs\nw_collider_cmp.h">
@@ -1472,6 +1475,12 @@
     </ClInclude>
     <ClInclude Include="src_cpp\ecs_decl.hpp">
       <Filter>src_cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\gl\control\nw_draw_engine.h">
+      <Filter>src_cpp\gl\control</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\gl\control\nw_draw_state.h">
+      <Filter>src_cpp\gl\control</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\gl\control\nw_gapi.h">
       <Filter>src_cpp\gl\control</Filter>
@@ -1587,10 +1596,16 @@
     <ClInclude Include="src_cpp\nw_pch.hpp">
       <Filter>src_cpp</Filter>
     </ClInclude>
+    <ClInclude Include="src_cpp\phys\nw_phys_engine.h">
+      <Filter>src_cpp\phys</Filter>
+    </ClInclude>
     <ClInclude Include="src_cpp\sys\nw_data_sys.h">
       <Filter>src_cpp\sys</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\sys\nw_ev_sys.h">
+      <Filter>src_cpp\sys</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\sys\nw_gui_sys.h">
       <Filter>src_cpp\sys</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\sys\nw_io_sys.h">
@@ -1608,21 +1623,20 @@
     <ClInclude Include="src_cpp\sys\nw_time_sys.h">
       <Filter>src_cpp\sys</Filter>
     </ClInclude>
-    <ClInclude Include="src_cpp\sys\nw_gui_sys.h">
-      <Filter>src_cpp\sys</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\core\nw_phys_engine.h" />
-    <ClInclude Include="src_cpp\core\nw_core_engine.h">
+    <ClInclude Include="src_cpp\lib\nw_singleton.h">
       <Filter>src_cpp\core</Filter>
     </ClInclude>
-    <ClInclude Include="src_cpp\core\nw_core_state.h">
+    <ClInclude Include="src_cpp\lib\nw_event.h">
       <Filter>src_cpp\core</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\core\nw_graph_engine.h">
-      <Filter>src_cpp\gl\control</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src_cpp\core\nw_core_engine.cpp">
+      <Filter>src_cpp\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\core\nw_core_state.cpp">
+      <Filter>src_cpp\core</Filter>
+    </ClCompile>
     <ClCompile Include="src_cpp\core\nw_data_res.cpp">
       <Filter>src_cpp\core</Filter>
     </ClCompile>
@@ -1649,6 +1663,12 @@
     </ClCompile>
     <ClCompile Include="src_cpp\ecs\nw_transform_cmp.cpp">
       <Filter>src_cpp\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\gl\control\nw_draw_engine.cpp">
+      <Filter>src_cpp\gl\control</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\gl\control\nw_draw_state.cpp">
+      <Filter>src_cpp\gl\control</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\gl\control\nw_gapi.cpp">
       <Filter>src_cpp\gl\control</Filter>
@@ -1716,10 +1736,16 @@
     <ClCompile Include="src_cpp\nw_pch.cpp">
       <Filter>src_cpp</Filter>
     </ClCompile>
+    <ClCompile Include="src_cpp\phys\nw_phys_engine.cpp">
+      <Filter>src_cpp\phys</Filter>
+    </ClCompile>
     <ClCompile Include="src_cpp\sys\nw_data_sys.cpp">
       <Filter>src_cpp\sys</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\sys\nw_ev_sys.cpp">
+      <Filter>src_cpp\sys</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\sys\nw_gui_sys.cpp">
       <Filter>src_cpp\sys</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\sys\nw_io_sys.cpp">
@@ -1736,19 +1762,6 @@
     </ClCompile>
     <ClCompile Include="src_cpp\sys\nw_time_sys.cpp">
       <Filter>src_cpp\sys</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\sys\nw_gui_sys.cpp">
-      <Filter>src_cpp\sys</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\core\nw_phys_engine.cpp" />
-    <ClCompile Include="src_cpp\core\nw_core_engine.cpp">
-      <Filter>src_cpp\core</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\core\nw_core_state.cpp">
-      <Filter>src_cpp\core</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\core\nw_graph_engine.cpp">
-      <Filter>src_cpp\gl\control</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

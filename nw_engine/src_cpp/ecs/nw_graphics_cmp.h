@@ -13,7 +13,6 @@ namespace NW
 	{
 	public:
 		UInt8 unDrawOrder = 0;
-		DrawObjectData DOData;
 	public:
 		AGraphicsCmp(AEntity& rEntity) :
 			AEntityCmp(rEntity, std::type_index(typeid(AGraphicsCmp))) { }
@@ -63,7 +62,7 @@ namespace NW
 	{
 	public:
 		Graphics2dCmp(AEntity& rEntity);
-		~Graphics2dCmp() = default;
+		~Graphics2dCmp();
 
 		// --getters
 		virtual inline ADrawable* GetDrawable() override { return &m_Sprite; }

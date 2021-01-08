@@ -7,7 +7,7 @@ namespace NW
 {
 	//	--==<Control>==--
 	class NW_API AGraphicsApi;
-	class NW_API GraphEngine;
+	class NW_API DrawEngine;
 	class NW_API GCameraLad;
 	//	--==</Control>==--
 
@@ -65,7 +65,7 @@ namespace NW
 	struct NW_API VertexShape3d;
 
 	struct NW_API BufferElement;
-	struct NW_API BufferLayout;
+	struct NW_API VertexBufLayout;
 
 	struct NW_API SubTexture1d;
 	struct NW_API SubTexture2d;
@@ -93,6 +93,7 @@ namespace NW
 	/// Data that can be loaded in a shader
 	enum ShaderDataTypes : UInt32
 	{
+		SDT_NONE = NW_ERR_NO_DATA,
 		SDT_BOOL = NW_BOOL, SDT_INT8 = NW_INT8, SDT_UINT8 = NW_UINT8,
 		SDT_INT16 = NW_INT16, SDT_UINT16 = NW_UINT16,
 		SDT_INT32 = NW_INT32, SDT_UINT32 = NW_UINT32,

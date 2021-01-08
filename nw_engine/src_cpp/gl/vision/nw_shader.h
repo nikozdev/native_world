@@ -15,8 +15,8 @@ namespace NW
 	class NW_API ASubShader : public ACodeChunk
 	{
 	public:
-		using Attribs = HashMap<String, UInt32>;
-		using Blocks = HashMap<String, UInt32>;
+		using Attribs = HashMap<String, Int32>;
+		using Blocks = HashMap<String, Int32>;
 	public:
 		ASubShader(const char* strName, ShaderTypes sdType);
 		virtual ~ASubShader();
@@ -24,9 +24,6 @@ namespace NW
 		// --getters
 		inline UInt32 GetRenderId() const { return m_unRId; }
 		inline ShaderTypes GetType() const { return m_shdType; }
-		inline const BufferLayout& GetVertexLayout() const { return m_vtxLayout; }
-		inline const Attribs& GetAttribs() const { return m_Attribs; }
-		inline const Blocks& GetBlocks() const { return m_Blocks; }
 		virtual inline const AShader* GetOverShader() const = 0;
 
 		// --core_methods
@@ -43,9 +40,6 @@ namespace NW
 	protected:
 		UInt32 m_unRId;
 		ShaderTypes m_shdType;
-		BufferLayout m_vtxLayout;
-		mutable Attribs m_Attribs;
-		mutable Blocks m_Blocks;
 	};
 	/// Abstract Shader Class
 	/// --Interface:
@@ -65,17 +59,17 @@ namespace NW
 	class NW_API AShader : public ACodeChunk
 	{
 	public:
-		using Attribs = HashMap<String, UInt32>;
-		using Blocks = HashMap<String, UInt32>;
+		using Params = HashMap<String, Int32>;
+		using Blocks = HashMap<String, Int32>;
 	public:
 		AShader(const char* strName);
 		virtual ~AShader();
 
 		// --getters
 		inline UInt32 GetRenderId() const { return m_unRId; }
-		inline const BufferLayout& GetVertexLayout() const { return m_vtxLayout; }
-		inline const BufferLayout& GetShdLayout() const { return m_shdLayout; }
-		inline const Attribs& GetAttribs() const { return m_Attribs; }
+		inline const VertexBufLayout& GetVertexLayout() const { return m_vtxLayout; }
+		inline const ShaderBufLayout& GetShdLayout() const { return m_shdLayout; }
+		inline const Params& GetParams() const { return m_Params; }
 		inline const Blocks& GetBlocks() const { return m_Blocks; }
 		virtual inline const ASubShader* GetSubShader(ShaderTypes sdType) = 0;
 		// --core_methods
@@ -91,22 +85,21 @@ namespace NW
 		static AShader* Create(const char* strName);
 
 		// --setters
-		virtual void SetBool(const char* strName, bool value) const {}
-		virtual void SetInt(const char* strName, int value) const {}
-		virtual void SetIntArray(const char *strName, Int32 *pIntArr, UInt32 unCount) const {}
-		virtual void SetUIntArray(const char *strName, UInt32 *pUIntArr, UInt32 unCount) const {}
-
-		virtual void SetFloat(const char* strName, float value) const {}
-		virtual void SetFloatArray(const char *strName, float *pFloatArr, UInt32 unCount) const {}
-		virtual void SetV2f(const char* strName, const V2f& value) const {}
-		virtual void SetV3f(const char* strName, const V3f& value) const {}
-		virtual void SetV4f(const char* strName, const V4f& value) const {}
-		virtual void SetM4f(const char* strName, const Mat4f& value) const {}
+		virtual void SetBool(const char* strName, bool value) const = 0;
+		virtual void SetInt(const char* strName, int value) const = 0;
+		virtual void SetIntArray(const char *strName, Int32 *pIntArr, UInt32 unCount) const = 0;
+		virtual void SetUIntArray(const char *strName, UInt32 *pUIntArr, UInt32 unCount) const = 0;
+		virtual void SetFloat(const char* strName, float value) const = 0;
+		virtual void SetFloatArray(const char *strName, float *pFloatArr, UInt32 unCount) const = 0;
+		virtual void SetV2f(const char* strName, const V2f& value) const = 0;
+		virtual void SetV3f(const char* strName, const V3f& value) const = 0;
+		virtual void SetV4f(const char* strName, const V4f& value) const = 0;
+		virtual void SetM4f(const char* strName, const Mat4f& value) const = 0;
 	protected:
 		UInt32 m_unRId;
-		BufferLayout m_vtxLayout;
-		BufferLayout m_shdLayout;
-		mutable Attribs m_Attribs;
+		VertexBufLayout m_vtxLayout;
+		ShaderBufLayout m_shdLayout;
+		mutable Params m_Params;
 		mutable Blocks m_Blocks;
 	};
 }
@@ -138,7 +131,7 @@ namespace NW
 		virtual bool SaveF(const char* strFPath) override;
 		virtual bool LoadF(const char* strFPath) override;
 	private:
-		bool CodeProc();
+		inline bool CodeProc();
 	private:
 		ShaderOgl* m_pOverShader;
 	};
@@ -192,10 +185,10 @@ namespace NW
 		/// Iterate throught all the lines in that code
 		/// If it suits the format:
 		/// Create new SubShaderOgl of appropriate type in the own vector, set it's source
-		bool CodeProc();
+		inline bool CodeProc();
 		// Optimization
 		/// Gets uniforms from the program, or from the uniforms cashe if they are there
-		inline Int32 GetAttribLoc(const char* strName) const;
+		inline Int32 GetUniformLoc(const char* strName) const;
 		inline Int32 GetBlockIdx(const char* strName) const;
 	};
 }

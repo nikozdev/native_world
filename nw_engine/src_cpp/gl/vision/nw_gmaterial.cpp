@@ -18,19 +18,22 @@ namespace NW
 		DataSys::AddDataRes<GMaterial>(this);
 	}
 	GMaterial::~GMaterial() { DataSys::RemoveDataRes<GMaterial>(GetName()); }
-	
+
 	// --setters
 	void GMaterial::SetShader(AShader* pShader) {
 		m_pShader = pShader;
 		m_Textures.clear();
 		if (pShader == nullptr) { return; }
-		for (auto& itElem : pShader->GetShdLayout().GetElems()) {
-			if (itElem.sdType == SDT_SAMPLER) {
-				for (Int8 txi = itElem.unCount; txi > 0; txi--) {
-					m_Textures[itElem.strName] = nullptr;
+		for (auto& rBlock : pShader->GetShdLayout().GetBlocks()) {
+			for (auto& rElem : rBlock.BufElems) {
+				switch (rElem.sdType) {
+				case SDT_FLOAT32:
+					if (rElem.unCount == 16) {}
+					break;
+				case SDT_SAMPLER:
+					m_Textures[rElem.strName] = DataSys::GetDataRes<ATexture2d>("tex_white_solid");
 				}
 			}
-			else { }
 		}
 	}
 	void GMaterial::SetTexture(ATexture* pTex, const char* strType) {
@@ -41,17 +44,10 @@ namespace NW
 	// --core_methods
 	void GMaterial::Enable()
 	{
-		DArray<Int32> nTexSlots(m_Textures.size());
-		
-		for (auto& itTex : m_Textures) {
-			itTex.second->Bind(itTex.second->GetTexSlot());
-			nTexSlots.push_back(itTex.second->GetTexSlot());
-		}
 		m_pShader->Enable();
 	}
 	void GMaterial::Disable()
 	{
-		for (auto& itTex : m_Textures) { itTex.second->Unbind(); }
 		m_pShader->Disable();
 	}
 

@@ -9,7 +9,7 @@
 #include <ecs/nw_physics_cmp.h>
 #include <ecs/nw_collider_cmp.h>
 
-#include <core/nw_singleton.h>
+#include <lib/nw_singleton.h>
 #include <core/nw_data_res.h>
 
 #include <sys/nw_mem_sys.h>

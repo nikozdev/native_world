@@ -8,20 +8,21 @@
 
 namespace NW
 {
-	/// Abstract Drawable class
+	/// Abstract Drawable struct
 	/// Description:
-	/// -- GraphEngine needs objects to draw. That objects has to be a bunch of data
+	/// -- DrawEngine needs objects to draw. That objects has to be a bunch of data
 	/// -- We need to save that "drawable" objects with their vertex data.
-	/// -- Also, we need to derrive a classes from it. They should be as simple with their data as it's possible
-	/// -- This class contatins all the vertex and index data for drawing
+	/// -- Also, we need to derrive a structes from it. They should be as simple with their data as it's possible
+	/// -- This struct contatins all the vertex and index data for drawing
 	/// + Reference to material and other drawing stuff
 	/// Interface:
-	/// -> Create an instance -> Set the attributes -> Give it to the GraphEngine
-	class NW_API ADrawable
+	/// -> Create an instance -> Set the attributes -> Give it to the DrawEngine
+	struct NW_API ADrawable
 	{
 	public:
 		Mat4f m4Transform = Mat4f(1.0f);
 		GMaterial* pGMtl = nullptr;
+		UInt8 unDrawOrder = 0;
 	public:
 		virtual ~ADrawable() = default;
 
@@ -38,6 +39,12 @@ namespace NW
 		// --core_methods
 		virtual void UpdateVData() = 0;
 		virtual void UpdateIData() = 0;
+		// --operators
+		inline bool operator>(const ADrawable* pDrb) { return pDrb->unDrawOrder > unDrawOrder; }
+		inline bool operator>=(const ADrawable* pDrb) { return pDrb->unDrawOrder >= unDrawOrder; }
+		inline bool operator==(const ADrawable* pDrb) { return pDrb->unDrawOrder == unDrawOrder; }
+		inline bool operator<=(const ADrawable* pDrb) { return pDrb->unDrawOrder <= unDrawOrder; }
+		inline bool operator<(const ADrawable* pDrb) { return pDrb->unDrawOrder < unDrawOrder; }
 	};
 }
 
@@ -55,7 +62,7 @@ namespace NW
 	/// -- Consist of points and for beautiful rendering can be configured
 	/// -- Renderer needs to set up points size, points shape (via geometry shader)
 	/// -- The main thing is to make "DrawCall" with "Points" primitive
-	class NW_API Particles : public ADrawable
+	struct NW_API Particles : public ADrawable
 	{
 	public:
 		UInt32 unPartCount;
@@ -83,8 +90,8 @@ namespace NW
 		DArray<VertexBatch1d> vtxVData;
 		DArray<UInt32> indIData;
 	};
-	/// PolyLine class
-	class NW_API PolyLine : public ADrawable
+	/// PolyLine struct
+	struct NW_API PolyLine : public ADrawable
 	{
 	public:
 		DArray<V3f> vtxCrds;
@@ -108,8 +115,8 @@ namespace NW
 		virtual void UpdateVData() override;
 		virtual void UpdateIData() override;
 	};
-	/// Polygon class
-	class NW_API Polygons : public ADrawable
+	/// Polygon struct
+	struct NW_API Polygons : public ADrawable
 	{
 	public:
 		V3f xyzCrd;
@@ -142,8 +149,8 @@ namespace NW
 namespace NW
 {
 	// --==<Shapes2d>==--
-	/// Triangle class
-	class NW_API Triangle : public ADrawable
+	/// Triangle struct
+	struct NW_API Triangle : public ADrawable
 	{
 	public:
 		V2f vtxCrds[3];
@@ -167,8 +174,8 @@ namespace NW
 		VertexBatch3d vtxVData[3];
 		UInt32 indIData[3];
 	};
-	/// Rectangle class
-	class NW_API Rectangle : public ADrawable
+	/// Rectangle struct
+	struct NW_API Rectangle : public ADrawable
 	{
 	public:
 		V2f whSize;
