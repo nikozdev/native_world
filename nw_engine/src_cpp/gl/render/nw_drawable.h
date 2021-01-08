@@ -1,8 +1,8 @@
 #ifndef NW_ADRAWABLE_H
 #define NW_ADRAWABLE_H
 
+#include <gl/render/nw_texture.h>
 #include <gl/nw_gl_core.h>
-#include <gl/vision/nw_gmaterial.h>
 
 #include <gl_decl.hpp>
 
@@ -180,6 +180,7 @@ namespace NW
 	public:
 		V2f whSize;
 		V2f xyPivot;
+		SubTexture2d SubTex;
 	public:
 		Rectangle(const V2f& whSize = V2f{ 1.0f, 1.0f });
 		
@@ -200,17 +201,6 @@ namespace NW
 		VertexBatch3d vtxVData[4];
 		UInt32 indIData[6];
 		V2f vtxCrds[4];
-	};
-	/// Sprite struct
-	struct NW_API Sprite : public Rectangle
-	{
-	public:
-		SubTexture2d SubTex;
-	public:
-		Sprite();
-		
-		// -- InterfaceMethods
-		virtual void UpdateVData() override;
 	};
 	// --==</Shapes2d>==--
 }

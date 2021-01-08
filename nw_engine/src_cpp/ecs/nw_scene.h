@@ -69,10 +69,7 @@ namespace NW
 				[=](AEntity& rEnt)->bool {return strcmp(rEnt.GetName(), strName) == 0; });
 			return itEnt == m_Ents.end() ? nullptr : &*itEnt;
 		}
-		inline AEntity* CreateEntity() {
-			m_Ents.push_back(AEntity());
-			return &*(--m_Ents.end());
-		}
+		inline AEntity* CreateEntity() { m_Ents.push_back(AEntity()); return &m_Ents.back(); }
 		inline void OnDestroyEntity(const Ents::iterator& itEnt) {
 			auto itDestEnt = std::find(m_DestroyEnts.begin(), m_DestroyEnts.end(), itEnt);
 			if (itDestEnt == m_DestroyEnts.end()) m_DestroyEnts.push_back(itEnt);

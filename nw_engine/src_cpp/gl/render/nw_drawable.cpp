@@ -15,7 +15,7 @@ namespace NW
 		unPartCount(0), unPartScale(0.0f),
 		DrawPrimitive(PT_POINTS)
 	{
-		pGMtl = DataSys::GetDataRes<GMaterial>("gmt_batch_particles");
+		pGMtl = DataSys::GetDataRes<GMaterial>("gmt_batch_points");
 
 		UpdateVData(); UpdateIData();
 	}
@@ -50,7 +50,7 @@ namespace NW
 					if (ATexture* pTex = pGMtl->GetTexture()) {
 						vtxVData[vti].nTexSlot = static_cast<float>(pTex->GetTexSlot());
 					}
-					//vtxVData[vti].vtxClr = pGMtl->GetColor();
+					vtxVData[vti].vtxClr = *pGMtl->GetColor();
 				}
 			}
 		}
@@ -94,6 +94,7 @@ namespace NW
 						}
 						vtxVData[vti].vtxClr = rgbaClr;
 						vtxVData[vti].m4Transform = m4Transform;
+						vtxVData[vti].vtxClr = *pGMtl->GetColor();
 					}
 				}
 			}
@@ -128,6 +129,7 @@ namespace NW
 		ADrawable(),
 		vtxCrds{ {-0.5f, -0.5f}, { 0.25f, 0.5f }, {0.5f, -0.5f} }
 	{
+		pGMtl = DataSys::GetDataRes<GMaterial>("gmt_batch_3d");
 		UpdateVData();
 		UpdateIData();
 	}
@@ -135,6 +137,7 @@ namespace NW
 		ADrawable(),
 		vtxCrds{ xyV0, xyV1, xyV2 }
 	{
+		pGMtl = DataSys::GetDataRes<GMaterial>("gmt_batch_3d");
 		UpdateVData();
 		UpdateIData();
 	}
@@ -160,9 +163,11 @@ namespace NW
 	// --==<Rectangle>==--
 	Rectangle::Rectangle(const V2f& whSize) :
 		ADrawable(),
-		whSize(whSize), xyPivot{ V2f{ 0.5f, 0.5f } }
+		whSize(whSize), xyPivot{ V2f{ 0.5f, 0.5f } },
+		SubTex(SubTexture2d())
 	{
 		pGMtl = DataSys::GetDataRes<GMaterial>("gmt_batch_3d");
+		SubTex.pOverTex = DataSys::GetDataRes<ATexture2d>("tex_white_solid");
 		UpdateVData();
 		UpdateIData();
 	}
@@ -170,35 +175,7 @@ namespace NW
 	// --core_methods
 	void Rectangle::UpdateVData()
 	{
-		vtxCrds[0] = V2f{ xyPivot.x * whSize.x - ((1.0f - xyPivot.x) * whSize.x), xyPivot.y * whSize.y - ((1.0f - xyPivot.y) * whSize.y) };
-		vtxCrds[1] = V2f{ xyPivot.x * whSize.x - ((1.0f - xyPivot.x) * whSize.x), xyPivot.y * whSize.y + ((1.0f + xyPivot.y) * whSize.y) };
-		vtxCrds[2] = V2f{ xyPivot.x * whSize.x + ((1.0f + xyPivot.x) * whSize.x), xyPivot.y * whSize.y + ((1.0f + xyPivot.y) * whSize.y) };
-		vtxCrds[3] = V2f{ xyPivot.x * whSize.x + ((1.0f + xyPivot.x) * whSize.x), xyPivot.y * whSize.y - ((1.0f - xyPivot.y) * whSize.y) };
-		for (UInt8 vti = 0; vti < 4; vti++) {
-			vtxVData[vti].vtxCrd = V3f{ vtxCrds[vti].x, vtxCrds[vti].y, 0.0f };
-			if (ATexture* pTex = pGMtl->GetTexture()) {
-				vtxVData[vti].nTexSlot = static_cast<float>(pTex->GetTexSlot());
-			}
-			//vtxVData[vti].vtxClr = pGMtl->GetColor();
-			vtxVData[vti].m4Transform = m4Transform;
-		}
-	}
-	void Rectangle::UpdateIData()
-	{
-		indIData[0] = 0; indIData[1] = 1; indIData[2] = 2;
-		indIData[3] = 2; indIData[4] = 3; indIData[5] = 0;
-	}
-	// --==</Rectangle>==--
-
-	// --==<Sprite>==--
-	Sprite::Sprite() :
-		Rectangle({ 1.0f, 1.0f }),
-		SubTex(SubTexture2d()) { SubTex.pOverTex = DataSys::GetDataRes<ATexture2d>("tex_white_solid"); }
-
-	// --core_methods
-	void Sprite::UpdateVData()
-	{
-		V2f xyTexCrd = {0.0f, 0.0f}, whTexSize = { 1.0f, 1.0f };
+		V2f xyTexCrd = { 0.0f, 0.0f }, whTexSize = { 1.0f, 1.0f };
 		if (ATexture2d* pTex = dynamic_cast<ATexture2d*>(pGMtl->GetTexture())) {
 			if (SubTex.pOverTex != pTex) {
 				SubTex.pOverTex = pTex;
@@ -208,13 +185,32 @@ namespace NW
 		}
 		xyTexCrd = SubTex.GetTexCoord_0_1();
 		whTexSize = SubTex.GetTexSize_0_1();
-		Rectangle::UpdateVData();
+		
 		vtxVData[0].texCrd = V2f{ xyTexCrd.x, xyTexCrd.y + whTexSize.y };					// { left; bottom } == { xCoord, height }
 		vtxVData[1].texCrd = V2f{ xyTexCrd.x, xyTexCrd.y };									// { left; up } == { xCoord, yCoord }
 		vtxVData[2].texCrd = V2f{ xyTexCrd.x + whTexSize.x, xyTexCrd.y };					// { right; up } == { width, yCoord }
 		vtxVData[3].texCrd = V2f{ xyTexCrd.x + whTexSize.x, xyTexCrd.y + whTexSize.y };		// { right; bottom } == { width, height }
+
+		vtxCrds[0] = V2f{ xyPivot.x * whSize.x - ((1.0f - xyPivot.x) * whSize.x), xyPivot.y * whSize.y - ((1.0f - xyPivot.y) * whSize.y) };
+		vtxCrds[1] = V2f{ xyPivot.x * whSize.x - ((1.0f - xyPivot.x) * whSize.x), xyPivot.y * whSize.y + ((1.0f + xyPivot.y) * whSize.y) };
+		vtxCrds[2] = V2f{ xyPivot.x * whSize.x + ((1.0f + xyPivot.x) * whSize.x), xyPivot.y * whSize.y + ((1.0f + xyPivot.y) * whSize.y) };
+		vtxCrds[3] = V2f{ xyPivot.x * whSize.x + ((1.0f + xyPivot.x) * whSize.x), xyPivot.y * whSize.y - ((1.0f - xyPivot.y) * whSize.y) };
+		
+		for (UInt8 vti = 0; vti < 4; vti++) {
+			vtxVData[vti].vtxCrd = V3f{ vtxCrds[vti].x, vtxCrds[vti].y, 0.0f };
+			if (ATexture* pTex = pGMtl->GetTexture()) {
+				vtxVData[vti].nTexSlot = static_cast<float>(pTex->GetTexSlot());
+			}
+			vtxVData[vti].m4Transform = m4Transform;
+			vtxVData[vti].vtxClr = *pGMtl->GetColor();
+		}
 	}
-	// --==</Sprite>==--
+	void Rectangle::UpdateIData()
+	{
+		indIData[0] = 0; indIData[1] = 1; indIData[2] = 2;
+		indIData[3] = 2; indIData[4] = 3; indIData[5] = 0;
+	}
+	// --==</Rectangle>==--
 }
 // --==</Shape2d>==--
 

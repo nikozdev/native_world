@@ -27,7 +27,7 @@ namespace NW
 		static inline AppTimeCounter& GetAppTimeCounter() { return s_AppTimeCounter; }
 
 		static const TimeInfo& GetTimeInfo();
-		static const char* GetTimeString() { return std::asctime(&GetTimeInfo()); }
+		static const char* GetTimeString();
 		// --setters
 		static inline void SetAppSpeed(float nSpeed) { s_nTimeSpeed = nSpeed; }
 

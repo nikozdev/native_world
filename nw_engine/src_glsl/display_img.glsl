@@ -3,11 +3,9 @@
 
 layout(location = 0) in vec2 atb_vtxCrd;
 layout(location = 1) in vec2 atb_texCrd;
-layout(location = 2) in float atb_texSlot;
 
 out VS_OUT {
 	vec2 texCrd;
-	float texSlot;
 } vs_out;
 
 void main()
@@ -15,7 +13,6 @@ void main()
 	gl_Position = vec4(atb_vtxCrd.x, atb_vtxCrd.y, 0.0f, 1.0f);
 	
 	vs_out.texCrd = atb_texCrd;
-	vs_out.texSlot = atb_texSlot;
 }
 
 #shader_type geometry
@@ -55,18 +52,15 @@ void main()
 #shader_type pixel
 #version 400 core
 
-#define MAX_TEXTURES 7
-
 out vec4 ps_pxClr;
 
 in VS_OUT {
 	vec2 texCrd;
-	float texSlot;
 } ps_in;
 
-uniform sampler2D unf_textures[MAX_TEXTURES];
+uniform sampler2D tex_img;
 
 void main()
 {
-	ps_pxClr = vec4(texture(unf_textures[int(ps_in.texSlot)], ps_in.texCrd).rgba);
+	ps_pxClr = vec4(texture(tex_img, ps_in.texCrd).rgba);
 }

@@ -71,7 +71,7 @@ namespace NW
 		// --core_methods
 		virtual void OnUpdate() override;
 	private:
-		Sprite m_Sprite;
+		Rectangle m_Sprite;
 	};
 }
 

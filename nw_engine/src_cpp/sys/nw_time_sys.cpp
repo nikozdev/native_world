@@ -22,12 +22,13 @@ namespace NW
 {
     // --getters
     const TimeInfo& TimeSys::GetTimeInfo() { std::mktime(&s_TimeInfo); return s_TimeInfo; }
+    const char* TimeSys::GetTimeString() { return std::asctime(&s_TimeInfo); }
     // --setters
 
     // --==<core_methods>==--
     void TimeSys::Update()
     {
-#if (NW_WINDOW & NW_WINDOW_GLFW)
+    #if (NW_WINDOW & NW_WINDOW_GLFW)
         s_nRealTime = static_cast<float>(glfwGetTime());
         s_nRealDelta = s_nRealTime - s_nRealLast;
         s_nRealLast = s_nRealTime;
@@ -38,12 +39,12 @@ namespace NW
 
         s_RealTimeCounter.EndCount();
         s_AppTimeCounter.EndCount();
-#elif (defined NW_PLATFORM_WINDOWS)
+    #elif (defined NW_PLATFORM_WINDOWS)
         s_tpCurrTime = std::chrono::steady_clock::now();
         s_dfDeltaTime = s_tpCurrTime - s_tpLastTime;
         s_tpLastTime = s_tpCurrTime;
         s_fTimeDelta = s_dfDeltaTime.count();
-#endif // NW_WINDOW_GLFW
+    #endif // NW_WINDOW_GLFW
     }
     // --==</core_methods>==--
 }

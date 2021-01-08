@@ -2,11 +2,16 @@
 #include "nw_draw_engine.h"
 
 #include <gl/control/nw_gapi.h>
+
 #include <gl/gcontext/nw_gcontext.h>
 #include <gl/gcontext/nw_window.h>
 #include <gl/gcontext/nw_framebuf.h>
+
 #include <gl/vision/nw_gcamera.h>
 #include <gl/vision/nw_gmaterial.h>
+#include <gl/vision/nw_shader.h>
+
+#include <gl/render/nw_texture.h>
 #include <gl/render/nw_drawable.h>
 
 #include <sys/nw_mem_sys.h>
@@ -159,10 +164,10 @@ namespace NW
 			s_pGApi->SetPrimitiveType(itDState->DPrimitive);
 			DrawEngine::GetGApi()->SetViewport(xywhViewport.x, xywhViewport.y, xywhViewport.z, xywhViewport.w);
 			
-			memcpy(s_DTools.pShdIter, &itDState->pGCamera->GetProjMatrix(), sizeof(Mat4f));
-			s_DTools.pShdIter += (s_DTools.szShdData += sizeof(Mat4f));
-			memcpy(s_DTools.pShdIter, &itDState->pGCamera->GetViewMatrix(), sizeof(Mat4f));
-			s_DTools.pShdIter += (s_DTools.szShdData += sizeof(Mat4f));
+			DrawSceneData DSData;
+			DSData.m4Proj = itDState->pGCamera->GetProjMatrix();
+			DSData.m4View = itDState->pGCamera->GetViewMatrix();
+			UploadShdData(&DSData);
 
 			itDState->pFrameBuf->Bind();
 			itDState->pFrameBuf->Clear(FB_COLOR | FB_DEPTH | FB_STENCIL);
@@ -190,27 +195,37 @@ namespace NW
 		UInt32 szIdx = pDrawable->GetIDataSize();
 		UInt32 unIdx = pDrawable->GetIDataCount();
 		const UByte* pVData = reinterpret_cast<const UByte*>(pDrawable->GetVData());
-		const UInt32* punIData = reinterpret_cast<const UInt32*>(pDrawable->GetIData());
+		const UInt32* pIData = reinterpret_cast<const UInt32*>(pDrawable->GetIData());
 
 		if (s_DTools.szVtxData + szVtx > s_DInfo.szMaxVtx ||
-			s_DTools.szIdxData + szIdx > s_DInfo.szMaxIdx ||
-			s_DTools.unTexCount >= NW_MAX_TEXTURES) { DrawCall(); }
+			s_DTools.szIdxData + szIdx > s_DInfo.szMaxIdx /*||
+			s_DTools.unTexCount >= NW_MAX_TEXTURES*/) { DrawCall(); }
 
-	TextureData:
+	//TextureData:
 	VertexData:
 		pDrawable->UpdateVData();
-		for (UInt32 vti = 0; vti < szVtx; vti++) { *s_DTools.pVtxIter++ = pVData[vti]; }
+		memcpy(s_DTools.pVtxIter, pVData, szVtx);
+		s_DTools.pVtxIter += szVtx;
 	IndexData:
 		pDrawable->UpdateIData();
-		for (UInt32 ini = 0; ini < unIdx; ini++) { *s_DTools.pIdxIter++ = punIData[ini] + s_DTools.unVtxData; }
+		memcpy(s_DTools.pIdxIter, pIData, szIdx);
+		s_DTools.pIdxIter += szIdx;
 	UpdateInfo:
 		s_DTools.szVtxData += szVtx;
 		s_DTools.unVtxData += unVtx;
 		s_DTools.szIdxData += szIdx;
 		s_DTools.unIdxData += unIdx;
 	}
-	inline void DrawEngine::UploadShdData()
+	inline void DrawEngine::UploadShdData(DrawSceneData* pDSData)
 	{
+		Size szShd = pDSData->GetDataSize();
+		const Byte* pShd = reinterpret_cast<const Byte*>(pDSData->GetData());
+
+		if (s_DTools.szShdData + szShd > s_DInfo.szMaxShd) { DrawCall(); }
+		
+		memcpy(s_DTools.pShdData, pShd, szShd);
+
+		s_DTools.szShdData += szShd;
 	}
 	inline void DrawEngine::DrawCall()
 	{

@@ -70,6 +70,8 @@ namespace NW
 	{
 	public:
 		virtual void OnDraw() override;
+	private:
+		Char strDate[256] = "11/01/2021";
 	};
 	/// GuiOfLogSys struct
 	struct NW_API GuiOfLogSys : public AGuiOf<GuiOfLogSys>
@@ -155,13 +157,12 @@ namespace NW
 	public:
 		// --getters
 		// --setters
-		void SetContext(ATexture2d* pContext);
+		void SetContext(SubTexture2d* pContext);
 
 		// --core_methods
 		virtual void OnDraw() override;
 	private:
-		ATexture2d* pContext = nullptr;
-		ATexture2d* pSelectTex = nullptr;
+		SubTexture2d* pContext = nullptr;
 		ATexture2d* pBGTex = nullptr;
 		float nAspectRatio = 1.0f;
 		

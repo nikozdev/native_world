@@ -7,6 +7,8 @@
 
 #include <gl/gcontext/nw_window.h>
 #include <gl/vision/nw_gmaterial.h>
+#include <gl/vision/nw_shader.h>
+#include <gl/render/nw_texture.h>
 
 #include <sys/nw_ev_sys.h>
 #include <sys/nw_mem_sys.h>

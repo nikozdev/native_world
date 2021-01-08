@@ -25,7 +25,8 @@ namespace NW
 		switch (sDataType) {
 		case SDT_BOOL:	case SDT_INT8:	case SDT_UINT8:			szAll = 4;	break;
 		case SDT_INT16:	case SDT_UINT16:						szAll = 4;	break;
-		case SDT_INT32:	case SDT_UINT32:	case SDT_FLOAT32:	szAll = 4;	break;
+		case SDT_INT32:	case SDT_UINT32:	case SDT_SAMPLER:	szAll = 4;	break;
+		case SDT_FLOAT32:										szAll = 4;	break;
 		case SDT_FLOAT64:										szAll = 8;	break;
 		default:	NW_ERR("Invalid shader data type");			szAll = 0;	break;
 		}
@@ -109,16 +110,12 @@ namespace NW
 		inline const ShaderBlock& GetBlock(UInt8 unIdx) const { return m_Blocks.at(unIdx); }
 		inline const DArray<ShaderBlock>& GetBlocks() const { return m_Blocks; }
 		// --setters
-		inline void AddGlobalElem(const BufferElement& rBufElem) {
-			m_Globals.push_back(rBufElem);
-			m_szGlobal += SDType_GetAllignedSize(rBufElem.sdType, rBufElem.unCount);
-		}
+		inline void AddGlobalElem(const BufferElement& rBufElem) { m_Globals.push_back(rBufElem); }
 		inline void SetBlocks(const DArray<ShaderBlock>& rBlocks) { m_Blocks = rBlocks; Update(); }
 		inline void AddBlock(const ShaderBlock& rBlock, Int8 nElems = 1) { while (nElems-- > 0) { m_Blocks.push_back(rBlock); } Update(); }
 		inline void Reset() { m_szData = 0; m_Blocks.clear(); }
 	private:
 		DArray<BufferElement> m_Globals;
-		Size m_szGlobal;
 		DArray<ShaderBlock> m_Blocks;
 		Size m_szData;
 	private:
@@ -199,7 +196,15 @@ namespace NW
 	/// DrawSceneData struct
 	struct NW_API DrawSceneData
 	{
-		GCamera* pGCamera = nullptr;
+		Mat4f m4Proj;
+		Mat4f m4View;
+	public:
+		DrawSceneData() : pData(&m4Proj[0]), szData(sizeof(Mat4f) * 2) {}
+		inline const void* GetData() const { return pData; }
+		inline Size GetDataSize() const { return szData; }
+	private:
+		void* pData;
+		Size szData;
 	};
 	/// RenderAttributes struct
 	/// Description:

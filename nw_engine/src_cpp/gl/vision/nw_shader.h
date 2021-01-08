@@ -59,7 +59,7 @@ namespace NW
 	class NW_API AShader : public ACodeChunk
 	{
 	public:
-		using Params = HashMap<String, Int32>;
+		using Globals = HashMap<String, Int32>;
 		using Blocks = HashMap<String, Int32>;
 	public:
 		AShader(const char* strName);
@@ -69,7 +69,7 @@ namespace NW
 		inline UInt32 GetRenderId() const { return m_unRId; }
 		inline const VertexBufLayout& GetVertexLayout() const { return m_vtxLayout; }
 		inline const ShaderBufLayout& GetShdLayout() const { return m_shdLayout; }
-		inline const Params& GetParams() const { return m_Params; }
+		inline const Globals& GetGlobals() const { return m_Globals; }
 		inline const Blocks& GetBlocks() const { return m_Blocks; }
 		virtual inline const ASubShader* GetSubShader(ShaderTypes sdType) = 0;
 		// --core_methods
@@ -99,7 +99,7 @@ namespace NW
 		UInt32 m_unRId;
 		VertexBufLayout m_vtxLayout;
 		ShaderBufLayout m_shdLayout;
-		mutable Params m_Params;
+		mutable Globals m_Globals;
 		mutable Blocks m_Blocks;
 	};
 }

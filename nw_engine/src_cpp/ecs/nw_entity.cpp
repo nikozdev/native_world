@@ -61,6 +61,7 @@ namespace NW
 	}
 
 	void AEntity::AddSubEnt(AEntity* pSubEnt) {
+		if (pSubEnt == nullptr || pSubEnt == this) { return; }
 		m_SubEnts.push_back(pSubEnt); pSubEnt->SetOverEnt(this);
 	}
 	void AEntity::RemoveSubEnt(UInt32 unId) {

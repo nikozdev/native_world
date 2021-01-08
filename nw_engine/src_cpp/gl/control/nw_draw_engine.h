@@ -48,7 +48,7 @@ namespace NW
 		static void EndDraw();
 	private: // Implementation Methods
 		static inline void UploadVtxData(ADrawable* pDrawable);
-		static inline void UploadShdData();
+		static inline void UploadShdData(DrawSceneData* pDSData);
 		static inline void DrawCall();
 	private: // Implementation Attributes
 		static AGraphicsApi* s_pGApi;

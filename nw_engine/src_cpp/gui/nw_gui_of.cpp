@@ -12,6 +12,8 @@
 #include <gl/gcontext/nw_window.h>
 #include <gl/gcontext/nw_framebuf.h>
 #include <gl/vision/nw_gmaterial.h>
+#include <gl/vision/nw_shader.h>
+#include <gl/render/nw_texture.h>
 #include <gl/render/nw_drawable.h>
 
 #include <core/nw_core_engine.h>
@@ -124,7 +126,6 @@ namespace NW
 				const ImageInfo& rImgInfo = pTex.second->GetImgInfo();
 				if (ImGui::ImageButton(reinterpret_cast<void*>(pTex.second->GetRenderId()),
 					ImVec2{ 64.0f * rImgInfo.nWidth / rImgInfo.nHeight, 64.0f })) {
-					GuiOfSpriteEditor::Get().SetContext(pTex.second);
 				}
 			} ImGui::Separator();
 			ImGui::TreePop();
@@ -159,6 +160,8 @@ namespace NW
 		ImGui::Text("Application time: %d", static_cast<Int32>(TimeSys::GetAppTime()));
 		if (ImGui::DragFloat("Application speed", &nAppSpeed, 0.05f, 0.001f)) { TimeSys::SetAppSpeed(nAppSpeed); }
 		ImGui::Text("Frames/second: %d", static_cast<Int32>(1.0f / TimeSys::GetRealDelta()));
+		ImGui::Text("Date: %s", strDate);
+		if (ImGui::Button("Update date")) { strcpy(strDate, &TimeSys::GetTimeString()[0]); }
 		ImGui::End();
 	}
 	// --==</GuiOfTimeSys>==--
@@ -211,7 +214,7 @@ namespace NW
 		if (!bIsEnabled) return;
 
 		ImGui::Begin("Graphics", &bIsEnabled);
-		bGContext = ImGui::TreeNodeEx("--==<Graphics Context>==--", GUI_DEFAULT_TREE_FLAGS);
+		bGContext = ImGui::TreeNodeEx("--==<graphics_context>==--", GUI_DEFAULT_TREE_FLAGS);
 		if (bGContext) {
 			const GContextInfo& rGContextInfo = CoreEngine::Get().GetWindow()->GetGContext()->GetInfo();
 
@@ -224,7 +227,7 @@ namespace NW
 
 			ImGui::TreePop();
 		}
-		bGApi = ImGui::TreeNodeEx("--==<Graphics Api>==--", GUI_DEFAULT_TREE_FLAGS);
+		bGApi = ImGui::TreeNodeEx("--==<graphics_api>==--", GUI_DEFAULT_TREE_FLAGS);
 		if (bGApi) {
 			AGraphicsApi* pGApi = DrawEngine::GetGApi();
 			ImGui::Text("Type: %s",
@@ -246,7 +249,7 @@ namespace NW
 			} ImGui::Separator();
 			ImGui::TreePop();
 		}
-		bDrawEngineInfo = ImGui::TreeNodeEx("--==<Draw Info>==--", GUI_DEFAULT_TREE_FLAGS);
+		bDrawEngineInfo = ImGui::TreeNodeEx("--==<draw_engine>==--", GUI_DEFAULT_TREE_FLAGS);
 		if (bDrawEngineInfo) {
 			const DrawEngineInfo& rDInfo = DrawEngine::GetInfo();
 			ImGui::Text("Vertex data\n::Count: %d;\n::Size in Bytes: %d/%d;\n",
@@ -391,43 +394,72 @@ namespace NW
 			}
 			ImGui::EndMenuBar();
 		}
+
 		if (pContextScr != nullptr) {
 			ImGui::PushID(pContextScr->GetId());
 			ImGui::Text("Lua script: %s;", &pContextScr->GetName()[0]);
 			if (ImGui::InputTextMultiline("", &strCodeBuf[0], strCodeBuf.size(),
 				{ ImGui::GetContentRegionAvail().x - 32.0f, ImGui::GetContentRegionAvail().y - 64.0f }, ImGuiInputTextFlags_Multiline)) {
 				if (strlen(&strCodeBuf[0]) > strCodeBuf.size() - 8) { strCodeBuf.resize(strCodeBuf.size() * 2); }
-			}else if (ImGui::Button("Edit")) { pContextScr->SetCode(&strCodeBuf[0]); }
+			}
+			else if (ImGui::Button("Edit")) { pContextScr->SetCode(&strCodeBuf[0]); }
 
 			ImGui::PopID();
 		}
 		else if (pContextShd != nullptr) {
 			ImGui::PushID(pContextShd->GetId());
+			ImGui::Text("Shader: %s;", &pContextShd->GetName()[0]);
 			if (ImGui::InputTextMultiline("", &strCodeBuf[0], strCodeBuf.size(),
 				{ ImGui::GetContentRegionAvail().x - 32.0f, ImGui::GetContentRegionAvail().y - 64.0f }, ImGuiInputTextFlags_Multiline)) {
 				if (strlen(&strCodeBuf[0]) > strCodeBuf.size() - 8) { strCodeBuf.resize(strCodeBuf.size() * 2); }
-			}else if (ImGui::Button("Edit")) { pContextShd->SetCode(&strCodeBuf[0]); pContextShd->Compile(); }
-
-			auto& rBufElems = pContextShd->GetVertexLayout().GetElems();
-			for (UInt16 bei = 0; bei < rBufElems.size(); bei++) {
-				auto& rBE = rBufElems[bei];
-				ImGui::Text("%dth attribute:\nName: %s;\tType: %s;\nCount = %d;\tIs%snormalized", bei,
-					&rBE.strName[0],
-					rBE.sdType == SDT_BOOL ? "boolean" :
-					rBE.sdType == SDT_INT8 ? "byte" : rBE.sdType == SDT_UINT8 ? "unsigned byte" :
-					rBE.sdType == SDT_INT16 ? "short" : rBE.sdType == SDT_UINT16 ? "unsigned short" :
-					rBE.sdType == SDT_INT32 ? "integer" : rBE.sdType == SDT_UINT32 ? "unsigned integer" :
-					rBE.sdType == SDT_FLOAT32 ? "float" : rBE.sdType == SDT_FLOAT64 ? "double" :
-					"unknown",
-					rBE.unCount, rBE.bNormalized ? " " : " not ");
 			}
-			auto& rAttribs = pContextShd->GetParams();
-			for (auto& rAtb : rAttribs) { ImGui::Text("%dth parameter: %s", rAtb.second, rAtb.first); }
-			auto& rBlocks = pContextShd->GetBlocks();
-			for (auto& rBlk: rBlocks) { ImGui::Text("%dth block: %s", rBlk.second, rBlk.first); }
+			else if (ImGui::Button("Edit")) { pContextShd->SetCode(&strCodeBuf[0]); pContextShd->Compile(); }
+			
+			if (ImGui::TreeNodeEx("--==<vertex_buffer_layout>==--", GUI_DEFAULT_TREE_FLAGS)) {
+				auto& rElems = pContextShd->GetVertexLayout().GetElems();
+				for (UInt16 bei = 0; bei < rElems.size(); bei++) {
+					auto& rBE = rElems[bei];
+					ImGui::Text("%dth attribute:\nName: %s;\tType: %s;\nCount = %d;\tIs%snormalized", bei,
+						&rBE.strName[0],
+						rBE.sdType == SDT_BOOL ? "boolean" :
+						rBE.sdType == SDT_INT8 ? "byte" : rBE.sdType == SDT_UINT8 ? "unsigned byte" :
+						rBE.sdType == SDT_INT16 ? "short" : rBE.sdType == SDT_UINT16 ? "unsigned short" :
+						rBE.sdType == SDT_INT32 ? "integer" : rBE.sdType == SDT_UINT32 ? "unsigned integer" :
+						rBE.sdType == SDT_FLOAT32 ? "float" : rBE.sdType == SDT_FLOAT64 ? "double" :
+						"unknown",
+						rBE.unCount, rBE.bNormalized ? " " : " not ");
+				}
+				ImGui::TreePop();
+			}
+			if (ImGui::TreeNodeEx("--==<globals>==--", GUI_DEFAULT_TREE_FLAGS)) {
+				for (auto& rPrm : pContextShd->GetGlobals()) { ImGui::Text("%dth global: %s", rPrm.second, rPrm.first); }
+				ImGui::TreePop();
+			}
+			if (ImGui::TreeNodeEx("--==<shader_buffer_layout>==--", GUI_DEFAULT_TREE_FLAGS)) {
+				auto& rLayout = pContextShd->GetShdLayout();
+				for (auto& rBlk : rLayout.GetBlocks()) {
+					ImGui::Text("%dth block\nName: %s\nSize = %d;\tOffset = %d", rBlk.unBindPoint, rBlk.strName, rBlk.szAll, rBlk.szOffset);
+					if (ImGui::TreeNodeEx("Elements", GUI_DEFAULT_TREE_FLAGS)) {
+						for (UInt16 bei = 0; bei < rBlk.BufElems.size(); bei++) {
+							auto& rBE = rBlk.BufElems[bei];
+							ImGui::Text("%dth attribute:\nName: %s;\tType: %s;\nCount = %d;\tIs%snormalized", bei,
+								&rBE.strName[0],
+								rBE.sdType == SDT_BOOL ? "boolean" :
+								rBE.sdType == SDT_INT8 ? "byte" : rBE.sdType == SDT_UINT8 ? "unsigned byte" :
+								rBE.sdType == SDT_INT16 ? "short" : rBE.sdType == SDT_UINT16 ? "unsigned short" :
+								rBE.sdType == SDT_INT32 ? "integer" : rBE.sdType == SDT_UINT32 ? "unsigned integer" :
+								rBE.sdType == SDT_FLOAT32 ? "float" : rBE.sdType == SDT_FLOAT64 ? "double" :
+								"unknown",
+								rBE.unCount, rBE.bNormalized ? " " : " not ");
+						}
+						ImGui::TreePop();
+					}
+				}
+				ImGui::TreePop();
+			}
+			
 			ImGui::PopID();
 		}
-		
 		ImGui::End();
 	}
 	// --==</GuiOfCodeEditor>==--
@@ -438,18 +470,9 @@ namespace NW
 		pIndBuf(nullptr),
 		pShader(AShader::Create("shd_sprite_editor"))
 	{
-		float vtxData[] = {
-			-1.0f,	-1.0f,		0.0f, 0.0f,		0.0f,
-			-1.0f,	1.0f,		0.0f, 1.0f,		0.0f,
-			1.0f,	1.0f,		1.0f, 1.0f,		0.0f,
-			1.0f,	-1.0f,		1.0f, 0.0f,		0.0f
-		};
-		pVtxBuf.reset(AVertexBuf::Create(sizeof(vtxData), &vtxData[0]));
-		UInt32 IndData[] = {
-			0, 1, 2,
-			2, 3, 0
-		};
-		pIndBuf.reset(AIndexBuf::Create(sizeof(IndData) / sizeof(UInt32), &IndData[0]));
+		pVtxBuf.reset(AVertexBuf::Create(sizeof(float) * (2 + 2), nullptr));
+		UInt32 IndData[] = { 0, 1, 2,	2, 3, 0 };
+		pIndBuf.reset(AIndexBuf::Create(sizeof(IndData), &IndData[0]));
 		
 		pShader->LoadF("D:\\dev\\native_world\\nw_engine\\src_glsl\\display_img.glsl");
 		pVtxBuf->SetLayout(pShader->GetVertexLayout());
@@ -461,17 +484,25 @@ namespace NW
 		pFrameBuf = AFrameBuf::Create("fmb_sprite_editor", fbInfo);
 	}
 	// --setters
-	void GuiOfSpriteEditor::SetContext(ATexture2d* pContext) {
+	void GuiOfSpriteEditor::SetContext(SubTexture2d* pContext) {
 		this->pContext = pContext;
-		pSelectTex = DataSys::GetDataRes<ATexture2d>("tex_white_frame");
 		if (pContext == nullptr) {
 			bIsEnabled = false;
-			pContext = DataSys::GetDataRes<ATexture2d>("tex_white_solid");
 		}
 		else {
+			if (pContext->pOverTex == nullptr) { pContext->pOverTex = DataSys::GetDataRes<ATexture2d>("tex_white_solid"); }
 			bIsEnabled = true;
+			V2i xyTexCrd = pContext->GetTexCoord_0_1();
+			V2i whTexSize = pContext->GetTexSize_0_1();
+			float vtxData[] = {
+				-1.0f,	-1.0f,		xyTexCrd.x + 0.0f,	xyTexCrd.y + 0.0f,
+				-1.0f,	1.0f,		xyTexCrd.x + 0.0f,	xyTexCrd.y + whTexSize.y,
+				1.0f,	1.0f,		xyTexCrd.x + whTexSize.x,	xyTexCrd.y + whTexSize.y,
+				1.0f,	-1.0f,		xyTexCrd.x + whTexSize.x,	xyTexCrd.x + 0.0f
+			};
+			pVtxBuf->SetSubData(sizeof(vtxData), &vtxData[0]);
 		}
-		const ImageInfo& rImgInfo = pContext->GetImgInfo();
+		const ImageInfo& rImgInfo = pContext->pOverTex->GetImgInfo();
 		nAspectRatio = rImgInfo.nWidth / rImgInfo.nHeight;
 	}
 	// --core_methods
@@ -479,6 +510,19 @@ namespace NW
 		if (!bIsEnabled) return;
 		ImGui::Begin("Sprite_Editor", &bIsEnabled);
 		if (pContext == nullptr) { ImGui::End(); return; }
+
+		if (ImGui::DragInt2("Top left", &pContext->xyTexCrd[0], 0.1f, pContext->pOverTex->GetHeight(), pContext->pOverTex->GetWidth()) ||
+			ImGui::DragInt2("Bottom right", &pContext->whTexSize[0], 0.1f, pContext->pOverTex->GetHeight(), pContext->pOverTex->GetWidth())) {
+			V2i xyTexCrd = pContext->GetTexCoord_0_1();
+			V2i whTexSize = pContext->GetTexSize_0_1();
+			float vtxData[] = {
+				-1.0f,	-1.0f,		xyTexCrd.x + 0.0f,	xyTexCrd.y + 0.0f,
+				-1.0f,	1.0f,		xyTexCrd.x + 0.0f,	xyTexCrd.y + whTexSize.y,
+				1.0f,	1.0f,		xyTexCrd.x + whTexSize.x,	xyTexCrd.y + whTexSize.y,
+				1.0f,	-1.0f,		xyTexCrd.x + whTexSize.x,	xyTexCrd.x + 0.0f
+			};
+			pVtxBuf->SetSubData(sizeof(vtxData), &vtxData[0]);
+		}
 
 		V2i whDisplaySize = { ImGui::GetContentRegionAvail().x * nAspectRatio, ImGui::GetContentRegionAvail().y - 32.0f };
 		
@@ -491,7 +535,7 @@ namespace NW
 		pFrameBuf->Clear();
 
 		pShader->Enable();
-		pContext->Bind(0);
+		pContext->pOverTex->Bind(0);
 		pShader->SetInt("unf_textures[0]", 0);
 
 		pVtxBuf->Bind();
@@ -500,20 +544,13 @@ namespace NW
 		pIndBuf->Unbind();
 		pVtxBuf->Unbind();
 		
-		pContext->Unbind();
+		pContext->pOverTex->Unbind();
 		pShader->Disable();
 		pFrameBuf->Unbind();
 
 		ImGui::Image(reinterpret_cast<void*>(pFrameBuf->GetColorAttachment()->GetRenderId()),
 			ImVec2{ static_cast<float>(whDisplaySize.x), static_cast<float>(whDisplaySize.y) });
-		if (ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
-			bIsSelection = true;
-		}
-		else {
-			bIsSelection = false;
-		}
-		if (bIsSelection) {
-		}
+
 		ImGui::End();
 	}
 	// --==</GuiOfSpriteEditor>==--
@@ -575,51 +612,56 @@ namespace NW
 			Int32 nDrawOrder = pGCmp->unDrawOrder;
 			if (ImGui::InputInt("Draw order", &nDrawOrder)) { pGCmp->unDrawOrder = nDrawOrder; }
 			ImGui::Separator();
-			if (ImGui::TreeNodeEx("-- Material", GUI_DEFAULT_TREE_FLAGS)) {
+			if (ImGui::TreeNodeEx("--==<Material>==--", GUI_DEFAULT_TREE_FLAGS)) {
 				GMaterial* pGMtl = pGCmp->GetDrawable()->pGMtl;
 				Char cBuffer[128]{ 0 };
 				strcpy_s(cBuffer, pGMtl->GetName());
 				if (ImGui::InputText("Name", &cBuffer[0], 128)) { pGMtl->SetName(cBuffer); }
-				//ImGui::ColorEdit4("Albedo Color", &pGMtl->GetColor()[0]);
 
-				if (ATexture* pTex = pGMtl->GetTexture()) {
-					ImGui::PushID(pTex->GetId());
-					const ImageInfo rImgInfo = pTex->GetImgInfo();
-					ImGui::Text("Albedo_Texture: Name %s\nRender Id = %d; Slot = %d;\n"
-						"Width = %d; height = %d; depth = %d;",
-						pTex->GetName(), pTex->GetRenderId(), pTex->GetTexSlot(),
-						rImgInfo.nWidth, rImgInfo.nHeight, rImgInfo.nDepth);
-					ImGui::Image(reinterpret_cast<void*>(pTex->GetRenderId()),
-						ImVec2{ 64.0f * rImgInfo.nWidth / rImgInfo.nHeight, 64.0f });
-					ImGui::PopID();
-					if (ImGui::BeginCombo("Change texture", &pTex->GetName()[0])) {
-						auto& Textures = DataSys::GetDataResources<ATexture>();
-						for (auto& itTex : Textures) {
-							const ImageInfo rImgInfoLoc = itTex.second->GetImgInfo();
-							if (ImGui::ImageButton(reinterpret_cast<void*>(itTex.second->GetRenderId()),
-								ImVec2{ 64.0f * (rImgInfoLoc.nWidth / rImgInfoLoc.nHeight), 64.0f })) {
-								pGMtl->SetTexture(itTex.second);
-							}
-						} ImGui::EndCombo();
-					}
+				for (auto itClr = pGMtl->GetColors().begin(); itClr != pGMtl->GetColors().end(); itClr++) {
+					ImGui::ColorEdit4(&itClr->first[0], &itClr->second[0]);
 				}
-				ImGui::Separator();
-				if (ImGui::TreeNodeEx("Shader", GUI_DEFAULT_TREE_FLAGS)) {
+				if (ImGui::TreeNodeEx("-- textures", GUI_DEFAULT_TREE_FLAGS)) {
+					auto itTex = pGMtl->GetTextures().begin();
+					for (Int32 txi = 0; txi < pGMtl->GetTexCount(); txi++, itTex++) {
+						auto pTex = itTex->second;
+						ImGui::PushID(&itTex->first[0]);
+						const ImageInfo rImgInfo = pTex->GetImgInfo();
+						ImGui::Text("%d texture: Name: %s\nRender Id = %d; Slot = %d;",
+							txi, &itTex->first[0], pTex->GetRenderId(), pTex->GetTexSlot());
+						ImGui::Text("Width = %d; Height = %d; Depth = %d;",
+							rImgInfo.nWidth, rImgInfo.nHeight, rImgInfo.nDepth);
+						ImGui::Image(reinterpret_cast<void*>(pTex->GetRenderId()),
+							ImVec2{ 64.0f * rImgInfo.nWidth / rImgInfo.nHeight, 64.0f });
+						if (ImGui::BeginCombo("Change texture", &pTex->GetName()[0])) {
+							auto& Textures = DataSys::GetDataResources<ATexture>();
+							for (auto& itTex : Textures) {
+								const ImageInfo rImgInfoLoc = itTex.second->GetImgInfo();
+								if (ImGui::ImageButton(reinterpret_cast<void*>(itTex.second->GetRenderId()),
+									ImVec2{ 64.0f * (rImgInfoLoc.nWidth / rImgInfoLoc.nHeight), 64.0f })) {
+									pGMtl->SetTexture(itTex.second);
+								}
+							} ImGui::EndCombo();
+						}
+						ImGui::PopID();
+					}
+					ImGui::TreePop();
+				}
+				
+				if (ImGui::TreeNodeEx("-- shader", GUI_DEFAULT_TREE_FLAGS)) {
 					AShader* pShader = pGMtl->GetShader();
 					ImGui::Text("ID = %d;\nName: %s;", pShader->GetId(), pShader->GetName());
 					if (ImGui::Button("Code editor")) { GuiOfCodeEditor::Get().SetContext(pShader); }
 					if (ImGui::BeginCombo("Change shader", &pShader->GetName()[0])) {
 						auto& Shaders = DataSys::GetDataResources<AShader>();
 						for (auto& pShd : Shaders) {
-							if (ImGui::Button(&pShd.second->GetName()[0])) {
-								pGMtl->SetShader(pShd.second);
-							}
+							if (ImGui::Button(&pShd.second->GetName()[0])) { pGMtl->SetShader(pShd.second); }
 						}
 						ImGui::EndCombo();
 					}
-					ImGui::TreePop(); ImGui::Separator();
+					ImGui::TreePop();
 				}
-				ImGui::TreePop(); ImGui::Separator();
+				ImGui::TreePop();
 			}
 		};
 		OnDraw(pGCmp, cbGCmp);

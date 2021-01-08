@@ -123,12 +123,15 @@ namespace NW
 				if (strToken == "in") {		// layout(location=%loc)in %type %name;
 					strCodeStream >> strToken;
 				/// --<macro_helper>--
-#define MAKE_BUF_ELEM(expr, type, count, command)								\
-	if (expr) { if (nCurr < 0) { nCurr = 0; }	strCodeStream >> strName;		\
-	BufferElement BufElem(&strName[0], type, count, false);						\
-	if ((nCurr = strToken.find("[", nCurr)) != -1)								\
-	{ BufElem.unCount *= atoi(&strToken[nCurr]); }								\
-	command(BufElem); }
+#define MAKE_BUF_ELEM(expr, type, count, command)				\
+	if (expr) { if (nCurr < 0) { nCurr = 0; }					\
+		UInt32 unCount = 1;										\
+		strCodeStream >> strName;								\
+		if ((nCurr = strName.find("[", nCurr)) != -1) {			\
+			unCount *= atoi(&strName[nCurr + 1]);				\
+			strName = strName.substr(0, nCurr);	}				\
+		BufferElement BufElem(&strName[0], type, count, false);	\
+		while(unCount-- > 0) { command(BufElem); } }
 				/// --<macro_helper>--
 					MAKE_BUF_ELEM(strToken == "bool", SDT_BOOL, 1,			m_pOverShader->m_vtxLayout.AddElement)
 					MAKE_BUF_ELEM(strToken == "short", SDT_INT16, 1,		m_pOverShader->m_vtxLayout.AddElement)
@@ -169,19 +172,36 @@ namespace NW
 				}
 			}
 			else if (strToken == "uniform") {	// uniform {type} {name};
-				strCodeStream >> strToken;
-				strCodeStream >> strToken;
-				MAKE_BUF_ELEM(strToken == "bool", SDT_BOOL, 1, m_pOverShader->m_shdLayout.AddGlobalElem)
-				MAKE_BUF_ELEM(strToken == "short", SDT_INT16, 1, m_pOverShader->m_shdLayout.AddGlobalElem)
-				MAKE_BUF_ELEM(strToken == "int", SDT_INT32, 1, m_pOverShader->m_shdLayout.AddGlobalElem)
-				MAKE_BUF_ELEM(strToken == "float", SDT_FLOAT32, 1, m_pOverShader->m_shdLayout.AddGlobalElem)
-				MAKE_BUF_ELEM(strToken == "vec2", SDT_FLOAT32, 2, m_pOverShader->m_shdLayout.AddGlobalElem)
-				MAKE_BUF_ELEM(strToken == "vec3", SDT_FLOAT32, 3, m_pOverShader->m_shdLayout.AddGlobalElem)
-				MAKE_BUF_ELEM(strToken == "vec4", SDT_FLOAT32, 4, m_pOverShader->m_shdLayout.AddGlobalElem)
-				MAKE_BUF_ELEM(strToken == "mat2", SDT_FLOAT32, 2 * 2, m_pOverShader->m_shdLayout.AddGlobalElem)
-				MAKE_BUF_ELEM(strToken == "mat3", SDT_FLOAT32, 3 * 3, m_pOverShader->m_shdLayout.AddGlobalElem)
-				MAKE_BUF_ELEM(strToken == "mat4", SDT_FLOAT32, 4 * 4, m_pOverShader->m_shdLayout.AddGlobalElem)
-				m_pOverShader->m_Params[strName] = m_pOverShader->m_Params.size();
+				std::getline(strCodeStream, strToken, ';');
+				auto fnMakeElems = [&](const char* strComp, ShaderDataTypes sdType, UInt8 unCount = 1)->bool {
+					if ((nCurr = strToken.find(strComp)) != -1) {
+						Int32 nCount = 1;
+						Int32 nBeg = (nCurr += strlen(strComp) + 1);
+						strName = strToken.substr(nBeg, strToken.size());
+						if ((nCurr = strName.find("[")) != -1) {
+							if (sscanf(&strName[nCurr], "[%d]", &nCount) <= 0) { return false; }
+							strName = strName.substr(0, nCurr);
+						}
+						if ((nCurr = strName.find(" ")) != -1) { strName = strName.substr(0, nCurr - 1); }
+						if (nCount > 1) {
+							for (UInt32 bi = 0; bi < nCount; bi++) {
+								Char strCompleteName[128];
+								sprintf(&strCompleteName[0], "%s[%d]", &strName[0], bi);
+								m_pOverShader->m_shdLayout.AddGlobalElem(BufferElement(&strCompleteName[0], sdType, unCount, false));
+							}
+						}
+						else {
+							m_pOverShader->m_shdLayout.AddGlobalElem(BufferElement(&strName[0], sdType, unCount, false));
+						}
+						return true;
+					}
+				};
+				fnMakeElems("sampler1D", SDT_SAMPLER); fnMakeElems("sampler2D", SDT_SAMPLER); fnMakeElems("sampler3D", SDT_SAMPLER);
+				fnMakeElems("bool", SDT_BOOL); fnMakeElems("char", SDT_INT8); fnMakeElems("short", SDT_INT16); fnMakeElems("int", SDT_INT32);
+				fnMakeElems("float", SDT_FLOAT32); fnMakeElems("vec2", SDT_FLOAT32, 2);
+				fnMakeElems("vec3", SDT_FLOAT32, 3); fnMakeElems("vec4", SDT_FLOAT32, 4);
+				fnMakeElems("mat2", SDT_FLOAT32, 2 * 2); fnMakeElems("mat3", SDT_FLOAT32, 3 * 3); fnMakeElems("mat4", SDT_FLOAT32, 4 * 4);
+				//m_pOverShader->m_Globals[strName] = m_pOverShader->m_Globals.size();
 			}
 		}
 		return true;
@@ -221,7 +241,7 @@ namespace NW
 		if (m_unRId != 0) { glDeleteProgram(m_unRId); m_unRId = 0; }
 		m_unRId = glCreateProgram();
 		m_SubShaders.clear();
-		m_Params.clear();
+		m_Globals.clear();
 		m_vtxLayout.Reset();
 		m_shdLayout.Reset();
 	}
@@ -297,10 +317,10 @@ namespace NW
 	}
 
 	inline Int32 ShaderOgl::GetUniformLoc(const char* strName) const {
-		for (auto& itPar : m_Params) { if (strcmp(itPar.first.c_str(), strName) == 0) { return itPar.second; } }
+		for (auto& itPar : m_Globals) { if (strcmp(itPar.first.c_str(), strName) == 0) { return itPar.second; } }
 		
 		Int32 nLoc = glGetUniformLocation(m_unRId, strName);
-		m_Params[strName] = nLoc;
+		m_Globals[strName] = nLoc;
 		return nLoc;
 	}
 	inline Int32 ShaderOgl::GetBlockIdx(const char* strName) const {

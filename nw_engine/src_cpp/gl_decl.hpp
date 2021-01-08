@@ -37,7 +37,6 @@ namespace NW
 	struct NW_API Polygons;
 	struct NW_API Triangle;
 	struct NW_API Rectangle;
-	struct NW_API Sprite;
 	struct NW_API Mesh3d;
 	//	--==</Render>==--
 
