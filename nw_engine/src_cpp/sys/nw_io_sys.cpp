@@ -1,7 +1,7 @@
 #include <nw_pch.hpp>
 #include "nw_io_sys.h"
 
-#include <gl/gcontext/nw_window.h>
+#include <glib/gcontext/nw_window.h>
 
 #include <sys/nw_ev_sys.h>
 

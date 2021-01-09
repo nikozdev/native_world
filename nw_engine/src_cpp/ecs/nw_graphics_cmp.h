@@ -3,8 +3,8 @@
 
 #include <ecs/nw_entity_cmp.h>
 
-#include <gl/render/nw_drawable.h>
-#include <gl/vision/nw_gmaterial.h>
+#include <glib/render/nw_drawable.h>
+#include <glib/vision/nw_gmaterial.h>
 
 namespace NW
 {

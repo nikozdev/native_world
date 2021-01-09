@@ -3,8 +3,8 @@
 
 #include <core/nw_core_state.h>
 
-#include <gl/control/nw_draw_engine.h>
-#include <gl/gcontext/nw_window.h>
+#include <glib/control/nw_draw_engine.h>
+#include <glib/gcontext/nw_window.h>
 
 #include <ecs/nw_scene.h>
 
@@ -105,7 +105,7 @@ namespace NW
 	{
 		// -- Preparation
 		m_bIsRunning = true;
-		if (m_pCurrState == nullptr) { AddState(MemSys::NewT<CoreState>()); }
+		if (m_pCurrState == nullptr) { Quit(); }
 		// -- Main Loop
 		while (m_bIsRunning) { Update(); }
 		// -- Quit code

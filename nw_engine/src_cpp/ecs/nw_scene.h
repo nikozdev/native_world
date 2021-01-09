@@ -33,100 +33,68 @@ namespace NW
 	/// -- But actual processed scene in the actual memory is a singleton
 	class NW_API Scene : public ASingleton<Scene>
 	{
-		using Ents = List2<AEntity>;
-		using RefEnts = DArray<AEntity*>;
+		using Ents = HashMap<UInt32, AEntity>;
+		using RefEnts = HashMap<UInt32, AEntity*>;
 		using DestroyEnts = DArray<Ents::iterator>;
-		using CmpTypeId = std::type_index;
 		using ACmps = DArray<AEntityCmp*>;
+		using IdStack = DStack<UInt32>;
 		friend class ASingleton <Scene>;
+		friend class AEntity;
 	private:
 		Scene();
-	public:
 		Scene(Scene& rScn) = delete;
 		void operator=(Scene& rScn) = delete;
+	public:
 		~Scene();
 
 		// --getters
-		inline const char* GetName() const { return &m_strName[0]; }
 		inline GCamera* GetGCamera() { return m_pGCamera; }
 		inline AFrameBuf* GetFrameBuf() { return m_pFrameBuf; }
 		inline const V4f& GetViewport() const { return m_xywhViewport; }
+		
+		inline Ents& GetEnts() { return m_Ents; }
+		inline RefEnts& GetOverEnts() { return m_OverEnts; }
+		inline AEntity* GetEntity(UInt32 unId) { return (m_Ents.find(unId) == m_Ents.end()) ? nullptr : &m_Ents[unId]; }
+		inline AEntity* GetEntity(const char* strName) {
+			Ents::iterator itEnt = std::find_if(m_Ents.begin(), m_Ents.end(),
+				[=](std::pair<const UInt32, AEntity>& rEnt)->bool {return strcmp(rEnt.second.GetName(), strName) == 0; });
+			return itEnt == m_Ents.end() ? nullptr : &itEnt->second;
+		}
 		// --setters
-		inline void SetName(const char* strName) { m_strName = strName; }
 		void SetGCamera(GCamera* pGCamera);
 		void SetViewport(const V4f& xywhViewport);
 
+		AEntity* CreateEntity();
+		void DestroyEntity(const char* strName);
+		void DestroyEntity(AEntity* pEnt);
+		void DestroyEntity(UInt32 unId);
+
+		void AddAComponent(AEntityCmp* pCmp) { if (pCmp == nullptr) { return; } m_ACmps.push_back(pCmp); }
+		void RemoveAComponent(AEntityCmp* pCmp) {
+			auto& itCmp = std::find(m_ACmps.begin(), m_ACmps.end(), pCmp);
+			if (itCmp == m_ACmps.end()) { return; } m_ACmps.erase(itCmp);
+		}
 		// --core_methods
 		void Update();
-		// -- Entities
-		inline Ents& GetEnts() { return m_Ents; }
-		inline AEntity* GetEntity(UInt32 unId) {
-			Ents::iterator itEnt = FIND_BY_FUNC(m_Ents, AEntity&, unId, .GetId);
-			return itEnt == m_Ents.end() ? nullptr : &*itEnt;
-		}
-		inline AEntity* GetEntity(const char* strName) {
-			Ents::iterator itEnt = std::find_if(m_Ents.begin(), m_Ents.end(),
-				[=](AEntity& rEnt)->bool {return strcmp(rEnt.GetName(), strName) == 0; });
-			return itEnt == m_Ents.end() ? nullptr : &*itEnt;
-		}
-		inline AEntity* CreateEntity() { m_Ents.push_back(AEntity()); return &m_Ents.back(); }
-		inline void OnDestroyEntity(const Ents::iterator& itEnt) {
-			auto itDestEnt = std::find(m_DestroyEnts.begin(), m_DestroyEnts.end(), itEnt);
-			if (itDestEnt == m_DestroyEnts.end()) m_DestroyEnts.push_back(itEnt);
-		}
-		inline void DestroyEntity(const char* strName) {
-			Ents::iterator itEnt = std::find_if(m_Ents.begin(), m_Ents.end(),
-				[=](AEntity& rEnt)->bool {return strcmp(rEnt.GetName(), strName) == 0; });
-			if (itEnt == m_Ents.end()) { return; };
-			//m_Ents.erase(itEnt);
-			OnDestroyEntity(itEnt);
-		}
-		inline void DestroyEntity(AEntity* pEnt) {
-			if (pEnt == nullptr) { return; }
-			Ents::iterator itEnt = m_Ents.begin();
-			while (itEnt != m_Ents.end()) {
-				if (&*itEnt == pEnt) { OnDestroyEntity(itEnt); return; }
-				else { itEnt++; }
-			}
-		}
-		inline void DestroyEntity(UInt32 unId) {
-			Ents::iterator itEnt = FIND_BY_FUNC(m_Ents, AEntity&, unId, .GetId);
-			if (itEnt == m_Ents.end()) { return; };
-			// m_Ents.erase(itEnt);
-			OnDestroyEntity(itEnt);
-		}
-		// -- AComponents
-		inline ACmps& GetAComponents() { return m_ACmps; }
-		inline AEntityCmp* GetAComponent(UInt32 unId) {
-			ACmps::iterator& itCmp = FIND_BY_FUNC(m_ACmps, AEntityCmp*, unId, ->GetCmpId);
-			return itCmp == m_ACmps.end() ? nullptr : *itCmp;
-		}
-		inline void AddAComponent(AEntityCmp* pCmp) {
-			if (pCmp == nullptr) return;
-			if (HasAComponent(pCmp->GetCmpId())) return;
-			m_ACmps.push_back(pCmp);
-		}
-		inline void RemoveAComponent(UInt32 unId) {
-			ACmps::iterator& itCmp = FIND_BY_FUNC(m_ACmps, AEntityCmp*, unId, ->GetCmpId);
-			if (itCmp == m_ACmps.end()) return;
-			if ((*itCmp)->GetCmpId() != unId) return;
-			m_ACmps.erase(itCmp);
-		}
-		inline bool HasAComponent(UInt32 unId) { return GetAComponent(unId) != nullptr; }
 		// --data_methods
 		bool SaveF(const char* strFPath);
 		bool LoadF(const char* strFPath);
 	private:
-		String m_strName;
-		
 		Ents m_Ents;
+		RefEnts m_OverEnts;
 		DestroyEnts m_DestroyEnts;
+		IdStack m_EntIdStack;
 
 		ACmps m_ACmps;
 
 		GCamera* m_pGCamera;
 		AFrameBuf* m_pFrameBuf;
 		V4f m_xywhViewport = V4f{ 0.0f, 0.0f, 800.0f, 600.0f };
+	private:
+		inline void OnDestroyEntity(const Ents::iterator& itEnt) {
+			for (auto& itDestEnt : m_DestroyEnts) { if (itDestEnt == itEnt) return; }
+			m_DestroyEnts.push_back(itEnt);
+		}
 	};
 }
 

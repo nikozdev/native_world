@@ -12,25 +12,20 @@ namespace NW
 	class NW_API CoreState
 	{
 	public:
-		CoreState();
-		virtual ~CoreState();
+		virtual ~CoreState() = default;
 
 		// --getters
-		virtual inline const char* GetName() { return "engine_state"; }
+		virtual inline const char* GetName() = 0;
 		// --setters
-		// -- Predicates
-		virtual bool IsEnabled() { return m_bIsEnabled; }
 		// --core_methods
-		virtual bool Init();
-		virtual void Update();
-		virtual void OnEnable();
-		virtual void OnDisable();
+		virtual bool Init() = 0;
+		virtual void Update() = 0;
+		virtual void OnEnable() = 0;
+		virtual void OnDisable() = 0;
 		// --on_event_methods
-		virtual void OnEvent(MouseEvent& rmEvt);
-		virtual void OnEvent(KeyboardEvent& rkEvt);
-		virtual void OnEvent(WindowEvent& rwEvt);
-	private:
-		bool m_bIsEnabled;
+		virtual void OnEvent(MouseEvent& rmEvt) = 0;
+		virtual void OnEvent(KeyboardEvent& rkEvt) = 0;
+		virtual void OnEvent(WindowEvent& rwEvt) = 0;
 	};
 }
 #endif	// NW_CORE_STATE_H

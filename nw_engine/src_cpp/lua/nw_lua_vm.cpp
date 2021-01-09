@@ -300,7 +300,7 @@ namespace NW
 	inline bool LuaVM::LuaMove(const char* strLoc, const char* strName)
 	{	// Get on the top of the stack some value due to string "tab1.tab2.value"
 		String strBuf("", 256);		// String buffer for the currently serched name
-		StringStream strStream = StringStream(String(strLoc) + '.' + strName);
+		StrStream strStream = StrStream(String(strLoc) + '.' + strName);
 
 		// Start with the global namespace
 		strStream.getline(&strBuf[0], strBuf.size(), '.');

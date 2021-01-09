@@ -3,7 +3,7 @@
 #include <lib/nw_event.h>
 
 #include <nw_decl.hpp>
-#include <gl_decl.hpp>
+#include <glib_decl.hpp>
 
 namespace NW
 {

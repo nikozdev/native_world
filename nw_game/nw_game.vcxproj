@@ -97,10 +97,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src_cpp\nwg_game_state.h" />
     <ClInclude Include="src_cpp\nwg_pch.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src_cpp\nwg_entry.cpp" />
+    <ClCompile Include="src_cpp\nwg_game_state.cpp" />
     <ClCompile Include="src_cpp\nwg_pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

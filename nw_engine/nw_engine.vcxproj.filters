@@ -1476,51 +1476,6 @@
     <ClInclude Include="src_cpp\ecs_decl.hpp">
       <Filter>src_cpp</Filter>
     </ClInclude>
-    <ClInclude Include="src_cpp\gl\control\nw_draw_engine.h">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\gl\control\nw_draw_state.h">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\gl\control\nw_gapi.h">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\gl\control\nw_gcamera_lad.h">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\gl\gcontext\nw_framebuf.h">
-      <Filter>src_cpp\gl\gcontext</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\gl\gcontext\nw_gcontext.h">
-      <Filter>src_cpp\gl\gcontext</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\gl\gcontext\nw_window.h">
-      <Filter>src_cpp\gl\gcontext</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\gl\nw_gl_core.h">
-      <Filter>src_cpp\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\gl\render\nw_drawable.h">
-      <Filter>src_cpp\gl\render</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\gl\render\nw_texture.h">
-      <Filter>src_cpp\gl\render</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\gl\vision\nw_gcamera.h">
-      <Filter>src_cpp\gl\vision</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\gl\vision\nw_gmaterial.h">
-      <Filter>src_cpp\gl\vision</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\gl\vision\nw_light_source.h">
-      <Filter>src_cpp\gl\vision</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\gl\vision\nw_shader.h">
-      <Filter>src_cpp\gl\vision</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\gl_decl.hpp">
-      <Filter>src_cpp</Filter>
-    </ClInclude>
     <ClInclude Include="src_cpp\gui\nw_gui_core.h">
       <Filter>src_cpp\gui</Filter>
     </ClInclude>
@@ -1629,12 +1584,55 @@
     <ClInclude Include="src_cpp\lib\nw_event.h">
       <Filter>src_cpp\core</Filter>
     </ClInclude>
+    <ClInclude Include="src_cpp\glib\control\nw_draw_engine.h">
+      <Filter>src_cpp\gl\control</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\control\nw_draw_state.h">
+      <Filter>src_cpp\gl\control</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\control\nw_gapi.h">
+      <Filter>src_cpp\gl\control</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\control\nw_gcamera_lad.h">
+      <Filter>src_cpp\gl\control</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\gcontext\nw_framebuf.h">
+      <Filter>src_cpp\gl\gcontext</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\gcontext\nw_gcontext.h">
+      <Filter>src_cpp\gl\gcontext</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\gcontext\nw_window.h">
+      <Filter>src_cpp\gl\gcontext</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\render\nw_drawable.h">
+      <Filter>src_cpp\gl\render</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\render\nw_texture.h">
+      <Filter>src_cpp\gl\render</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\vision\nw_gcamera.h">
+      <Filter>src_cpp\gl\vision</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\vision\nw_gmaterial.h">
+      <Filter>src_cpp\gl\vision</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\vision\nw_light_source.h">
+      <Filter>src_cpp\gl\vision</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\vision\nw_shader.h">
+      <Filter>src_cpp\gl\vision</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib_decl.hpp">
+      <Filter>src_cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\nw_glib_core.h">
+      <Filter>src_cpp\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\nw_gbuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src_cpp\core\nw_core_engine.cpp">
-      <Filter>src_cpp\core</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\core\nw_core_state.cpp">
       <Filter>src_cpp\core</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\core\nw_data_res.cpp">
@@ -1663,45 +1661,6 @@
     </ClCompile>
     <ClCompile Include="src_cpp\ecs\nw_transform_cmp.cpp">
       <Filter>src_cpp\ecs</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\control\nw_draw_engine.cpp">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\control\nw_draw_state.cpp">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\control\nw_gapi.cpp">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\control\nw_gcamera_lad.cpp">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\gcontext\nw_framebuf.cpp">
-      <Filter>src_cpp\gl\gcontext</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\gcontext\nw_gcontext.cpp">
-      <Filter>src_cpp\gl\gcontext</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\gcontext\nw_window.cpp">
-      <Filter>src_cpp\gl\gcontext</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\nw_gl_core.cpp">
-      <Filter>src_cpp\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\render\nw_drawable.cpp">
-      <Filter>src_cpp\gl\render</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\render\nw_texture.cpp">
-      <Filter>src_cpp\gl\render</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\vision\nw_gcamera.cpp">
-      <Filter>src_cpp\gl\vision</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\vision\nw_gmaterial.cpp">
-      <Filter>src_cpp\gl\vision</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\gl\vision\nw_shader.cpp">
-      <Filter>src_cpp\gl\vision</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\gui\nw_gui_core.cpp">
       <Filter>src_cpp\gui</Filter>
@@ -1763,6 +1722,46 @@
     <ClCompile Include="src_cpp\sys\nw_time_sys.cpp">
       <Filter>src_cpp\sys</Filter>
     </ClCompile>
+    <ClCompile Include="src_cpp\glib\control\nw_draw_engine.cpp">
+      <Filter>src_cpp\gl\control</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\control\nw_draw_state.cpp">
+      <Filter>src_cpp\gl\control</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\control\nw_gapi.cpp">
+      <Filter>src_cpp\gl\control</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\control\nw_gcamera_lad.cpp">
+      <Filter>src_cpp\gl\control</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\gcontext\nw_framebuf.cpp">
+      <Filter>src_cpp\gl\gcontext</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\gcontext\nw_gcontext.cpp">
+      <Filter>src_cpp\gl\gcontext</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\gcontext\nw_window.cpp">
+      <Filter>src_cpp\gl\gcontext</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\render\nw_drawable.cpp">
+      <Filter>src_cpp\gl\render</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\render\nw_texture.cpp">
+      <Filter>src_cpp\gl\render</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\vision\nw_gcamera.cpp">
+      <Filter>src_cpp\gl\vision</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\vision\nw_gmaterial.cpp">
+      <Filter>src_cpp\gl\vision</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\vision\nw_shader.cpp">
+      <Filter>src_cpp\gl\vision</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\nw_glib_core.cpp">
+      <Filter>src_cpp\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\nw_gbuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ext\glm\doc\api\a00001_source.html">

@@ -6,38 +6,6 @@
 /// .pch header isn't essentially compiles every time we want to run the app
 /// .pch header includes in every cpp file of project
 
-#include <cstdint>
-#include <string>
-#include <cstring>
-
-#include <streambuf>
-#include <sstream>
-#include <fstream>
-#include <iostream>
-#include <stdio.h>
-#include <conio.h>
-
-#include <memory>
-#include <typeindex>
-
-#include <time.h>
-#include <chrono>
-
-#include <thread>
-#include <mutex>
-
-#include <algorithm>
-#include <functional>
-
-#include <list>
-#include <array>
-#include <vector>
-#include <stack>
-#include <unordered_map>
-#include <map>
-
-#ifdef NW_PLATFORM_WINDOWS
-#include <windows.h>
-#endif
+#include <native_world.hpp>
 
 #endif	// NWG_PCH

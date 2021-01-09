@@ -2,7 +2,7 @@
 #define ECS_COLLIDER_COMPONENT_H
 #include <ecs/nw_entity_cmp.h>
 
-#include <gl/render/nw_drawable.h>
+#include <glib/render/nw_drawable.h>
 
 namespace NW
 {

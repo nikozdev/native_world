@@ -19,19 +19,19 @@
 // --==</systems>==--
 
 // --==<graphics_library>==--
-#include <gl/control/nw_gapi.h>
-#include <gl/control/nw_draw_engine.h>
+#include <glib/control/nw_gapi.h>
+#include <glib/control/nw_draw_engine.h>
 
-#include <gl/gcontext/nw_window.h>
-#include <gl/gcontext/nw_gcontext.h>
+#include <glib/gcontext/nw_window.h>
+#include <glib/gcontext/nw_gcontext.h>
 
-#include <gl/vision/nw_shader.h>
-#include <gl/vision/nw_gmaterial.h>
-#include <gl/vision/nw_gcamera.h>
+#include <glib/vision/nw_shader.h>
+#include <glib/vision/nw_gmaterial.h>
+#include <glib/vision/nw_gcamera.h>
 
-#include <gl/gcontext/nw_framebuf.h>
-#include <gl/render/nw_texture.h>
-#include <gl/render/nw_drawable.h>
+#include <glib/gcontext/nw_framebuf.h>
+#include <glib/render/nw_texture.h>
+#include <glib/render/nw_drawable.h>
 // --==</graphics_library>==--
 
 // --==<entity_component_system>==--

@@ -4,9 +4,12 @@
 #include <core/nw_data_res.h>
 #include <lib/utils/nw_code_chunk.h>
 
+#include <glib/nw_gbuffer.h>
+#include <glib/render/nw_texture.h>
+
 #include <nw_decl.hpp>
 #include <gui_decl.hpp>
-#include <gl_decl.hpp>
+#include <glib_decl.hpp>
 #include <ecs_decl.hpp>
 
 #include <lib/utils/math_vector.h>
@@ -43,21 +46,28 @@ namespace NW
 	public:
 		bool bWindow = false, bAppState = false, bLuaVM = false;
 	private:
-		AWindow* pWindow = nullptr;
-		CoreState* pEState = nullptr;
-		Char strStateScript[1024] = "Script";
-		Char strWindowTitle[128] = "NW_Engine";
-	private:
 		GuiOfEngine();
 		~GuiOfEngine();
 	public:
 		virtual void OnDraw() override;
+	private:
+		AWindow* pWindow = nullptr;
+		CoreState* pEState = nullptr;
+		Char strStateScript[1024] = "Script";
+		Char strWindowTitle[128] = "NW_Engine";
 	};
 	/// GuiOfDataSys struct
 	struct NW_API GuiOfDataSys : public AGuiOf<GuiOfDataSys>
 	{
+		friend class AGuiOf<GuiOfDataSys>;
+	private:
+		GuiOfDataSys();
+		~GuiOfDataSys();
 	public:
 		virtual void OnDraw() override;
+	private:
+		Char strDir[256];
+		Char strCurrDir[256];
 	};
 	/// GuiOfMemSys struct
 	struct NW_API GuiOfMemSys : public AGuiOf<GuiOfMemSys>
@@ -147,28 +157,51 @@ namespace NW
 		virtual void OnDraw() override;
 	};
 	/// GuiOfSpriteEditor struct
+	struct NW_API GuiOfGMaterialEditor : public AGuiOf<GuiOfGMaterialEditor>
+	{
+		friend class AGuiOf<GuiOfGMaterialEditor>;
+	private:
+		GuiOfGMaterialEditor();
+	public:
+		// --getters
+		// --setters
+		void SetContext(GMaterial* pContext);
+
+		// --core_methods
+		virtual void OnDraw() override;
+	private:
+		GMaterial* pContext = nullptr;
+		Char strContextName[128];
+	};
+	/// GuiOfSpriteEditor struct
 	struct NW_API GuiOfSpriteEditor : public AGuiOf<GuiOfSpriteEditor>
 	{
 		friend class AGuiOf<GuiOfSpriteEditor>;
-	public:
-		AFrameBuf* pFrameBuf = nullptr;
 	private:
 		GuiOfSpriteEditor();
 	public:
 		// --getters
 		// --setters
-		void SetContext(SubTexture2d* pContext);
+		void SetContext(ATexture2d* pContext);
 
 		// --core_methods
 		virtual void OnDraw() override;
 	private:
-		SubTexture2d* pContext = nullptr;
+		ATexture2d* pContext = nullptr;
+		Char strContextName[128];
+
+		DArray<SubTexture2d> Sprites;
+
+		AFrameBuf* pFrameBuf = nullptr;
 		ATexture2d* pBGTex = nullptr;
 		float nAspectRatio = 1.0f;
 		
 		RefOwner<AVertexBuf> pVtxBuf;
 		RefOwner<AIndexBuf> pIndBuf;
 		AShader* pShader = nullptr;
+
+		ImageInfo ImgInfo;
+		TextureInfo TexInfo;
 
 		bool bIsSelection = false;
 	};
@@ -190,8 +223,8 @@ namespace NW
 	/// GuiOfSceneEditor struct
 	struct NW_API GuiOfSceneEditor : public AGuiOf<GuiOfSceneEditor>
 	{
-		using Ents = List2<AEntity>;
-		using RefEnts = DArray<AEntity*>;
+		using Ents = HashMap<UInt32, AEntity>;
+		using RefEnts = HashMap<UInt32, AEntity*>;
 		friend class AGuiOf<GuiOfSceneEditor>;
 	public:
 		bool bIsEnabled = false;
@@ -202,10 +235,9 @@ namespace NW
 		// --core_methods
 		virtual void OnDraw() override;
 	private:
-		inline void OnDraw(RefEnts& rRefEnts);
+		inline void OnDraw(RefEnts& rEnts);
 		inline void OnDraw(GCamera* pGCamera);
 	private:
-		AEntity* pDestroyEnt = nullptr;
 		ATexture2d* pIcoCamera = nullptr;
 	};
 }

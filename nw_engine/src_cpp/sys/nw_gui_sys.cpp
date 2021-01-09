@@ -5,17 +5,17 @@
 
 #include <ecs/nw_scene.h>
 
-#include <gl/vision/nw_gcamera.h>
-#include <gl/vision/nw_gmaterial.h>
+#include <glib/vision/nw_gcamera.h>
+#include <glib/vision/nw_gmaterial.h>
 
-#include <gl/control/nw_draw_engine.h>
-#include <gl/gcontext/nw_gcontext.h>
-#include <gl/gcontext/nw_framebuf.h>
-#include <gl/control/nw_gapi.h>
-#include <gl/gcontext/nw_window.h>
-#include <gl/render/nw_drawable.h>
-#include <gl/vision/nw_gcamera.h>
-#include <gl/vision/nw_gmaterial.h>
+#include <glib/control/nw_draw_engine.h>
+#include <glib/gcontext/nw_gcontext.h>
+#include <glib/gcontext/nw_framebuf.h>
+#include <glib/control/nw_gapi.h>
+#include <glib/gcontext/nw_window.h>
+#include <glib/render/nw_drawable.h>
+#include <glib/vision/nw_gcamera.h>
+#include <glib/vision/nw_gmaterial.h>
 
 #include <core/nw_core_engine.h>
 #include <sys/nw_ev_sys.h>
@@ -171,6 +171,7 @@ namespace NW
 				ImGui::Checkbox("Scene_Editor",				&GuiOfSceneEditor::Get().bIsEnabled);
 				ImGui::Checkbox("Entity_Editor",			&GuiOfEntityEditor::Get().bIsEnabled);
 				ImGui::Checkbox("Sprite_Editor",			&GuiOfSpriteEditor::Get().bIsEnabled);
+				ImGui::Checkbox("GMaterial_Editor",			&GuiOfGMaterialEditor::Get().bIsEnabled);
 
 				ImGui::EndMenu();
 			}
@@ -190,6 +191,7 @@ namespace NW
 		GuiOfSceneEditor::Get().OnDraw();
 		GuiOfEntityEditor::Get().OnDraw();
 		GuiOfSpriteEditor::Get().OnDraw();
+		GuiOfGMaterialEditor::Get().OnDraw();
 	}
 
 	void GuiSys::OnEvent(MouseEvent& rmEvt)

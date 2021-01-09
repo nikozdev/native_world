@@ -1,8 +1,8 @@
 #include <nw_pch.hpp>
 #include "nw_gui_core.h"
 
-#include <gl/render/nw_texture.h>
-#include <gl/render/nw_drawable.h>
+#include <glib/render/nw_texture.h>
+#include <glib/render/nw_drawable.h>
 
 namespace NW
 {

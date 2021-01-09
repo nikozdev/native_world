@@ -13,29 +13,29 @@ namespace NW
 	/// Description
 	/// -- The main unit of the scene
 	/// -- Owns component references of component system
-	class NW_API AEntity : public ADataRes
+	class NW_API AEntity
 	{
 		using CmpTypeId = std::type_index;
 		using ACmps = HashMap<CmpTypeId, AEntityCmp*>;
-		using SubEnts = DArray<AEntity*>;
-		friend class Scene;
+		using RefEnts = HashMap<UInt32, AEntity*>;
 	public:
 		AEntity();
+		AEntity(UInt32 unId);
 		explicit AEntity(const AEntity& rEnt);
 		virtual ~AEntity();
 
 		// --getters
+		inline UInt32 GetId() { return m_unId; }
+		inline const char* GetName() { return &m_strName[0]; }
+
 		inline AEntity* GetOverEnt() { return m_pOverEnt; }
-		inline SubEnts& GetSubEnts() { return m_SubEnts; }
+		inline RefEnts& GetSubEnts() { return m_SubEnts; }
 		inline ACmps& GetAComponents() { return m_ACmps; }
-		inline AEntity* GetSubEnt(UInt32 unId) {
-			SubEnts::iterator itSubEnt = FIND_BY_FUNC(m_SubEnts, AEntity*, unId, ->GetId);
-			return itSubEnt == m_SubEnts.end() ? nullptr : *itSubEnt;
-		}
-		inline AEntityCmp* GetAComponent(UInt32 unId) {
-			ACmps::iterator itCmp = std::find_if(m_ACmps.begin(), m_ACmps.end(),
-				[=](std::pair<const CmpTypeId, AEntityCmp*>& rACmp)->bool {return rACmp.second->GetCmpId() == unId; });
-			return itCmp == m_ACmps.end() ? nullptr : itCmp->second;
+		inline AEntity* GetSubEnt(UInt32 unId) { return m_SubEnts.find(unId) == m_SubEnts.end() ? nullptr : m_SubEnts[unId]; }
+		template<class CmpType>
+		inline CmpType* GetAComponent(CmpTypeId TypeIndex) {
+			ACmps::iterator itCmp = m_ACmps.find(TypeIndex);
+			return itCmp == m_ACmps.end() ? nullptr : static_cast<CmpType*>(itCmp->second);
 		}
 		template<class CmpType>
 		inline CmpType* GetComponent() {
@@ -49,31 +49,28 @@ namespace NW
 		void RemoveSubEnt(UInt32 unId);
 		void AddAComponent(AEntityCmp* pCmp);
 		void RemoveAComponent(CmpTypeId TypeIndex);
-		void RemoveAComponent(UInt32 unId);
+		void DestroyAComponent(CmpTypeId TypeIndex);
 		template<class CmpType, typename ...Args>
-		inline CmpType* AddComponent(Args ...Arguments) {
+		inline CmpType* CreateComponent(Args ...Arguments) {
 			if (HasComponent<CmpType>()) return nullptr;
-			CmpType* pCmp = MemSys::NewT<CmpType>(*this, std::forward<Args>(Arguments)...);
-			return pCmp;
+			return MemSys::NewT<CmpType>(*this, std::forward<Args>(Arguments)...);
 		}
-		template<class CmpType> inline void RemoveComponent() { RemoveAComponent(CmpTypeId(typeid(CmpType))); }
-		virtual void SetName(const char* strName) override;
+		template<class CmpType> inline void DestroyComponent() { DestroyAComponent(CmpTypeId(typeid(CmpType))); }
+		void SetName(const char* strName);
 		// -- Predicates
 		inline bool IsEnabled() { return m_bIsEnabled; }
-		inline bool HasSubEnt(UInt32 unId) { SubEnts::iterator itEnt = FIND_BY_FUNC(m_SubEnts, AEntity*, unId, ->GetId);  return itEnt != m_SubEnts.end(); }
+		inline bool HasSubEnt(UInt32 unId) { return m_SubEnts.find(unId) != m_SubEnts.end(); }
 		inline bool HasSubEnt(AEntity* pEntity) { return (pEntity->GetOverEnt() == this); }
-		inline bool HasAComponent(UInt32 unId) { return GetAComponent(unId) != nullptr; }
-		inline bool HasAComponent(const CmpTypeId& TypeIndex) { return m_ACmps.find(TypeIndex) != m_ACmps.end(); }
-		template <class CmpType> inline bool HasComponent() { return HasAComponent(CmpTypeId(typeid(CmpType))); }
-
-		// --data_methods
-		virtual bool SaveF(const char* strFPath) override;
-		virtual bool LoadF(const char* strFPath) override;
-	private:	// Implementation Attributes
+		inline bool HasAComponent(CmpTypeId TypeIndex) { return m_ACmps.find(TypeIndex) != m_ACmps.end(); }
+		template <class CmpType> inline bool HasComponent() { return m_ACmps.find(CmpTypeId(typeid(CmpType))) != m_ACmps.end(); }
+	private:
+		UInt32 m_unId;
+		String m_strName;
 		bool m_bIsEnabled;
+		bool m_bIsDestroyed;
 
 		AEntity* m_pOverEnt;
-		SubEnts m_SubEnts;
+		RefEnts m_SubEnts;
 
 		ACmps m_ACmps;
 	};

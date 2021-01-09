@@ -1,12 +1,12 @@
 #ifndef GUI_LIB_H
 #define GUI_LIB_H
 
-#include <gl/render/nw_texture.h>
+#include <glib/render/nw_texture.h>
 
 #include <lib/nw_event.h>
 
 #include <gui_decl.hpp>
-#include <gl_decl.hpp>
+#include <glib_decl.hpp>
 
 namespace NW
 {

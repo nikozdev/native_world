@@ -5,16 +5,16 @@
 #include <ecs/nw_entity.h>
 #include <ecs/nw_entity_cmp.h>
 
-#include <gl/control/nw_draw_engine.h>
-#include <gl/control/nw_gapi.h>
-#include <gl/control/nw_gcamera_lad.h>
-#include <gl/gcontext/nw_gcontext.h>
-#include <gl/gcontext/nw_window.h>
-#include <gl/gcontext/nw_framebuf.h>
-#include <gl/vision/nw_gmaterial.h>
-#include <gl/vision/nw_shader.h>
-#include <gl/render/nw_texture.h>
-#include <gl/render/nw_drawable.h>
+#include <glib/control/nw_draw_engine.h>
+#include <glib/control/nw_gapi.h>
+#include <glib/control/nw_gcamera_lad.h>
+#include <glib/gcontext/nw_gcontext.h>
+#include <glib/gcontext/nw_window.h>
+#include <glib/gcontext/nw_framebuf.h>
+#include <glib/vision/nw_gmaterial.h>
+#include <glib/vision/nw_shader.h>
+#include <glib/render/nw_texture.h>
+#include <glib/render/nw_drawable.h>
 
 #include <core/nw_core_engine.h>
 #include <core/nw_core_state.h>
@@ -99,7 +99,10 @@ namespace NW
 	}
 	// --==</GuiOfEngine>==--
 
-	// --==</GuiOfDataSys>==--
+	// --==<GuiOfDataSys>==--
+	GuiOfDataSys::GuiOfDataSys() { strcpy(strDir, DataSys::GetDirectory()); }
+	GuiOfDataSys::~GuiOfDataSys() { }
+
 	void GuiOfDataSys::OnDraw() {
 		if (!bIsEnabled) return;
 		ImGui::Begin("Data_System", &bIsEnabled);
@@ -107,11 +110,18 @@ namespace NW
 			if (ImGui::TreeNodeEx("Create", GUI_DEFAULT_TREE_FLAGS)) {
 				if (ImGui::MenuItem("Shader")) { AShader::Create("shd_nameless"); }
 				else if (ImGui::MenuItem("Texture2d")) { ATexture2d::Create("tex_2d_nameless"); }
-				else if (ImGui::MenuItem("Default 2d")) { MemSys::NewT<GMaterial>("gmt_default"); }
+				else if (ImGui::MenuItem("Default 3d")) { MemSys::NewT<GMaterial>("gmt_default_3d"); }
 				ImGui::TreePop();
 			}
 			ImGui::EndPopup();
 		}
+		
+		if (ImGui::Button("file_system_tree")) { system("tree"); }
+		else if (ImGui::Button("files_list")) { system("dir"); }
+		else if (ImGui::Button("new_directory")) { system("md newdir"); }
+		else if (ImGui::Button("delete_directory")) { system("rd newdir"); }
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal | ImGuiSeparatorFlags_SpanAllColumns);
+
 		if (ImGui::TreeNodeEx("Data Resources")) {
 			DataSys::ADRs& rDrs = DataSys::GetADataResources();
 			for (DataSys::ADRs::iterator itDrs = rDrs.begin(); itDrs != rDrs.end(); itDrs++) {
@@ -121,12 +131,11 @@ namespace NW
 		}
 		if (ImGui::TreeNodeEx("Textures2d")) {
 			auto& Textures = DataSys::GetDataResources<ATexture2d>();
-			for (auto& pTex : Textures) {
-				ImGui::Text(pTex.second->GetName());
-				const ImageInfo& rImgInfo = pTex.second->GetImgInfo();
-				if (ImGui::ImageButton(reinterpret_cast<void*>(pTex.second->GetRenderId()),
-					ImVec2{ 64.0f * rImgInfo.nWidth / rImgInfo.nHeight, 64.0f })) {
-				}
+			for (auto& itTex : Textures) {
+				ImGui::Text(itTex.second->GetName());
+				const ImageInfo& rImgInfo = itTex.second->GetImgInfo();
+				if (ImGui::ImageButton(reinterpret_cast<void*>(itTex.second->GetRenderId()),
+					ImVec2{ 64.0f * rImgInfo.nWidth / rImgInfo.nHeight, 64.0f })) { GuiOfSpriteEditor::Get().SetContext(itTex.second); }
 			} ImGui::Separator();
 			ImGui::TreePop();
 		}
@@ -134,6 +143,13 @@ namespace NW
 			auto& Shaders = DataSys::GetDataResources<AShader>();
 			for (auto& pShader : Shaders) {
 				if (ImGui::Button(pShader.second->GetName())) { GuiOfCodeEditor::Get().SetContext(pShader.second); }
+			} ImGui::Separator();
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNodeEx("GMaterial")) {
+			auto& GMaterials = DataSys::GetDataResources<GMaterial>();
+			for (auto& itGMtl : GMaterials) {
+				if (ImGui::Button(itGMtl.second->GetName())) { GuiOfGMaterialEditor::Get().SetContext(itGMtl.second); }
 			} ImGui::Separator();
 			ImGui::TreePop();
 		}
@@ -301,7 +317,7 @@ namespace NW
 			strCmdBuf.push_back("--==<>==--");
 			while (strCmdBuf.size() > 24) { strCmdBuf.erase(strCmdBuf.begin()); }
 			
-			StringStream strStream(*(strCmdBuf.end() - 2));
+			StrStream strStream(*(strCmdBuf.end() - 2));
 			while (strStream >> &chrCmdBuf[0]) {
 				if (strcmp(&chrCmdBuf[0], "cmd_mode") == 0) {
 					strStream >> &chrCmdBuf[0];
@@ -360,7 +376,7 @@ namespace NW
 		if (ImGui::BeginMenuBar()) {
 			if (ImGui::BeginMenu("File")) {
 				if (ImGui::MenuItem("Save code...")) {
-					String strFPath = DataSys::FDialog_load("all_files(*.*)\0*.*\0lua_scripts(*.lua)\0*.lua\0opengl_shader(*.glsl)\0(*.glsl)\0\0");
+					String strFPath = DataSys::FDialog_save("all_files(*.*)\0*.*\0lua_scripts(*.lua)\0*.lua\0opengl_shader(*.glsl)\0(*.glsl)\0\0");
 					if (!strFPath.empty()) {
 						String strTemp;
 						DataSys::SaveF_string(&strFPath[0], &strCodeBuf[0], strCodeBuf.size());
@@ -443,14 +459,7 @@ namespace NW
 						for (UInt16 bei = 0; bei < rBlk.BufElems.size(); bei++) {
 							auto& rBE = rBlk.BufElems[bei];
 							ImGui::Text("%dth attribute:\nName: %s;\tType: %s;\nCount = %d;\tIs%snormalized", bei,
-								&rBE.strName[0],
-								rBE.sdType == SDT_BOOL ? "boolean" :
-								rBE.sdType == SDT_INT8 ? "byte" : rBE.sdType == SDT_UINT8 ? "unsigned byte" :
-								rBE.sdType == SDT_INT16 ? "short" : rBE.sdType == SDT_UINT16 ? "unsigned short" :
-								rBE.sdType == SDT_INT32 ? "integer" : rBE.sdType == SDT_UINT32 ? "unsigned integer" :
-								rBE.sdType == SDT_FLOAT32 ? "float" : rBE.sdType == SDT_FLOAT64 ? "double" :
-								"unknown",
-								rBE.unCount, rBE.bNormalized ? " " : " not ");
+								&rBE.strName[0], SDType_GetString(rBE.sdType), rBE.unCount, rBE.bNormalized ? " " : " not ");
 						}
 						ImGui::TreePop();
 					}
@@ -464,6 +473,109 @@ namespace NW
 	}
 	// --==</GuiOfCodeEditor>==--
 	
+	// --==<GuiOfGMaterialEditor>==--
+	GuiOfGMaterialEditor::GuiOfGMaterialEditor() :
+		pContext(DataSys::GetDataRes<GMaterial>("gmt_batch_3d"))
+	{ }
+	// --setters
+	void GuiOfGMaterialEditor::SetContext(GMaterial* pContext) {
+		this->pContext = pContext;
+		if (pContext == nullptr) {
+			bIsEnabled = false;
+		}
+		else {
+			if (pContext == nullptr) { pContext = DataSys::GetDataRes<GMaterial>("gmt_batch_3d"); }
+			bIsEnabled = true;
+		}
+	}
+	// --core_methods
+	void GuiOfGMaterialEditor::OnDraw() {
+		if (!bIsEnabled) return;
+		ImGui::Begin("GMaterial_Editor", &bIsEnabled, ImGuiWindowFlags_MenuBar);
+		if (pContext == nullptr) { ImGui::End(); return; }
+
+		if (ImGui::BeginMenuBar()) {
+			if (ImGui::BeginMenu("File")) {
+				if (ImGui::MenuItem("Save...")) {
+					String strFPath = DataSys::FDialog_save("all_files(*.*)\0*.*\0graphics_material(*.gmt)\0(*.gmt)\0\0");
+					if (!strFPath.empty()) { }
+				}
+				else if (ImGui::MenuItem("Load...")) {
+					String strFPath = DataSys::FDialog_load("all_files(*.*)\0*.*\0graphics_material(*.gmt)\0(*.gmt)\0\0");
+					if (!strFPath.empty()) { }
+				}
+				ImGui::EndMenu();
+			}
+			else if (ImGui::BeginMenu("Context")) {
+				if (ImGui::BeginCombo("Set gmaterial", pContext == nullptr ? "No material" : &pContext->GetName()[0])) {
+					auto& GMaterials = DataSys::GetDataResources<GMaterial>();
+					for (auto& itGMtl : GMaterials) {
+						if (ImGui::Button(&itGMtl.second->GetName()[0])) {
+							this->SetContext(itGMtl.second);
+						}
+					}
+					ImGui::EndCombo();
+				}
+				if (ImGui::MenuItem("Reset")) { SetContext(nullptr); }
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
+		}
+
+		strcpy(strContextName, pContext->GetName());
+		if (ImGui::InputText("Name", &strContextName[0], 128)) { pContext->SetName(strContextName); }
+
+		if (ImGui::TreeNodeEx("-- colors", GUI_DEFAULT_TREE_FLAGS)) {
+			for (auto itClr = pContext->GetColors().begin(); itClr != pContext->GetColors().end(); itClr++) {
+				ImGui::ColorEdit4(&itClr->first[0], &itClr->second[0]);
+			}
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNodeEx("-- textures", GUI_DEFAULT_TREE_FLAGS)) {
+			auto itTexMtl = pContext->GetTextures().begin();
+			for (Int32 txi = 0; txi < pContext->GetTexCount(); txi++, itTexMtl++) {
+				auto pTex = itTexMtl->second;
+				ImGui::PushID(&itTexMtl->first[0]);
+				const ImageInfo rImgInfo = pTex->GetImgInfo();
+				ImGui::Text("%d texture: Name: %s\nRender Id = %d; Slot = %d;",
+					txi, &itTexMtl->first[0], pTex->GetRenderId(), pTex->GetTexSlot());
+				ImGui::Text("Width = %d; Height = %d; Depth = %d;",
+					rImgInfo.nWidth, rImgInfo.nHeight, rImgInfo.nDepth);
+				ImGui::Image(reinterpret_cast<void*>(pTex->GetRenderId()),
+					ImVec2{ 64.0f * rImgInfo.nWidth / rImgInfo.nHeight, 64.0f });
+				if (ImGui::BeginCombo("Change texture", &(pTex->GetName())[0])) {
+					auto& Textures = DataSys::GetDataResources<ATexture>();
+					for (auto& itTex : Textures) {
+						const ImageInfo rImgInfoLoc = itTex.second->GetImgInfo();
+						if (ImGui::ImageButton(reinterpret_cast<void*>(itTex.second->GetRenderId()),
+							ImVec2{ 64.0f * (rImgInfoLoc.nWidth / rImgInfoLoc.nHeight), 64.0f })) {
+							pContext->SetTexture(itTex.second, &itTexMtl->first[0]);
+						}
+					} ImGui::EndCombo();
+				}
+				ImGui::PopID();
+			}
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNodeEx("-- shader", GUI_DEFAULT_TREE_FLAGS)) {
+			AShader* pShader = pContext->GetShader();
+			ImGui::Text("ID = %d;\nName: %s;", pShader->GetId(), pShader->GetName());
+			if (ImGui::Button("Code editor")) { GuiOfCodeEditor::Get().SetContext(pShader); }
+			if (ImGui::BeginCombo("Change shader", &pShader->GetName()[0])) {
+				auto& Shaders = DataSys::GetDataResources<AShader>();
+				for (auto& pShd : Shaders) {
+					if (ImGui::Button(&pShd.second->GetName()[0])) { pContext->SetShader(pShd.second); }
+				}
+				ImGui::EndCombo();
+			}
+			ImGui::TreePop();
+		}
+
+		ImGui::End();
+	}
+	// --==</GuiOfGMaterialEditor>==--
+
 	// --==<GuiOfSpriteEditor>==--
 	GuiOfSpriteEditor::GuiOfSpriteEditor() :
 		pVtxBuf(nullptr),
@@ -474,7 +586,7 @@ namespace NW
 		UInt32 IndData[] = { 0, 1, 2,	2, 3, 0 };
 		pIndBuf.reset(AIndexBuf::Create(sizeof(IndData), &IndData[0]));
 		
-		pShader->LoadF("D:\\dev\\native_world\\nw_engine\\src_glsl\\display_img.glsl");
+		pShader->LoadF("D:/dev/native_world/nw_engine/src_glsl/display_img.glsl");
 		pVtxBuf->SetLayout(pShader->GetVertexLayout());
 
 		FrameBufInfo fbInfo;
@@ -484,14 +596,15 @@ namespace NW
 		pFrameBuf = AFrameBuf::Create("fmb_sprite_editor", fbInfo);
 	}
 	// --setters
-	void GuiOfSpriteEditor::SetContext(SubTexture2d* pContext) {
+	void GuiOfSpriteEditor::SetContext(ATexture2d* pContext) {
 		this->pContext = pContext;
 		if (pContext == nullptr) {
 			bIsEnabled = false;
+			pContext = DataSys::GetDataRes<ATexture2d>("tex_white_solid");
 		}
 		else {
-			if (pContext->pOverTex == nullptr) { pContext->pOverTex = DataSys::GetDataRes<ATexture2d>("tex_white_solid"); }
 			bIsEnabled = true;
+			/*
 			V2i xyTexCrd = pContext->GetTexCoord_0_1();
 			V2i whTexSize = pContext->GetTexSize_0_1();
 			float vtxData[] = {
@@ -500,56 +613,138 @@ namespace NW
 				1.0f,	1.0f,		xyTexCrd.x + whTexSize.x,	xyTexCrd.y + whTexSize.y,
 				1.0f,	-1.0f,		xyTexCrd.x + whTexSize.x,	xyTexCrd.x + 0.0f
 			};
-			pVtxBuf->SetSubData(sizeof(vtxData), &vtxData[0]);
+			pVtxBuf->SetSubData(sizeof(vtxData), &vtxData[0]);*/
 		}
-		const ImageInfo& rImgInfo = pContext->pOverTex->GetImgInfo();
-		nAspectRatio = rImgInfo.nWidth / rImgInfo.nHeight;
+		strcpy(strContextName, pContext->GetName());
+		ImgInfo = pContext->GetImgInfo();
+		TexInfo = pContext->GetTexInfo();
+		nAspectRatio = ImgInfo.nWidth / ImgInfo.nHeight;
 	}
 	// --core_methods
 	void GuiOfSpriteEditor::OnDraw() {
 		if (!bIsEnabled) return;
-		ImGui::Begin("Sprite_Editor", &bIsEnabled);
+		ImGui::Begin("Sprite_Editor", &bIsEnabled, ImGuiWindowFlags_MenuBar);
+
+		if (ImGui::BeginMenuBar()) {
+			if (ImGui::BeginMenu("File")) {
+				if (ImGui::MenuItem("Save...")) {
+					String strFPath = DataSys::FDialog_save("all_files\0*.*\0images\0*.png");
+					if (!strFPath.empty()) { pContext->SaveF(&strFPath[0]); }
+				}
+				else if (ImGui::MenuItem("Load...")) {
+					String strFPath = DataSys::FDialog_load("all_files\0*.*\0images\0*.png");
+					if (!strFPath.empty()) { pContext->LoadF(&strFPath[0]); }
+				}
+				ImGui::EndMenu();
+			}
+			else if (ImGui::BeginMenu("Context")) {
+				if (ImGui::MenuItem("Set texture")) {
+					ImGui::OpenPopup("set_context");
+					if (ImGui::BeginPopup("set_context")) {
+						auto& Textures = DataSys::GetDataResources<ATexture2d>();
+						for (auto& itTex : Textures) {
+							ImGui::Text(itTex.second->GetName());
+							const ImageInfo& rImgInfo = itTex.second->GetImgInfo();
+							if (ImGui::ImageButton(reinterpret_cast<void*>(itTex.second->GetRenderId()),
+								ImVec2{ 64.0f * rImgInfo.nWidth / rImgInfo.nHeight, 64.0f })) {
+								SetContext(itTex.second);
+							}
+						}
+						ImGui::EndPopup();
+					}
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
+		}
 		if (pContext == nullptr) { ImGui::End(); return; }
 
-		if (ImGui::DragInt2("Top left", &pContext->xyTexCrd[0], 0.1f, pContext->pOverTex->GetHeight(), pContext->pOverTex->GetWidth()) ||
-			ImGui::DragInt2("Bottom right", &pContext->whTexSize[0], 0.1f, pContext->pOverTex->GetHeight(), pContext->pOverTex->GetWidth())) {
-			V2i xyTexCrd = pContext->GetTexCoord_0_1();
-			V2i whTexSize = pContext->GetTexSize_0_1();
-			float vtxData[] = {
-				-1.0f,	-1.0f,		xyTexCrd.x + 0.0f,	xyTexCrd.y + 0.0f,
-				-1.0f,	1.0f,		xyTexCrd.x + 0.0f,	xyTexCrd.y + whTexSize.y,
-				1.0f,	1.0f,		xyTexCrd.x + whTexSize.x,	xyTexCrd.y + whTexSize.y,
-				1.0f,	-1.0f,		xyTexCrd.x + whTexSize.x,	xyTexCrd.x + 0.0f
-			};
-			pVtxBuf->SetSubData(sizeof(vtxData), &vtxData[0]);
+		if (ImGui::InputText("name", strContextName, 128)) { pContext->SetName(strContextName); }
+		ImGui::Text("context id: %d; render id: %d", pContext->GetId(), pContext->GetRenderId());
+		ImGui::Text("current: width = %d; height = %d", pContext->GetWidth(), pContext->GetHeight());
+
+		if (ImGui::Button("apply")) { pContext->SetInfo(ImgInfo); pContext->SetInfo(TexInfo); pContext->Remake(); }
+
+		if (ImGui::TreeNodeEx("texture_info", GUI_DEFAULT_TREE_FLAGS)) {
+			
+			if (ImGui::BeginCombo("filter_min", TexInfo.FilterMin == TC_FILTER_LINEAR ? "linear" :
+				TexInfo.FilterMin == TC_FILTER_NEAREST ? "nearest" : "none")) {
+				if (ImGui::MenuItem("linear")) { TexInfo.FilterMin = TC_FILTER_LINEAR; }
+				else if (ImGui::MenuItem("nearest")) { TexInfo.FilterMin = TC_FILTER_NEAREST; }
+				ImGui::EndCombo();
+			}
+			else if (ImGui::BeginCombo("filter_mag", TexInfo.FilterMag == TC_FILTER_LINEAR ? "linear" :
+				TexInfo.FilterMag == TC_FILTER_NEAREST ? "nearest" : "none")) {
+				if (ImGui::MenuItem("linear")) { TexInfo.FilterMag = TC_FILTER_LINEAR; }
+				else if (ImGui::MenuItem("nearest")) { TexInfo.FilterMag = TC_FILTER_NEAREST; }
+				ImGui::EndCombo();
+			}
+
+			else if (ImGui::BeginCombo("wrap_s", TexInfo.WrapTypeS == TC_WRAP_REPEAT ? "repeat" : TexInfo.WrapTypeS == TC_WRAP_CLAMP ? "clamp" : "none")) {
+				if (ImGui::MenuItem("clamp")) { TexInfo.WrapTypeS = TC_WRAP_CLAMP; }
+				else if (ImGui::MenuItem("repeat")) { TexInfo.WrapTypeS = TC_WRAP_REPEAT; }
+				ImGui::EndCombo();
+			}
+			else if (ImGui::BeginCombo("wrap_t", TexInfo.WrapTypeT == TC_WRAP_REPEAT ? "repeat" : TexInfo.WrapTypeT == TC_WRAP_CLAMP ? "clamp" : "none")) {
+				if (ImGui::MenuItem("clamp")) { TexInfo.WrapTypeT = TC_WRAP_CLAMP; }
+				else if (ImGui::MenuItem("repeat")) { TexInfo.WrapTypeT = TC_WRAP_REPEAT; }
+				ImGui::EndCombo();
+			}
+
+			else if (ImGui::BeginCombo("format", TexInfo.Format == TC_FORMAT_RGB ? "rgb" : TexInfo.Format == TC_FORMAT_RGBA ? "rgba" :
+				TexInfo.Format == TC_FORMAT_RED ? "grayscale" : "none")) {
+				if (ImGui::MenuItem("rgb")) { TexInfo.Format = TC_FORMAT_RGB; TexInfo.InterFormat = TC_FORMAT_RGB; }
+				else if (ImGui::MenuItem("rgba")) { TexInfo.Format = TC_FORMAT_RGBA; TexInfo.InterFormat = TC_FORMAT_RGBA; }
+				ImGui::EndCombo();
+			}
+
+			ImGui::TreePop();
 		}
+		ImGui::Image(reinterpret_cast<void*>(pContext->GetRenderId()),
+			ImVec2{ static_cast<float>(64.0f * nAspectRatio), static_cast<float>(64.0f) });
+		if (ImGui::TreeNodeEx("Sprites", GUI_DEFAULT_TREE_FLAGS)) {
 
-		V2i whDisplaySize = { ImGui::GetContentRegionAvail().x * nAspectRatio, ImGui::GetContentRegionAvail().y - 32.0f };
-		
-		const FrameBufInfo& rFBInfo = pFrameBuf->GetInfo();
-		if (rFBInfo.unHeight != whDisplaySize.x || rFBInfo.unWidth != whDisplaySize.x) {
-			pFrameBuf->SetSizeWH(whDisplaySize.x, whDisplaySize.y);
+			/*if (ImGui::DragInt2("Top left", &pContext->xyTexCrd[0], 0.1f, 0.0, pContext->GetOverTexSize().y) ||
+				ImGui::DragInt2("Bottom right", &pContext->whTexSize[0], 0.1f, pContext->GetOverTexSize().y, pContext->pOverTex->GetWidth())) {
+				V2i xyTexCrd = pContext->GetTexCoord_0_1();
+				V2i whTexSize = pContext->GetTexSize_0_1();
+				float vtxData[] = {
+					-1.0f,	-1.0f,		xyTexCrd.x + 0.0f,	xyTexCrd.y + 0.0f,
+					-1.0f,	1.0f,		xyTexCrd.x + 0.0f,	xyTexCrd.y + whTexSize.y,
+					1.0f,	1.0f,		xyTexCrd.x + whTexSize.x,	xyTexCrd.y + whTexSize.y,
+					1.0f,	-1.0f,		xyTexCrd.x + whTexSize.x,	xyTexCrd.x + 0.0f
+				};
+				pVtxBuf->SetSubData(sizeof(vtxData), &vtxData[0]);
+			}*/
+
+			V2i whDisplaySize = { ImGui::GetContentRegionAvail().x * nAspectRatio, ImGui::GetContentRegionAvail().y - 32.0f };
+
+			const FrameBufInfo& rFBInfo = pFrameBuf->GetInfo();
+			if (rFBInfo.unHeight != whDisplaySize.x || rFBInfo.unWidth != whDisplaySize.x) {
+				pFrameBuf->SetSizeWH(whDisplaySize.x, whDisplaySize.y);
+			}
+
+			pFrameBuf->Bind();
+			pFrameBuf->Clear();
+
+			pShader->Enable();
+			pContext->Bind(0);
+			pShader->SetInt("unf_tex", 0);
+
+			pVtxBuf->Bind();
+			pIndBuf->Bind();
+			DrawEngine::GetGApi()->DrawIndexed(pIndBuf->GetDataSize() / sizeof(UInt32));
+			pIndBuf->Unbind();
+			pVtxBuf->Unbind();
+
+			pContext->Unbind();
+			pShader->Disable();
+			pFrameBuf->Unbind();
+
+			ImGui::Image(reinterpret_cast<void*>(pFrameBuf->GetColorAttachment()->GetRenderId()),
+				ImVec2{ static_cast<float>(whDisplaySize.x), static_cast<float>(whDisplaySize.y) });
+			ImGui::TreePop();
 		}
-
-		pFrameBuf->Bind();
-		pFrameBuf->Clear();
-
-		pShader->Enable();
-		pContext->pOverTex->Bind(0);
-		pShader->SetInt("unf_textures[0]", 0);
-
-		pVtxBuf->Bind();
-		pIndBuf->Bind();
-		DrawEngine::GetGApi()->DrawIndexed(pIndBuf->GetDataSize() / sizeof(UInt32));
-		pIndBuf->Unbind();
-		pVtxBuf->Unbind();
-		
-		pContext->pOverTex->Unbind();
-		pShader->Disable();
-		pFrameBuf->Unbind();
-
-		ImGui::Image(reinterpret_cast<void*>(pFrameBuf->GetColorAttachment()->GetRenderId()),
-			ImVec2{ static_cast<float>(whDisplaySize.x), static_cast<float>(whDisplaySize.y) });
 
 		ImGui::End();
 	}
@@ -618,28 +813,31 @@ namespace NW
 				strcpy_s(cBuffer, pGMtl->GetName());
 				if (ImGui::InputText("Name", &cBuffer[0], 128)) { pGMtl->SetName(cBuffer); }
 
-				for (auto itClr = pGMtl->GetColors().begin(); itClr != pGMtl->GetColors().end(); itClr++) {
-					ImGui::ColorEdit4(&itClr->first[0], &itClr->second[0]);
+				if (ImGui::TreeNodeEx("-- colors", GUI_DEFAULT_TREE_FLAGS)) {
+					for (auto itClr = pGMtl->GetColors().begin(); itClr != pGMtl->GetColors().end(); itClr++) {
+						ImGui::ColorEdit4(&itClr->first[0], &itClr->second[0]);
+					}
+					ImGui::TreePop();
 				}
 				if (ImGui::TreeNodeEx("-- textures", GUI_DEFAULT_TREE_FLAGS)) {
-					auto itTex = pGMtl->GetTextures().begin();
-					for (Int32 txi = 0; txi < pGMtl->GetTexCount(); txi++, itTex++) {
-						auto pTex = itTex->second;
-						ImGui::PushID(&itTex->first[0]);
+					auto itTexMtl = pGMtl->GetTextures().begin();
+					for (Int32 txi = 0; txi < pGMtl->GetTexCount(); txi++, itTexMtl++) {
+						auto pTex = itTexMtl->second;
+						ImGui::PushID(&itTexMtl->first[0]);
 						const ImageInfo rImgInfo = pTex->GetImgInfo();
 						ImGui::Text("%d texture: Name: %s\nRender Id = %d; Slot = %d;",
-							txi, &itTex->first[0], pTex->GetRenderId(), pTex->GetTexSlot());
+							txi, &itTexMtl->first[0], pTex->GetRenderId(), pTex->GetTexSlot());
 						ImGui::Text("Width = %d; Height = %d; Depth = %d;",
 							rImgInfo.nWidth, rImgInfo.nHeight, rImgInfo.nDepth);
 						ImGui::Image(reinterpret_cast<void*>(pTex->GetRenderId()),
 							ImVec2{ 64.0f * rImgInfo.nWidth / rImgInfo.nHeight, 64.0f });
-						if (ImGui::BeginCombo("Change texture", &pTex->GetName()[0])) {
+						if (ImGui::BeginCombo("Change texture", &(pTex->GetName())[0])) {
 							auto& Textures = DataSys::GetDataResources<ATexture>();
 							for (auto& itTex : Textures) {
 								const ImageInfo rImgInfoLoc = itTex.second->GetImgInfo();
 								if (ImGui::ImageButton(reinterpret_cast<void*>(itTex.second->GetRenderId()),
 									ImVec2{ 64.0f * (rImgInfoLoc.nWidth / rImgInfoLoc.nHeight), 64.0f })) {
-									pGMtl->SetTexture(itTex.second);
+									pGMtl->SetTexture(itTex.second, &itTexMtl->first[0]);
 								}
 							} ImGui::EndCombo();
 						}
@@ -660,6 +858,13 @@ namespace NW
 						ImGui::EndCombo();
 					}
 					ImGui::TreePop();
+				}
+				if (ImGui::BeginCombo("Change material", &pGMtl->GetName()[0])) {
+					auto& GMaterials = DataSys::GetDataResources<GMaterial>();
+					for (auto& itGMtl : GMaterials) {
+						if (ImGui::Button(&itGMtl.second->GetName()[0])) { pGCmp->GetDrawable()->pGMtl = itGMtl.second; }
+					}
+					ImGui::EndCombo();
 				}
 				ImGui::TreePop();
 			}
@@ -737,22 +942,14 @@ namespace NW
 namespace NW
 {
 	GuiOfSceneEditor::GuiOfSceneEditor() :
-		pDestroyEnt(nullptr),
 		pIcoCamera(ATexture2d::Create("ico_editor_camera"))
 	{
-		pIcoCamera->LoadF("D:\\dev\\native_world\\bin\\resources\\graphics\\images\\ico_eye.png");
+		pIcoCamera->LoadF("data_res/graphics/images/ico_eye.png");
 	}
 	// --core_methods
 	void GuiOfSceneEditor::OnDraw() {
 		if (!bIsEnabled) { return; }
 		ImGui::Begin("Scene_Editor", &bIsEnabled);
-		
-		char cNameBuf[128]{ 0 };
-		strcpy_s(cNameBuf, &Scene::Get().GetName()[0]);
-		if (ImGui::InputText("Name", &cNameBuf[0], 128)) {
-			Scene::Get().SetName(cNameBuf);
-		}
-		ImGui::Separator();
 
 		if (ImGui::BeginPopupContextWindow(0, 1, false)) {
 			AEntity* pEnt0 = nullptr;
@@ -762,10 +959,7 @@ namespace NW
 				Graphics2dCmp* pG2dCmp = MemSys::NewT<Graphics2dCmp>(*pEnt0);
 			} ImGui::EndPopup();
 		}
-		RefEnts RefEnts;
-		Ents& rEnts = Scene::Get().GetEnts();
-		for (auto& rEnt : rEnts) { if (rEnt.GetOverEnt() == nullptr) RefEnts.push_back(&rEnt); }
-		OnDraw(RefEnts);
+		OnDraw(Scene::Get().GetOverEnts());
 		ImGui::End();
 
 		OnDraw(GCameraLad::Get().GetGCamera());
@@ -788,8 +982,9 @@ namespace NW
 		ImGui::End();
 	}
 	inline void GuiOfSceneEditor::OnDraw(RefEnts& rRefEnts) {
-		for (UInt32 ei = 0; ei < rRefEnts.size(); ei++) {
-			AEntity* pEntity = rRefEnts[ei];
+		AEntity* pDestroyEnt = nullptr;
+		for (auto itEnt : rRefEnts) {
+			AEntity* pEntity = itEnt.second;
 			bool bOpened = ImGui::TreeNodeEx(&pEntity->GetName()[0], GUI_DEFAULT_TREE_FLAGS);
 			if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) { GuiOfEntityEditor::Get().SetContext(pEntity); }
 			if (ImGui::BeginPopupContextItem(&pEntity->GetName()[0])) {
@@ -800,18 +995,16 @@ namespace NW
 					Graphics2dCmp* pG2dCmp = MemSys::NewT<Graphics2dCmp>(*pSubEnt);
 				}
 				else if (ImGui::MenuItem("Destroy Entity")) {
-					Scene::Get().DestroyEntity(pEntity->GetId());
 					pDestroyEnt = pEntity;
 				} ImGui::EndPopup();
 			}
 			if (bOpened) {
-				if (pEntity->GetSubEnts().size() > 0) OnDraw(pEntity->GetSubEnts());
+				if (pEntity->GetSubEnts().size() > 0) { OnDraw(pEntity->GetSubEnts()); }
 				ImGui::TreePop();
 			}
 			if (pDestroyEnt != nullptr) {
 				GuiOfEntityEditor::Get().SetContext(nullptr);
 				Scene::Get().DestroyEntity(pDestroyEnt->GetId());
-				pDestroyEnt = nullptr;
 			}
 		}
 	}

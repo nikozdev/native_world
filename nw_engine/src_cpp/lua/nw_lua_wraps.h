@@ -26,22 +26,22 @@ namespace NW
 	static inline AEntityCmp* GetCmpByArg(LuaState* pLState, Int32 nIdx) {
 		Int32 nTypeArg = lua_type(pLState, nIdx);
 		if (nTypeArg == LT_LUD) { return static_cast<AEntityCmp*>(lua_touserdata(pLState, nIdx)); }
-		else if (nTypeArg == LT_NUM) { return Scene::Get().GetAComponent(lua_tonumber(pLState, nIdx)); }
+		else if (nTypeArg == LT_NUM) { return nullptr; }
 		else { return nullptr; }
 	}
 	AEntityCmp* CreateCmpOfEnt(AEntity* pEnt, const char* strCmpName) {
 		if (pEnt == nullptr) return nullptr;
 		if (strcmp(strCmpName, "cmp_transform_2d") == 0) {
-			return pEnt->AddComponent<Transform2dCmp>();
+			return pEnt->CreateComponent<Transform2dCmp>();
 		}
 		else if (strcmp(strCmpName, "cmp_transform_3d") == 0) {
-			return pEnt->AddComponent<Transform3dCmp>();
+			return pEnt->CreateComponent<Transform3dCmp>();
 		}
 		else if (strcmp(strCmpName, "cmp_graphics_2d") == 0) {
-			return pEnt->AddComponent<Graphics2dCmp>();
+			return pEnt->CreateComponent<Graphics2dCmp>();
 		}
 		else if (strcmp(strCmpName, "cmp_graphics_3d") == 0) {
-			return pEnt->AddComponent<Graphics2dCmp>();
+			return pEnt->CreateComponent<Graphics2dCmp>();
 		}
 		return nullptr;
 	}

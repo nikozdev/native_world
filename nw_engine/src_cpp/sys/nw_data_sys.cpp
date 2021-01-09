@@ -5,10 +5,10 @@
 #include <ecs/nw_scene.h>
 #include <lua/nw_lua_vm.h>
 
-#include <gl/gcontext/nw_window.h>
-#include <gl/vision/nw_gmaterial.h>
-#include <gl/vision/nw_shader.h>
-#include <gl/render/nw_texture.h>
+#include <glib/gcontext/nw_window.h>
+#include <glib/vision/nw_gmaterial.h>
+#include <glib/vision/nw_shader.h>
+#include <glib/render/nw_texture.h>
 
 #include <sys/nw_ev_sys.h>
 #include <sys/nw_mem_sys.h>
@@ -26,9 +26,7 @@
 #endif  // NW_PLATFORM
 
 NW::DataSys::ADRs NW::DataSys::s_ADRs;
-NW::String NW::DataSys::s_strRscDir = "D:\\dev\\native_world\\bin\\resources";
-std::stringstream NW::DataSys::s_strStream;
-std::fstream NW::DataSys::s_fStream;
+NW::String NW::DataSys::s_strRscDir = &std::filesystem::current_path().generic_string()[0];
 
 namespace NW
 {
@@ -44,7 +42,7 @@ namespace NW
         return nullptr;
     }
     // --setters
-
+    void DataSys::SetDirectory(const char* strDir) { s_strRscDir = strDir; }
     void DataSys::AddADataRes(ADataRes* pDataRes) {
         if (pDataRes == nullptr) return;
         s_ADRs[pDataRes->GetId()] = (pDataRes);
@@ -59,26 +57,19 @@ namespace NW
     // --==<core_methods>==--=
     bool DataSys::OnInit()
     {
-        s_fStream.exceptions(std::ios::badbit | std::ios::failbit);
+        FStream fStream;
+        fStream.exceptions(std::ios::badbit | std::ios::failbit);
 
         if (true) {
-            AShader::Create("shd_batch_3d");
-            GetDataRes<AShader>("shd_batch_3d")->LoadF("D:/dev/native_world/nw_engine/src_glsl/batch_3d.glsl");
+            AShader::Create("shd_default");
+            DataSys::GetDataRes<AShader>("shd_default")->LoadF("D:/dev/native_world/nw_engine/src_glsl/batch_3d.glsl");
         }
         if (true) {
             ATexture2d::Create("tex_white_solid");
             GetDataRes<ATexture2d>("tex_white_solid")->LoadF("");
-            ATexture2d::Create("tex_white_frame");
-            GetDataRes<ATexture2d>("tex_white_frame")->LoadF("D:/dev/native_world/bin/resources/graphics/images/tex_white_frame.png");
-            ATexture2d::Create("tex_white_circle");
-            GetDataRes<ATexture2d>("tex_white_circle")->LoadF("D:/dev/native_world/bin/resources/graphics/images/tex_white_circle.png");
-            ATexture2d::Create("fnt_cheer0");
-            GetDataRes<ATexture2d>("fnt_cheer0")->LoadF("D:/dev/native_world/bin/resources/graphics/fonts/fnt_cheer0.png");
-            ATexture2d::Create("spt_ground0");
-            GetDataRes<ATexture2d>("spt_ground0")->LoadF("D:/dev/native_world/bin/resources/graphics/images/spt_iso_ground0_0.png");
         }
         if (true) {
-            GMaterial* pGMtl = MemSys::NewT<GMaterial>("gmt_batch_3d");
+            GMaterial* pGMtl = MemSys::NewT<GMaterial>("gmt_default");
         }
         return true;
     }
@@ -86,17 +77,13 @@ namespace NW
     void DataSys::OnQuit()
     {
         if (true) {
-            MemSys::DelT<AShader>(GetDataRes<AShader>("shd_batch_3d"));
+            MemSys::DelT<AShader>(GetDataRes<AShader>("gmt_default"));
         }
         if (true) {
             MemSys::DelT<ATexture2d>(GetDataRes<ATexture2d>("tex_white_solid"));
-            MemSys::DelT<ATexture2d>(GetDataRes<ATexture2d>("tex_white_frame"));
-            MemSys::DelT<ATexture2d>(GetDataRes<ATexture2d>("tex_white_circle"));
-            MemSys::DelT<ATexture2d>(GetDataRes<ATexture2d>("fnt_cheer0"));
-            MemSys::DelT<ATexture2d>(GetDataRes<ATexture2d>("spt_ground0"));
         }
         if (true) {
-            MemSys::DelT<GMaterial>(GetDataRes<GMaterial>("gmt_batch_3d"));
+            MemSys::DelT<GMaterial>(GetDataRes<GMaterial>("gmt_default"));
         }
     }
     // -- File Dialogs
@@ -136,40 +123,42 @@ namespace NW
     }
 
     // -- BinaryData
-    bool DataSys::SaveF_data(const char *filePath,
+    bool DataSys::SaveF_data(const char* filePath,
         void* pData, UInt64 unBytes)
     {
+        FStream fStream;
+        fStream.exceptions(std::ios::badbit | std::ios::failbit);
         try {
-            s_fStream.open(filePath, std::ios::out | std::ios::binary);
-            s_fStream.write(static_cast<char*>(pData), unBytes);
-            s_fStream.close();
+            fStream.open(filePath, std::ios::out | std::ios::binary);
+            fStream.write(static_cast<char*>(pData), unBytes);
+            fStream.close();
             return true;
-        } catch (std::ios_base::failure ex) {
-            return false;
-        }
+        } catch (std::ios_base::failure ex) { return false; }
     }
     bool DataSys::SaveF_data(const char* directory, const char* name, const char* format,
         void* pData, UInt64 unBytes)
     {
         try {
-            s_strStream << directory << name << "." << format;
-            s_fStream.open(s_strStream.str().c_str(), std::ios::out | std::ios::binary);
-            s_fStream.write(static_cast<char*>(pData), unBytes);
-            s_fStream.close();
-            s_strStream = std::stringstream();
+            FStream fStream;
+            StrStream strStream;
+            strStream << directory << name << "." << format;
+            fStream.open(strStream.str().c_str(), std::ios::out | std::ios::binary);
+            fStream.write(static_cast<char*>(pData), unBytes);
+            fStream.close();
             return true;
         } catch (std::ios_base::failure ex) {
-            s_strStream = std::stringstream();
             return false;
         }
     }
     bool DataSys::LoadF_data(const char* filePath,
         void* pData, UInt64 unBytes)
     {
+        FStream fStream;
+        fStream.exceptions(std::ios::badbit | std::ios::failbit);
         try {
-            s_fStream.open(filePath, std::ios::in | std::ios::binary);
-            s_fStream.read(static_cast<char*>(pData), unBytes);
-            s_fStream.close();
+            fStream.open(filePath, std::ios::in | std::ios::binary);
+            fStream.read(static_cast<char*>(pData), unBytes);
+            fStream.close();
             return true;
         } catch (std::ios_base::failure ex)
         {
@@ -179,15 +168,16 @@ namespace NW
     bool DataSys::LoadF_data(const char* directory, const char* name, const char* format,
         void* pData, UInt64 unBytes)
     {
+        FStream fStream;
+        fStream.exceptions(std::ios::badbit | std::ios::failbit);
+        StrStream strStream;
         try {
-            s_strStream << directory << name << "." << format;
-            s_fStream.open(s_strStream.str(), std::ios::in | std::ios::binary);
-            s_fStream.read(static_cast<char*>(pData), unBytes);
-            s_fStream.close();
-            s_strStream = std::stringstream();
+            strStream << directory << name << "." << format;
+            fStream.open(strStream.str(), std::ios::in | std::ios::binary);
+            fStream.read(static_cast<char*>(pData), unBytes);
+            fStream.close();
             return true;
         } catch (std::ios_base::failure ex) {
-            s_strStream = std::stringstream();
             return false;
         }
     }
@@ -195,31 +185,33 @@ namespace NW
     // --Strings
     bool DataSys::SaveF_string(const char *strFPath, const char* strSrc, UInt64 unBytes)
     {
+        FStream fStream;
+        fStream.exceptions(std::ios::badbit | std::ios::failbit);
+        StrStream strStream;
         try {
-            s_fStream.open(strFPath, std::ios::out, std::ios::binary);
-            s_fStream.write(&strSrc[0], unBytes);
-            s_fStream.close();
-            s_strStream = std::stringstream();
+            fStream.open(strFPath, std::ios::out, std::ios::binary);
+            fStream.write(&strSrc[0], unBytes);
+            fStream.close();
             return true;
         } catch (std::ios_base::failure ex) {
-            s_strStream = std::stringstream();
             return false;
         }
     }
     bool DataSys::LoadF_string(const char* strFPath, String& strDest)
     {
+        FStream fStream;
+        fStream.exceptions(std::ios::badbit | std::ios::failbit);
+        StrStream strStream;
         try {
-            s_fStream.open(strFPath, std::ios::in, std::ios::binary);
-            s_fStream.seekg(0, std::ios::end);
-            strDest.resize(s_fStream.tellg());
-            s_fStream.seekg(0, std::ios::beg);
-            s_strStream << s_fStream.rdbuf();
-            strcpy(&strDest[0], &s_strStream.str()[0]);
-            s_fStream.close();
-            s_strStream = std::stringstream();
+            fStream.open(strFPath, std::ios::in, std::ios::binary);
+            fStream.seekg(0, std::ios::end);
+            strDest.resize(fStream.tellg());
+            fStream.seekg(0, std::ios::beg);
+            strStream << fStream.rdbuf();
+            strcpy(&strDest[0], &strStream.str()[0]);
+            fStream.close();
             return true;
         } catch (std::ios_base::failure ex) {
-            s_strStream = std::stringstream();
             return false;
         }
     }
@@ -253,21 +245,22 @@ namespace NW
     {
         UInt16 dotPos = strFilePath.rfind('.') + 1;
         String format = strFilePath.substr(dotPos, strFilePath.size() - dotPos);
+        FStream fStream;
+        fStream.exceptions(std::ios::badbit | std::ios::failbit);
+        StrStream strStream;
         try {
-            s_fStream.open(strFilePath, std::ios::in, std::ios::binary);
-            s_strStream << s_fStream.rdbuf();
-            if (format == "obj") { LoadF_mesh_obj(s_strStream.str(), *pVtxData, *punIndData); }
+            fStream.open(strFilePath, std::ios::in, std::ios::binary);
+            strStream << fStream.rdbuf();
+            if (format == "obj") { LoadF_mesh_obj(strStream.str(), *pVtxData, *punIndData); }
             else if (format == "dae") {}
             else { throw std::exception("Unknown format"); }
-            s_fStream.close();
-            s_fStream.clear();
-            s_strStream = std::stringstream();
+            fStream.close();
+            fStream.clear();
             return true;
         } catch (std::exception ex) {
             NW_ERR("Failed to load a file by path " + strFilePath + "\n" + ex.what());
-            s_fStream.clear();
-            s_fStream.close();
-            s_strStream = std::stringstream();
+            fStream.clear();
+            fStream.close();
             return false;
         }
     }

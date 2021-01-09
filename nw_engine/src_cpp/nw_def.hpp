@@ -39,7 +39,7 @@ namespace NW
 	using InStream = std::istream;
 	using OutStream = std::ostream;
 	using IOStream = std::iostream;
-	using StringStream = std::stringstream;
+	using StrStream = std::stringstream;
 	// --container
 	template <typename ValType, Size szCapacity>
 	using SArray = std::array<ValType, szCapacity>;

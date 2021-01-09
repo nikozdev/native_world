@@ -4,7 +4,7 @@
 
 #include <nw_decl.hpp>
 #include <ecs_decl.hpp>
-#include <gl_decl.hpp>
+#include <glib_decl.hpp>
 
 #include <lib/utils/math_vector.h>
 
@@ -16,11 +16,12 @@ namespace NW
 	class NW_API DataSys
 	{
 	public:
+		using FStream = std::fstream;
 		using ADRs = HashMap<UInt32, ADataRes*>;
 		template <class DRType> using DRs = HashMap<String, DRType*>;
 	public:
 		// --getters
-		inline const char* GetDirectory() const { return &s_strRscDir[0]; }
+		static inline const char* GetDirectory() { return &s_strRscDir[0]; }
 		
 		static inline ADRs& GetADataResources() { return s_ADRs; }
 		static inline ADataRes* GetADataRes(UInt32 unId) {
@@ -32,10 +33,11 @@ namespace NW
 		template <class DRType> static inline DRType* GetDataRes(UInt32 unId) { return dynamic_cast<DRType*>(GetADataRes(unId)); }
 		template <class DRType> static inline DRType* GetDataRes(const char* strName) {
 			DRs<DRType>& s_DRs = GetDataResources<DRType>();
-			DRs<DRType>::iterator itDR = s_DRs.find(strName);
+			DRs<DRType>::iterator& itDR = s_DRs.find(strName);
 			return itDR == s_DRs.end() ? nullptr : itDR->second;
 		}
 		// --setters
+		static void SetDirectory(const char* strDir);
 		static void AddADataRes(ADataRes* pDataRes);
 		static void RemoveADataRes(UInt32 unId);
 		
@@ -80,8 +82,6 @@ namespace NW
 	private:
 		static ADRs s_ADRs;
 		static String s_strRscDir;
-		static std::stringstream s_strStream;
-		static std::fstream s_fStream;
 	private:
 		static bool LoadF_mesh_dae(const String& strFileData, DArray<UInt32>& arrIndices,
 			DArray<V3f>& vtxCoords, DArray<V2f>& texCoords, DArray<V3f>& normalCoords);

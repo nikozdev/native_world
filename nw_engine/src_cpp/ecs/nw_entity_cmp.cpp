@@ -22,7 +22,7 @@ namespace NW
 	}
 	AEntityCmp::~AEntityCmp()
 	{
-		Scene::Get().RemoveAComponent(GetCmpId());
+		Scene::Get().RemoveAComponent(this);
 	}
 	// --==</AbstractEntityCmp>==--
 }
