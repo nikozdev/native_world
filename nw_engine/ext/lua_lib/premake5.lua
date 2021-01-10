@@ -6,7 +6,7 @@ project "lua_lib"
 	systemversion "latest"
 
 	targetdir ("bin/"..dir_out.. "/%{prj.name}")
-	objdir ("bin-int/"..dir_out.. "/%{prj.name}")
+	objdir ("bin/"..dir_out.. "/%{prj.name}")
 
 	files
 	{

@@ -50,6 +50,21 @@ namespace NW
 		UInt32 m_unLast = 0;
 		bool m_bOwnedIds[IdCount]{ false };
 	};
+	/// IdStack class
+	/// Description:
+	/// --It's like a simple stack of unsigned 32-bit integers but for identificators
+	/// --Contains one single ID for any class
+	/// --You can get new id during construction of and object and put it back into the stack
+	/// --If any destroyed instance gives back own ID to the stack - there is no loss
+	class IdStack : protected DStack<UInt32>
+	{
+	public:
+		IdStack() : DStack<UInt32>() { push(1); }
+		// -- getters
+		inline UInt32 GetFreeId() { UInt32 unFreeId = top(); if (size() == 1) { top()++; } else { pop(); } return unFreeId; }
+		// -- setters
+		inline void SetFreeId(UInt32 unFreeId) { if (unFreeId != top()) { push(unFreeId); } }
+	};
 #if (NW_LIBS & NW_LIBS_NATIVE_COLLECTION)
 	template <typename Type, int size>
 	class NW_API SArray

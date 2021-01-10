@@ -1,8 +1,12 @@
 # Ignore these directories
 .vs/
 bin/
+ext/
+bin/
 .git/
-native_world/ext//
+nw_engine/ext/
+nw_game/ext/
+versions/
 # Files
 **.vcxproj**
 *.sln

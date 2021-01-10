@@ -7,26 +7,34 @@ namespace NWG
 {
 	using namespace NW;
 
-	GameState::GameState(){
-		if (true) {
-		}
-		if (true) {
-		}
-		if (true) {
-		}
-	}
+	GameState::GameState(){}
 	GameState::~GameState(){
-		if (true) {
+		if (true) {	// materials
 		}
-		if (true) {
+		if (true) {	// textures
+			MemSys::DelT<ATexture2d>(DataSys::GetDataRes<ATexture2d>("spt_nw_hero"));
 		}
-		if (true) {
+		if (true) {	// shaders
 		}
 	}
 
 	// --==<core_methods>==--
-	bool GameState::Init() { return true; }
-	void GameState::Update() { GCameraLad::Get().UpdateCamera(); Scene::Get().Update(); }
+	bool GameState::Init() {
+		if (true) {	// shaders
+		}
+		if (true) {	// textures
+			ATexture2d::Create("spt_nw_hero")->LoadF("data_res/graphics/images/spt_nw_hero.png");
+		}
+		if (true) {	// materials
+		}
+		return true;
+	}
+	void GameState::Update() {
+		//auto& rEnts = Scene::Get().GetEnts();
+		
+		GCameraLad::Get().UpdateCamera();
+		Scene::Get().Update();
+	}
 	void GameState::OnEnable() { Scene::Get().SetGCamera(GCameraLad::Get().GetGCamera()); }
 	void GameState::OnDisable() { Scene::Get().SetGCamera(nullptr); }
 	// --==</core_methods>==--

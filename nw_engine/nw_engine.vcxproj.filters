@@ -1443,9 +1443,6 @@
     <ClInclude Include="src_cpp\core\nw_core_engine.h">
       <Filter>src_cpp\core</Filter>
     </ClInclude>
-    <ClInclude Include="src_cpp\core\nw_core_state.h">
-      <Filter>src_cpp\core</Filter>
-    </ClInclude>
     <ClInclude Include="src_cpp\core\nw_data_res.h">
       <Filter>src_cpp\core</Filter>
     </ClInclude>
@@ -1584,18 +1581,6 @@
     <ClInclude Include="src_cpp\lib\nw_event.h">
       <Filter>src_cpp\core</Filter>
     </ClInclude>
-    <ClInclude Include="src_cpp\glib\control\nw_draw_engine.h">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib\control\nw_draw_state.h">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib\control\nw_gapi.h">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib\control\nw_gcamera_lad.h">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClInclude>
     <ClInclude Include="src_cpp\glib\gcontext\nw_framebuf.h">
       <Filter>src_cpp\gl\gcontext</Filter>
     </ClInclude>
@@ -1630,6 +1615,22 @@
       <Filter>src_cpp\gl</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\glib\nw_gbuffer.h" />
+    <ClInclude Include="src_cpp\core\nw_core_state.h">
+      <Filter>src_cpp\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\sys\nw_ent_sys.h" />
+    <ClInclude Include="src_cpp\glib\control\nw_gcamera_lad.h">
+      <Filter>src_cpp\gl\control</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\control\nw_graph_state.h">
+      <Filter>src_cpp\gl\control</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\control\nw_graph_engine.h">
+      <Filter>src_cpp\gl\control</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\control\nw_graph_api.h">
+      <Filter>src_cpp\gl\control</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src_cpp\core\nw_core_engine.cpp">
@@ -1722,18 +1723,6 @@
     <ClCompile Include="src_cpp\sys\nw_time_sys.cpp">
       <Filter>src_cpp\sys</Filter>
     </ClCompile>
-    <ClCompile Include="src_cpp\glib\control\nw_draw_engine.cpp">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\glib\control\nw_draw_state.cpp">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\glib\control\nw_gapi.cpp">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\glib\control\nw_gcamera_lad.cpp">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClCompile>
     <ClCompile Include="src_cpp\glib\gcontext\nw_framebuf.cpp">
       <Filter>src_cpp\gl\gcontext</Filter>
     </ClCompile>
@@ -1762,6 +1751,19 @@
       <Filter>src_cpp\gl</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\glib\nw_gbuffer.cpp" />
+    <ClCompile Include="src_cpp\sys\nw_ent_sys.cpp" />
+    <ClCompile Include="src_cpp\glib\control\nw_gcamera_lad.cpp">
+      <Filter>src_cpp\gl\control</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\control\nw_graph_state.cpp">
+      <Filter>src_cpp\gl\control</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\control\nw_graph_engine.cpp">
+      <Filter>src_cpp\gl\control</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\control\nw_graph_api.cpp">
+      <Filter>src_cpp\gl\control</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ext\glm\doc\api\a00001_source.html">
@@ -3879,11 +3881,9 @@
     <None Include="src_glsl\display_img.glsl">
       <Filter>src_glsl</Filter>
     </None>
-    <None Include="src_glsl\frame.glsl">
-      <Filter>src_glsl</Filter>
-    </None>
     <None Include="src_lua\estates\est_default.lua">
       <Filter>src_lua\estates</Filter>
     </None>
+    <None Include="src_glsl\tile_2d.glsl" />
   </ItemGroup>
 </Project>

@@ -7,14 +7,14 @@
 #pragma warning(disable : 4312)
 
 #if (defined NW_GRAPHICS)
-#include <glib/control/nw_draw_engine.h>
+#include <glib/control/nw_graph_engine.h>
 // Buffers
 namespace NW
 {
 	AVertexBuf* AVertexBuf::Create(Size szAlloc, const void* pVtxData)
 	{
 		AVertexBuf* pVB = nullptr;
-		switch (DrawEngine::GetGApi()->GetType()) {
+		switch (GraphEngine::Get().GetGApi()->GetType()) {
 #if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GApiTypes::GAPI_COUT: break;
 #endif	// NW_GRAPHICS
@@ -31,7 +31,7 @@ namespace NW
 	AIndexBuf* AIndexBuf::Create(Size szAlloc, const void* pIdxData)
 	{
 		AIndexBuf* pIB = nullptr;
-		switch (DrawEngine::GetGApi()->GetType()) {
+		switch (GraphEngine::Get().GetGApi()->GetType()) {
 #if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GApiTypes::GAPI_COUT: break;
 #endif // NW_GRAPHICS
@@ -48,7 +48,7 @@ namespace NW
 	}
 	AShaderBuf* AShaderBuf::Create(Size szAlloc, const void* pIdxData) {
 		AShaderBuf* pSB = nullptr;
-		switch (DrawEngine::GetGApi()->GetType()) {
+		switch (GraphEngine::Get().GetGApi()->GetType()) {
 #if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GApiTypes::GAPI_COUT: break;
 #endif // NW_GRAPHICS

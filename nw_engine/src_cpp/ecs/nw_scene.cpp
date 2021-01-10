@@ -1,7 +1,7 @@
 #include <nw_pch.hpp>
 #include "nw_scene.h"
 
-#include <glib/control/nw_draw_engine.h>
+#include <glib/control/nw_graph_engine.h>
 #include <glib/vision/nw_gcamera.h>
 #include <glib/gcontext/nw_framebuf.h>
 
@@ -15,7 +15,8 @@
 namespace NW
 {
 	Scene::Scene() :
-        m_pGCamera(nullptr), m_pFrameBuf(nullptr)
+        m_pGCamera(nullptr), m_pFrameBuf(nullptr), m_xywhViewport{0, 0, 800, 600},
+        m_pGState(nullptr)
     {
         m_EntIdStack.push(1);
 
@@ -24,6 +25,8 @@ namespace NW
         fbInfo.unHeight = 600;
         fbInfo.unSamples = 1;
         m_pFrameBuf = AFrameBuf::Create("fmb_scene", fbInfo);
+        
+        GraphEngine::Get().AddState(m_pGState = MemSys::NewT<GraphState>());
     }
 	Scene::~Scene() {
         if (m_pFrameBuf != nullptr) { MemSys::DelT<AFrameBuf>(m_pFrameBuf); }
@@ -73,13 +76,11 @@ namespace NW
             m_Ents.erase(m_DestroyEnts.back());
             m_DestroyEnts.pop_back();
         }
-        
-        DrawEngine::GetState("des_scene").pGCamera = m_pGCamera;
-        DrawEngine::GetState("des_scene").pFrameBuf = m_pFrameBuf;
-        DrawEngine::GetState("des_scene").xywhViewport = m_xywhViewport;
-        DrawEngine::GetState("des_scene").unDrawOrder = 0;
-        DrawEngine::GetState("des_scene").DPrimitive = PT_TRIANGLES;
-        
+
+        m_pGState->pGCamera = m_pGCamera;
+        m_pGState->pFrameBuf = m_pFrameBuf;
+        m_pGState->xywhViewport = m_xywhViewport;
+
         for (auto pCmp : m_ACmps) {
             if (!pCmp->IsEnabled()) continue;
             pCmp->OnUpdate();

@@ -13,6 +13,7 @@ namespace NW
 	{
 	public:
 		UInt8 unDrawOrder = 0;
+		GraphState* pGState = nullptr;
 	public:
 		AGraphicsCmp(AEntity& rEntity) :
 			AEntityCmp(rEntity, std::type_index(typeid(AGraphicsCmp))) { }
@@ -72,6 +73,22 @@ namespace NW
 		virtual void OnUpdate() override;
 	private:
 		Rectangle m_Sprite;
+	};
+	/// DrawTileCmp class
+	class NW_API TileMapCmp : public AGraphicsCmp
+	{
+	public:
+		TileMapCmp(AEntity& rEntity);
+		~TileMapCmp();
+
+		// --getters
+		virtual inline ADrawable* GetDrawable() override { return &m_TileMap; }
+		// --setters
+
+		// --core_methods
+		virtual void OnUpdate() override;
+	private:
+		TileMapSprite m_TileMap;
 	};
 }
 

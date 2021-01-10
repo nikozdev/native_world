@@ -5,8 +5,8 @@
 #include <ecs/nw_entity.h>
 #include <ecs/nw_entity_cmp.h>
 
-#include <glib/control/nw_draw_engine.h>
-#include <glib/control/nw_gapi.h>
+#include <glib/control/nw_graph_engine.h>
+#include <glib/control/nw_graph_api.h>
 #include <glib/control/nw_gcamera_lad.h>
 #include <glib/gcontext/nw_gcontext.h>
 #include <glib/gcontext/nw_window.h>
@@ -42,32 +42,33 @@
 // --==<GuiOfGlobal>==--
 namespace NW
 {
-	// --==<GuiOfEngine>==--
-	GuiOfEngine::GuiOfEngine() {
-		pEState = CoreEngine::Get().GetState();
+	// --==<GuiOfCoreEngine>==--
+	GuiOfCoreEngine::GuiOfCoreEngine() {
+		pCoreState = CoreEngine::Get().GetState();
 		pWindow = CoreEngine::Get().GetWindow();
 	}
-	GuiOfEngine::~GuiOfEngine() { }
-	
-	void GuiOfEngine::OnDraw() {
+	GuiOfCoreEngine::~GuiOfCoreEngine() { }
+
+	// --core_methods
+	void GuiOfCoreEngine::OnDraw() {
 		if (!bIsEnabled) return;
-		ImGui::Begin("NW_Engine", &bIsEnabled);
-		bWindow = ImGui::TreeNodeEx("--==<Window>==--", GUI_DEFAULT_TREE_FLAGS);
+		ImGui::Begin("core_engine", &bIsEnabled);
+		bWindow = ImGui::TreeNodeEx("--==<window>==--", GUI_DEFAULT_TREE_FLAGS);
 		if (bWindow) {
 			const WindowInfo& rWindowInfo = pWindow->GetWindowInfo();
-			ImGui::Text("Window API: %s",
-				rWindowInfo.WApiType == WAPI_GLFW ? "GLFW" : rWindowInfo.WApiType == WAPI_COUT ? "Console" :
-				rWindowInfo.WApiType == WAPI_WIN ? "Windows" : "None");
-			if (ImGui::InputText("Title", &strWindowTitle[0], 128)) { CoreEngine::Get().GetWindow()->SetTitle(&strWindowTitle[0]); }
-			
-			ImGui::Text("Size: %dx%d;\nAspect ratio = %f;",
-				rWindowInfo.unWidth, rWindowInfo.unHeight, rWindowInfo.nAspectRatio);
-			ImGui::Text("Cursor: X = %d; Y = %d;", static_cast<Int32>(IOSys::Cursor.xMove), static_cast<Int32>(IOSys::Cursor.yMove));
-			
-			bool bVSync = rWindowInfo.bVSync;
-			if (ImGui::Checkbox("Vertical synchronization", &bVSync)) { CoreEngine::Get().GetWindow()->SetVSync(bVSync); }
+			ImGui::Text("window_api: %s",
+				rWindowInfo.WApiType == WAPI_GLFW ? "glfw" : rWindowInfo.WApiType == WAPI_COUT ? "console" :
+				rWindowInfo.WApiType == WAPI_WIN ? "windows" : "None");
+			if (ImGui::InputText("title", &strWindowTitle[0], 128)) { CoreEngine::Get().GetWindow()->SetTitle(&strWindowTitle[0]); }
 
-			if (ImGui::BeginCombo("Switch window", &pWindow->GetWindowInfo().strTitle[0])) {
+			ImGui::Text("size: %dx%d;\naspect_ratio = %f;",
+				rWindowInfo.unWidth, rWindowInfo.unHeight, rWindowInfo.nAspectRatio);
+			ImGui::Text("cursor: x = %d; y = %d;", static_cast<Int32>(IOSys::Cursor.xMove), static_cast<Int32>(IOSys::Cursor.yMove));
+
+			bool bVSync = rWindowInfo.bVSync;
+			if (ImGui::Checkbox("vertical_synchronization", &bVSync)) { CoreEngine::Get().GetWindow()->SetVSync(bVSync); }
+
+			if (ImGui::BeginCombo("switch_window", &pWindow->GetWindowInfo().strTitle[0])) {
 				auto itWindow = CoreEngine::Get().GetWindow();
 				if (ImGui::Selectable(&itWindow->GetWindowInfo().strTitle[0])) {
 					pWindow = CoreEngine::Get().GetWindow();
@@ -76,9 +77,9 @@ namespace NW
 			}
 			ImGui::TreePop();
 		}
-		bAppState = ImGui::TreeNodeEx("--==<Engine_State>==--", GUI_DEFAULT_TREE_FLAGS);
+		bAppState = ImGui::TreeNodeEx("--==<core_state>==--", GUI_DEFAULT_TREE_FLAGS);
 		if (bAppState) {
-			if (ImGui::BeginCombo("Switch state", &pEState->GetName()[0])) {
+			if (ImGui::BeginCombo("Switch state", &pCoreState->GetName()[0])) {
 				auto pStates = CoreEngine::Get().GetStates();
 				for (auto pEst : pStates) {
 					if (ImGui::Selectable(&pEst->GetName()[0])) {
@@ -88,29 +89,172 @@ namespace NW
 			}
 			ImGui::TreePop();
 		}
-		bLuaVM = ImGui::TreeNodeEx("--==<Lua_Virtual_Machiene>==--", GUI_DEFAULT_TREE_FLAGS);
+		bLuaVM = ImGui::TreeNodeEx("--==<lua_virtual_machiene>==--", GUI_DEFAULT_TREE_FLAGS);
 		if (bLuaVM) {
-			if (ImGui::Button("Write info")) {
+			if (ImGui::Button("write_info")) {
 				LogSys::GetLogOut() << LuaVM::Get().GetInfo();
 			}
 			ImGui::TreePop();
 		}
 		ImGui::End();
 	}
-	// --==</GuiOfEngine>==--
+	// --==</GuiOfCoreEngine>==--
+	// --==<GuiOfGraphEngine>==--
+	GuiOfGraphEngine::GuiOfGraphEngine() {}
+	GuiOfGraphEngine::~GuiOfGraphEngine() {}
 
+	void GuiOfGraphEngine::OnDraw() {
+		if (!bIsEnabled) return;
+
+		ImGui::Begin("graph_engine", &bIsEnabled);
+		bGContext = ImGui::TreeNodeEx("--==<gcontext>==--", GUI_DEFAULT_TREE_FLAGS);
+		if (bGContext) {
+			const GContextInfo& rGContextInfo = CoreEngine::Get().GetWindow()->GetGContext()->GetInfo();
+
+			ImGui::Text("version: %s;\nrenderer: %s;"
+				"\nvendor: %s;\nshading language: %s"
+				"\nmax texture count: %d;\nmax vertex attributes: %d",
+				rGContextInfo.strRenderer, rGContextInfo.strVersion,
+				rGContextInfo.strVendor, rGContextInfo.strShadingLanguage,
+				rGContextInfo.nMaxTextures, rGContextInfo.nMaxVertexAttribs);
+
+			ImGui::TreePop();
+		}
+		bGApi = ImGui::TreeNodeEx("--==<gapi>==--", GUI_DEFAULT_TREE_FLAGS);
+		if (bGApi) {
+			AGraphApi* pGApi = GraphEngine::Get().GetGApi();
+			ImGui::Text("Type: %s",
+				pGApi->GetType() == GApiTypes::GAPI_OPENGL ? "OpenGL" : pGApi->GetType() == GApiTypes::GAPI_COUT ? "Console" :
+				pGApi->GetType() == GApiTypes::GAPI_WIN ? "Windows" :
+				"None");
+			if (ImGui::DragFloat("line width", &nLineW, 0.1f)) GraphEngine::Get().GetGApi()->SetLineWidth(nLineW);
+			if (ImGui::DragFloat("pixel size", &nPixelSz, 0.1f)) GraphEngine::Get().GetGApi()->SetPixelSize(nPixelSz);
+			if (ImGui::BeginCombo("DrawMode", &strDrawMode[0])) {
+				if (ImGui::Selectable("MD_FILL")) {
+					strDrawMode = "MD_FILL";
+					GraphEngine::Get().GetGApi()->SetDrawMode(DrawModes::DM_FILL, FacePlanes::FP_FRONT_AND_BACK);
+				}
+				else if (ImGui::Selectable("MD_LINE")) {
+					strDrawMode = "MD_LINE";
+					GraphEngine::Get().GetGApi()->SetDrawMode(DrawModes::DM_LINE, FacePlanes::FP_FRONT_AND_BACK);
+				}
+				ImGui::EndCombo();
+			} ImGui::Separator();
+			ImGui::TreePop();
+		}
+		
+		bStates = ImGui::TreeNodeEx("--==<gstates>==--");
+		if (bStates) {
+			GraphState* pState = GraphEngine::Get().GetStates().begin()->second;
+			for (UInt16 dsi = 0; dsi < GraphEngine::Get().GetStates().size(); dsi++) {
+				pState++;
+				ImGui::Text("%dth state:\nname: %s", dsi, pState->GetName());
+			}
+			if (ImGui::BeginPopupContextWindow("state_props", ImGuiPopupFlags_MouseButtonRight)) {
+				if (ImGui::MenuItem("create state")) {
+					ImGui::OpenPopup("state_creation");
+					if (ImGui::BeginPopup("state_creation")) {
+						ImGui::InputText("state name", strStateName, 256);
+						if (ImGui::Button("add state")) { GraphEngine::Get().AddState(MemSys::NewT<GraphState>(strStateName)); }
+						ImGui::EndPopup();
+					}
+				}
+				ImGui::EndPopup();
+			}
+		}
+
+		const GraphEngineInfo& rDInfo = GraphEngine::Get().GetInfo();
+		ImGui::Text("vertex data\n::count: %d;\n::size in bytes: %d/%d;\n",
+			rDInfo.unVtx,
+			rDInfo.szVtx, rDInfo.szMaxVtx);
+		ImGui::InputInt("new max vertex data size", &szMaxVtx);
+		if (ImGui::Button("change max vertex data size")) GraphEngine::Get().SetMaxVtxSize(szMaxVtx);
+
+		ImGui::Text("index data\n::count: %d;\n::size in bytes: %d/%d;\n",
+			rDInfo.unIdx,
+			rDInfo.szIdx, rDInfo.szMaxIdx);
+		ImGui::InputInt("new max index data size", &szMaxIdx);
+		if (ImGui::Button("change max index data size")) GraphEngine::Get().SetMaxIdxSize(szMaxIdx);
+
+		ImGui::Text("shader data\n::size in bytes: %d/%d;\n",
+			rDInfo.szShd, rDInfo.szMaxShd);
+		ImGui::InputInt("new max shaderdata size", &szMaxIdx);
+		if (ImGui::Button("change max shader data size")) GraphEngine::Get().SetMaxShdSize(szMaxIdx);
+
+		unMaxTex = rDInfo.unMaxTex;
+		ImGui::Text("textures\n::slots: %d/%d;",
+			rDInfo.unTex, rDInfo.unMaxTex);
+		ImGui::InputInt("new max texture slots", &unMaxTex);
+		if (ImGui::Button("change max texture slots")) GraphEngine::Get().SetMaxTexCount(unMaxTex);
+
+		ImGui::Text("draw calls per frame: %d;",
+			rDInfo.unDrawCalls);
+		ImGui::Separator();
+
+		ImGui::End();
+	}
+	// --==</GuiOfGraphEngine>==--
+
+	// --==<GuiOfCmdEngine>==--
+	GuiOfCmdEngine::GuiOfCmdEngine() :
+		chrCmdBuf(DArray<Char>(128, '\0')) { }
+	GuiOfCmdEngine::~GuiOfCmdEngine() { }
+	// --core_methods
+	void GuiOfCmdEngine::OnDraw() {
+		if (!bIsEnabled) return;
+		ImGui::Begin("Console");
+		ImGui::Text("cmd_mode: %s", CmdMode == CMD_NATIVE ? "native" : CmdMode == CMD_LUA ? "lua" : "none");
+		if (ImGui::InputText("Command:", &chrCmdBuf[0], chrCmdBuf.size())) {
+			if (strlen(&chrCmdBuf[0]) > chrCmdBuf.size() - 8) {
+				chrCmdBuf.resize(chrCmdBuf.size() * 2);
+			}
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Accept") || IOSys::GetKeyReleased(NW_KEY_ENTER_10)) {
+			strCmdBuf.push_back(&chrCmdBuf[0]);
+			strCmdBuf.push_back("--==<>==--");
+			while (strCmdBuf.size() > 24) { strCmdBuf.erase(strCmdBuf.begin()); }
+
+			StrStream strStream(*(strCmdBuf.end() - 2));
+			while (strStream >> &chrCmdBuf[0]) {
+				if (strcmp(&chrCmdBuf[0], "cmd_mode") == 0) {
+					strStream >> &chrCmdBuf[0];
+					if (strcmp(&chrCmdBuf[0], "native") == 0) { CmdMode = CMD_NATIVE; }
+					else if (strcmp(&chrCmdBuf[0], "lua") == 0) { CmdMode = CMD_LUA; }
+					else { CmdMode = CMD_NONE; }
+				}
+				else if (CmdMode == CMD_LUA) {
+					LuaVM::Get().RunScriptStr(&strStream.str()[0]);
+				}
+				else if (CmdMode == CMD_NATIVE) {
+					//
+				}
+			}
+			memset(&chrCmdBuf[0], 0, chrCmdBuf.size()); chrCmdBuf.resize(100);
+		}
+
+		for (Int32 li = strCmdBuf.size() - 1; li >= 0; li--) {
+			ImGui::Text("%d: %s", li, &(strCmdBuf[li])[0]);
+		}
+
+		ImGui::End();
+	}
+	// --==</GuiOfCmdEngine>==--
+}
+namespace NW
+{
 	// --==<GuiOfDataSys>==--
 	GuiOfDataSys::GuiOfDataSys() { strcpy(strDir, DataSys::GetDirectory()); }
 	GuiOfDataSys::~GuiOfDataSys() { }
 
 	void GuiOfDataSys::OnDraw() {
 		if (!bIsEnabled) return;
-		ImGui::Begin("Data_System", &bIsEnabled);
-		if (ImGui::BeginPopupContextWindow("DataProps", 1, false)) {
-			if (ImGui::TreeNodeEx("Create", GUI_DEFAULT_TREE_FLAGS)) {
-				if (ImGui::MenuItem("Shader")) { AShader::Create("shd_nameless"); }
-				else if (ImGui::MenuItem("Texture2d")) { ATexture2d::Create("tex_2d_nameless"); }
-				else if (ImGui::MenuItem("Default 3d")) { MemSys::NewT<GMaterial>("gmt_default_3d"); }
+		ImGui::Begin("data_system", &bIsEnabled);
+		if (ImGui::BeginPopupContextWindow("data_props", 1, false)) {
+			if (ImGui::TreeNodeEx("create", GUI_DEFAULT_TREE_FLAGS)) {
+				if (ImGui::MenuItem("shader")) { AShader::Create("shd_nameless"); }
+				else if (ImGui::MenuItem("texture2d")) { ATexture2d::Create("tex_2d_nameless"); }
+				else if (ImGui::MenuItem("gmaterial")) { MemSys::NewT<GMaterial>("gmt_3d_nameless"); }
 				ImGui::TreePop();
 			}
 			ImGui::EndPopup();
@@ -118,18 +262,16 @@ namespace NW
 		
 		if (ImGui::Button("file_system_tree")) { system("tree"); }
 		else if (ImGui::Button("files_list")) { system("dir"); }
-		else if (ImGui::Button("new_directory")) { system("md newdir"); }
-		else if (ImGui::Button("delete_directory")) { system("rd newdir"); }
 		ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal | ImGuiSeparatorFlags_SpanAllColumns);
 
-		if (ImGui::TreeNodeEx("Data Resources")) {
+		if (ImGui::TreeNodeEx("data_resources")) {
 			DataSys::ADRs& rDrs = DataSys::GetADataResources();
 			for (DataSys::ADRs::iterator itDrs = rDrs.begin(); itDrs != rDrs.end(); itDrs++) {
-				ImGui::TextColored({0.4f, 0.7f, 0.7f, 1.0f}, "Name: %s; ID: %d", itDrs->second->GetName(), itDrs->first);
+				ImGui::TextColored({0.4f, 0.7f, 0.7f, 1.0f}, "name: %s; id: %d", itDrs->second->GetName(), itDrs->first);
 			}
 			ImGui::TreePop();
 		}
-		if (ImGui::TreeNodeEx("Textures2d")) {
+		if (ImGui::TreeNodeEx("textures")) {
 			auto& Textures = DataSys::GetDataResources<ATexture2d>();
 			for (auto& itTex : Textures) {
 				ImGui::Text(itTex.second->GetName());
@@ -139,14 +281,14 @@ namespace NW
 			} ImGui::Separator();
 			ImGui::TreePop();
 		}
-		if (ImGui::TreeNodeEx("Shaders")) {
+		if (ImGui::TreeNodeEx("shaders")) {
 			auto& Shaders = DataSys::GetDataResources<AShader>();
 			for (auto& pShader : Shaders) {
 				if (ImGui::Button(pShader.second->GetName())) { GuiOfCodeEditor::Get().SetContext(pShader.second); }
 			} ImGui::Separator();
 			ImGui::TreePop();
 		}
-		if (ImGui::TreeNodeEx("GMaterial")) {
+		if (ImGui::TreeNodeEx("gmaterials")) {
 			auto& GMaterials = DataSys::GetDataResources<GMaterial>();
 			for (auto& itGMtl : GMaterials) {
 				if (ImGui::Button(itGMtl.second->GetName())) { GuiOfGMaterialEditor::Get().SetContext(itGMtl.second); }
@@ -160,9 +302,9 @@ namespace NW
 	// --==<GuiOfMemSys>==--
 	void GuiOfMemSys::OnDraw() {
 		if (!bIsEnabled) return;
-		ImGui::Begin("Memory_System", &bIsEnabled);
-		ImGui::Text("::Allocated memory bytes: %d", MemSys::GetInfo().szAlloc);
-		ImGui::Text("::Allocated memory blocks: %d", MemSys::GetInfo().unAlloc);
+		ImGui::Begin("memory_system", &bIsEnabled);
+		ImGui::Text("allocated_bytes: %d", MemSys::GetInfo().szAlloc);
+		ImGui::Text("allocated_blocks: %d", MemSys::GetInfo().unAlloc);
 		ImGui::End();
 	}
 	// --==</GuiOfMemSys>==--
@@ -170,14 +312,14 @@ namespace NW
 	// --==<GuiOfTimeSys>==--
 	void GuiOfTimeSys::OnDraw() {
 		if (!bIsEnabled) return;
-		ImGui::Begin("Time_System", &bIsEnabled);
+		ImGui::Begin("time_system", &bIsEnabled);
 		float nAppSpeed = TimeSys::GetAppSpeed();
-		ImGui::Text("Work time: %d", static_cast<int>(TimeSys::GetRealTime()));
-		ImGui::Text("Application time: %d", static_cast<Int32>(TimeSys::GetAppTime()));
-		if (ImGui::DragFloat("Application speed", &nAppSpeed, 0.05f, 0.001f)) { TimeSys::SetAppSpeed(nAppSpeed); }
-		ImGui::Text("Frames/second: %d", static_cast<Int32>(1.0f / TimeSys::GetRealDelta()));
-		ImGui::Text("Date: %s", strDate);
-		if (ImGui::Button("Update date")) { strcpy(strDate, &TimeSys::GetTimeString()[0]); }
+		ImGui::Text("time_since_start: %d", static_cast<int>(TimeSys::GetRealTime()));
+		ImGui::Text("application_time: %d", static_cast<Int32>(TimeSys::GetAppTime()));
+		if (ImGui::DragFloat("application_speed", &nAppSpeed, 0.05f, 0.001f)) { TimeSys::SetAppSpeed(nAppSpeed); }
+		ImGui::Text("updates/second: %d", static_cast<Int32>(1.0f / TimeSys::GetRealDelta()));
+		ImGui::Text("date: %s", strDate);
+		if (ImGui::Button("update_date")) { strcpy(strDate, &TimeSys::GetTimeString()[0]); }
 		ImGui::End();
 	}
 	// --==</GuiOfTimeSys>==--
@@ -185,8 +327,8 @@ namespace NW
 	// --==<GuiOfLogSys>==--
 	void GuiOfLogSys::OnDraw() {
 		if (!bIsEnabled) return;
-		ImGui::Begin("Log_System", &bIsEnabled);
-		if (ImGui::Button("Print formatted message")) {
+		ImGui::Begin("log_system", &bIsEnabled);
+		if (ImGui::Button("print_formatted_message")) {
 			LogSys::WriteStr("Int: {int};\nFloat: {flt};\nDouble: {flt};\nChar: {chr}\nCString: {str};",
 				1, 1.25f, 152.0, 'C', "Format is done!");
 		}
@@ -197,7 +339,7 @@ namespace NW
 	// --==<GuiOfRandSys>==--
 	void GuiOfRandSys::OnDraw() {
 		if (!bIsEnabled) return;
-		ImGui::Begin("Random_System", &bIsEnabled);
+		ImGui::Begin("random_system", &bIsEnabled);
 		if (ImGui::Button("Get random boolean")) {
 			bRand = RandSys::GetBool();
 		}
@@ -224,126 +366,7 @@ namespace NW
 		ImGui::End();
 	}
 	// --==</GuiOfRandSys>==--
-
-	// --==<GuiOfRenderer>==--
-	void GuiOfRender::OnDraw() {
-		if (!bIsEnabled) return;
-
-		ImGui::Begin("Graphics", &bIsEnabled);
-		bGContext = ImGui::TreeNodeEx("--==<graphics_context>==--", GUI_DEFAULT_TREE_FLAGS);
-		if (bGContext) {
-			const GContextInfo& rGContextInfo = CoreEngine::Get().GetWindow()->GetGContext()->GetInfo();
-
-			ImGui::Text("--==<Graphics context>==--\nVersion: %s;\nRenderer: %s;"
-				"\nVendor: %s;\nShading language: %s"
-				"\nMax texture count: %d;\nMax vertex attributes: %d",
-				rGContextInfo.strRenderer, rGContextInfo.strVersion,
-				rGContextInfo.strVendor, rGContextInfo.strShadingLanguage,
-				rGContextInfo.nMaxTextures, rGContextInfo.nMaxVertexAttribs);
-
-			ImGui::TreePop();
-		}
-		bGApi = ImGui::TreeNodeEx("--==<graphics_api>==--", GUI_DEFAULT_TREE_FLAGS);
-		if (bGApi) {
-			AGraphicsApi* pGApi = DrawEngine::GetGApi();
-			ImGui::Text("Type: %s",
-				pGApi->GetType() == GApiTypes::GAPI_OPENGL ? "OpenGL" : pGApi->GetType() == GApiTypes::GAPI_COUT ? "Console" :
-				pGApi->GetType() == GApiTypes::GAPI_WIN ? "Windows" :
-				"None");
-			if (ImGui::DragFloat("Line Width", &nLineW, 0.1f)) DrawEngine::GetGApi()->SetLineWidth(nLineW);
-			if (ImGui::DragFloat("Pixel size", &nPixelSz, 0.1f)) DrawEngine::GetGApi()->SetPixelSize(nPixelSz);
-			if (ImGui::BeginCombo("DrawMode", &strDrawMode[0])) {
-				if (ImGui::Selectable("MD_FILL")) {
-					strDrawMode = "MD_FILL";
-					DrawEngine::GetGApi()->SetDrawMode(DrawModes::DM_FILL, FacePlanes::FP_FRONT_AND_BACK);
-				}
-				else if (ImGui::Selectable("MD_LINE")) {
-					strDrawMode = "MD_LINE";
-					DrawEngine::GetGApi()->SetDrawMode(DrawModes::DM_LINE, FacePlanes::FP_FRONT_AND_BACK);
-				}
-				ImGui::EndCombo();
-			} ImGui::Separator();
-			ImGui::TreePop();
-		}
-		bDrawEngineInfo = ImGui::TreeNodeEx("--==<draw_engine>==--", GUI_DEFAULT_TREE_FLAGS);
-		if (bDrawEngineInfo) {
-			const DrawEngineInfo& rDInfo = DrawEngine::GetInfo();
-			ImGui::Text("Vertex data\n::Count: %d;\n::Size in Bytes: %d/%d;\n",
-				rDInfo.unVtx,
-				rDInfo.szVtx, rDInfo.szMaxVtx);
-
-			ImGui::InputInt("New MaxVtxSize", &szMaxVtx);
-			if (ImGui::Button("Change MaxVtxSize")) DrawEngine::SetMaxVtxSize(szMaxVtx);
-			
-			szMaxIdx = rDInfo.szMaxIdx;
-			ImGui::Text("Index data\n::Count: %d;\n::Size in Bytes: %d/%d;\n",
-				rDInfo.unIdx,
-				rDInfo.szIdx, rDInfo.szMaxIdx);
-
-			ImGui::InputInt("New MaxIndexSize", &szMaxIdx);
-			if (ImGui::Button("Change MaxIndexSize")) DrawEngine::SetMaxIdxSize(szMaxIdx);
-			ImGui::Text("Textures\n::Slots: %d/%d;",
-				rDInfo.unTex, rDInfo.unMaxTex);
-
-			unTexCount = rDInfo.unMaxTex;
-			ImGui::InputInt("New MaxTexCount", &unTexCount);
-			if (ImGui::Button("Change MaxTexCount")) DrawEngine::SetMaxTexCount(unTexCount);
-
-			ImGui::Text("Performance\n::Draw calls per frame: %d;",
-				rDInfo.unDrawCalls);
-			ImGui::Separator();
-			ImGui::TreePop();
-		}
-		ImGui::End();
-	}
-	// --==</GuiOfRenderer>==--
-
-	// --==<GuiOfConsole>==--
-	GuiOfConsole::GuiOfConsole():
-		chrCmdBuf(DArray<Char>(128, '\0')) { }
-	// --core_methods
-	void GuiOfConsole::OnDraw() {
-		if (!bIsEnabled) return;
-		ImGui::Begin("Console");
-		ImGui::Text("cmd_mode: %s", CmdMode == CMD_NATIVE ? "native" : CmdMode == CMD_LUA ? "lua" : "none");
-		if (ImGui::InputText("Command:", &chrCmdBuf[0], chrCmdBuf.size())) {
-			if (strlen(&chrCmdBuf[0]) > chrCmdBuf.size() - 8) {
-				chrCmdBuf.resize(chrCmdBuf.size() * 2);
-			}
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Accept") || IOSys::GetKeyReleased(NW_KEY_ENTER_10)) {
-			strCmdBuf.push_back(&chrCmdBuf[0]);
-			strCmdBuf.push_back("--==<>==--");
-			while (strCmdBuf.size() > 24) { strCmdBuf.erase(strCmdBuf.begin()); }
-			
-			StrStream strStream(*(strCmdBuf.end() - 2));
-			while (strStream >> &chrCmdBuf[0]) {
-				if (strcmp(&chrCmdBuf[0], "cmd_mode") == 0) {
-					strStream >> &chrCmdBuf[0];
-					if (strcmp(&chrCmdBuf[0], "native") == 0) { CmdMode = CMD_NATIVE; }
-					else if (strcmp(&chrCmdBuf[0], "lua") == 0) { CmdMode = CMD_LUA; }
-					else { CmdMode = CMD_NONE; }
-				}
-				else if (CmdMode == CMD_LUA) {
-					LuaVM::Get().RunScriptStr(&strStream.str()[0]);
-				}
-				else if (CmdMode == CMD_NATIVE) {
-					//
-				}
-			}
-			memset(&chrCmdBuf[0], 0, chrCmdBuf.size()); chrCmdBuf.resize(100);
-		}
-		
-		for (Int32 li = strCmdBuf.size() - 1; li >= 0; li--) {
-			ImGui::Text("%d: %s", li, &(strCmdBuf[li])[0]);
-		}
-
-		ImGui::End();
-	}
-	// --==</GuiOfConsole>==--
 }
-// --==</GuiOfGlobal>==--
 
 // --==<GuiOfEditors>==--
 namespace NW
@@ -733,7 +756,7 @@ namespace NW
 
 			pVtxBuf->Bind();
 			pIndBuf->Bind();
-			DrawEngine::GetGApi()->DrawIndexed(pIndBuf->GetDataSize() / sizeof(UInt32));
+			GraphEngine::Get().GetGApi()->DrawIndexed(pIndBuf->GetDataSize() / sizeof(UInt32));
 			pIndBuf->Unbind();
 			pVtxBuf->Unbind();
 
@@ -774,10 +797,12 @@ namespace NW
 			}
 			ImGui::EndPopup();
 		}
-		if (bOpened0 && pACmp != nullptr) {
-			ImGui::Text("ID: %d", pACmp->GetCmpId());
-			ImGui::Separator();
-			fnCallback();
+		if (bOpened0) {
+			if (pACmp != nullptr) {
+				ImGui::Text("ID: %d", pACmp->GetCmpId());
+				ImGui::Separator();
+				fnCallback();
+			}
 			ImGui::TreePop();
 		}
 		ImGui::PopID();
@@ -805,68 +830,51 @@ namespace NW
 	template <> void GuiOfEntityEditor::OnDraw<AGraphicsCmp>(AGraphicsCmp* pGCmp) {
 		static auto cbGCmp = [&]()->void {
 			Int32 nDrawOrder = pGCmp->unDrawOrder;
-			if (ImGui::InputInt("Draw order", &nDrawOrder)) { pGCmp->unDrawOrder = nDrawOrder; }
+			if (ImGui::InputInt("draw order", &nDrawOrder)) { pGCmp->unDrawOrder = nDrawOrder; }
+			if (ImGui::BeginCombo("graphics state", &pGCmp->pGState->GetName()[0])) {
+				auto& rGStates = GraphEngine::Get().GetStates();
+				for (auto& itGState : rGStates) {
+					if (ImGui::MenuItem(&itGState.first[0])) { pGCmp->pGState = itGState.second; }
+				}
+				ImGui::EndCombo();
+			}
 			ImGui::Separator();
-			if (ImGui::TreeNodeEx("--==<Material>==--", GUI_DEFAULT_TREE_FLAGS)) {
+			if (ImGui::TreeNodeEx("--==<gmaterial>==--", GUI_DEFAULT_TREE_FLAGS)) {
 				GMaterial* pGMtl = pGCmp->GetDrawable()->pGMtl;
 				Char cBuffer[128]{ 0 };
 				strcpy_s(cBuffer, pGMtl->GetName());
-				if (ImGui::InputText("Name", &cBuffer[0], 128)) { pGMtl->SetName(cBuffer); }
-
-				if (ImGui::TreeNodeEx("-- colors", GUI_DEFAULT_TREE_FLAGS)) {
-					for (auto itClr = pGMtl->GetColors().begin(); itClr != pGMtl->GetColors().end(); itClr++) {
-						ImGui::ColorEdit4(&itClr->first[0], &itClr->second[0]);
-					}
-					ImGui::TreePop();
-				}
-				if (ImGui::TreeNodeEx("-- textures", GUI_DEFAULT_TREE_FLAGS)) {
-					auto itTexMtl = pGMtl->GetTextures().begin();
-					for (Int32 txi = 0; txi < pGMtl->GetTexCount(); txi++, itTexMtl++) {
-						auto pTex = itTexMtl->second;
-						ImGui::PushID(&itTexMtl->first[0]);
-						const ImageInfo rImgInfo = pTex->GetImgInfo();
-						ImGui::Text("%d texture: Name: %s\nRender Id = %d; Slot = %d;",
-							txi, &itTexMtl->first[0], pTex->GetRenderId(), pTex->GetTexSlot());
-						ImGui::Text("Width = %d; Height = %d; Depth = %d;",
-							rImgInfo.nWidth, rImgInfo.nHeight, rImgInfo.nDepth);
-						ImGui::Image(reinterpret_cast<void*>(pTex->GetRenderId()),
-							ImVec2{ 64.0f * rImgInfo.nWidth / rImgInfo.nHeight, 64.0f });
-						if (ImGui::BeginCombo("Change texture", &(pTex->GetName())[0])) {
-							auto& Textures = DataSys::GetDataResources<ATexture>();
-							for (auto& itTex : Textures) {
-								const ImageInfo rImgInfoLoc = itTex.second->GetImgInfo();
-								if (ImGui::ImageButton(reinterpret_cast<void*>(itTex.second->GetRenderId()),
-									ImVec2{ 64.0f * (rImgInfoLoc.nWidth / rImgInfoLoc.nHeight), 64.0f })) {
-									pGMtl->SetTexture(itTex.second, &itTexMtl->first[0]);
-								}
-							} ImGui::EndCombo();
-						}
-						ImGui::PopID();
-					}
-					ImGui::TreePop();
-				}
-				
-				if (ImGui::TreeNodeEx("-- shader", GUI_DEFAULT_TREE_FLAGS)) {
-					AShader* pShader = pGMtl->GetShader();
-					ImGui::Text("ID = %d;\nName: %s;", pShader->GetId(), pShader->GetName());
-					if (ImGui::Button("Code editor")) { GuiOfCodeEditor::Get().SetContext(pShader); }
-					if (ImGui::BeginCombo("Change shader", &pShader->GetName()[0])) {
-						auto& Shaders = DataSys::GetDataResources<AShader>();
-						for (auto& pShd : Shaders) {
-							if (ImGui::Button(&pShd.second->GetName()[0])) { pGMtl->SetShader(pShd.second); }
-						}
-						ImGui::EndCombo();
-					}
-					ImGui::TreePop();
-				}
-				if (ImGui::BeginCombo("Change material", &pGMtl->GetName()[0])) {
+				if (ImGui::InputText("name", &cBuffer[0], 128)) { pGMtl->SetName(cBuffer); }
+				if (ImGui::BeginCombo("change gmaterial", &pGMtl->GetName()[0])) {
 					auto& GMaterials = DataSys::GetDataResources<GMaterial>();
 					for (auto& itGMtl : GMaterials) {
 						if (ImGui::Button(&itGMtl.second->GetName()[0])) { pGCmp->GetDrawable()->pGMtl = itGMtl.second; }
 					}
 					ImGui::EndCombo();
 				}
+				if (ImGui::Button("gmaterial editor")) { GuiOfGMaterialEditor::Get().SetContext(pGMtl); }
 				ImGui::TreePop();
+			}
+			if (TileMapCmp* ptmCmp = dynamic_cast<TileMapCmp*>(pGCmp)) {
+				TileMapSprite* ptmSprite = static_cast<TileMapSprite*>(ptmCmp->GetDrawable());
+				V2i whSize = ptmSprite->GetTileSize();
+				ATexture2d* pTileMap = ptmSprite->GetTileMap();
+				V4i xywhPadding = ptmSprite->GetTilePadding();
+				if (ImGui::DragInt2("tile size", &whSize[0], 1.0f, 0, std::max(pTileMap->GetWidth(), pTileMap->GetHeight()))) {
+					ptmSprite->SetTileSize(whSize);
+				}
+				else if (ImGui::DragInt4("tile padding", &xywhPadding[0], 1.0f, 0, std::max(whSize.x, whSize.x))) {
+					ptmSprite->SetTilePadding(xywhPadding);
+				}
+				else if (ImGui::BeginCombo("change tilemap", pTileMap->GetName())) {
+					auto& rTextures = DataSys::GetDataResources<ATexture2d>();
+					for (auto& itTex : rTextures) {
+						if (ImGui::MenuItem(itTex.second->GetName())) { ptmSprite->SetTilemap(itTex.second); }
+					}
+					ImGui::EndCombo();
+				}
+				else if (ImGui::Button("update tiles")) {
+					ptmSprite->UpdateTileData();
+				}
 			}
 		};
 		OnDraw(pGCmp, cbGCmp);
@@ -896,7 +904,23 @@ namespace NW
 	// --core_methods
 	void GuiOfEntityEditor::OnDraw() {
 		if (!bIsEnabled) return;
-		ImGui::Begin("Entity_Editor", &bIsEnabled);
+		ImGui::Begin("entity_editor", &bIsEnabled, ImGuiWindowFlags_MenuBar);
+		if (ImGui::BeginMenuBar()) {
+			if (ImGui::BeginMenu("File")) {
+				if (ImGui::MenuItem("Save...")) {
+					String strFPath = DataSys::FDialog_save("all_files(*.*)\0*.*\0entity(*.ent)\0*.ent");
+					if (!strFPath.empty()) {
+					}
+				}
+				else if (ImGui::MenuItem("Load...")) {
+					String strFPath = DataSys::FDialog_load("all_files(*.*)\0*.*\0entity(*.ent)\0*.ent");
+					if (!strFPath.empty()) {
+					}
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
+		}
 		if (pContext == nullptr) { ImGui::End(); return; }
 
 		bool bEnabled0 = pContext->IsEnabled();
@@ -926,6 +950,9 @@ namespace NW
 			}
 			else if (ImGui::MenuItem("Graphics2d Component")) {
 				Graphics2dCmp* pG2dCmp = MemSys::NewT<Graphics2dCmp>(*pContext);
+			}
+			else if (ImGui::MenuItem("Tilemap Component")) {
+				TileMapCmp* ptmCmp = MemSys::NewT<TileMapCmp>(*pContext);
 			}
 			else if (ImGui::MenuItem("Collider2d Rect Component")) {
 				Collider2dRectCmp* pC2dRCmp = MemSys::NewT<Collider2dRectCmp>(*pContext);
@@ -957,9 +984,27 @@ namespace NW
 				pEnt0 = Scene::Get().CreateEntity();
 				Transform2dCmp* pTF2dCmp = MemSys::NewT<Transform2dCmp>(*pEnt0);
 				Graphics2dCmp* pG2dCmp = MemSys::NewT<Graphics2dCmp>(*pEnt0);
-			} ImGui::EndPopup();
+			}
+			else if (ImGui::MenuItem("Create 10 ents")) {
+				for (UInt8 ei = 0; ei < 10; ei++) {
+					pEnt0 = Scene::Get().CreateEntity();
+					Transform2dCmp* pTF2dCmp = MemSys::NewT<Transform2dCmp>(*pEnt0);
+					Graphics2dCmp* pG2dCmp = MemSys::NewT<Graphics2dCmp>(*pEnt0);
+				}
+			}
+			else if (ImGui::MenuItem("Create 50 ents")) {
+				for (UInt8 ei = 0; ei < 50; ei++) {
+					pEnt0 = Scene::Get().CreateEntity();
+					Transform2dCmp* pTF2dCmp = MemSys::NewT<Transform2dCmp>(*pEnt0);
+					Graphics2dCmp* pG2dCmp = MemSys::NewT<Graphics2dCmp>(*pEnt0);
+				}
+			}
+			else if (ImGui::MenuItem("Destroy 50 ents")) {
+				for (UInt8 ei = 0; ei < 50; ei++) { Scene::Get().DestroyEntity(ei); }
+			}
+			ImGui::EndPopup();
 		}
-		OnDraw(Scene::Get().GetOverEnts());
+		OnDraw(Scene::Get().GetEnts());
 		ImGui::End();
 
 		OnDraw(GCameraLad::Get().GetGCamera());
@@ -980,34 +1025,45 @@ namespace NW
 
 		if (rfbInfo.unWidth != unSizeW || rfbInfo.unHeight != unSizeH) { Scene::Get().SetViewport(V4f{ 0, 0, unSizeW, unSizeH }); }
 		ImGui::End();
+
+		if (pDestroyEnt != nullptr) {
+			GuiOfEntityEditor::Get().SetContext(nullptr);
+			Scene::Get().DestroyEntity(pDestroyEnt->GetId());
+			pDestroyEnt = nullptr;
+		}
 	}
-	inline void GuiOfSceneEditor::OnDraw(RefEnts& rRefEnts) {
-		AEntity* pDestroyEnt = nullptr;
-		for (auto itEnt : rRefEnts) {
-			AEntity* pEntity = itEnt.second;
-			bool bOpened = ImGui::TreeNodeEx(&pEntity->GetName()[0], GUI_DEFAULT_TREE_FLAGS);
-			if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) { GuiOfEntityEditor::Get().SetContext(pEntity); }
-			if (ImGui::BeginPopupContextItem(&pEntity->GetName()[0])) {
-				if (ImGui::MenuItem("Create SubEnt")) {
+
+	inline void GuiOfSceneEditor::OnDraw(AEntity* pEnt)
+	{
+
+		bool bOpened = ImGui::TreeNodeEx(&pEnt->GetName()[0], GUI_DEFAULT_TREE_FLAGS);
+		if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) { GuiOfEntityEditor::Get().SetContext(pEnt); }
+
+		if (ImGui::BeginPopupContextItem(&pEnt->GetName()[0])) {
+			if (ImGui::MenuItem("Create SubEnt")) {
+				AEntity* pSubEnt = Scene::Get().CreateEntity();
+				pEnt->AddSubEnt(pSubEnt);
+				Transform2dCmp* pTF2dCmp = MemSys::NewT<Transform2dCmp>(*pSubEnt);
+				Graphics2dCmp* pG2dCmp = MemSys::NewT<Graphics2dCmp>(*pSubEnt);
+			}
+			else if (ImGui::MenuItem("Create 10 SubEnts")) {
+				for (UInt8 ei = 0; ei < 10; ei++) {
 					AEntity* pSubEnt = Scene::Get().CreateEntity();
-					pEntity->AddSubEnt(pSubEnt);
+					pEnt->AddSubEnt(pSubEnt);
 					Transform2dCmp* pTF2dCmp = MemSys::NewT<Transform2dCmp>(*pSubEnt);
 					Graphics2dCmp* pG2dCmp = MemSys::NewT<Graphics2dCmp>(*pSubEnt);
 				}
-				else if (ImGui::MenuItem("Destroy Entity")) {
-					pDestroyEnt = pEntity;
-				} ImGui::EndPopup();
 			}
-			if (bOpened) {
-				if (pEntity->GetSubEnts().size() > 0) { OnDraw(pEntity->GetSubEnts()); }
-				ImGui::TreePop();
-			}
-			if (pDestroyEnt != nullptr) {
-				GuiOfEntityEditor::Get().SetContext(nullptr);
-				Scene::Get().DestroyEntity(pDestroyEnt->GetId());
-			}
+			else if (ImGui::MenuItem("Destroy Entity")) { pDestroyEnt = pEnt; }
+			ImGui::EndPopup();
+		}
+		if (bOpened) {
+			if (pEnt->GetSubEnts().size() > 0) { OnDraw(pEnt->GetSubEnts()); }
+			ImGui::TreePop();
 		}
 	}
+	inline void GuiOfSceneEditor::OnDraw(Ents& rEnts) { for (auto& itEnt : rEnts) { OnDraw(&itEnt.second); } }
+	inline void GuiOfSceneEditor::OnDraw(RefEnts& rRefEnts) { for (auto& itEnt : rRefEnts) { OnDraw(itEnt.second); } }
 	inline void GuiOfSceneEditor::OnDraw(GCamera* pGCamera) {
 		if (!bIsEnabledCamera || pGCamera == nullptr) return;
 		ImGui::Begin("Editor_Camera", &bIsEnabledCamera);

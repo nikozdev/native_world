@@ -7,7 +7,7 @@
 
 #if (defined NW_GRAPHICS)
 #include <glib/nw_gbuffer.h>
-#include <glib/control/nw_draw_engine.h>
+#include <glib/control/nw_graph_engine.h>
 #include <glib/vision/nw_light_source.h>
 namespace NW
 {
@@ -20,7 +20,7 @@ namespace NW
 	ASubShader* ASubShader::Create(const char* strName, ShaderTypes sdType)
 	{
 		ASubShader* pSubShader = nullptr;
-		switch (DrawEngine::GetGApi()->GetType()) {
+		switch (GraphEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GAPI_COUT: break;
 	#elif (NW_GRAPHICS & NW_GRAPHICS_OGL)
@@ -41,7 +41,7 @@ namespace NW
 	AShader* AShader::Create(const char* strName)
 	{
 		AShader* pShader = nullptr;
-		switch (DrawEngine::GetGApi()->GetType()) {
+		switch (GraphEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GAPI_COUT: break;
 	#elif (NW_GRAPHICS & NW_GRAPHICS_OGL)

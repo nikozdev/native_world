@@ -116,7 +116,7 @@ namespace NW
 	/// RenderAttributes struct
 	/// Description:
 	/// -- Check and change renderer attributes for more or less performance/resource usage
-	struct NW_API DrawEngineInfo
+	struct NW_API GraphEngineInfo
 	{
 	public:
 		// Configurations
@@ -129,13 +129,14 @@ namespace NW
 		Size unVtx = 0;
 		Size szIdx = 0;
 		Size unIdx = 0;
+		Size szShd = 0;
 		UInt32 unTex = 0;
 		// Drawing
 		UInt16 unDrawCalls = 0;
 	public:
 		// --setters
 		inline void Reset() {
-			szVtx = szIdx = unTex = 0;
+			szVtx = szIdx = szShd = unTex = 0;
 			unDrawCalls = 0;
 		}
 	};

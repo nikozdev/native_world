@@ -36,26 +36,64 @@ namespace NW
 
 namespace NW
 {
-	/// AGuiOf struct
 	/// GuiOfEngine struct
 	/// Description:
-	/// -- Renders the engine state and systems
-	struct NW_API GuiOfEngine : public AGuiOf<GuiOfEngine>
+	/// -- Renders the core engine state and window gui
+	struct NW_API GuiOfCoreEngine : public AGuiOf<GuiOfCoreEngine>
 	{
-		friend class AGuiOf<GuiOfEngine>;
+		friend class AGuiOf<GuiOfCoreEngine>;
 	public:
 		bool bWindow = false, bAppState = false, bLuaVM = false;
 	private:
-		GuiOfEngine();
-		~GuiOfEngine();
+		GuiOfCoreEngine();
+		~GuiOfCoreEngine();
 	public:
 		virtual void OnDraw() override;
 	private:
+		// --core_engine
+		CoreState* pCoreState = nullptr;
 		AWindow* pWindow = nullptr;
-		CoreState* pEState = nullptr;
-		Char strStateScript[1024] = "Script";
-		Char strWindowTitle[128] = "NW_Engine";
+		Char strWindowTitle[256] = "nw_engine";
 	};
+	/// GuiOfGraphEngine struct
+	struct NW_API GuiOfGraphEngine : public AGuiOf<GuiOfGraphEngine>
+	{
+		friend class AGuiOf<GuiOfGraphEngine>;
+	private:
+		GuiOfGraphEngine();
+		~GuiOfGraphEngine();
+	private:
+		bool bGApi = false, bGContext = false, bStates = false;
+		Int32 szMaxVtx = 0, szMaxIdx = 0, szMaxShd = 0, unMaxTex = 0;
+		String strDrawMode = "MD_FILL";
+		float nLineW = 0.01f, nPixelSz = 0.01f;
+		Char strStateName[256];
+	public:
+		virtual void OnDraw() override;
+	};
+	/// GuiOfCmdEngine struct
+	struct NW_API GuiOfCmdEngine : public AGuiOf<GuiOfCmdEngine>
+	{
+		friend class AGuiOf<GuiOfCmdEngine>;
+	private:
+		GuiOfCmdEngine();
+		~GuiOfCmdEngine();
+	private:
+		enum CmdModes : UInt8 {
+			CMD_NONE = 0,
+			CMD_NATIVE = 1,
+			CMD_LUA = 2,
+		};
+	private:
+		CmdModes CmdMode = CMD_NONE;
+		DArray<String> strCmdBuf;
+		DArray<Char> chrCmdBuf;
+	public:
+		virtual void OnDraw() override;
+	};
+}
+namespace NW
+{
 	/// GuiOfDataSys struct
 	struct NW_API GuiOfDataSys : public AGuiOf<GuiOfDataSys>
 	{
@@ -66,10 +104,11 @@ namespace NW
 	public:
 		virtual void OnDraw() override;
 	private:
+	// --data_system
 		Char strDir[256];
 		Char strCurrDir[256];
+	// --time system
 	};
-	/// GuiOfMemSys struct
 	struct NW_API GuiOfMemSys : public AGuiOf<GuiOfMemSys>
 	{
 	public:
@@ -100,39 +139,6 @@ namespace NW
 		UInt32 unRand = 0;
 		Float32 fRand = 0.0f;
 		Float64 dRand = 0.0f;
-	public:
-		virtual void OnDraw() override;
-	};
-}
-namespace NW
-{
-	/// GuiOfRender struct
-	struct NW_API GuiOfRender : public AGuiOf<GuiOfRender>
-	{
-	private:
-		bool bGApi = false, bGContext = false, bDrawEngineInfo = false;
-		Int32 szMaxVtx = 0, szMaxIdx = 0, unTexCount = 0;
-		String strDrawMode = "MD_FILL";
-		float nLineW = 0.01f, nPixelSz = 0.01f;
-	public:
-		virtual void OnDraw() override;
-	};
-	/// GuiOfConsole struct
-	struct NW_API GuiOfConsole : public AGuiOf<GuiOfConsole>
-	{
-		friend class AGuiOf<GuiOfConsole>;
-	private:
-		enum CmdModes : UInt8 {
-			CMD_NONE = 0,
-			CMD_NATIVE = 1,
-			CMD_LUA = 2,
-		};
-	private:
-		CmdModes CmdMode = CMD_NONE;
-		DArray<String> strCmdBuf;
-		DArray<Char> chrCmdBuf;
-	private:
-		GuiOfConsole();
 	public:
 		virtual void OnDraw() override;
 	};
@@ -235,10 +241,13 @@ namespace NW
 		// --core_methods
 		virtual void OnDraw() override;
 	private:
-		inline void OnDraw(RefEnts& rEnts);
+		inline void OnDraw(AEntity* pEnt);
+		inline void OnDraw(Ents& rEnts);
+		inline void OnDraw(RefEnts& rRefEnts);
 		inline void OnDraw(GCamera* pGCamera);
 	private:
 		ATexture2d* pIcoCamera = nullptr;
+		AEntity* pDestroyEnt = nullptr;
 	};
 }
 
