@@ -5,7 +5,7 @@
 #include <sys/nw_mem_sys.h>
 
 #if (defined NW_GRAPHICS)
-#include <glib/control/nw_draw_engine.h>
+#include <glib/control/nw_graph_engine.h>
 
 #include <sys/nw_log_sys.h>
 
@@ -62,6 +62,11 @@ namespace NW
 	ATexture2d::ATexture2d(const char* strName) :
 		ATexture(strName) { DataSys::AddDataRes<ATexture2d>(this); }
 	ATexture2d::~ATexture2d() { DataSys::RemoveDataRes<ATexture2d>(GetName()); }
+
+	void ATexture2d::SetSubTexs(const DArray<SubTexture2d>& rSubTexs) {
+		m_SubTexs = rSubTexs;
+		for (auto& rSub : m_SubTexs) { rSub.pOverTex = this; rSub.whOverTexSize = { m_ImgInfo.nWidth, m_ImgInfo.nHeight }; }
+	}
 
 	bool ATexture2d::SaveF(const char* strFPath) { return true; }
 	bool ATexture2d::LoadF(const char* strFPath)
@@ -142,7 +147,7 @@ namespace NW
 
 	ATexture1d* ATexture1d::Create(const char* strName) {
 		ATexture1d* pTex = nullptr;
-		switch (DrawEngine::GetGApi()->GetType()) {
+		switch (GraphEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GAPI_COUT:
 			pTex = MemSys::NewT<Texture1dCout>(strName);
@@ -159,7 +164,7 @@ namespace NW
 	}
 	ATexture2d* ATexture2d::Create(const char* strName) {
 		ATexture2d* pTex = nullptr;
-		switch (DrawEngine::GetGApi()->GetType()) {
+		switch (GraphEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GAPI_COUT:
 			pTex = MemSys::NewT<Texture2dCout>(strName);
@@ -176,7 +181,7 @@ namespace NW
 	}
 	ATexture3d* ATexture3d::Create(const char* strName) {
 		ATexture3d* pTex = nullptr;
-		switch (DrawEngine::GetGApi()->GetType()) {
+		switch (GraphEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GAPI_COUT:
 			pTex = MemSys::NewT<Texture3dCout>(strName);
@@ -210,10 +215,10 @@ namespace NW
 	}
 	void Texture1dOgl::SetInfo(const ImageInfo& rImgInfo) {
 		if (rImgInfo.nWidth < 1 || rImgInfo.nHeight < 1 || rImgInfo.nChannels < 1) { return; }
-		if (m_ImgInfo.ClrData != &s_ClearColorData[0] && m_ImgInfo.ClrData != nullptr) {
+		if (m_ImgInfo.ClrData != &s_ClearColorData[0] && m_ImgInfo.ClrData != rImgInfo.ClrData && m_ImgInfo.ClrData != nullptr) {
 			MemSys::DelTArr<UByte>(m_ImgInfo.ClrData, m_ImgInfo.nWidth * m_ImgInfo.nHeight * m_ImgInfo.nChannels);
+			m_ImgInfo.ClrData = nullptr;
 		}
-		m_ImgInfo.ClrData = nullptr;
 
 		m_ImgInfo = rImgInfo;
 	}
@@ -272,11 +277,12 @@ namespace NW
 	}
 	void Texture2dOgl::SetInfo(const ImageInfo& rImgInfo) {
 		if (rImgInfo.nWidth < 1 || rImgInfo.nHeight < 1 || rImgInfo.nChannels < 1) { return; }
-		if (m_ImgInfo.ClrData != &s_ClearColorData[0] && m_ImgInfo.ClrData != nullptr) {
+		if (m_ImgInfo.ClrData != &s_ClearColorData[0] && m_ImgInfo.ClrData != rImgInfo.ClrData && m_ImgInfo.ClrData != nullptr) {
 			MemSys::DelTArr<UByte>(m_ImgInfo.ClrData, m_ImgInfo.nWidth * m_ImgInfo.nHeight * m_ImgInfo.nChannels);
 			m_ImgInfo.ClrData = nullptr;
 		}
 		m_ImgInfo = rImgInfo;
+		SetSubTexs(GetSubTexs());
 	}
 
 	// --==<Interface Methods>==--
@@ -327,7 +333,7 @@ namespace NW
 	}
 	void Texture3dOgl::SetInfo(const ImageInfo& rImgInfo) {
 		if (rImgInfo.nWidth < 1 || rImgInfo.nHeight < 1 || rImgInfo.nChannels < 1) { return; }
-		if (m_ImgInfo.ClrData != &s_ClearColorData[0] && m_ImgInfo.ClrData != nullptr) {
+		if (m_ImgInfo.ClrData != &s_ClearColorData[0] && m_ImgInfo.ClrData != rImgInfo.ClrData && m_ImgInfo.ClrData != nullptr) {
 			MemSys::DelTArr<UByte>(m_ImgInfo.ClrData, m_ImgInfo.nWidth * m_ImgInfo.nHeight * m_ImgInfo.nChannels);
 		}
 		m_ImgInfo = rImgInfo;

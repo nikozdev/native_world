@@ -1,5 +1,5 @@
 #include <nw_pch.hpp>
-#include "nw_gapi.h"
+#include "nw_graph_api.h"
 
 #include <sys/nw_mem_sys.h>
 
@@ -9,9 +9,9 @@
 #include <glib/gcontext/nw_framebuf.h>
 namespace NW
 {
-	AGraphicsApi* AGraphicsApi::Create(GApiTypes GApitype)
+	AGraphApi* AGraphApi::Create(GApiTypes GApitype)
 	{
-		AGraphicsApi* pGApi = nullptr;
+		AGraphApi* pGApi = nullptr;
 		switch (GApitype)
 		{
 #if (NW_GRAPHICS & NW_GRAPHICS_COUT)
@@ -74,7 +74,7 @@ namespace NW
 {
 	// Constructor&Destructor
 	GraphicsApiCout::GraphicsApiCout() :
-		AGraphicsApi(),
+		AGraphApi(),
 		m_unClearColor(0), m_ucPattern(PxCharTypes::PX_SOLID)
 	{
 		m_pWindow = dynamic_cast<CoutWindow*>(&NW_Engine::Get().GetWindow());

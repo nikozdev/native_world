@@ -17,7 +17,8 @@ namespace NW
 	class NW_API ADataRes
 	{
 		friend class DataSys;
-		using IdStack = DStack<UInt32>;
+	protected:
+		ADataRes(const char* strName, UInt32 unId);
 	public:
 		ADataRes(const char* strName);
 		ADataRes(const ADataRes& rDataRes);
@@ -36,7 +37,7 @@ namespace NW
 		UInt32 m_unId;
 		String m_strName;
 
-		static IdStack s_unIdStack;
+		static IdStack s_IdStack;
 	};
 }
 namespace NW

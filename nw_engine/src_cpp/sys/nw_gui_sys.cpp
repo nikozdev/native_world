@@ -8,10 +8,10 @@
 #include <glib/vision/nw_gcamera.h>
 #include <glib/vision/nw_gmaterial.h>
 
-#include <glib/control/nw_draw_engine.h>
+#include <glib/control/nw_graph_engine.h>
 #include <glib/gcontext/nw_gcontext.h>
 #include <glib/gcontext/nw_framebuf.h>
-#include <glib/control/nw_gapi.h>
+#include <glib/control/nw_graph_api.h>
 #include <glib/gcontext/nw_window.h>
 #include <glib/render/nw_drawable.h>
 #include <glib/vision/nw_gcamera.h>
@@ -68,7 +68,7 @@ namespace NW
 	// --==<core_methods>==--
 	void GuiSys::OnInit()
 	{
-		AGraphicsApi* pGApi = DrawEngine::GetGApi();
+		AGraphApi* pGApi = GraphEngine::Get().GetGApi();
 		if (pGApi == nullptr) { return; }
 		AWindow* pWindow = CoreEngine::Get().GetWindow();
 		if (pWindow == nullptr) {
@@ -158,34 +158,36 @@ namespace NW
 				ImGui::EndMenu();
 			}
 			else if (ImGui::BeginMenu("View")) {
-				ImGui::Checkbox("GuiOf_Engine",				&GuiOfEngine::Get().bIsEnabled);
-				ImGui::Checkbox("GuiOf_Data_System",		&GuiOfDataSys::Get().bIsEnabled);
-				ImGui::Checkbox("GuiOf_Memory_System",		&GuiOfMemSys::Get().bIsEnabled);
-				ImGui::Checkbox("GuiOf_Time_System",		&GuiOfTimeSys::Get().bIsEnabled);
-				//ImGui::Checkbox("GuiOf_Log_System",		&GuiOfLogSys::Get().bIsEnabled);
-				//ImGui::Checkbox("GuiOf_Random_System",	&GuiOfRandSys::Get().bIsEnabled);
-				ImGui::Checkbox("GuiOf_Render",				&GuiOfRender::Get().bIsEnabled);
-				ImGui::Checkbox("GuiOf_Console",			&GuiOfConsole::Get().bIsEnabled);
+				ImGui::Checkbox("core_engine",				&GuiOfCoreEngine::Get().bIsEnabled);
+				ImGui::Checkbox("graphichs_engine",			&GuiOfGraphEngine::Get().bIsEnabled);
+				ImGui::Checkbox("console_engine",			&GuiOfCmdEngine::Get().bIsEnabled);
 
-				ImGui::Checkbox("Code_Editor",				&GuiOfCodeEditor::Get().bIsEnabled);
-				ImGui::Checkbox("Scene_Editor",				&GuiOfSceneEditor::Get().bIsEnabled);
-				ImGui::Checkbox("Entity_Editor",			&GuiOfEntityEditor::Get().bIsEnabled);
-				ImGui::Checkbox("Sprite_Editor",			&GuiOfSpriteEditor::Get().bIsEnabled);
-				ImGui::Checkbox("GMaterial_Editor",			&GuiOfGMaterialEditor::Get().bIsEnabled);
+				ImGui::Checkbox("data_system",				&GuiOfDataSys::Get().bIsEnabled);
+				ImGui::Checkbox("memory_mystem",			&GuiOfMemSys::Get().bIsEnabled);
+				ImGui::Checkbox("time_system",				&GuiOfTimeSys::Get().bIsEnabled);
+				//ImGui::Checkbox("log_system",				&GuiOfLogSys::Get().bIsEnabled);
+				//ImGui::Checkbox("random_system",			&GuiOfRandSys::Get().bIsEnabled);
+
+				ImGui::Checkbox("code_Editor",				&GuiOfCodeEditor::Get().bIsEnabled);
+				ImGui::Checkbox("scene_editor",				&GuiOfSceneEditor::Get().bIsEnabled);
+				ImGui::Checkbox("entity_editor",			&GuiOfEntityEditor::Get().bIsEnabled);
+				ImGui::Checkbox("sprite_editor",			&GuiOfSpriteEditor::Get().bIsEnabled);
+				ImGui::Checkbox("gmaterial_editor",			&GuiOfGMaterialEditor::Get().bIsEnabled);
 
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenuBar();
 		}
 	#endif // NW_GUI
-		GuiOfEngine::Get().OnDraw();
+		GuiOfCoreEngine::Get().OnDraw();
+		GuiOfGraphEngine::Get().OnDraw();
+		GuiOfCmdEngine::Get().OnDraw();
+
 		GuiOfDataSys::Get().OnDraw();
 		GuiOfMemSys::Get().OnDraw();
 		GuiOfTimeSys::Get().OnDraw();
 		//GuiOfLogSys::Get().OnDraw();
 		//GuiOfRandSys::Get().OnDraw();
-		GuiOfRender::Get().OnDraw();
-		GuiOfConsole::Get().OnDraw();
 
 		GuiOfCodeEditor::Get().OnDraw();
 		GuiOfSceneEditor::Get().OnDraw();

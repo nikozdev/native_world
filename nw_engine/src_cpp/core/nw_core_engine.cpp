@@ -3,7 +3,7 @@
 
 #include <core/nw_core_state.h>
 
-#include <glib/control/nw_draw_engine.h>
+#include <glib/control/nw_graph_engine.h>
 #include <glib/gcontext/nw_window.h>
 
 #include <ecs/nw_scene.h>
@@ -84,9 +84,8 @@ namespace NW
 		GApiType = GApiTypes::GAPI_COUT;
 		#endif
 	#endif	// NW_GRAPHICS
-		if (!DrawEngine::Init(GApiType)) {
-			LogSys::WriteErrStr(NW_ERR_NO_INIT, "DrawEngine is not initialized!");
-			DrawEngine::OnQuit();
+		if (!GraphEngine::Get().Init(GApiType)) {
+			LogSys::WriteErrStr(NW_ERR_NO_INIT, "GraphEngine is not initialized!");
 			m_pWindow->OnQuit();
 			return false;
 		}
@@ -117,7 +116,7 @@ namespace NW
 		DataSys::OnQuit();
 		GuiSys::OnQuit();
 
-		DrawEngine::OnQuit();
+		GraphEngine::Get().OnQuit();
 		m_pWindow->OnQuit();
 
 		system("\a");
@@ -125,7 +124,6 @@ namespace NW
 	}
 	inline void CoreEngine::Update()
 	{
-		DrawEngine::BeginDraw();
 		GuiSys::BeginDraw();
 		GuiSys::Update();
 		
@@ -133,12 +131,12 @@ namespace NW
 		m_pWindow->Update();
 		
 		GuiSys::EndDraw();
-		DrawEngine::Update();
-		DrawEngine::EndDraw();
 	
 		IOSys::Update();
 		TimeSys::Update();
 		EvSys::Update();
+
+		GraphEngine::Get().Update();
 	}
 	// --==</core_methods>==--
 

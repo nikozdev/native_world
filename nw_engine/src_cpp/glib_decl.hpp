@@ -6,8 +6,9 @@
 namespace NW
 {
 	//	--==<Control>==--
-	class NW_API AGraphicsApi;
-	class NW_API DrawEngine;
+	class NW_API AGraphApi;
+	class NW_API GraphEngine;
+	class NW_API GraphState;
 	class NW_API GCameraLad;
 	//	--==</Control>==--
 
@@ -168,11 +169,6 @@ namespace NW
 	enum StencilConfigs : UInt32
 	{
 		SC_ = 0
-	};
-	enum RenderTypes : UInt32 {
-		RT_DEFAULT = 0,
-		RT_2D_LINES, RT_2D_POLYGONS,
-		RT_3D_LINES, RT_3D_POLYGONS
 	};
 	enum TextureTypes : UInt32 {
 		TT_1D = NW_TEXTURE_1D, TT_2D = NW_TEXTURE_2D, TT_3D = NW_TEXTURE_3D,

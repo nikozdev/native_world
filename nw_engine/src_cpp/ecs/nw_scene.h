@@ -50,8 +50,9 @@ namespace NW
 		// --getters
 		inline GCamera* GetGCamera() { return m_pGCamera; }
 		inline AFrameBuf* GetFrameBuf() { return m_pFrameBuf; }
-		inline const V4f& GetViewport() const { return m_xywhViewport; }
-		
+		inline V4f GetViewport() { return m_xywhViewport; }
+		inline GraphState* GetGraphState() { return m_pGState; }
+
 		inline Ents& GetEnts() { return m_Ents; }
 		inline RefEnts& GetOverEnts() { return m_OverEnts; }
 		inline AEntity* GetEntity(UInt32 unId) { return (m_Ents.find(unId) == m_Ents.end()) ? nullptr : &m_Ents[unId]; }
@@ -90,6 +91,7 @@ namespace NW
 		GCamera* m_pGCamera;
 		AFrameBuf* m_pFrameBuf;
 		V4f m_xywhViewport = V4f{ 0.0f, 0.0f, 800.0f, 600.0f };
+		GraphState* m_pGState;
 	private:
 		inline void OnDestroyEntity(const Ents::iterator& itEnt) {
 			for (auto& itDestEnt : m_DestroyEnts) { if (itDestEnt == itEnt) return; }

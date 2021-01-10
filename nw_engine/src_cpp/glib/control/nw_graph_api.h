@@ -3,7 +3,7 @@
 
 #include <glib_decl.hpp>
 
-// --==<AGraphicsApi>==--
+// --==<AGraphApi>==--
 #if (defined NW_GRAPHICS)	// This has to be defined anyway
 namespace NW
 {
@@ -16,10 +16,10 @@ namespace NW
 	/// -- This is the tool of the engine renderer
 	/// -- Renderer owns an instance of the derrived from this class
 	/// -- Renderer is static and he owns any API with which he can draw
-	class NW_API AGraphicsApi
+	class NW_API AGraphApi
 	{
 	public:
-		virtual ~AGraphicsApi() = default;
+		virtual ~AGraphApi() = default;
 		
 		// --getters
 		virtual inline const GApiTypes GetType() const = 0;
@@ -42,11 +42,11 @@ namespace NW
 		virtual void DrawIndexed(UInt32 unIndexCount) = 0;
 		virtual void DrawArray(UInt32 unVertexCount) = 0;
 
-		static AGraphicsApi* Create(GApiTypes gapiType);
+		static AGraphApi* Create(GApiTypes gapiType);
 	};
 }
 #endif	// NW_GRAPHICS
-// --==</AGraphicsApi>==--
+// --==</AGraphApi>==--
 
 // --==<GraphicsApiOgl>==--
 #if (NW_GRAPHICS & NW_GRAPHICS_OGL)
@@ -57,7 +57,7 @@ namespace NW
 	/// --Draws everything you give him
 	/// --Gets data and draws it
 	/// --Can draw throught abstraction classes and VBO/VAO/EBO
-	class NW_API GraphicsApiOgl : public AGraphicsApi
+	class NW_API GraphicsApiOgl : public AGraphApi
 	{
 	public:
 		GraphicsApiOgl();
@@ -102,7 +102,7 @@ namespace NW
 namespace NW
 {
 	/// Console GraphicsApi class
-	class NW_API GraphicsApiCout : public AGraphicsApi
+	class NW_API GraphicsApiCout : public AGraphApi
 	{
 	public: // Interface Methods
 		GraphicsApiCout();

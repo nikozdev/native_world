@@ -13,7 +13,7 @@ namespace NW
 	GMaterial::GMaterial(const char* strName) :
 		ADataRes(strName)
 	{
-		SetShader(DataSys::GetDataRes<AShader>("shd_batch_3d"));
+		SetShader(DataSys::GetDataRes<AShader>("shd_default"));
 		DataSys::AddDataRes<GMaterial>(this);
 	}
 	GMaterial::~GMaterial() { DataSys::RemoveDataRes<GMaterial>(GetName()); }

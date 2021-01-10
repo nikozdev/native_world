@@ -19,8 +19,8 @@
 // --==</systems>==--
 
 // --==<graphics_library>==--
-#include <glib/control/nw_gapi.h>
-#include <glib/control/nw_draw_engine.h>
+#include <glib/control/nw_graph_api.h>
+#include <glib/control/nw_graph_engine.h>
 
 #include <glib/gcontext/nw_window.h>
 #include <glib/gcontext/nw_gcontext.h>

@@ -312,13 +312,13 @@ namespace NW
 		static inline Int32 DestroyEnt(LuaState* pLState) {
 			Int32 nType = lua_type(pLState, -1);
 			if (nType == LT_STR) {			// destroy by name
-				Scene::Get().DestroyEntity(lua_tostring(pLState, -1));
+				//Scene::Get().DestroyEntity(lua_tostring(pLState, -1));
 			}
 			else if (nType == LT_LUD) {		// destroy by reference
-				Scene::Get().DestroyEntity(static_cast<AEntity*>(lua_touserdata(pLState, -1)));
+				//Scene::Get().DestroyEntity(static_cast<AEntity*>(lua_touserdata(pLState, -1)));
 			}
 			else if (nType == LT_NUM) {		// destroy by id
-				Scene::Get().DestroyEntity(lua_tonumber(pLState, -1));
+				//Scene::Get().DestroyEntity(lua_tonumber(pLState, -1));
 			}
 			return 0;
 		}

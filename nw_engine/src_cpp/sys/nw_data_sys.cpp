@@ -61,15 +61,15 @@ namespace NW
         fStream.exceptions(std::ios::badbit | std::ios::failbit);
 
         if (true) {
-            AShader::Create("shd_default");
-            DataSys::GetDataRes<AShader>("shd_default")->LoadF("D:/dev/native_world/nw_engine/src_glsl/batch_3d.glsl");
+            AShader::Create("shd_default")->LoadF("D:/dev/native_world/nw_engine/src_glsl/batch_3d.glsl");
+            AShader::Create("shd_default_tile")->LoadF("D:/dev/native_world/nw_engine/src_glsl/tile_2d.glsl");
         }
         if (true) {
-            ATexture2d::Create("tex_white_solid");
-            GetDataRes<ATexture2d>("tex_white_solid")->LoadF("");
+            ATexture2d::Create("tex_white_solid")->LoadF("");
         }
         if (true) {
-            GMaterial* pGMtl = MemSys::NewT<GMaterial>("gmt_default");
+            MemSys::NewT<GMaterial>("gmt_default");
+            MemSys::NewT<GMaterial>("gmt_default_tile")->SetShader(GetDataRes<AShader>("shd_default_tile"));
         }
         return true;
     }
@@ -77,13 +77,15 @@ namespace NW
     void DataSys::OnQuit()
     {
         if (true) {
-            MemSys::DelT<AShader>(GetDataRes<AShader>("gmt_default"));
+            MemSys::DelT<AShader>(GetDataRes<AShader>("shd_default"));
+            MemSys::DelT<AShader>(GetDataRes<AShader>("shd_default_tile"));
         }
         if (true) {
             MemSys::DelT<ATexture2d>(GetDataRes<ATexture2d>("tex_white_solid"));
         }
         if (true) {
             MemSys::DelT<GMaterial>(GetDataRes<GMaterial>("gmt_default"));
+            MemSys::DelT<GMaterial>(GetDataRes<GMaterial>("gmt_default_tile"));
         }
     }
     // -- File Dialogs
