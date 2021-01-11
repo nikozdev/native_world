@@ -18,7 +18,7 @@ namespace NW
 		m_ColorAttach = ATexture2d::Create(&strClrName[0]);
 		DataSys::AddDataRes<AFrameBuf>(this);
 	}
-	AFrameBuf::~AFrameBuf() { DataSys::RemoveDataRes<AFrameBuf>(GetName()); }
+	AFrameBuf::~AFrameBuf() { DataSys::RmvDataRes<AFrameBuf>(GetName()); }
 
 	// --setters
 	void AFrameBuf::SetSizeWH(UInt32 unWidth, UInt32 unHeight) {

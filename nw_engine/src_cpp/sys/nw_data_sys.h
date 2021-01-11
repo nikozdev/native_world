@@ -34,18 +34,18 @@ namespace NW
 		template <class DRType> static inline DRType* GetDataRes(const char* strName) {
 			DRs<DRType>& s_DRs = GetDataResources<DRType>();
 			DRs<DRType>::iterator& itDR = s_DRs.find(strName);
-			return itDR == s_DRs.end() ? nullptr : itDR->second;
+			return itDR == s_DRs.end() ? s_DRs.begin()->second : itDR->second;
 		}
 		// --setters
 		static void SetDirectory(const char* strDir);
 		static void AddADataRes(ADataRes* pDataRes);
-		static void RemoveADataRes(UInt32 unId);
+		static void RmvADataRes(UInt32 unId);
 		
 		template <class DRType> static inline void AddDataRes(DRType* pDataRes) {
 			if (pDataRes == nullptr) return;
 			GetDataResources<DRType>()[pDataRes->GetName()] = (pDataRes);
 		}
-		template <class DRType> static inline void RemoveDataRes(const char* strName) {
+		template <class DRType> static inline void RmvDataRes(const char* strName) {
 			DRs<DRType>& s_DRs = GetDataResources<DRType>();
 			if (s_DRs.size() == 0) return;
 			DRs<DRType>::iterator itDR = s_DRs.find(strName);

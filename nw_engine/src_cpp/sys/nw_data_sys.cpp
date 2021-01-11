@@ -47,7 +47,7 @@ namespace NW
         if (pDataRes == nullptr) return;
         s_ADRs[pDataRes->GetId()] = (pDataRes);
     }
-    void DataSys::RemoveADataRes(UInt32 unId) {
+    void DataSys::RmvADataRes(UInt32 unId) {
         ADRs::iterator itDR = s_ADRs.find(unId);
         if (s_ADRs.size() == 0) return;
         if (itDR == s_ADRs.end()) return;
@@ -61,15 +61,17 @@ namespace NW
         fStream.exceptions(std::ios::badbit | std::ios::failbit);
 
         if (true) {
-            AShader::Create("shd_default")->LoadF("D:/dev/native_world/nw_engine/src_glsl/batch_3d.glsl");
-            AShader::Create("shd_default_tile")->LoadF("D:/dev/native_world/nw_engine/src_glsl/tile_2d.glsl");
+            AShader::Create("shd_2d_batch")->LoadF("D:/dev/native_world/nw_engine/src_glsl/shd_2d_batch.glsl");
+            AShader::Create("shd_2d_tile")->LoadF("D:/dev/native_world/nw_engine/src_glsl/shd_2d_tile.glsl");
+            AShader::Create("shd_3d_batch")->LoadF("D:/dev/native_world/nw_engine/src_glsl/shd_3d_batch.glsl");
         }
         if (true) {
             ATexture2d::Create("tex_white_solid")->LoadF("");
         }
         if (true) {
-            MemSys::NewT<GMaterial>("gmt_default");
-            MemSys::NewT<GMaterial>("gmt_default_tile")->SetShader(GetDataRes<AShader>("shd_default_tile"));
+            MemSys::NewT<GMaterial>("gmt_2d_batch")->SetShader(GetDataRes<AShader>("shd_2d_batch"));
+            MemSys::NewT<GMaterial>("shd_2d_tile")->SetShader(GetDataRes<AShader>("shd_2d_tile"));
+            MemSys::NewT<GMaterial>("gmt_3d_batch")->SetShader(GetDataRes<AShader>("shd_3d_batch"));
         }
         return true;
     }
@@ -77,15 +79,16 @@ namespace NW
     void DataSys::OnQuit()
     {
         if (true) {
-            MemSys::DelT<AShader>(GetDataRes<AShader>("shd_default"));
-            MemSys::DelT<AShader>(GetDataRes<AShader>("shd_default_tile"));
+            MemSys::DelT<AShader>(GetDataRes<AShader>("shd_2d_tile"));
+            MemSys::DelT<AShader>(GetDataRes<AShader>("shd_3d_batch"));
         }
         if (true) {
             MemSys::DelT<ATexture2d>(GetDataRes<ATexture2d>("tex_white_solid"));
         }
         if (true) {
-            MemSys::DelT<GMaterial>(GetDataRes<GMaterial>("gmt_default"));
-            MemSys::DelT<GMaterial>(GetDataRes<GMaterial>("gmt_default_tile"));
+            MemSys::DelT<GMaterial>(GetDataRes<GMaterial>("gmt_2d_tile"));
+            MemSys::DelT<GMaterial>(GetDataRes<GMaterial>("gmt_2d_batch"));
+            MemSys::DelT<GMaterial>(GetDataRes<GMaterial>("gmt_3d_batch"));
         }
     }
     // -- File Dialogs

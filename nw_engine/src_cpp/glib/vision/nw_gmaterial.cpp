@@ -13,10 +13,9 @@ namespace NW
 	GMaterial::GMaterial(const char* strName) :
 		ADataRes(strName)
 	{
-		SetShader(DataSys::GetDataRes<AShader>("shd_default"));
 		DataSys::AddDataRes<GMaterial>(this);
 	}
-	GMaterial::~GMaterial() { DataSys::RemoveDataRes<GMaterial>(GetName()); }
+	GMaterial::~GMaterial() { DataSys::RmvDataRes<GMaterial>(GetName()); }
 
 	// --setters
 	void GMaterial::SetShader(AShader* pShader) {

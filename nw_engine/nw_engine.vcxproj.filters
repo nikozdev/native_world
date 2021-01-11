@@ -31,8 +31,41 @@
     <Filter Include="ext\glm\glm\gtx">
       <UniqueIdentifier>{F6DF6C10-626B-DAD4-6B7C-5DC9D78636D5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ext\glm\glm\out">
+      <UniqueIdentifier>{1B026D10-878D-DAD4-909E-5DC9FCA836D5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\glm\glm\out\build">
+      <UniqueIdentifier>{9AB6DC75-0623-9870-CF16-30CE3B42BAD8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\glm\glm\out\build\x64-Debug (default)">
+      <UniqueIdentifier>{75271147-E141-74E8-2A64-847C96BD9BEF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\glm\glm\out\build\x64-Debug (default)\CMakeFiles">
+      <UniqueIdentifier>{98E96BC3-8428-163F-2DAB-F27019C9CBA9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\glm\glm\out\build\x64-Debug (default)\CMakeFiles\ShowIncludes">
+      <UniqueIdentifier>{DF977042-4BB6-840F-9483-8A2100E1BF18}</UniqueIdentifier>
+    </Filter>
     <Filter Include="ext\glm\glm\simd">
       <UniqueIdentifier>{70430F1E-5C3C-2E70-856E-13F571C60D7C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\glm\test">
+      <UniqueIdentifier>{7481A2ED-60E4-3192-096A-6A48F5ABFD14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\glm\test\out">
+      <UniqueIdentifier>{FBC84915-E7C1-6867-10F4-4DECFC4B4873}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\glm\test\out\build">
+      <UniqueIdentifier>{7A25AB95-661F-D4E7-4F8C-6AF83B253A54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\glm\test\out\build\x64-Debug (default)">
+      <UniqueIdentifier>{55C6DDF8-412E-A4C6-AA99-B8DC9620BBB2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\glm\test\out\build\x64-Debug (default)\CMakeFiles">
+      <UniqueIdentifier>{787C4B46-E498-3D37-AD70-AAA4194CA7F8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\glm\test\out\build\x64-Debug (default)\CMakeFiles\ShowIncludes">
+      <UniqueIdentifier>{BFD6BFB0-ABC2-5720-1439-17730044F850}</UniqueIdentifier>
     </Filter>
     <Filter Include="ext\lua_lib">
       <UniqueIdentifier>{FD08F927-69BE-711D-F2B2-6BF45E676821}</UniqueIdentifier>
@@ -49,20 +82,20 @@
     <Filter Include="src_cpp\ecs">
       <UniqueIdentifier>{D9055F2B-45BB-D720-CEAF-D1F73A64CE24}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src_cpp\gl">
-      <UniqueIdentifier>{F1F040C3-DDA8-8210-46B0-5B6C32871D01}</UniqueIdentifier>
+    <Filter Include="src_cpp\glib">
+      <UniqueIdentifier>{1CFF4097-0862-D03B-B1E7-08F29D299CBE}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src_cpp\gl\control">
-      <UniqueIdentifier>{C19A2786-AD7E-E8DB-16DF-E22E02E2D25D}</UniqueIdentifier>
+    <Filter Include="src_cpp\glib\control">
+      <UniqueIdentifier>{ECA33CB9-D832-C682-8151-DA7D6DBFD628}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src_cpp\gl\gcontext">
-      <UniqueIdentifier>{2CF35062-9854-2E70-21C2-74228D22652F}</UniqueIdentifier>
+    <Filter Include="src_cpp\glib\gcontext">
+      <UniqueIdentifier>{B72107F8-238E-C2F2-EC81-5A5058ADE45A}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src_cpp\gl\render">
-      <UniqueIdentifier>{604A0BF0-CC60-0986-15D8-94A7812DDA0D}</UniqueIdentifier>
+    <Filter Include="src_cpp\glib\render">
+      <UniqueIdentifier>{2B5ABE8C-97BB-9B9A-2029-E24C8C89D259}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src_cpp\gl\vision">
-      <UniqueIdentifier>{5823ABF9-C439-A98F-0DB1-34B179067A17}</UniqueIdentifier>
+    <Filter Include="src_cpp\glib\vision">
+      <UniqueIdentifier>{23335E96-8F94-3BA4-1802-825684627263}</UniqueIdentifier>
     </Filter>
     <Filter Include="src_cpp\gui">
       <UniqueIdentifier>{A3105F2B-0FC6-D720-98BA-D1F7046FCE24}</UniqueIdentifier>
@@ -1308,6 +1341,9 @@
     <ClInclude Include="ext\glm\glm\matrix.hpp">
       <Filter>ext\glm\glm</Filter>
     </ClInclude>
+    <ClInclude Include="ext\glm\glm\out\build\x64-Debug (default)\CMakeFiles\ShowIncludes\foo.h">
+      <Filter>ext\glm\glm\out\build\x64-Debug (default)\CMakeFiles\ShowIncludes</Filter>
+    </ClInclude>
     <ClInclude Include="ext\glm\glm\packing.hpp">
       <Filter>ext\glm\glm</Filter>
     </ClInclude>
@@ -1355,6 +1391,9 @@
     </ClInclude>
     <ClInclude Include="ext\glm\glm\vector_relational.hpp">
       <Filter>ext\glm\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="ext\glm\test\out\build\x64-Debug (default)\CMakeFiles\ShowIncludes\foo.h">
+      <Filter>ext\glm\test\out\build\x64-Debug (default)\CMakeFiles\ShowIncludes</Filter>
     </ClInclude>
     <ClInclude Include="ext\lua_lib\src\lapi.h">
       <Filter>ext\lua_lib\src</Filter>
@@ -1443,6 +1482,9 @@
     <ClInclude Include="src_cpp\core\nw_core_engine.h">
       <Filter>src_cpp\core</Filter>
     </ClInclude>
+    <ClInclude Include="src_cpp\core\nw_core_state.h">
+      <Filter>src_cpp\core</Filter>
+    </ClInclude>
     <ClInclude Include="src_cpp\core\nw_data_res.h">
       <Filter>src_cpp\core</Filter>
     </ClInclude>
@@ -1473,6 +1515,54 @@
     <ClInclude Include="src_cpp\ecs_decl.hpp">
       <Filter>src_cpp</Filter>
     </ClInclude>
+    <ClInclude Include="src_cpp\glib\control\nw_gcamera_lad.h">
+      <Filter>src_cpp\glib\control</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\control\nw_graph_api.h">
+      <Filter>src_cpp\glib\control</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\control\nw_graph_engine.h">
+      <Filter>src_cpp\glib\control</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\control\nw_graph_state.h">
+      <Filter>src_cpp\glib\control</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\gcontext\nw_framebuf.h">
+      <Filter>src_cpp\glib\gcontext</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\gcontext\nw_gcontext.h">
+      <Filter>src_cpp\glib\gcontext</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\gcontext\nw_window.h">
+      <Filter>src_cpp\glib\gcontext</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\nw_gbuffer.h">
+      <Filter>src_cpp\glib</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\nw_glib_core.h">
+      <Filter>src_cpp\glib</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\render\nw_drawable.h">
+      <Filter>src_cpp\glib\render</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\render\nw_texture.h">
+      <Filter>src_cpp\glib\render</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\vision\nw_gcamera.h">
+      <Filter>src_cpp\glib\vision</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\vision\nw_gmaterial.h">
+      <Filter>src_cpp\glib\vision</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\vision\nw_light_source.h">
+      <Filter>src_cpp\glib\vision</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\vision\nw_shader.h">
+      <Filter>src_cpp\glib\vision</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib_decl.hpp">
+      <Filter>src_cpp</Filter>
+    </ClInclude>
     <ClInclude Include="src_cpp\gui\nw_gui_core.h">
       <Filter>src_cpp\gui</Filter>
     </ClInclude>
@@ -1491,6 +1581,9 @@
     <ClInclude Include="src_cpp\lib\nw_container.h">
       <Filter>src_cpp\lib</Filter>
     </ClInclude>
+    <ClInclude Include="src_cpp\lib\nw_event.h">
+      <Filter>src_cpp\lib</Filter>
+    </ClInclude>
     <ClInclude Include="src_cpp\lib\nw_io_lib.h">
       <Filter>src_cpp\lib</Filter>
     </ClInclude>
@@ -1498,6 +1591,9 @@
       <Filter>src_cpp\lib</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\lib\nw_memory.h">
+      <Filter>src_cpp\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\lib\nw_singleton.h">
       <Filter>src_cpp\lib</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\lib\nw_string.h">
@@ -1554,6 +1650,9 @@
     <ClInclude Include="src_cpp\sys\nw_data_sys.h">
       <Filter>src_cpp\sys</Filter>
     </ClInclude>
+    <ClInclude Include="src_cpp\sys\nw_ent_sys.h">
+      <Filter>src_cpp\sys</Filter>
+    </ClInclude>
     <ClInclude Include="src_cpp\sys\nw_ev_sys.h">
       <Filter>src_cpp\sys</Filter>
     </ClInclude>
@@ -1574,62 +1673,6 @@
     </ClInclude>
     <ClInclude Include="src_cpp\sys\nw_time_sys.h">
       <Filter>src_cpp\sys</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\lib\nw_singleton.h">
-      <Filter>src_cpp\core</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\lib\nw_event.h">
-      <Filter>src_cpp\core</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib\gcontext\nw_framebuf.h">
-      <Filter>src_cpp\gl\gcontext</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib\gcontext\nw_gcontext.h">
-      <Filter>src_cpp\gl\gcontext</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib\gcontext\nw_window.h">
-      <Filter>src_cpp\gl\gcontext</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib\render\nw_drawable.h">
-      <Filter>src_cpp\gl\render</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib\render\nw_texture.h">
-      <Filter>src_cpp\gl\render</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib\vision\nw_gcamera.h">
-      <Filter>src_cpp\gl\vision</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib\vision\nw_gmaterial.h">
-      <Filter>src_cpp\gl\vision</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib\vision\nw_light_source.h">
-      <Filter>src_cpp\gl\vision</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib\vision\nw_shader.h">
-      <Filter>src_cpp\gl\vision</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib_decl.hpp">
-      <Filter>src_cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib\nw_glib_core.h">
-      <Filter>src_cpp\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib\nw_gbuffer.h" />
-    <ClInclude Include="src_cpp\core\nw_core_state.h">
-      <Filter>src_cpp\core</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\sys\nw_ent_sys.h" />
-    <ClInclude Include="src_cpp\glib\control\nw_gcamera_lad.h">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib\control\nw_graph_state.h">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib\control\nw_graph_engine.h">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib\control\nw_graph_api.h">
-      <Filter>src_cpp\gl\control</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1662,6 +1705,48 @@
     </ClCompile>
     <ClCompile Include="src_cpp\ecs\nw_transform_cmp.cpp">
       <Filter>src_cpp\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\control\nw_gcamera_lad.cpp">
+      <Filter>src_cpp\glib\control</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\control\nw_graph_api.cpp">
+      <Filter>src_cpp\glib\control</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\control\nw_graph_engine.cpp">
+      <Filter>src_cpp\glib\control</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\control\nw_graph_state.cpp">
+      <Filter>src_cpp\glib\control</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\gcontext\nw_framebuf.cpp">
+      <Filter>src_cpp\glib\gcontext</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\gcontext\nw_gcontext.cpp">
+      <Filter>src_cpp\glib\gcontext</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\gcontext\nw_window.cpp">
+      <Filter>src_cpp\glib\gcontext</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\nw_gbuffer.cpp">
+      <Filter>src_cpp\glib</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\nw_glib_core.cpp">
+      <Filter>src_cpp\glib</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\render\nw_drawable.cpp">
+      <Filter>src_cpp\glib\render</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\render\nw_texture.cpp">
+      <Filter>src_cpp\glib\render</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\vision\nw_gcamera.cpp">
+      <Filter>src_cpp\glib\vision</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\vision\nw_gmaterial.cpp">
+      <Filter>src_cpp\glib\vision</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\vision\nw_shader.cpp">
+      <Filter>src_cpp\glib\vision</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\gui\nw_gui_core.cpp">
       <Filter>src_cpp\gui</Filter>
@@ -1702,6 +1787,9 @@
     <ClCompile Include="src_cpp\sys\nw_data_sys.cpp">
       <Filter>src_cpp\sys</Filter>
     </ClCompile>
+    <ClCompile Include="src_cpp\sys\nw_ent_sys.cpp">
+      <Filter>src_cpp\sys</Filter>
+    </ClCompile>
     <ClCompile Include="src_cpp\sys\nw_ev_sys.cpp">
       <Filter>src_cpp\sys</Filter>
     </ClCompile>
@@ -1722,47 +1810,6 @@
     </ClCompile>
     <ClCompile Include="src_cpp\sys\nw_time_sys.cpp">
       <Filter>src_cpp\sys</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\glib\gcontext\nw_framebuf.cpp">
-      <Filter>src_cpp\gl\gcontext</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\glib\gcontext\nw_gcontext.cpp">
-      <Filter>src_cpp\gl\gcontext</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\glib\gcontext\nw_window.cpp">
-      <Filter>src_cpp\gl\gcontext</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\glib\render\nw_drawable.cpp">
-      <Filter>src_cpp\gl\render</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\glib\render\nw_texture.cpp">
-      <Filter>src_cpp\gl\render</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\glib\vision\nw_gcamera.cpp">
-      <Filter>src_cpp\gl\vision</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\glib\vision\nw_gmaterial.cpp">
-      <Filter>src_cpp\gl\vision</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\glib\vision\nw_shader.cpp">
-      <Filter>src_cpp\gl\vision</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\glib\nw_glib_core.cpp">
-      <Filter>src_cpp\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\glib\nw_gbuffer.cpp" />
-    <ClCompile Include="src_cpp\sys\nw_ent_sys.cpp" />
-    <ClCompile Include="src_cpp\glib\control\nw_gcamera_lad.cpp">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\glib\control\nw_graph_state.cpp">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\glib\control\nw_graph_engine.cpp">
-      <Filter>src_cpp\gl\control</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\glib\control\nw_graph_api.cpp">
-      <Filter>src_cpp\gl\control</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3854,36 +3901,24 @@
     <None Include="ext\glm\doc\api\search\typedefs_d.html">
       <Filter>ext\glm\doc\api\search</Filter>
     </None>
-    <None Include="src_glsl\batch_2d.glsl">
-      <Filter>src_glsl</Filter>
-    </None>
-    <None Include="src_glsl\batch_3d.glsl">
-      <Filter>src_glsl</Filter>
-    </None>
-    <None Include="src_glsl\batch_gizmos.glsl">
-      <Filter>src_glsl</Filter>
-    </None>
-    <None Include="src_glsl\batch_gui.glsl">
-      <Filter>src_glsl</Filter>
-    </None>
-    <None Include="src_glsl\batch_lines.glsl">
-      <Filter>src_glsl</Filter>
-    </None>
-    <None Include="src_glsl\batch_points.glsl">
-      <Filter>src_glsl</Filter>
-    </None>
-    <None Include="src_glsl\core_2d.glsl">
-      <Filter>src_glsl</Filter>
-    </None>
-    <None Include="src_glsl\core_3d.glsl">
-      <Filter>src_glsl</Filter>
-    </None>
-    <None Include="src_glsl\display_img.glsl">
-      <Filter>src_glsl</Filter>
-    </None>
     <None Include="src_lua\estates\est_default.lua">
       <Filter>src_lua\estates</Filter>
     </None>
-    <None Include="src_glsl\tile_2d.glsl" />
+    <None Include="src_glsl\shd_3d_mesh.glsl">
+      <Filter>src_glsl</Filter>
+    </None>
+    <None Include="src_glsl\shd_2d_tile.glsl">
+      <Filter>src_glsl</Filter>
+    </None>
+    <None Include="src_glsl\shd_2d_display.glsl">
+      <Filter>src_glsl</Filter>
+    </None>
+    <None Include="src_glsl\shd_3d_batch.glsl">
+      <Filter>src_glsl</Filter>
+    </None>
+    <None Include="src_glsl\shd_void.glsl" />
+    <None Include="src_glsl\shd_2d_batch.glsl">
+      <Filter>src_glsl</Filter>
+    </None>
   </ItemGroup>
 </Project>

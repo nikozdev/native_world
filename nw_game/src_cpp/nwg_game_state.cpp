@@ -23,7 +23,7 @@ namespace NWG
 		if (true) {	// shaders
 		}
 		if (true) {	// textures
-			ATexture2d::Create("spt_nw_hero")->LoadF("data_res/graphics/images/spt_nw_hero.png");
+			ATexture2d::Create("spt_nw_hero")->LoadF("data/tex/spt_nw_hero.png");
 		}
 		if (true) {	// materials
 		}

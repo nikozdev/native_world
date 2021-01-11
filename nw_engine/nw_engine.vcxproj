@@ -506,6 +506,7 @@
     <ClInclude Include="ext\glm\glm\mat4x3.hpp" />
     <ClInclude Include="ext\glm\glm\mat4x4.hpp" />
     <ClInclude Include="ext\glm\glm\matrix.hpp" />
+    <ClInclude Include="ext\glm\glm\out\build\x64-Debug (default)\CMakeFiles\ShowIncludes\foo.h" />
     <ClInclude Include="ext\glm\glm\packing.hpp" />
     <ClInclude Include="ext\glm\glm\simd\common.h" />
     <ClInclude Include="ext\glm\glm\simd\exponential.h" />
@@ -522,6 +523,7 @@
     <ClInclude Include="ext\glm\glm\vec3.hpp" />
     <ClInclude Include="ext\glm\glm\vec4.hpp" />
     <ClInclude Include="ext\glm\glm\vector_relational.hpp" />
+    <ClInclude Include="ext\glm\test\out\build\x64-Debug (default)\CMakeFiles\ShowIncludes\foo.h" />
     <ClInclude Include="ext\lua_lib\src\lapi.h" />
     <ClInclude Include="ext\lua_lib\src\lauxlib.h" />
     <ClInclude Include="ext\lua_lib\src\lcode.h" />
@@ -553,10 +555,6 @@
     <ClInclude Include="src_cpp\core\nw_core_engine.h" />
     <ClInclude Include="src_cpp\core\nw_core_state.h" />
     <ClInclude Include="src_cpp\core\nw_data_res.h" />
-    <ClInclude Include="src_cpp\sys\nw_ent_sys.h" />
-    <ClInclude Include="src_cpp\glib\nw_gbuffer.h" />
-    <ClInclude Include="src_cpp\lib\nw_event.h" />
-    <ClInclude Include="src_cpp\lib\nw_singleton.h" />
     <ClInclude Include="src_cpp\ecs\nw_collider_cmp.h" />
     <ClInclude Include="src_cpp\ecs\nw_entity.h" />
     <ClInclude Include="src_cpp\ecs\nw_entity_cmp.h" />
@@ -566,13 +564,14 @@
     <ClInclude Include="src_cpp\ecs\nw_script_cmp.h" />
     <ClInclude Include="src_cpp\ecs\nw_transform_cmp.h" />
     <ClInclude Include="src_cpp\ecs_decl.hpp" />
+    <ClInclude Include="src_cpp\glib\control\nw_gcamera_lad.h" />
+    <ClInclude Include="src_cpp\glib\control\nw_graph_api.h" />
     <ClInclude Include="src_cpp\glib\control\nw_graph_engine.h" />
     <ClInclude Include="src_cpp\glib\control\nw_graph_state.h" />
-    <ClInclude Include="src_cpp\glib\control\nw_graph_api.h" />
-    <ClInclude Include="src_cpp\glib\control\nw_gcamera_lad.h" />
     <ClInclude Include="src_cpp\glib\gcontext\nw_framebuf.h" />
     <ClInclude Include="src_cpp\glib\gcontext\nw_gcontext.h" />
     <ClInclude Include="src_cpp\glib\gcontext\nw_window.h" />
+    <ClInclude Include="src_cpp\glib\nw_gbuffer.h" />
     <ClInclude Include="src_cpp\glib\nw_glib_core.h" />
     <ClInclude Include="src_cpp\glib\render\nw_drawable.h" />
     <ClInclude Include="src_cpp\glib\render\nw_texture.h" />
@@ -587,9 +586,11 @@
     <ClInclude Include="src_cpp\gui_decl.hpp" />
     <ClInclude Include="src_cpp\lib\nw_algorithm.h" />
     <ClInclude Include="src_cpp\lib\nw_container.h" />
+    <ClInclude Include="src_cpp\lib\nw_event.h" />
     <ClInclude Include="src_cpp\lib\nw_io_lib.h" />
     <ClInclude Include="src_cpp\lib\nw_math.h" />
     <ClInclude Include="src_cpp\lib\nw_memory.h" />
+    <ClInclude Include="src_cpp\lib\nw_singleton.h" />
     <ClInclude Include="src_cpp\lib\nw_string.h" />
     <ClInclude Include="src_cpp\lib\nw_time.h" />
     <ClInclude Include="src_cpp\lib\utils\math_matrix.h" />
@@ -608,6 +609,7 @@
     <ClInclude Include="src_cpp\nw_pch.hpp" />
     <ClInclude Include="src_cpp\phys\nw_phys_engine.h" />
     <ClInclude Include="src_cpp\sys\nw_data_sys.h" />
+    <ClInclude Include="src_cpp\sys\nw_ent_sys.h" />
     <ClInclude Include="src_cpp\sys\nw_ev_sys.h" />
     <ClInclude Include="src_cpp\sys\nw_gui_sys.h" />
     <ClInclude Include="src_cpp\sys\nw_io_sys.h" />
@@ -627,10 +629,10 @@
     <ClCompile Include="src_cpp\ecs\nw_scene.cpp" />
     <ClCompile Include="src_cpp\ecs\nw_script_cmp.cpp" />
     <ClCompile Include="src_cpp\ecs\nw_transform_cmp.cpp" />
+    <ClCompile Include="src_cpp\glib\control\nw_gcamera_lad.cpp" />
+    <ClCompile Include="src_cpp\glib\control\nw_graph_api.cpp" />
     <ClCompile Include="src_cpp\glib\control\nw_graph_engine.cpp" />
     <ClCompile Include="src_cpp\glib\control\nw_graph_state.cpp" />
-    <ClCompile Include="src_cpp\glib\control\nw_graph_api.cpp" />
-    <ClCompile Include="src_cpp\glib\control\nw_gcamera_lad.cpp" />
     <ClCompile Include="src_cpp\glib\gcontext\nw_framebuf.cpp" />
     <ClCompile Include="src_cpp\glib\gcontext\nw_gcontext.cpp" />
     <ClCompile Include="src_cpp\glib\gcontext\nw_window.cpp" />
@@ -1362,16 +1364,12 @@
     <None Include="ext\glm\doc\api\search\typedefs_b.html" />
     <None Include="ext\glm\doc\api\search\typedefs_c.html" />
     <None Include="ext\glm\doc\api\search\typedefs_d.html" />
-    <None Include="src_glsl\batch_2d.glsl" />
-    <None Include="src_glsl\batch_3d.glsl" />
-    <None Include="src_glsl\batch_gizmos.glsl" />
-    <None Include="src_glsl\batch_gui.glsl" />
-    <None Include="src_glsl\batch_lines.glsl" />
-    <None Include="src_glsl\batch_points.glsl" />
-    <None Include="src_glsl\core_2d.glsl" />
-    <None Include="src_glsl\core_3d.glsl" />
-    <None Include="src_glsl\display_img.glsl" />
-    <None Include="src_glsl\tile_2d.glsl" />
+    <None Include="src_glsl\shd_3d_batch.glsl" />
+    <None Include="src_glsl\shd_2d_batch.glsl" />
+    <None Include="src_glsl\shd_3d_mesh.glsl" />
+    <None Include="src_glsl\shd_2d_display.glsl" />
+    <None Include="src_glsl\shd_2d_tile.glsl" />
+    <None Include="src_glsl\shd_void.glsl" />
     <None Include="src_lua\estates\est_default.lua" />
   </ItemGroup>
   <ItemGroup>

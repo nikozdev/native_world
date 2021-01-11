@@ -16,7 +16,7 @@ namespace NW
 		m_unRId(0), m_shdType(sdType) {
 		DataSys::AddDataRes<ASubShader>(this);
 	}
-	ASubShader::~ASubShader() { DataSys::RemoveDataRes<ASubShader>(GetName()); }
+	ASubShader::~ASubShader() { DataSys::RmvDataRes<ASubShader>(GetName()); }
 	ASubShader* ASubShader::Create(const char* strName, ShaderTypes sdType)
 	{
 		ASubShader* pSubShader = nullptr;
@@ -36,7 +36,7 @@ namespace NW
 	AShader::AShader(const char* strName) :
 		ACodeChunk(strName),
 		m_unRId(0) { DataSys::AddDataRes<AShader>(this); }
-	AShader::~AShader() { DataSys::RemoveDataRes<AShader>(GetName()); }
+	AShader::~AShader() { DataSys::RmvDataRes<AShader>(GetName()); }
 
 	AShader* AShader::Create(const char* strName)
 	{
@@ -141,12 +141,13 @@ namespace NW
 					MAKE_BUF_ELEM(strToken == "vec2", SDT_FLOAT32, 2,		m_pOverShader->m_vtxLayout.AddElement)
 					MAKE_BUF_ELEM(strToken == "vec3", SDT_FLOAT32, 3,		m_pOverShader->m_vtxLayout.AddElement)
 					MAKE_BUF_ELEM(strToken == "vec4", SDT_FLOAT32, 4,		m_pOverShader->m_vtxLayout.AddElement)
-					if (strToken == "mat4") {
+					if ((nCurr = strToken.find("mat")) != -1) {
 						strCodeStream >> strName;
-						m_pOverShader->m_vtxLayout.AddElement(BufferElement{&strName[0], SDT_FLOAT32, 4, false});
-						m_pOverShader->m_vtxLayout.AddElement(BufferElement{&strName[0], SDT_FLOAT32, 4, false});
-						m_pOverShader->m_vtxLayout.AddElement(BufferElement{&strName[0], SDT_FLOAT32, 4, false});
-						m_pOverShader->m_vtxLayout.AddElement(BufferElement{&strName[0], SDT_FLOAT32, 4, false});
+						if (sscanf(&strToken[0], "mat%d", &nCurr) > 0) {
+							for (UInt8 ei = 0; ei < nCurr; ei++) {
+								m_pOverShader->m_vtxLayout.AddElement(BufferElement{ &strName[0], SDT_FLOAT32, static_cast<UInt32>(nCurr), false });
+							}
+						}
 					}
 				}
 				else if (strToken == "uniform") {	// uniform %name {%elements};

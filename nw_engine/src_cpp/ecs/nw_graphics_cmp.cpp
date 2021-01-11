@@ -52,7 +52,7 @@ namespace NW
 		pGState = GraphEngine::Get().GetState(Scene::Get().GetGraphState()->GetName());
 
 		m_TileMap.pGMtl = DataSys::GetDataRes<GMaterial>("gmt_default_tile");
-		m_TileMap.SetTilemap(DataSys::GetDataRes<ATexture2d>("spt_nw_hero"));
+		m_TileMap.pTileMap = DataSys::GetDataRes<ATexture2d>("spt_nw_hero");
 	}
 	TileMapCmp::~TileMapCmp() {}
 

@@ -16,16 +16,13 @@ namespace NW
 	ATexture::ATexture(const char* strName) :
 		ADataRes(strName),
 		m_strName(strName), m_unRId(0), m_unTexSlot(0),
-		m_TexInfo(TextureInfo()), m_ImgInfo(ImageInfo())
-	{
-		DataSys::AddDataRes<ATexture>(this);
-	}
-	ATexture::~ATexture() { DataSys::RemoveDataRes<ATexture>(GetName()); }
+		m_TexInfo(TextureInfo()), m_ImgInfo(ImageInfo()) { DataSys::AddDataRes<ATexture>(this); }
+	ATexture::~ATexture() { DataSys::RmvDataRes<ATexture>(GetName()); }
 
 	// --==<ATexture1d>==--
 	ATexture1d::ATexture1d(const char* strName) :
 	ATexture(strName) { DataSys::AddDataRes<ATexture1d>(this); }
-	ATexture1d::~ATexture1d() { DataSys::RemoveDataRes<ATexture1d>(GetName()); }
+	ATexture1d::~ATexture1d() { DataSys::RmvDataRes<ATexture1d>(GetName()); }
 
 	bool ATexture1d::SaveF(const char* strFPath) { return true; }
 	bool ATexture1d::LoadF(const char* strFPath)
@@ -61,7 +58,7 @@ namespace NW
 	// --==<ATexture2d>==--
 	ATexture2d::ATexture2d(const char* strName) :
 		ATexture(strName) { DataSys::AddDataRes<ATexture2d>(this); }
-	ATexture2d::~ATexture2d() { DataSys::RemoveDataRes<ATexture2d>(GetName()); }
+	ATexture2d::~ATexture2d() { DataSys::RmvDataRes<ATexture2d>(GetName()); }
 
 	void ATexture2d::SetSubTexs(const DArray<SubTexture2d>& rSubTexs) {
 		m_SubTexs = rSubTexs;
@@ -112,7 +109,7 @@ namespace NW
 	// --==<ATexture3d>==--
 	ATexture3d::ATexture3d(const char* strName) :
 		ATexture(strName) { DataSys::AddDataRes<ATexture3d>(this); }
-	ATexture3d::~ATexture3d() { DataSys::RemoveDataRes<ATexture3d>(GetName()); }
+	ATexture3d::~ATexture3d() { DataSys::RmvDataRes<ATexture3d>(GetName()); }
 
 	bool ATexture3d::SaveF(const char* strFPath) { return true; }
 	bool ATexture3d::LoadF(const char* strFPath)

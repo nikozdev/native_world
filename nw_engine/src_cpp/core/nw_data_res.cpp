@@ -24,7 +24,7 @@ namespace NW
 	ADataRes::~ADataRes()
 	{
 		s_IdStack.SetFreeId(m_unId);
-		DataSys::RemoveADataRes(GetId());
+		DataSys::RmvADataRes(GetId());
 	}
 	void ADataRes::SetName(const char* strName) {
 		m_strName = strName;

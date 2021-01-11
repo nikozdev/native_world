@@ -36,6 +36,7 @@ namespace NW
 	protected:
 		UInt32 m_unId;
 		String m_strName;
+		String m_strDir;
 
 		static IdStack s_IdStack;
 	};

@@ -35,6 +35,7 @@ namespace NW
 		V2i xyTexCrd = { 0, 0 };
 		V2i whTexSize = { 1, 1 };
 		ATexture2d* pOverTex = nullptr;
+		V2i whOverTexSize = { 0, 0 };
 	public:
 		// --getters
 		inline V2f GetTexCoord_0_1() const {
@@ -46,7 +47,6 @@ namespace NW
 				static_cast<float>(whTexSize.y) / static_cast<float>(whOverTexSize.y) };
 		}
 	private:
-		V2i whOverTexSize = { 0, 0 };
 	};
 	/// SubTexture3d struct
 	struct NW_API SubTexture3d

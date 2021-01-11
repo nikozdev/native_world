@@ -32,7 +32,6 @@ namespace NW
 		virtual inline const void* GetVData() const = 0;
 		virtual inline UInt32 GetVDataCount() const = 0;
 		virtual inline Size GetVDataSize() const = 0;
-		virtual inline UInt32 GetVertexSize() const = 0;
 		
 		virtual inline const UInt32* GetIData() const = 0;
 		virtual inline Size GetIDataSize() = 0;
@@ -76,8 +75,7 @@ namespace NW
 		// --getters
 		virtual inline const void* GetVData() const override { return &vtxData[0]; }
 		virtual inline UInt32 GetVDataCount() const override { return vtxData.size(); };
-		virtual inline Size GetVDataSize() const override { return GetVDataCount() * GetVertexSize(); }
-		virtual inline UInt32 GetVertexSize() const override { return sizeof(VertexBatch1d); }
+		virtual inline Size GetVDataSize() const override { return vtxData.size() * sizeof(VertexBatch3d); }
 		
 		virtual inline const UInt32* GetIData() const override { return &idxData[0]; }
 		virtual inline UInt32 GetIDataCount() const override { return idxData.size(); }
@@ -106,8 +104,7 @@ namespace NW
 		// --getters
 		virtual inline const void* GetVData() const override { return &vtxData[0]; }
 		virtual inline UInt32 GetVDataCount() const override { return vtxData.size(); };
-		virtual inline Size GetVDataSize() const override { return GetVDataCount() * GetVertexSize(); }
-		virtual inline UInt32 GetVertexSize() const override { return sizeof(VertexBatch1d); }
+		virtual inline Size GetVDataSize() const override { return vtxData.size() * sizeof(VertexBatch1d); }
 		
 		virtual inline const UInt32* GetIData() const override { return &idxData[0]; }
 		virtual inline UInt32 GetIDataCount() const override { return idxData.size(); }
@@ -132,8 +129,7 @@ namespace NW
 		// --getters
 		virtual inline const void* GetVData() const override { return &vtxData[0]; }
 		virtual inline UInt32 GetVDataCount() const override { return vtxData.size(); };
-		virtual inline Size GetVDataSize() const override { return GetVDataCount() * GetVertexSize(); }
-		virtual inline UInt32 GetVertexSize() const override { return sizeof(VertexBatch1d); }
+		virtual inline Size GetVDataSize() const override { return vtxData.size() * sizeof(VertexBatch3d); }
 		
 		virtual inline const UInt32* GetIData() const override { return &idxData[0]; }
 		virtual inline UInt32 GetIDataCount() const override { return idxData.size(); }
@@ -162,8 +158,7 @@ namespace NW
 		// --getters
 		virtual inline const void* GetVData() const override { return &vtxData[0]; }
 		virtual inline UInt32 GetVDataCount() const override { return 3; };
-		virtual inline Size GetVDataSize() const override { return GetVDataCount() * GetVertexSize(); }
-		virtual inline UInt32 GetVertexSize() const override { return sizeof(VertexBatch3d); }
+		virtual inline Size GetVDataSize() const override { return 3 * sizeof(VertexBatch3d); }
 		
 		virtual inline const UInt32* GetIData() const override { return &idxData[0]; }
 		virtual inline UInt32 GetIDataCount() const override { return 3; }
@@ -189,8 +184,7 @@ namespace NW
 		// --getters
 		virtual inline const void* GetVData() const override { return &vtxData[0]; }
 		virtual inline UInt32 GetVDataCount() const override { return 4; };
-		virtual inline Size GetVDataSize() const override { return GetVDataCount() * GetVertexSize(); }
-		virtual inline UInt32 GetVertexSize() const override { return sizeof(VertexBatch3d); }
+		virtual inline Size GetVDataSize() const override { return 4 * sizeof(VertexBatch3d); }
 		
 		virtual inline const UInt32* GetIData() const override { return &idxData[0]; }
 		virtual inline UInt32 GetIDataCount() const override { return 6; }
@@ -204,6 +198,11 @@ namespace NW
 		UInt32 idxData[6];
 		V2f vtxCrds[4];
 	};
+	struct NW_API TileSprite
+	{
+		V2i xyIdx = { 0, 0 };
+		SubTexture2d SubTex;
+	};
 	/// TileMapSprite struct
 	/// --It is assumed to be used with the special geometry shader
 	/// --Here is data of triangles with calculated texture coordinates for tiles
@@ -212,34 +211,27 @@ namespace NW
 	struct NW_API TileMapSprite : public ADrawable
 	{
 	public:
+		V2f whTileSize;
+		V4f xywhTilePadding;
+		ATexture2d* pTileMap;
+		DArray<TileSprite> Tiles;
+	public:
 		TileMapSprite();
 
 		// --getters
 		virtual inline const void* GetVData() const override { return &vtxData[0]; }
 		virtual inline UInt32 GetVDataCount() const override { return vtxData.size(); };
-		virtual inline Size GetVDataSize() const override { return GetVDataCount() * GetVertexSize(); }
-		virtual inline UInt32 GetVertexSize() const override { return sizeof(VertexBatch3d); }
+		virtual inline Size GetVDataSize() const override { return vtxData.size() * sizeof(VertexBatch3d); }
 
 		virtual inline const UInt32* GetIData() const override { return &idxData[0]; }
 		virtual inline UInt32 GetIDataCount() const override { return idxData.size(); }
 		virtual inline Size GetIDataSize() override { return GetIDataCount() * sizeof(UInt32); }
-
-		inline ATexture2d* GetTileMap() { return pTileMap; }
-		inline const V2i& GetTileSize() const { return whTileSize; }
-		inline const V4i& GetTilePadding() const { return xywhTilePadding; }
-		// --setters
-		void SetTilemap(ATexture2d* pTex);
-		void SetTileSize(const V2i& whSize);
-		void SetTilePadding(const V4i& xywhPadding);
 
 		// --core_methods
 		virtual void UpdateVData() override;
 		virtual void UpdateIData() override;
 		void UpdateTileData();
 	private:
-		ATexture2d* pTileMap;
-		V2i whTileSize;
-		V4i xywhTilePadding;
 		V2i xyTileCount;
 		V2i whWholeTileSize;
 		DArray<VertexBatch3d> vtxData;

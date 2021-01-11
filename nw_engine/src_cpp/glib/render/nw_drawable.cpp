@@ -216,13 +216,6 @@ namespace NW
 		UpdateTileData();
 	}
 
-
-	void TileMapSprite::SetTilemap(ATexture2d* pTex) { this->pTileMap = pTex; }
-
-	// --setters
-	void TileMapSprite::SetTileSize(const V2i& whSize) { whTileSize = whSize; }
-	void TileMapSprite::SetTilePadding(const V4i& xywhPadding) { xywhTilePadding = xywhPadding; }
-
 	// --core_methods
 	void TileMapSprite::UpdateVData() {
 		for (UInt8 vti = 0; vti < vtxData.size() / 4; vti++) {
