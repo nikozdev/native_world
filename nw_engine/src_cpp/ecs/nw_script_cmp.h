@@ -2,7 +2,7 @@
 #define ECS_SCRIPT_COMPONENT_H
 #include <ecs/nw_entity_cmp.h>
 
-#include <lib/utils/nw_code_chunk.h>
+#include <nwlib/nw_code_chunk.h>
 
 #include <nw_decl.hpp>
 

@@ -13,66 +13,79 @@ namespace NW
 	/// Description
 	/// -- The main unit of the scene
 	/// -- Owns component references of component system
-	class NW_API AEntity
+	class NW_API AEntity : public ADataRes
 	{
-		using CmpTypeId = std::type_index;
-		using ACmps = HashMap<CmpTypeId, AEntityCmp*>;
+		using ACmps = HashMap<TypeInfo, AEntityCmp*>;
+		using Ents = HashMap<UInt32, AEntity>;
 		using RefEnts = HashMap<UInt32, AEntity*>;
+		friend class AEntityCmp;
 	public:
 		AEntity();
-		AEntity(UInt32 unId);
-		explicit AEntity(const AEntity& rEnt);
+		AEntity(const AEntity& rCpy);
 		virtual ~AEntity();
 
 		// --getters
-		inline UInt32 GetId() { return m_unId; }
-		inline const char* GetName() { return &m_strName[0]; }
-
 		inline AEntity* GetOverEnt() { return m_pOverEnt; }
 		inline RefEnts& GetSubEnts() { return m_SubEnts; }
-		inline ACmps& GetAComponents() { return m_ACmps; }
-		inline AEntity* GetSubEnt(UInt32 unId) { return m_SubEnts.find(unId) == m_SubEnts.end() ? nullptr : m_SubEnts[unId]; }
-		template<class CmpType>
-		inline CmpType* GetAComponent(CmpTypeId TypeIndex) {
-			ACmps::iterator itCmp = m_ACmps.find(TypeIndex);
-			return itCmp == m_ACmps.end() ? nullptr : static_cast<CmpType*>(itCmp->second);
-		}
-		template<class CmpType>
-		inline CmpType* GetComponent() {
-			ACmps::iterator itCmp = m_ACmps.find(CmpTypeId(typeid(CmpType)));
-			return itCmp == m_ACmps.end() ? nullptr : dynamic_cast<CmpType*>(itCmp->second);
-		}
+		inline ACmps& GetACmps(const TypeInfo& rTypeInfo);
+		inline AEntityCmp* GetACmp(const TypeInfo& rTypeInfo);
+		template <class CmpType> inline CmpType* GetCmp();
 		// --setters
-		void SetOverEnt(AEntity* pOverEnt);
 		void SetEnabled(bool bIsEnabled);
-		void AddSubEnt(AEntity* pSubEnt);
-		void RemoveSubEnt(UInt32 unId);
-		void AddAComponent(AEntityCmp* pCmp);
-		void RemoveAComponent(CmpTypeId TypeIndex);
-		void DestroyAComponent(CmpTypeId TypeIndex);
-		template<class CmpType, typename ...Args>
-		inline CmpType* CreateComponent(Args ...Arguments) {
-			if (HasComponent<CmpType>()) return nullptr;
-			return MemSys::NewT<CmpType>(*this, std::forward<Args>(Arguments)...);
-		}
-		template<class CmpType> inline void DestroyComponent() { DestroyAComponent(CmpTypeId(typeid(CmpType))); }
 		void SetName(const char* strName);
-		// -- Predicates
+		void SetOverEnt(AEntity* pEnt);
+		void AddSubEnt(AEntity* pEnt);
+		void RmvSubEnt(UInt32 unId);
+		// --predicates
 		inline bool IsEnabled() { return m_bIsEnabled; }
-		inline bool HasSubEnt(UInt32 unId) { return m_SubEnts.find(unId) != m_SubEnts.end(); }
-		inline bool HasSubEnt(AEntity* pEntity) { return (pEntity->GetOverEnt() == this); }
-		inline bool HasAComponent(CmpTypeId TypeIndex) { return m_ACmps.find(TypeIndex) != m_ACmps.end(); }
-		template <class CmpType> inline bool HasComponent() { return m_ACmps.find(CmpTypeId(typeid(CmpType))) != m_ACmps.end(); }
-	private:
-		UInt32 m_unId;
-		String m_strName;
-		bool m_bIsEnabled;
-		bool m_bIsDestroyed;
+		inline bool HasACmp(const TypeInfo& rTypeInfo) { return GetACmp(rTypeInfo) != nullptr; }
+		template <class CmpType>
+		inline bool HasCmp() { return GetCmp<CmpType>() != nullptr; }
 
+		// --core_methods
+		inline void AddACmp(AEntityCmp* pCmp);
+		inline void RmvACmp(const TypeInfo& rTypeInfo);
+		template <class CmpType, typename ...Args>
+		inline CmpType* AddCmp(Args... Arguments);
+		template <class CmpType>
+		inline void RmvCmp();
+		// --data_methods
+		virtual bool LoadF(const char* strName) override { return true; }
+		virtual bool SaveF(const char* strName) override { return true; }
+	private:
+		bool m_bIsEnabled;
+		ACmps m_ACmps;
 		AEntity* m_pOverEnt;
 		RefEnts m_SubEnts;
-
-		ACmps m_ACmps;
 	};
+	inline void AEntity::AddACmp(AEntityCmp* pCmp) {
+		if (pCmp == nullptr) { return; }
+		if (HasACmp(pCmp->GetTypeInfo())) { return; }
+		m_ACmps[pCmp->GetTypeInfo()] = pCmp;
+	}
+	inline void AEntity::RmvACmp(const TypeInfo& rTypeInfo) { m_ACmps.erase(rTypeInfo); }
+
+	inline AEntityCmp* AEntity::GetACmp(const TypeInfo& rTypeInfo) {
+		return m_ACmps.find(rTypeInfo) == m_ACmps.end() ? nullptr : m_ACmps[rTypeInfo];
+	}
+	template <class CmpType>
+	inline CmpType* AEntity::GetCmp() {
+		return m_ACmps.find(TypeInfo(typeid(CmpType))) == m_ACmps.end() ?
+			nullptr : static_cast<CmpType*>(m_ACmps[TypeInfo(typeid(CmpType))]);
+	}
+	template <class CmpType, typename ...Args>
+	inline CmpType* AEntity::AddCmp(Args... Arguments) {
+		if (HasCmp<CmpType>()) { return nullptr; }
+		CmpType* pCmp = MemSys::NewT<CmpType>(*this, std::forward<Args>()...);
+		m_ACmps[pCmp->GetTypeInfo()] = pCmp;
+		return pCmp;
+	}
+	template <class CmpType>
+	inline void AEntity::RmvCmp() {
+		ACmps::iterator& itCmp = m_ACmps.find(TypeInfo(typeid(CmpType)));
+		if (itCmp == m_ACmps.end()) { return; }
+		MemSys::DelT<CmpType>(itCmp->second);
+		m_ACmps.erase(itCmp);
+	}
 }
 #endif	// ECS_AENTITY_H

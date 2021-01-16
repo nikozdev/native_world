@@ -20,9 +20,9 @@ struct lua_State;
 
 namespace NW
 {
-	class NW_API LuaVM;
+	class NW_API LuaEngine;
 	
-	struct NW_API LuaVMInfo;
+	struct NW_API LuaEngineInfo;
 	struct NW_API LuaRegFunc;
 	struct NW_API LuaRegTable;
 

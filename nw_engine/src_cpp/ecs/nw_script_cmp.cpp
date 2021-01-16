@@ -1,9 +1,11 @@
 #include <nw_pch.hpp>
-#include <ecs/nw_scene.h>
+#include "nw_script_cmp.h"
+
+#include <ecs/nw_entity.h>
 
 #include <core/nw_core_engine.h>
 #include <core/nw_core_state.h>
-#include <lua/nw_lua_vm.h>
+#include <lua/nw_lua_engine.h>
 
 #include <lua.hpp>
 
@@ -35,17 +37,17 @@ namespace NW
 	void LuaScriptCmp::OnUpdate()
 	{
 		sprintf(&m_strBuf[0], "%s_update\0", &m_Script.GetName()[0]);
-		LuaVM::Get().CallFunctionGlb(&m_strBuf[0]);
+		LuaEngine::Get().CallFunctionGlb(&m_strBuf[0]);
 	}
 	void LuaScriptCmp::OnEnable()
 	{
 		sprintf(&m_strBuf[0], "%s_on_enable\0", &m_Script.GetName()[0]);
-		LuaVM::Get().CallFunctionGlb(&m_strBuf[0]);
+		LuaEngine::Get().CallFunctionGlb(&m_strBuf[0]);
 	}
 	void LuaScriptCmp::OnDisable()
 	{
 		sprintf(&m_strBuf[0], "%s_on_disable\0", &m_Script.GetName()[0]);
-		LuaVM::Get().CallFunctionGlb(&m_strBuf[0]);
+		LuaEngine::Get().CallFunctionGlb(&m_strBuf[0]);
 	}
 	// --==</Interface Methods>==--
 }

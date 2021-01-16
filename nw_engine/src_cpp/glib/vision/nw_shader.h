@@ -4,10 +4,7 @@
 #include <glib/nw_glib_core.h>
 #include <glib/nw_gbuffer.h>
 
-#include <lib/utils/nw_code_chunk.h>
-
-#include <lib/utils/math_vector.h>
-#include <lib/utils/math_matrix.h>
+#include <nwlib/nw_code_chunk.h>
 
 #if (defined NW_GRAPHICS)
 namespace NW
@@ -194,70 +191,4 @@ namespace NW
 	};
 }
 #endif // NW_GRAPHICS
-#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-strNamespace CN
-{
-	/// Shader class - handler for shader program OpenGL
-	/// Interface:
-	/// -> Create ->
-	/// -> Set the source code for both shader types: vertex and fragment shader
-	/// -> Load the program
-	/// Description
-	/// -- Instead of own source code, shader programm has shader objects with that code
-	class NW_API ShaderCout : public AShader
-	{
-	public: // Interface Methods
-		ShaderCout(const String& strName);
-		~ShaderCout();
-
-		// Getters
-		virtual UInt GetRenderId() const { return m_unRId; }
-		virtual const String& GetstrName() const override
-		{
-			return m_strName;
-		}
-		virtual inline const String& GetSource() const override
-		{
-			return m_strSource;
-		}
-		// Setters
-		virtual void SetstrName(const String& strName) { m_strName = strName; }
-		virtual void SetSource(const String& shaderCode) {
-			if (m_strSource != "") Reset();
-			m_strSource = shaderCode;
-		}
-
-		// Interface Methods
-		virtual void Enable() override;
-		virtual void Disable() override;
-
-		virtual bool Setup() override;
-		virtual void Reset() override;
-
-		// --Attributes&Settings
-		void SetBool(const char* strName, bool value) const override;
-		void SetInt(const char* strName, int value) const override;
-		void SetFloat(const char* strName, float value) const override;
-
-		void SetV2f(const char* strName, const V2f& value) const override;
-		void SetV3f(const char* strName, const V3f& value) const override;
-		void SetV4f(const char* strName, const V4f& value) const override;
-
-		void SetM4f(const char* strName, const Mat4f& value) const override;
-
-		// Light Sources
-		virtual void SetLight(const String& strName, const DirectLight3d& drLight) const override;
-		virtual void SetLight(const String& strName, const PointLight3d& ptLight) const override;
-		virtual void SetLight(const String& strName, const SpotLight3d& stLight) const override;
-		// --Attributes&Settings
-	private: // Implementation Attributes
-		UInt m_unRId;
-		String m_strName;
-		String m_strSource;
-	private: // Implementation Methods
-		bool SourceCodeProcess();
-	};
-}
-#endif // NW_GRAPHICS
-
 #endif // NW_ASHADER_H

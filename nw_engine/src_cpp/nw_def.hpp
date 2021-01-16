@@ -51,6 +51,8 @@ namespace NW
 	using List2 = std::list<ValType>;
 	template <typename KeyType, typename ValType>
 	using HashMap = std::unordered_map<KeyType, ValType>;
+	// --info
+	using TypeInfo = std::type_index;
 	// --platform
 #if defined NW_PLATFORM_WINDOWS
 	using V2xy = COORD;
@@ -83,175 +85,7 @@ typedef double GLdouble;
 typedef double GLclampd;
 #endif // NW_GRAPHICS
 // --==</alias>==--
-
-#if (NW_WINDOW & NW_WINDOW_CONSOLE)
-// --==<keyboard_NW>==--
-#define NW_KEY_NONE					0
-// Printable keys
-#define NW_KEY_SPACE_32				32
-#define NW_KEY_APOSTROPHE_39		39
-#define NW_KEY_COMMA_44				44
-#define NW_KEY_MINUS_45				45
-#define NW_KEY_PERIOD_46			46
-#define NW_KEY_SLASH_47				47
-#define NW_KEY_0_48					48
-#define NW_KEY_1_49					49
-#define NW_KEY_2_50					50
-#define NW_KEY_3_51					51
-#define NW_KEY_4_52					52
-#define NW_KEY_5_53					53
-#define NW_KEY_6_54					54
-#define NW_KEY_7_55					55
-#define NW_KEY_8_56					56
-#define NW_KEY_9_57					57
-#define NW_KEY_SEMICOLON_59			59
-#define NW_KEY_EQUAL_61				61
-// Alphabet_upper_case
-#define NW_KEY_A_65					65
-#define NW_KEY_B_66					66
-#define NW_KEY_C_67					67
-#define NW_KEY_D_68					68
-#define NW_KEY_E_69					69
-#define NW_KEY_F_70					70
-#define NW_KEY_G_71					71
-#define NW_KEY_H_72					72
-#define NW_KEY_I_73					73
-#define NW_KEY_J_74					74
-#define NW_KEY_K_75					75
-#define NW_KEY_L_76					76
-#define NW_KEY_M_77					77
-#define NW_KEY_N_78					78
-#define NW_KEY_O_79					79
-#define NW_KEY_P_80					80
-#define NW_KEY_Q_81					81
-#define NW_KEY_R_82					82
-#define NW_KEY_S_83					83
-#define NW_KEY_T_84					84
-#define NW_KEY_U_85					85
-#define NW_KEY_V_86					86
-#define NW_KEY_W_87					87
-#define NW_KEY_X_88					88
-#define NW_KEY_Y_89					89
-#define NW_KEY_Z_90					90
-// Additional
-#define NW_KEY_LEFT_BRACKET_91		91
-#define NW_KEY_BACKSLASH_92			92
-#define NW_KEY_RIGHT_BRACKET_93		93
-// Alphabet_lower_case
-#define NW_KEY_a_97					97
-#define NW_KEY_b_98					98
-#define NW_KEY_c_99					99
-#define NW_KEY_d_100				100
-#define NW_KEY_e_101				101
-#define NW_KEY_f_102				102
-#define NW_KEY_g_103				103
-#define NW_KEY_h_104				104
-#define NW_KEY_i_105				105
-#define NW_KEY_j_106				106
-#define NW_KEY_k_107				107
-#define NW_KEY_l_108				108
-#define NW_KEY_m_109				109
-#define NW_KEY_n_110				110
-#define NW_KEY_o_111				111
-#define NW_KEY_p_112				112
-#define NW_KEY_q_113				113
-#define NW_KEY_r_114				114
-#define NW_KEY_s_115				115
-#define NW_KEY_t_116				116
-#define NW_KEY_u_117				117
-#define NW_KEY_v_118				118
-#define NW_KEY_w_119				119
-#define NW_KEY_x_120				120
-#define NW_KEY_y_121				121
-#define NW_KEY_z_122				122
-// Functional keys
-#define NW_KEY_ESCAPE_27			27
-#define NW_KEY_BACKSPACE_8			8
-#define NW_KEY_HTAB_9				9
-#define NW_KEY_ENTER_10				10
-#define NW_KEY_HTAB_11				11
-#define NW_KEY_INS_45				45            
-#define NW_KEY_DEL_46				46
-#define NW_KEY_RIGHT_38				39
-#define NW_KEY_LEFT_37				37
-#define NW_KEY_DOWN_40				40
-#define NW_KEY_UP_38				38
-#define NW_KEY_F1					''
-#define NW_KEY_F2					''
-#define NW_KEY_F3					''
-#define NW_KEY_F4					''
-#define NW_KEY_F5					''
-#define NW_KEY_F6					''
-#define NW_KEY_F7					''
-#define NW_KEY_F8					''
-#define NW_KEY_F9					''
-#define NW_KEY_F10					''
-#define NW_KEY_F11					''
-#define NW_KEY_F12					''
-#define NW_KEY_KP_0					''
-#define NW_KEY_KP_1					''
-#define NW_KEY_KP_2					''
-#define NW_KEY_KP_3					''
-#define NW_KEY_KP_4					''
-#define NW_KEY_KP_5					''
-#define NW_KEY_KP_6					''
-#define NW_KEY_KP_7					''
-#define NW_KEY_KP_8					''
-#define NW_KEY_KP_9					''
-#define NW_KEY_KP_DECIMAL			''
-#define NW_KEY_KP_DIVIDE			''
-#define NW_KEY_KP_MULTIPLY			''
-#define NW_KEY_KP_SUBTRACT			''
-#define NW_KEY_KP_ADD				''
-#define NW_KEY_KP_ENTER_13			''
-#define NW_KEY_KP_EQUAL				''
-#define NW_KEY_SHIFT_LEFT			16
-#define NW_KEY_SHIFT_RIGHT			16
-#define NW_KEY_CONTROL_LEFT			17
-#define NW_KEY_CONTROL_RIGHT		17
-#define NW_KEY_ALT_LEFT				18
-#define NW_KEY_ALT_RIGHT			18
-
-#define NW_KEY_LAST 256
-// --==<keyboard_NW>==--
-
-// --==<DeviceCodes_NW>==--
-#define NW_MS_BTN_0         0
-#define NW_MS_BTN_1         1
-#define NW_MS_BTN_2         2
-#define NW_MS_BTN_3         3
-#define NW_MS_BTN_4         4
-#define NW_MS_BTN_5         5
-#define NW_MS_BTN_6         6
-#define NW_MS_BTN_7         7
-#define NW_MS_BTN_LAST      NW_MS_BTN_7
-#define NW_MS_BTN_LEFT      NW_MS_BTN_0
-#define NW_MS_BTN_RIGHT     NW_MS_BTN_1
-#define NW_MS_BTN_MIDDLE    NW_MS_BTN_2
-// --==<DeviceCodes_NW>==--
-
-// --==<EventTypes_NW>==--
-#define NW_PRESS 0
-
-#define NW_MS_PRESS_LEFT 0x0001
-#define NW_MS_PRESS_RIGHT 0x0002
-#define NW_MS_PRESS_2 0x0004
-#define NW_MS_PRESS_3 0x0008
-#define NW_MS_PRESS_4 0x0010
-
-#define NW_MS_PRESS_DOUBLE 0x0002
-
-#define NW_MS_MOVED 0x0001
-#define NW_MS_WHEELED 0x0004
-#define NW_MS_HWHEELED 0x0008
-
-#define NW_KEY_EVT 0x0001
-#define NW_MS_EVT 0x0002
-#define NW_WND_SIZE_EVT 0x0004
-#define NW_MENU_EVT 0x0008
-#define NW_FOCUS_EVT 0x0010
-// --==</EventTypes_NW>==--
-#elif (NW_WINDOW & NW_WINDOW_GLFW)
+#if (NW_WINDOW & NW_WINDOW_GLFW)
 // --==<keyboard_glfw>==--
 #define GLFW_KEY_UNKNOWN            -1
 // --keys_to_print
@@ -559,393 +393,10 @@ typedef double GLclampd;
 #define NW_MS_HWHEELED 3
 // --==</events_nw>==--
 
-#elif (NW_WINDOW & NW_WINDOW_WIN)
-// --==<keyboard_win>==--
-// Functional
-#define VK_LBUTTON        0x01
-#define VK_RBUTTON        0x02
-#define VK_CANCEL         0x03
-#define VK_MBUTTON        0x04    /* NOT contiguous with L & RBUTTON */
-
-#define VK_BACK           0x08
-#define VK_TAB            0x09
-
-#define VK_ESCAPE         0x1B
-
-#define VK_CONVERT        0x1C
-#define VK_NONCONVERT     0x1D
-#define VK_ACCEPT         0x1E
-#define VK_MODECHANGE     0x1F
-
-#define VK_SPACE          0x20
-#define VK_PRIOR          0x21
-#define VK_NEXT           0x22
-#define VK_END            0x23
-#define VK_HOME           0x24
-#define VK_LEFT           0x25
-#define VK_UP             0x26
-#define VK_RIGHT          0x27
-#define VK_DOWN           0x28
-#define VK_SELECT         0x29
-#define VK_PRINT          0x2A
-#define VK_EXECUTE        0x2B
-#define VK_SNAPSHOT       0x2C
-#define VK_INSERT         0x2D
-#define VK_DELETE         0x2E
-#define VK_HELP           0x2F
-
-#define VK_LSHIFT         0xA0
-#define VK_RSHIFT         0xA1
-#define VK_LCONTROL       0xA2
-#define VK_RCONTROL       0xA3
-#define VK_LMENU          0xA4
-#define VK_RMENU          0xA5
-// Numeric
-#define VK_NUMPAD0        0x60
-#define VK_NUMPAD1        0x61
-#define VK_NUMPAD2        0x62
-#define VK_NUMPAD3        0x63
-#define VK_NUMPAD4        0x64
-#define VK_NUMPAD5        0x65
-#define VK_NUMPAD6        0x66
-#define VK_NUMPAD7        0x67
-#define VK_NUMPAD8        0x68
-#define VK_NUMPAD9        0x69
-#define VK_MULTIPLY       0x6A
-#define VK_ADD            0x6B
-#define VK_SEPARATOR      0x6C
-#define VK_SUBTRACT       0x6D
-#define VK_DECIMAL        0x6E
-#define VK_DIVIDE         0x6F
-#define VK_F1             0x70
-#define VK_F2             0x71
-#define VK_F3             0x72
-#define VK_F4             0x73
-#define VK_F5             0x74
-#define VK_F6             0x75
-#define VK_F7             0x76
-#define VK_F8             0x77
-#define VK_F9             0x78
-#define VK_F10            0x79
-#define VK_F11            0x7A
-#define VK_F12            0x7B
-#define VK_F13            0x7C
-#define VK_F14            0x7D
-#define VK_F15            0x7E
-#define VK_F16            0x7F
-#define VK_F17            0x80
-#define VK_F18            0x81
-#define VK_F19            0x82
-#define VK_F20            0x83
-#define VK_F21            0x84
-#define VK_F22            0x85
-#define VK_F23            0x86
-#define VK_F24            0x87
-// --==</keyboard_WIN>==--
-
-// --==<keyboard_NW>==--
-#define NW_KEY_NONE					'0'
-// Printable keys
-#define NW_KEY_SPACE_32				'32'
-#define NW_KEY_APOSTROPHE_39		'39'
-#define NW_KEY_COMMA_44				'44'
-#define NW_KEY_MINUS_45				'45'
-#define NW_KEY_PERIOD_46			'46'
-#define NW_KEY_SLASH_47				'47'
-#define NW_KEY_0_48					'48'
-#define NW_KEY_1_49					'49'
-#define NW_KEY_2_50					'50'
-#define NW_KEY_3_51					'51'
-#define NW_KEY_4_52					'52'
-#define NW_KEY_5_53					'53'
-#define NW_KEY_6_54					'54'
-#define NW_KEY_7_55					'55'
-#define NW_KEY_8_56					'56'
-#define NW_KEY_9_57					'57'
-#define NW_KEY_SEMICOLON_59			'59'
-#define NW_KEY_EQUAL_61				'61'
-// Alphabet_upper_case
-#define NW_KEY_A_65					'65'
-#define NW_KEY_B_66					'66'
-#define NW_KEY_C_67					'67'
-#define NW_KEY_D_68					'68'
-#define NW_KEY_E_69					'69'
-#define NW_KEY_F_70					'70'
-#define NW_KEY_G_71					'71'
-#define NW_KEY_H_72					'72'
-#define NW_KEY_I_73					'73'
-#define NW_KEY_J_74					'74'
-#define NW_KEY_K_75					'75'
-#define NW_KEY_L_76					'76'
-#define NW_KEY_M_77					'77'
-#define NW_KEY_N_78					'78'
-#define NW_KEY_O_79					'79'
-#define NW_KEY_P_80					'80'
-#define NW_KEY_Q_81					'81'
-#define NW_KEY_R_82					'82'
-#define NW_KEY_S_83					'83'
-#define NW_KEY_T_84					'84'
-#define NW_KEY_U_85					'85'
-#define NW_KEY_V_86					'86'
-#define NW_KEY_W_87					'87'
-#define NW_KEY_X_88					'88'
-#define NW_KEY_Y_89					'89'
-#define NW_KEY_Z_90					'90'
-// Additional
-#define NW_KEY_LEFT_BRACKET_91		'91'
-#define NW_KEY_BACKSLASH_92			'92'
-#define NW_KEY_RIGHT_BRACKET_93		'93'
-// Alphabet_lower_case
-#define NW_KEY_a_97					'97'
-#define NW_KEY_b_98					'98'
-#define NW_KEY_c_99					'99'
-#define NW_KEY_d_100				'100'
-#define NW_KEY_e_101				'101'
-#define NW_KEY_f_102				'102'
-#define NW_KEY_g_103				'103'
-#define NW_KEY_h_104				'104'
-#define NW_KEY_i_105				'105'
-#define NW_KEY_j_106				'106'
-#define NW_KEY_k_107				'107'
-#define NW_KEY_l_108				'108'
-#define NW_KEY_m_109				'109'
-#define NW_KEY_n_110				'110'
-#define NW_KEY_o_111				'111'
-#define NW_KEY_p_112				'112'
-#define NW_KEY_q_113				'113'
-#define NW_KEY_r_114				'114'
-#define NW_KEY_s_115				'115'
-#define NW_KEY_t_116				'116'
-#define NW_KEY_u_117				'117'
-#define NW_KEY_v_118				'118'
-#define NW_KEY_w_119				'119'
-#define NW_KEY_x_120				'120'
-#define NW_KEY_y_121				'121'
-#define NW_KEY_z_122				'122'
-// Functional keys
-#define NW_KEY_ESCAPE_27			'27'
-#define NW_KEY_BACKSPACE_8			'8'
-#define NW_KEY_VTAB_9				'9'
-#define NW_KEY_ENTER_10				'10'
-#define NW_KEY_HTAB_11				'11'
-#define NW_KEY_INSERT_45			'45'
-#define NW_KEY_DELETE_46			'46'
-#define NW_KEY_RIGHT_38				'39'
-#define NW_KEY_LEFT_37				'37'
-#define NW_KEY_DOWN_40				'40'
-#define NW_KEY_UP_38				'38'
-#define NW_KEY_F1					''
-#define NW_KEY_F2					''
-#define NW_KEY_F3					''
-#define NW_KEY_F4					''
-#define NW_KEY_F5					''
-#define NW_KEY_F6					''
-#define NW_KEY_F7					''
-#define NW_KEY_F8					''
-#define NW_KEY_F9					''
-#define NW_KEY_F10					''
-#define NW_KEY_F11					''
-#define NW_KEY_F12					''
-#define NW_KEY_KP_0					''
-#define NW_KEY_KP_1					''
-#define NW_KEY_KP_2					''
-#define NW_KEY_KP_3					''
-#define NW_KEY_KP_4					''
-#define NW_KEY_KP_5					''
-#define NW_KEY_KP_6					''
-#define NW_KEY_KP_7					''
-#define NW_KEY_KP_8					''
-#define NW_KEY_KP_9					''
-#define NW_KEY_KP_DECIMAL			''
-#define NW_KEY_KP_DIVIDE			''
-#define NW_KEY_KP_MULTIPLY			''
-#define NW_KEY_KP_SUBTRACT			''
-#define NW_KEY_KP_ADD				''
-#define NW_KEY_KP_ENTER_13				''
-#define NW_KEY_KP_EQUAL				''
-#define NW_KEY_LEFT_SHIFT			''
-#define NW_KEY_LEFT_CONTROL			''
-#define NW_KEY_LEFT_ALT				''
-#define NW_KEY_RIGHT_SHIFT			''
-#define NW_KEY_RIGHT_CONTROL		''
-#define NW_KEY_RIGHT_ALT			''
-
-#define NW_KEY_LAST 256
-// --==</keyboard_NW>==--
-
-// --==<DeviceCodes_WIN>==--
-#define FROM_LEFT_1ST_BUTTON_PRESSED 0
-#define RIGHTMOST_BUTTON_PRESSED 1
-#define FROM_LEFT_2ND_BUTTON_PRESSED 2
-#define FROM_LEFT_3RD_BUTTON_PRESSED 3
-#define FROM_LEFT_4TH_BUTTON_PRESSED 4
-// --==</DeviceCodes_WIN>==--
-
-// --==<DeviceCodes_NW>==--
-#define NW_MS_BTN_0         FROM_LEFT_1ST_BUTTON_PRESSED
-#define NW_MS_BTN_1         RIGHTMOST_BUTTON_PRESSED
-#define NW_MS_BTN_2         FROM_LEFT_2ND_BUTTON_PRESSED
-#define NW_MS_BTN_3         FROM_LEFT_3RD_BUTTON_PRESSED
-#define NW_MS_BTN_4         FROM_LEFT_4TH_BUTTON_PRESSED
-#define NW_MS_BTN_5         0
-#define NW_MS_BTN_6         0
-#define NW_MS_BTN_7         0
-#define NW_MS_BTN_LAST      NW_MS_BTN_4
-#define NW_MS_BTN_LEFT      NW_MS_BTN_0
-#define NW_MS_BTN_RIGHT     NW_MS_BTN_1
-#define NW_MS_BTN_MIDDLE    NW_MS_BTN_2
-// --==</DeviceCodes_NW>==--
-
-// --==<Events_NW>==--
-#define NW_PRESS 0
-
-#define NW_MS_PRESS_LEFT 0x0001
-#define NW_MS_PRESS_RIGHT 0x0002
-#define NW_MS_PRESS_2 0x0004
-#define NW_MS_PRESS_3 0x0008
-#define NW_MS_PRESS_4 0x0010
-
-#define NW_MS_PRESS_DOUBLE 0x0002
-
-#define NW_MS_MOVED 0x0001
-#define NW_MS_WHEELED 0x0004
-#define NW_MS_HWHEELED 0x0008
-
-#define NW_KEY_EVT 0x0001
-#define NW_MS_EVT 0x0002
-#define NW_WND_SIZE_EVT 0x0004
-#define NW_MENU_EVT 0x0008
-#define NW_FOCUS_EVT 0x0010
-// --==</Events_NW>==--
 #endif // NW_WINDOW
 
-#if (NW_GRAPHICS & NW_GRAPHICS_COUT) || (NW_GRAPHICS & NW_GRAPHICS_WIN)
-// 5th bit from right + first 4 - default system types
-// 8th bit from right + first 4 - graphics types
-// 12th bit from right + second 4 - graphics operations & modes
-// --==<types_of_data_nw>==--
-#define NW_BOOL							0b0000'0001'0001
-#define NW_SINT							0b0000'0001'0010
-#define NW_USINT						0b0000'0001'0011
-#define NW_CHAR							0b0000'0001'0100
-#define NW_UCHAR						0b0000'0001'0101
-#define NW_INT							0b0000'0001'0111
-#define NW_UINT							0b0000'0001'1000
-#define NW_FLOAT						0b0000'0001'1001
-#define NW_DOUBLE						0b0000'0001'1010
-// --==</types_of_data_nw>==--
-
-// --==<ObjectTypes_NW>==--
-#define NW_BUFFER						0b0000'1000'0001
-#define NW_BUFFER_VERTEX				0b0000'1000'0010
-#define NW_BUFFER_INDEX					0b0000'1000'0011
-#define NW_ARRAY						0b0000'1000'0100
-#define NW_ARRAY_VERTEX					0b0000'1000'0101
-// --==</ObjectTypes_NW>==--
-
-// --==<ShaderTypes_NW>==--
-#define NW_SHADER						0b0000'1000'1000
-#define NW_SHADER_PROG					0b0000'1000'1001
-#define NW_SHADER_VERTEX				0b0000'1000'1010
-#define NW_SHADER_PIXEL					0b0000'1000'1100
-// --==<ShaderTypes_NW>==--
-
-// --==<Textures_NW>==--
-// --Types
-#define NW_TEXTURE_1D					0b0000'1001'0001
-#define NW_TEXTURE_2D					0b0000'1001'0010
-#define NW_TEXTURE_3D					0b0000'1001'0100
-// --Types
-// --==</Textures_NW>==--
-
-// --==<DrawModes_NW>==--
-#define NW_POINT						0b0000'0000'0000
-#define NW_LINE							0b0000'0000'0000
-#define NW_FILL							0b0000'0000'0000
-// --Primitives
-#define NW_POINTS						0b1000'0001'0000
-#define NW_LINES						0b1000'0010'0000
-#define NW_LINE_STRIP					0b1000'0011'0000
-#define NW_LINE_LOOP					0b1000'0101'0000
-#define NW_LINE_BIT						0b1000'0110'0000
-#define NW_TRIANGLES					0b1000'0111'0000
-#define NW_TRIANGLE_STRIP				0b1000'1000'0000
-#define NW_TRIANGLE_FAN					0b1000'1001'0000
-#define NW_QUADS						0b1000'1010'0000
-#define NW_QUAD_STRIP					0b1000'1011'0000
-#define NW_POLYGON						0b1000'1100'0000
-// --Primitives
-// --==</DrawModes_NW>==--
-
-// --==<Configurations_NW>==--
-// --==</Configurations_NW>==--
-
-// --==<Expressions_NW>==--
-// --Constants
-#define NW_NONE							0b0000'0000'0000
-#define NW_FALSE						0b0000'0000'0000
-#define NW_TRUE							0b0000'0000'0001
-// --Constants
-
-// --Conditions
-#define NW_NEVER						0b0000'0000'0000
-#define NW_ALWAYS						0b0000'0000'0001
-// --Conditions
-
-// --Logic
-// --Logic
-// --==</Expressions_NW>==--
-
-// --==<Colors_NW>==--
-#define NW_COLOR						0b0000'0000'0000
-#define NW_RED							0b0000'0000'0000
-#define NW_GREEN						0b0000'0000'0000
-#define NW_BLUE							0b0000'0000'0000
-#define NW_ALPHA						0b0000'0000'0000
-#define NW_RGB							0b0000'0000'0000
-#define NW_RGBA							0b0000'0000'0000
-// --==</Colors_NW>==--
-
-// --==<GBuffers_NW>==--
-#define NW_GBUFFER_VERTEX				0b0000'0000'0001
-#define NW_GBUFFER_INDEX				0b0000'0000'0001
-// --==</GBuffers_NW>==--
-
-// --==<Buffers_NW>==--
-#define NW_BUFFER_COLOR_BIT				0b0000'0000'0001
-#define NW_BUFFER_DEPTH_BIT				0b0000'0000'0010
-// --==</Buffers_NW>==--
-
-
-// --==<DataLoadTypes_NW>==--
-#define NW_STATIC_DRAW					0b0001'1000'0000
-#define NW_STREAM_DRAW					0b0010'1000'0000
-#define NW_DYNAMIC_DRAW					0b0011'1000'0000
-// --==</DataLoadTypes_NW>==--
-
-// --==<ErrorCodes_NW>==--
-#define NW_OK							0b0000'0000'0000
-#define NW_INVALID_ENUM					0b0001'0000'0000
-#define NW_INVALID_VALUE				0b0010'0000'0000
-#define NW_INVALID_OPERATION			0b0011'0000'0000
-#define NW_STACK_OVERFLOW				0b0100'0000'0000
-#define NW_STACK_UNDERFLOW				0b0101'0000'0000
-#define NW_OUT_OF_MEMORY				0b0110'0000'0000
-
-#define NW_ERR_SHADER_LOAD_PATH			0b1000'0000'0000
-#define NW_ERR_SHADER_LOAD_FAIL			0b1001'0000'0000
-#define NW_ERR_SHADER_LINK				0b1011'0000'0000
-#define NW_ERR_SHADER_COMPILE			0b1100'0000'0000
-
-#define NW_STATUS						0b1111'0000'0000
-#define NW_COMPILE_STATUS				0b1110'0000'0000
-#define NW_LINK_STATUS					0b1100'0000'0000
-// --==</ErrorCodes_NW>==--
-
-// --==<Info_OGL>==--
-// --==</Info_NW>==--
-#elif (NW_GRAPHICS & NW_GRAPHICS_OGL)
-// --==<DataTypes_OGL>==--
+#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
+// --==<data_types_ogl>==--
 #define GL_BOOL								0x8B56
 #define GL_BYTE								0x1400
 #define GL_UNSIGNED_BYTE					0x1401
@@ -956,9 +407,11 @@ typedef double GLclampd;
 #define GL_FLOAT							0x1406
 #define GL_DOUBLE							0x140A
 #define GL_SAMPLER_1D 0x8B5D
-// --==</DataTypes_OGL>==--
+// --==</data_types_ogl>==--
 
 // --==<types_of_data_nw>==--
+#define NW_ZERO 0
+#define NW_ONE 1
 #define NW_BOOL			GL_BOOL
 #define NW_INT16		GL_SHORT
 #define NW_UINT16		GL_UNSIGNED_SHORT
@@ -977,11 +430,11 @@ typedef double GLclampd;
 #define NW_SAMPLER_1D	GL_SAMPLER_1D
 // --==</types_of_data_nw>==--
 
-// --==<DrawModes_OGL>==--
+// --==<draw_modes_ogl>==--
 #define GL_POINT 0x1B00
 #define GL_LINE 0x1B01
 #define GL_FILL 0x1B02
-// --Primitives
+// --primitives
 #define GL_POINTS 0x0000
 #define GL_LINES 0x0001
 #define GL_LINE_STRIP 0x0003
@@ -993,13 +446,13 @@ typedef double GLclampd;
 #define GL_QUADS 0x0007
 #define GL_QUAD_STRIP 0x0008
 #define GL_POLYGON 0x0009
-// --Primitives
-// --==</DrawModes_OGL>==--
-// --==<DrawModes_NW>==--
+// --==</draw_modes_ogl>==--
+
+// --==<draw_modes_nw>==--
 #define NW_POINT 0x1B00
 #define NW_LINE 0x1B01
 #define NW_FILL 0x1B02
-// --Primitives
+// --primitives
 #define NW_POINTS 0x0000
 #define NW_LINES 0x0001
 #define NW_LINE_STRIP 0x0003
@@ -1011,25 +464,24 @@ typedef double GLclampd;
 #define NW_QUADS 0x0007
 #define NW_QUAD_STRIP 0x0008
 #define NW_POLYGON 0x0009
-// --Primitives
-// --==</DrawModes_NW>==--
+// --==</draw_modes_NW>==--
 
-// --==<Planes_OGL>==--
+// --==<planes_ogl>==--
 #define GL_FRONT 0x0404
 #define GL_BACK 0x0405
 #define GL_LEFT 0x0406
 #define GL_RIGHT 0x0407
 #define GL_FRONT_AND_BACK 0x0408
-// --==</Planes_OGL>==--
-// --==<Planes_NW>==--
+// --==</planes_ogl>==--
+// --==<planes_nw>==--
 #define NW_FRONT GL_FRONT
 #define NW_BACK GL_BACK
 #define NW_LEFT GL_LEFT
 #define NW_RIGHT GL_RIGHT
 #define NW_FRONT_AND_BACK GL_FRONT_AND_BACK
-// --==</Planes_OGL>==--
+// --==</planes_nw>==--
 
-// --==<Shaders_OGL>==--
+// --==<Shaders_ogl>==--
 #define GL_SHADER 0x82E1
 #define GL_PROGRAM 0x82E2
 #define GL_FRAGMENT_SHADER 0x8B30
@@ -1040,8 +492,9 @@ typedef double GLclampd;
 #define GL_LINK_STATUS 0x8B82
 #define GL_INFO_LOG_LENGTH 0x8B84
 #define GL_ATTACHED_SHADERS 0x8B85
-// --==<Shaders_OGL>==--
-// --==<Shaders_NW>==--
+// --==<shaders_ogl>==--
+
+// --==<shaders_nw>==--
 #define NW_SHADER				GL_PROGRAM
 #define NW_SHADER_VERTEX		GL_VERTEX_SHADER
 #define NW_SHADER_GEOMETRY		GL_GEOMETRY_SHADER
@@ -1051,7 +504,7 @@ typedef double GLclampd;
 #define NW_LINK_STATUS			GL_LINK_STATUS
 // --==</Shaders_NW>==--
 
-// --==<Configurations_OGL>==--
+// --==<configurations_ogl>==--
 #define GL_SRC_COLOR 0x0300
 #define GL_ONE_MINUS_SRC_COLOR 0x0301
 #define GL_SRC_ALPHA 0x0302
@@ -1080,9 +533,14 @@ typedef double GLclampd;
 #define GL_BLEND_DST 0x0BE0
 #define GL_BLEND_SRC 0x0BE1
 #define GL_BLEND 0x0BE2
-// --==</Configurations_OGL>==--
 
-// --==<Configurations_NW>==--
+#define GL_KEEP				0x1E00
+#define GL_REPLACE			0x1E01
+#define GL_INCR				0x1E02
+#define GL_DECR				0x1E03
+// --==</configurations_ogl>==--
+
+// --==<configurations_nw>==--
 #define NW_SRC_COLOR GL_SRC_COLOR
 #define NW_ONE_MINUS_SRC_COLOR GL_ONE_MINUS_SRC_COLOR
 #define NW_SRC_ALPHA GL_SRC_ALPHA
@@ -1111,16 +569,21 @@ typedef double GLclampd;
 #define NW_BLEND_DST		GL_BLEND_DST
 #define NW_BLEND_SRC		GL_BLEND_SRC
 #define NW_BLEND			GL_BLEND
-// --==</Configurations_NW>==--
 
-// --==<Expressions_OGL>==--
-// --Constants
+#define NW_KEEP				 GL_KEEP		
+#define NW_REPLACE			 GL_REPLACE	
+#define NW_INCR				 GL_INCR		
+#define NW_DECR				 GL_DECR		
+// --==</configurations_nw>==--
+
+// --==<expressions_ogl>==--
+// --constants
 #define GL_NONE 0
 #define GL_FALSE 0
 #define GL_TRUE 1
-// --Constants
-
-// --Conditions
+#define GL_ZERO 0
+#define GL_ONE 1
+// --conditions
 #define GL_NEVER 0x0200
 #define GL_LESS 0x0201
 #define GL_EQUAL 0x0202
@@ -1129,9 +592,7 @@ typedef double GLclampd;
 #define GL_NOTEQUAL 0x0205
 #define GL_GEQUAL 0x0206
 #define GL_ALWAYS 0x0207
-// --Conditions
-
-// --Logic
+// --logic
 #define GL_AND 0x1501
 #define GL_AND_REVERSE 0x1502
 #define GL_COPY 0x1503
@@ -1146,10 +607,40 @@ typedef double GLclampd;
 #define GL_COPY_INVERTED 0x150C
 #define GL_OR_INVERTED 0x150D
 #define GL_NAND 0x150E
-// --Logic
-// --==</Expressions_OGL>==--
+// --==</expressions_ogl>==--
 
-// --==<Colors_OGL>==--
+// --==<expressions_nw>==--
+// --constants
+#define NW_NONE 0
+#define NW_FALSE 0
+#define NW_TRUE 1
+// --conditions
+#define NW_NEVER 0x0200
+#define NW_LESS 0x0201
+#define NW_EQUAL 0x0202
+#define NW_LEQUAL 0x0203
+#define NW_GREATER 0x0204
+#define NW_NOTEQUAL 0x0205
+#define NW_GEQUAL 0x0206
+#define NW_ALWAYS 0x0207
+// --logic
+#define NW_AND 0x1501
+#define NW_AND_REVERSE 0x1502
+#define NW_COPY 0x1503
+#define NW_AND_INVERTED 0x1504
+#define NW_NOOP 0x1505
+#define NW_XOR 0x1506
+#define NW_OR 0x1507
+#define NW_NOR 0x1508
+#define NW_EQUIV 0x1509
+#define NW_INVERT 0x150A
+#define NW_OR_REVERSE 0x150B
+#define NW_COPY_INVERTED 0x150C
+#define NW_OR_INVERTED 0x150D
+#define NW_NAND 0x150E
+// --==</expressions_nw>==--
+
+// --==<colors_ogl>==--
 #define GL_COLOR 0x1800
 #define GL_RED 0x1903
 #define GL_GREEN 0x1904
@@ -1158,9 +649,9 @@ typedef double GLclampd;
 #define GL_RGB 0x1907
 #define GL_RGBA 0x1908
 #define GL_RGBA8 0x8058
-// --==</Colors_OGL>==--
+// --==</colors_ogl>==--
 
-// --==<Colors_NW>==--
+// --==<colors_nw>==--
 #define NW_COLOR		GL_COLOR
 #define NW_RED			GL_RED
 #define NW_GREEN		GL_GREEN
@@ -1169,93 +660,83 @@ typedef double GLclampd;
 #define NW_RGB			GL_RGB
 #define NW_RGBA			GL_RGBA
 #define NW_RGBA8		GL_RGBA8
-// --==</Colors_NW>==--
+// --==</colors_nw>==--
 
-// --==<Textures_OGL>==--
-// --Types
+// --==<textures_ogl>==--
+// --types
 #define GL_TEXTURE_1D 0x0DE0
 #define GL_TEXTURE_2D 0x0DE1
 #define GL_TEXTURE_3D 0x0DE2
-// --Types
-
-// --Filters
+// --filters
 #define GL_TEXTURE_MAG_FILTER 0x2800
 #define GL_TEXTURE_MIN_FILTER 0x2801
 #define GL_NEAREST 0x2600
 #define GL_LINEAR 0x2601
-// --Filters
-
-// --Wrappers
+// --wrappers
 #define GL_TEXTURE_WRAP_S 0x2802
 #define GL_TEXTURE_WRAP_T 0x2803
 #define GL_TEXTURE_WRAP_R 0x8072
 #define GL_CLAMP 0x2900
 #define GL_REPEAT 0x2901
-// --Wrappers
-// --==</Textures_OGL>==--
+// --==</textures_ogl>==--
 
-// --==<Textures_OGL>==--
-// --Types
+// --==<textures_nw>==--
+// --types
 #define NW_TEXTURE_1D	GL_TEXTURE_1D
 #define NW_TEXTURE_2D	GL_TEXTURE_2D
 #define NW_TEXTURE_3D	GL_TEXTURE_3D
-// --Types
-
-// --Filters
+// --filters
 #define NW_TEXTURE_MAG_FILTER			GL_TEXTURE_MAG_FILTER
 #define NW_TEXTURE_MIN_FILTER			GL_TEXTURE_MIN_FILTER
 #define NW_TEXTURE_FILTER_NEAREST		GL_NEAREST
 #define NW_TEXTURE_FILTER_LINEAR		GL_LINEAR
-// --Filters
-
-// --Wrappers
+// --wrappers
 #define NW_TEXTURE_WRAP_S			GL_TEXTURE_WRAP_S
 #define NW_TEXTURE_WRAP_T			GL_TEXTURE_WRAP_T
 #define NW_TEXTURE_WRAP_R			GL_TEXTURE_WRAP_R
 #define NW_TEXTURE_WRAP_CLAMP		GL_CLAMP
 #define NW_TEXTURE_WRAP_REPEAT		GL_REPEAT
-// --Wrappers
-// --==</Textures_OGL>==--
+// --==</textures_nw>==--
 
-// --==<GBuffers_OGL>==--
+// --==<gbuffers_ogl>==--
 #define GL_ARRAY_BUFFER 0x8892
 #define GL_ELEMENT_ARRAY_BUFFER 0x8893
 #define GL_UNIFORM_BUFFER 0x8A11
-// --==</GBuffers_OGL>==--
+// --==</gbuffers_ogl>==--
 
-// --==<Buffers_OGL>==--
+// --==<buffers_ogl>==--
 #define GL_COLOR_BUFFER_BIT					0x00004000
 #define GL_DEPTH_BUFFER_BIT					0x00000100
 #define GL_ACCUM_BUFFER_BIT					0x00000200
 #define GL_STENCIL_BUFFER_BIT				0x00000400
-// --==</Buffers_OGL>==--
+// --==</buffers_ogl>==--
 
 
-// --==<GBuffers_NW>==--
+// --==<gbuffers_nw>==--
 #define NW_GBUFFER_VERTEX GL_ARRAY_BUFFER
 #define NW_GBUFFER_INDEX GL_ELEMENT_ARRAY_BUFFER
 #define NW_GBUFFER_SHADER GL_UNIFORM_BUFFER
-// --==</GBuffers_NW>==--
+// --==</gbuffers_nw>==--
 
-// --==<Buffers_NW>==--
+// --==<framebuffers_nw>==--
 #define NW_BUFFER_COLOR_BIT					GL_COLOR_BUFFER_BIT
 #define NW_BUFFER_DEPTH_BIT					GL_DEPTH_BUFFER_BIT
 #define NW_BUFFER_STENCIL_BIT				GL_STENCIL_BUFFER_BIT
-// --==</Buffers_NW>==--
+// --==</framebuffers_nw>==--
 
-// --==<DataLoadTypes_OGL>==--
+// --==<data_load_types_ogl>==--
 #define GL_STATIC_DRAW 0x88E4
 #define GL_STREAM_DRAW 0x88E0
 #define GL_DYNAMIC_DRAW 0x88E8
-// --==</DataLoadTypes_OGL>==--
+// --==</data_load_types_ogl>==--
 
-// --==<DataLoadTypes_NW>==--
+// --==<data_load_types_nw>==--
 #define NW_STATIC_DRAW		GL_STATIC_DRAW 
 #define NW_STREAM_DRAW		GL_STREAM_DRAW 
 #define NW_DYNAMIC_DRAW		GL_DYNAMIC_DRAW
-// --==</DataLoadTypes_NW>==--
+// --==</data_load_types_nw>==--
 
-// --==<ErrorCodes_OGL>==--
+// --==<error_codes_ogl>==--
 #define GL_NO_ERROR                       0
 #define GL_INVALID_ENUM                   0x0500
 #define GL_INVALID_VALUE                  0x0501
@@ -1263,9 +744,9 @@ typedef double GLclampd;
 #define GL_STACK_OVERFLOW                 0x0503
 #define GL_STACK_UNDERFLOW                0x0504
 #define GL_OUT_OF_MEMORY                  0x0505
-// --==</ErrorCodes_OGL>==--
+// --==</error_codes_ogl>==--
 
-// --==<ErrorCodes_NW>==--
+// --==<error_codes_nw>==--
 #define NW_OK							GL_NO_ERROR         
 #define NW_INVALID_ENUM					GL_INVALID_ENUM     
 #define NW_INVALID_VALUE				GL_INVALID_VALUE    
@@ -1289,15 +770,14 @@ typedef double GLclampd;
 #define NW_ERR_SHADER_LOAD_FAIL			0b1001'0000'0000
 #define NW_ERR_SHADER_LINK				0b1011'0000'0000
 #define NW_ERR_SHADER_COMPILE			0b1100'0000'0000
-// --==</ErrorCodes_NW>==--
+// --==</error_codes_nw>==--
 
-// --==<Info_OGL>==--
+// --==<info_ogl>==--
 #define GL_VENDOR                         0x1F00
 #define GL_RENDERER                       0x1F01
 #define GL_VERSION                        0x1F02
 #define GL_EXTENSIONS                     0x1F03
-// --==</Info_OGL>==--
-#elif (NW_GRAPHICS & NW_GRAPHICS_DX)
+// --==</info_ogl>==--
 // Nothing for now... 08.11.20
 #endif // NW_GRAPHICS
 

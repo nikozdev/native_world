@@ -1,5 +1,5 @@
 #include <nw_pch.hpp>
-#include <ecs/nw_scene.h>
+#include "nw_physics_cmp.h"
 
 namespace NW
 {

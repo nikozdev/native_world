@@ -7,23 +7,18 @@
 #pragma warning(disable : 4312)
 
 #if (defined NW_GRAPHICS)
-#include <glib/control/nw_graph_engine.h>
+#include <glib/core/nw_gengine.h>
 // Buffers
 namespace NW
 {
 	AVertexBuf* AVertexBuf::Create(Size szAlloc, const void* pVtxData)
 	{
 		AVertexBuf* pVB = nullptr;
-		switch (GraphEngine::Get().GetGApi()->GetType()) {
-#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-		case GApiTypes::GAPI_COUT: break;
-#endif	// NW_GRAPHICS
-#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
+		switch (GEngine::Get().GetGApi()->GetType()) {
+	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
 		case GApiTypes::GAPI_OPENGL: pVB = MemSys::NewT<VertexBufOgl>(); break;
-#endif	// NW_GRAPHICS
-		default:
-			NW_ERR("There is no accessible API");
-			break;
+	#endif	// NW_GRAPHICS
+		default: NW_ERR("There is no accessible API"); break;
 		}
 		pVB->SetData(szAlloc, pVtxData);
 		return pVB;
@@ -31,34 +26,22 @@ namespace NW
 	AIndexBuf* AIndexBuf::Create(Size szAlloc, const void* pIdxData)
 	{
 		AIndexBuf* pIB = nullptr;
-		switch (GraphEngine::Get().GetGApi()->GetType()) {
-#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-		case GApiTypes::GAPI_COUT: break;
-#endif // NW_GRAPHICS
-#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GApiTypes::GAPI_OPENGL: pIB = MemSys::NewT<IndexBufOgl>();
-			break;
-#endif // NW_GRAPHICS
-		default:
-			NW_ERR("Graphics API is not defined");
-			break;
+		switch (GEngine::Get().GetGApi()->GetType()) {
+	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
+		case GApiTypes::GAPI_OPENGL: pIB = MemSys::NewT<IndexBufOgl>(); break;
+	#endif // NW_GRAPHICS
+		default: NW_ERR("Graphics API is not defined"); break;
 		}
 		pIB->SetData(szAlloc, pIdxData);
 		return pIB;
 	}
 	AShaderBuf* AShaderBuf::Create(Size szAlloc, const void* pIdxData) {
 		AShaderBuf* pSB = nullptr;
-		switch (GraphEngine::Get().GetGApi()->GetType()) {
-#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-		case GApiTypes::GAPI_COUT: break;
-#endif // NW_GRAPHICS
-#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GApiTypes::GAPI_OPENGL: pSB = MemSys::NewT<ShaderBufOgl>();
-			break;
-#endif // NW_GRAPHICS
-		default:
-			NW_ERR("Graphics API is not defined");
-			break;
+		switch (GEngine::Get().GetGApi()->GetType()) {
+	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
+		case GApiTypes::GAPI_OPENGL: pSB = MemSys::NewT<ShaderBufOgl>(); break;
+	#endif // NW_GRAPHICS
+		default: NW_ERR("Graphics API is not defined"); break;
 		}
 		pSB->SetData(szAlloc, pIdxData);
 		return pSB;
@@ -189,75 +172,3 @@ namespace NW
 	void ShaderBufOgl::Unbind() const { glBindBuffer(GL_UNIFORM_BUFFER, 0); }
 }
 #endif	// NW_GRAPHICS
-#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-// VertexBufCout
-namespace NW
-{
-	VertexBufCout::VertexBufCout(UInt32 unSizeInBytes)
-	{
-		m_daVData.reserve(unSizeInBytes);
-	}
-	VertexBufCout::VertexBufCout(UInt32 unSizeInBytes, void* pVData)
-	{
-		m_daVData.reserve(unSizeInBytes);
-		memcpy(&m_daVData[0], pVData, unSizeInBytes * sizeof(char));
-	}
-	VertexBufCout::~VertexBufCout()
-	{
-	}
-
-	// Interface Methods
-	void VertexBufCout::SetData(UInt unSizeInBytes, void* pVData, UInt unOffsetSize)
-	{
-		if (unSizeInBytes > GetSize())
-		{
-			NW_ERR("Too much bytes!");
-			return;
-		}
-		for (UInt32 i = unOffsetSize; i < unSizeInBytes; i++)
-			m_daVData.push_back(((char*)(pVData))[i]);
-	}
-
-	void VertexBufCout::Bind() const
-	{
-	}
-	void VertexBufCout::Unbind() const
-	{
-	}
-}
-// IndexBufferCout
-namespace NW
-{
-	IndexBufCout::IndexBufCout(UInt32 unCount)
-	{
-		m_unIData.reserve(unCount);
-	}
-	IndexBufCout::IndexBufCout(UInt32 unCount, UInt32* pIndices)
-	{
-		m_unIData.reserve(unCount);
-		for (UInt32 i = 0; i < unCount; i++)
-			m_unIData.push_back(pIndices[i]);
-	}
-	IndexBufCout::~IndexBufCout()
-	{
-	}
-
-	// Interface Methods
-	void IndexBufCout::SetData(UInt32 unCount, UInt32* pIndices, UInt32 unOffsetSize)
-	{
-		if (unCount > GetCount())
-		{
-			NW_ERR("Too much indices!");
-			return;
-		}
-		for (UInt32 i = unOffsetSize; i < unCount; i++)
-			m_unIData.push_back(pIndices[i]);
-	}
-	void IndexBufCout::Bind() const
-	{
-	}
-	void IndexBufCout::Unbind() const
-	{
-	}
-}
-#endif // NW_GRAPHICS

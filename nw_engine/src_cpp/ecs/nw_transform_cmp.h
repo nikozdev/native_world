@@ -2,16 +2,15 @@
 #define ECS_TRANSFORM_COMPONENT_H
 #include <ecs/nw_entity_cmp.h>
 
-#include <lib/utils/math_transform.h>
-
 namespace NW
 {
 	/// Abstract TransformComponent class
 	class NW_API ATransformCmp : public AEntityCmp
 	{
 	public:
-		ATransformCmp(AEntity& rEntity) : AEntityCmp(rEntity, std::type_index(typeid(ATransformCmp))) { }
-		~ATransformCmp() = default;
+		ATransformCmp(AEntity& rEntity);
+		ATransformCmp(ATransformCmp& rCpy);
+		~ATransformCmp();
 
 		// --getters
 		virtual inline Mat4f GetTransformMatrix() const = 0;

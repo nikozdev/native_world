@@ -1,85 +1,57 @@
-#ifndef NW_CORE_H
-#define NW_CORE_H
+#ifndef NW_CORE_HPP
+#define NW_CORE_HPP
 /// This is the main header of the engine
 /// Here are all relevant macros and configurations
 
-// --------<Linking&Platforms>--------
-#if defined NW_PLATFORM_WINDOWS
-    #if defined NW_LINK_DYNAMIC
-        #ifdef NW_BUILD_DLL
-            #define NW_API __declspec(dllexport)
-	    #elif defined NW_BUILD_EXE
-		    #define NW_API __declspec(dllimport)
-        #endif
-    #elif defined NW_LINK_STATIC
-		#define NW_API
-    #endif
-#else
-	//#error CheerNik cannot work with this platform
+// --==<linking>==--
+#if defined NW_LINK_DYNAMIC
+#ifdef NW_BUILD_DLL
+#define NW_API __declspec(dllexport)
+#elif defined NW_BUILD_EXE
+#define NW_API __declspec(dllimport)
 #endif
-// --------</Linking&Platforms>--------
+#elif defined NW_LINK_STATIC
+#define NW_API
+#endif
+// --==</linking>==--
 
-// --------<Configurations>--------
-// --Window choice
-#define NW_WINDOW_CONSOLE		1 << 1	// 0b0001
-#define NW_WINDOW_WIN			1 << 2	// 0b0010
-#define NW_WINDOW_GLFW			1 << 3	// 0b0100
-
+// --==<configurations>==--
+// --window_choice
+#define NW_WINDOW_GLFW			1 << 1
 #define NW_WINDOW				NW_WINDOW_GLFW
-// --Window choice
+// --window_choice
 
-// --Mathematics library choice
-#define NW_MATH_NATIVE			1 << 1	// 0b0001
-#define NW_MATH_GLM				1 << 2	// 0b0010
+// --mathematics_library_choice
+#define NW_MATH_NATIVE			1 << 1
+#define NW_MATH_GLM				1 << 2
 #define NW_MATH					NW_MATH_GLM
-// --Mathematics library choice
+// --mathematics_library_choice
 
-// --Gui library choice
-#define NW_GUI_NATIVE			1 << 2
-#define NW_GUI_COUT				1 << 1
-#define NW_GUI_IMGUI			1 << 3
+// --gui_library_choice
+#define NW_GUI_NATIVE			1 << 1
+#define NW_GUI_IMGUI			1 << 2
 #define NW_GUI					NW_GUI_IMGUI | NW_GUI_NATIVE
-// --Gui library choice
 
-// --Graphics choice
-#define NW_GRAPHICS_COUT 0b0001
-#define NW_GRAPHICS_WIN 0b0010
-#define NW_GRAPHICS_OGL 0b0100
-#define NW_GRAPHICS_DX 0b1000
+// --graphics_api_choice
+#define NW_GRAPHICS_OGL		1 << 1
 
 #define NW_GRAPHICS NW_GRAPHICS_OGL
-// --Graphics choice
-
-// --Graphics Library Choice
-#if (NW_GRAPHICS & NW_GRAPHICS_WIN)
-	#define NW_GL_USE_NATIVE
-#elif (NW_GRAPHICS & NW_GRAPHICS_WIN)
-	#define NW_GL_USE_WINAPI
-#elif (NW_GRAPHICS & NW_GRAPHICS_OGL)
-	#define NW_GL_USE_GLAD
-#endif // NW_GL_USE
-// --Graphics Library Choice
 
 #if (NW_WINDOW & NW_WINDOW_GLFW)
 	#define GLFW_INCLUDE_NONE
 #endif	// NW_WINDOW
 
-// --Standard libraries choice
+// --standard_libraries_choice
 #define NW_LIBS_NATIVE_PTR			0b0000'0001
 #define NW_LIBS_STD_PTR				0b0000'0010
-
 #define NW_LIBS_NATIVE_STR			0b0000'0100
 #define NW_LIBS_STD_STR				0b0000'1000
-
 #define NW_LIBS_NATIVE_COLLECTION	0b0001'0000
 #define NW_LIBS_STD_COLLECTION		0b0010'0000
-
 #define NW_LIBS (NW_LIBS_STD_PTR | NW_LIBS_STD_STR | NW_LIBS_NATIVE_STR | NW_LIBS_STD_COLLECTION)
-// --Standard libraries choice
+// --==</configurations>==--
 
-// --------</Configurations>--------
-
-// --------<SupportMacroses>--------
+// --==<support_macroses>==--
 ///Translate anything to the C string(char array)
 #define NW_CSTR(anything) (#anything)
 /// Translate anything to the string
@@ -95,7 +67,7 @@
 /// Get file directory from absolute path
 #define NW_FDIR_APATH(path) ( NW_STR_PART_L(std::string(path), '\\') )
 
-// --Debug macro
+// --debug_macro
 // -->__VA_ARGS__ - variadic agruments = arguments given as ...
 #if (defined NW_DEBUG)
 	#define NW_BREAK() __debugbreak();
@@ -130,7 +102,7 @@
 	#define NW_ERR(comment) NW_ASSERT(false, comment);
 
 	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-	// --OpenGL debug
+	// --opengl_debug
 namespace NW
 {
 	extern inline void OGL_ClearErr();
@@ -139,7 +111,6 @@ namespace NW
 	#define GL_CALL(function) OGL_ClearErr();\
 		function;\
 		NW_ASSERT(OGL_ErrLog(#function, NW_FNAME_APATH((std::string)__FILE__), __LINE__), "GL_ERROR: ")
-	// --OpenGL debug
 	#endif // NW_GRAPHICS
 #else
 	#define NW_LOG(loc, what);
@@ -149,12 +120,11 @@ namespace NW
 
 	#define GL_CALL(function);
 #endif // NW_DEBUG
-// --Debug Macro
 
 #define NW_BIND_FN(func) (std::bind(&func, this, std::placeholders::_1))
-// --------</SupportMacroses>--------
+// --==</support_macroses>==--
 
-// --------<Pragmas>--------
+// --==<pragmas>==--
 #pragma warning(disable : 4005)
 #pragma warning(disable : 4081)
 #pragma warning(disable : 4099)
@@ -163,12 +133,11 @@ namespace NW
 #pragma warning(disable : 4267)
 #pragma warning(disable : 4552)
 #pragma warning(disable : 4996)
-// --------</Pragmas>--------
-#endif // NW_CORE_H
+// --==</pragmas>==--
+#endif // NW_CORE_HPP
 
-// --native_world library
+#include <nw_pch.hpp>
 #include <nw_def.hpp>
-// --native_world library
 
 /// 18.10.2020
 /// To save your changes in github:

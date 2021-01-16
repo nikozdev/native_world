@@ -1,6 +1,6 @@
 #ifndef NW_TIME_SYSTEM_H
 #define NW_TIME_SYSTEM_H
-#include <lib/nw_time.h>
+#include <nwlib/nw_time.h>
 
 #include <nw_decl.hpp>
 

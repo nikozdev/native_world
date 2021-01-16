@@ -82,11 +82,12 @@
 #endif
 // --</platform>--
 
-// --<CheerNik_lib>--
-#include <lib/nw_string.h>
-#include <lib/nw_container.h>
-#include <lib/nw_algorithm.h>
-#include <lib/nw_memory.h>
-// --</CheerNik_lib>--
+// --<native_world_lib>--
+#include <nwlib/nw_string.h>
+#include <nwlib/nw_container.h>
+#include <nwlib/nw_algorithm.h>
+#include <nwlib/nw_memory.h>
+#include <nwlib/nw_math.h>
+// --</native_world_lib>--
 
 #endif	// NW_PCH_HPP

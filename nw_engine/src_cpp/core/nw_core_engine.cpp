@@ -1,18 +1,12 @@
 #include <nw_pch.hpp>
 #include <core/nw_core_engine.h>
 
-#include <core/nw_core_state.h>
-
-#include <glib/control/nw_graph_engine.h>
+#include <glib/core/nw_gengine.h>
 #include <glib/gcontext/nw_window.h>
 
-#include <ecs/nw_scene.h>
-
-#include <sys/nw_ev_sys.h>
 #include <sys/nw_io_sys.h>
 #include <sys/nw_time_sys.h>
 #include <sys/nw_mem_sys.h>
-#include <sys/nw_rand_sys.h>
 #include <sys/nw_log_sys.h>
 #include <sys/nw_data_sys.h>
 #include <sys/nw_gui_sys.h>
@@ -20,19 +14,11 @@
 namespace NW
 {
 	CoreEngine::CoreEngine() :
-		m_strName("NW_Application"),
+		m_strName("nw_engine"),
 		m_bIsRunning(false),
-		m_pCurrState(nullptr),
-		m_pWindow(nullptr)
-	{ }
-	CoreEngine::~CoreEngine()
-	{ }
+		m_pCurrState(nullptr) { }
+	CoreEngine::~CoreEngine() { }
 
-	// --setters
-	CoreState* CoreEngine::GetState(const char* strName) {
-		auto itState = FIND_BY_NAME(m_States, CoreState*, strName, ->GetName);
-		return itState == m_States.end() ? nullptr : *itState;
-	}
 	// --setters
 	void CoreEngine::AddState(CoreState* pState)
 	{
@@ -68,46 +54,42 @@ namespace NW
 	// --==<core_methods>==--
 	bool CoreEngine::Init()
 	{
-		WindowInfo WindowInfo{ &m_strName[0], 800, 600, true, nullptr };
-		m_pWindow.reset(AWindow::Create(WindowInfo, WApiTypes::WAPI_GLFW));
-		if (!m_pWindow->Init()) {
-			LogSys::WriteErrStr(NW_ERR_NO_INIT, "Window is not initialized!");
-			m_pWindow->OnQuit();
-			return false;
-		}
-		m_pWindow->SetEventCallback([this](AEvent& rEvt)->void { return OnEvent(rEvt); });
+	#if (defined NW_WINDOW)
+		WApiTypes WApiType = WApiTypes::WAPI_NONE;
+		#if (NW_WINDOW_GLFW & NW_WINDOW_GLFW)
+		WApiType = WApiTypes::WAPI_GLFW;
+		#endif
+	#endif	// NW_WINDOW
 	#if (defined NW_GRAPHICS)
 		GApiTypes GApiType = GApiTypes::GAPI_NONE;
 		#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
 		GApiType = GApiTypes::GAPI_OPENGL;
-		#elif (NW_GRAPHICS & NW_GRAPHICS_COUT)
-		GApiType = GApiTypes::GAPI_COUT;
 		#endif
 	#endif	// NW_GRAPHICS
-		if (!GraphEngine::Get().Init(GApiType)) {
-			LogSys::WriteErrStr(NW_ERR_NO_INIT, "GraphEngine is not initialized!");
-			m_pWindow->OnQuit();
+		if (!GEngine::Get().Init(WApiType, GApiType)) {
+			LogSys::WriteErrStr(NW_ERR_NO_INIT, "GEngine is not initialized!");
 			return false;
 		}
+		GEngine::Get().GetWindow()->SetEventCallback([this](AEvent& rEvt)->void { return OnEvent(rEvt); });
 
 		DataSys::OnInit();
-		EvSys::OnInit();
 		GuiSys::OnInit();
 
 		return true;
 	}
 	void CoreEngine::Quit()
 	{
+		if (!m_bIsRunning) { return; }
 		m_bIsRunning = false;
+		system("\a");
 	}
+
 	void CoreEngine::Run()
 	{
-		// -- Preparation
 		m_bIsRunning = true;
 		if (m_pCurrState == nullptr) { Quit(); }
-		// -- Main Loop
 		while (m_bIsRunning) { Update(); }
-		// -- Quit code
+
 		while (!m_States.empty()) {
 			(*m_States.begin())->OnDisable();
 			MemSys::DelT<CoreState>(*m_States.begin());
@@ -116,11 +98,11 @@ namespace NW
 		DataSys::OnQuit();
 		GuiSys::OnQuit();
 
-		GraphEngine::Get().OnQuit();
-		m_pWindow->OnQuit();
+		GEngine::Get().Quit();
+
 
 		system("\a");
-		LogSys::WriteStr("NW_CoreEngine has been quited");
+		LogSys::WriteStr("CoreEngine has been quited");
 	}
 	inline void CoreEngine::Update()
 	{
@@ -128,15 +110,13 @@ namespace NW
 		GuiSys::Update();
 		
 		m_pCurrState->Update();
-		m_pWindow->Update();
 		
 		GuiSys::EndDraw();
 	
 		IOSys::Update();
 		TimeSys::Update();
-		EvSys::Update();
 
-		GraphEngine::Get().Update();
+		GEngine::Get().Update();
 	}
 	// --==</core_methods>==--
 
@@ -145,26 +125,49 @@ namespace NW
 	{
 		// Dispatch particular events
 		if (MouseEvent* pmEvt = dynamic_cast<MouseEvent*>(&rEvt)) {
+			switch (pmEvt->EvtType) {
+			case ET_MOUSE_MOVE:
+				IOSys::s_Cursor.xMoveDelta = pmEvt->nX - IOSys::s_Cursor.xMove;
+				IOSys::s_Cursor.yMoveDelta = pmEvt->nY - IOSys::s_Cursor.yMove;
+				IOSys::s_Cursor.xMove = pmEvt->nX;
+				IOSys::s_Cursor.yMove = pmEvt->nY;
+				break;
+			case ET_MOUSE_SCROLL:
+				IOSys::s_xScroll = pmEvt->nX;
+				IOSys::s_yScroll = pmEvt->nY;
+				break;
+			case ET_MOUSE_RELEASE:
+				IOSys::s_bsMsBtns[pmEvt->nButton].bNew = false;
+			case ET_MOUSE_PRESS:
+				IOSys::s_bsMsBtns[pmEvt->nButton].bNew = true;
+			}
 			if (rEvt.bIsHandled) return;
 			m_pCurrState->OnEvent(*pmEvt);
-		} else if (KeyboardEvent* pkEvt = dynamic_cast<KeyboardEvent*>(&rEvt)) {
+		}
+		else if (KeyboardEvent* pkEvt = dynamic_cast<KeyboardEvent*>(&rEvt)) {
 			switch (pkEvt->EvtType) {
 			case ET_KEY_RELEASE:
-				KeyboardEvent* pkrEvt = dynamic_cast<KeyboardEvent*>(&rEvt);
-				switch (pkrEvt->unKeyCode) {
+				IOSys::s_bsKeys[pkEvt->unKeyCode].bNew = false;
+				switch (pkEvt->unKeyCode) {
 				case NW_KEY_ESCAPE_27: Quit(); break;
+				case NW_KEY_M_77:
+					IOSys::SetInputMode(IOSys::s_Cursor.bBlocked ? IM_CURSOR_NORMAL : IM_CURSOR_DISABLED);
+					IOSys::s_Cursor.bBlocked = !IOSys::s_Cursor.bBlocked;
+					break;
 				}
+			case ET_KEY_PRESS:
+				IOSys::s_bsKeys[pkEvt->unKeyCode].bNew = true;
+				break;
 			}
 			if (rEvt.bIsHandled) return;
 			m_pCurrState->OnEvent(*pkEvt);
-		} else if (WindowEvent* pwEvt = dynamic_cast<WindowEvent*>(&rEvt)) {
+		}
+		else if (WindowEvent* pwEvt = dynamic_cast<WindowEvent*>(&rEvt)) {
 			switch (pwEvt->EvtType) {
-			case ET_WINDOW_CLOSE:
-				m_bIsRunning = false;
-				break;
-				if (rEvt.bIsHandled) return;
-				m_pCurrState->OnEvent(*pwEvt);
+			case ET_WINDOW_CLOSE: Quit(); break;
 			}
+			if (rEvt.bIsHandled) return;
+			m_pCurrState->OnEvent(*pwEvt);
 		}
 	}
 	// --==</--on_event_methods>==--

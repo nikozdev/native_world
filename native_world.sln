@@ -1,17 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glad", "nw_engine\ext\glad\glad.vcxproj", "{DD62977C-C999-980D-7286-7E105E9C140F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glad", "ext\glad\glad.vcxproj", "{DD62977C-C999-980D-7286-7E105E9C140F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glfw", "nw_engine\ext\glfw\glfw.vcxproj", "{9563977C-819A-980D-2A87-7E10169D140F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glfw", "ext\glfw\glfw.vcxproj", "{9563977C-819A-980D-2A87-7E10169D140F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "imgui", "nw_engine\ext\imgui\imgui.vcxproj", "{0098A80F-6CAC-D0C0-352E-7420A101CDF1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "imgui", "ext\imgui\imgui.vcxproj", "{0098A80F-6CAC-D0C0-352E-7420A101CDF1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua_lib", "nw_engine\ext\lua_lib\lua_lib.vcxproj", "{9D0A4E95-09EA-CC30-1202-58077E603392}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lualib", "ext\lualib\lualib.vcxproj", "{BE65480C-AA07-73E2-93C2-86367F03FA32}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_cmd", "nw_cmd\nw_cmd.vcxproj", "{7DA91511-694B-40E7-5206-543B3E47C737}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_engine", "nw_engine\nw_engine.vcxproj", "{7F70A556-EBDA-59CD-3419-0B73A0C23722}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_game", "nw_game\nw_game.vcxproj", "{23D9CC33-8FB8-4BCF-98D0-D6A5042FB230}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_glib", "nw_glib\nw_glib.vcxproj", "{6707CD33-D3E6-4BCF-DCFE-D6A5485DB230}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +35,14 @@ Global
 		{0098A80F-6CAC-D0C0-352E-7420A101CDF1}.debug|x64.Build.0 = debug|x64
 		{0098A80F-6CAC-D0C0-352E-7420A101CDF1}.release|x64.ActiveCfg = release|x64
 		{0098A80F-6CAC-D0C0-352E-7420A101CDF1}.release|x64.Build.0 = release|x64
-		{9D0A4E95-09EA-CC30-1202-58077E603392}.debug|x64.ActiveCfg = debug|x64
-		{9D0A4E95-09EA-CC30-1202-58077E603392}.debug|x64.Build.0 = debug|x64
-		{9D0A4E95-09EA-CC30-1202-58077E603392}.release|x64.ActiveCfg = release|x64
-		{9D0A4E95-09EA-CC30-1202-58077E603392}.release|x64.Build.0 = release|x64
+		{BE65480C-AA07-73E2-93C2-86367F03FA32}.debug|x64.ActiveCfg = debug|x64
+		{BE65480C-AA07-73E2-93C2-86367F03FA32}.debug|x64.Build.0 = debug|x64
+		{BE65480C-AA07-73E2-93C2-86367F03FA32}.release|x64.ActiveCfg = release|x64
+		{BE65480C-AA07-73E2-93C2-86367F03FA32}.release|x64.Build.0 = release|x64
+		{7DA91511-694B-40E7-5206-543B3E47C737}.debug|x64.ActiveCfg = debug|x64
+		{7DA91511-694B-40E7-5206-543B3E47C737}.debug|x64.Build.0 = debug|x64
+		{7DA91511-694B-40E7-5206-543B3E47C737}.release|x64.ActiveCfg = release|x64
+		{7DA91511-694B-40E7-5206-543B3E47C737}.release|x64.Build.0 = release|x64
 		{7F70A556-EBDA-59CD-3419-0B73A0C23722}.debug|x64.ActiveCfg = debug|x64
 		{7F70A556-EBDA-59CD-3419-0B73A0C23722}.debug|x64.Build.0 = debug|x64
 		{7F70A556-EBDA-59CD-3419-0B73A0C23722}.release|x64.ActiveCfg = release|x64
@@ -43,6 +51,10 @@ Global
 		{23D9CC33-8FB8-4BCF-98D0-D6A5042FB230}.debug|x64.Build.0 = debug|x64
 		{23D9CC33-8FB8-4BCF-98D0-D6A5042FB230}.release|x64.ActiveCfg = release|x64
 		{23D9CC33-8FB8-4BCF-98D0-D6A5042FB230}.release|x64.Build.0 = release|x64
+		{6707CD33-D3E6-4BCF-DCFE-D6A5485DB230}.debug|x64.ActiveCfg = debug|x64
+		{6707CD33-D3E6-4BCF-DCFE-D6A5485DB230}.debug|x64.Build.0 = debug|x64
+		{6707CD33-D3E6-4BCF-DCFE-D6A5485DB230}.release|x64.ActiveCfg = release|x64
+		{6707CD33-D3E6-4BCF-DCFE-D6A5485DB230}.release|x64.Build.0 = release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

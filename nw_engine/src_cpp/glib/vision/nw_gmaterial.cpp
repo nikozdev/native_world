@@ -2,14 +2,13 @@
 #include "nw_gmaterial.h"
 
 #include <glib/nw_gbuffer.h>
-#include <glib/render/nw_texture.h>
+#include <glib/nw_texture.h>
 #include <glib/vision/nw_shader.h>
 
 #include <sys/nw_data_sys.h>
 
 namespace NW
 {
-	// --==<GMaterial>==--
 	GMaterial::GMaterial(const char* strName) :
 		ADataRes(strName)
 	{
@@ -72,5 +71,4 @@ namespace NW
 	{
 		return true;
 	}
-	// --==</GMaterial>==--
 }

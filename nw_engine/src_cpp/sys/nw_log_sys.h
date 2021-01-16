@@ -52,7 +52,7 @@ namespace NW
 		static ErrStack s_ErrStack;
 	};
 	
-	LogSys::LogOut& operator<<(LogSys::LogOut& rOStream, const LuaVMInfo& rLuaInfo);
+	LogSys::LogOut& operator<<(LogSys::LogOut& rOStream, const LuaEngineInfo& rLuaInfo);
 }
 
 #endif // NW_LOG_SYSTEM_H

@@ -1,4 +1,4 @@
-rem generate_the_project
+rem generate the project
 @echo off
 
 set premake_exe="ext\bin\premake\premake5.exe"
@@ -13,5 +13,5 @@ call %premake_exe% %environment%
 popd
 
 @echo on
-rem The project is built
+rem the project is ready
 PAUSE

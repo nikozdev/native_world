@@ -5,13 +5,13 @@
 
 namespace NW
 {
-	/// LuaVirtualMachieneInfo struct
+	/// LuaEngineInfo struct
 	/// Description:
 	/// -- Contains strings and numbers with the information about lua stack:
 	/// ==| size
 	/// ==| types
 	/// ==| last level of search
-	struct NW_API LuaVMInfo
+	struct NW_API LuaEngineInfo
 	{
 	public:
 		using StackTypesInfo = SArray<Int8, 20>;
@@ -19,7 +19,7 @@ namespace NW
 		UInt8 unLevel = 0;
 		StackTypesInfo StackTypes;
 	public:
-		LuaVMInfo() { memset(&StackTypes[0], LT_NON, sizeof(Int8)); }
+		LuaEngineInfo() { memset(&StackTypes[0], LT_NON, sizeof(Int8)); }
 		// --getters
 		inline Int8 GetStackType(UInt8 unIndex) { return StackTypes[unIndex]; }
 		inline Int8 GetLastType() { return unLevel == 0 ? LT_NIL : StackTypes[unLevel - 1]; }
@@ -30,7 +30,7 @@ namespace NW
 		inline void Reset() { RemoveType(unLevel); }
 		// -- Operators
 		inline OutStream& operator<<(OutStream& rOStream) const {
-			rOStream << std::endl << "LuaVMInfo::" << std::endl <<
+			rOStream << std::endl << "LuaEngineInfo::" << std::endl <<
 				"The top of the stack:" << std::endl;
 			for (UInt8 ti = 0; ti < StackTypes.size(); ti++) {
 				rOStream << static_cast<Int16>(ti + 1) << "th type: ";

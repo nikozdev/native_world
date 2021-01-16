@@ -1,27 +1,23 @@
 #include <nw_pch.hpp>
 #include "nw_gui_sys.h"
 
-#include <gui/nw_gui_of.h>
-
 #include <ecs/nw_scene.h>
 
 #include <glib/vision/nw_gcamera.h>
 #include <glib/vision/nw_gmaterial.h>
 
-#include <glib/control/nw_graph_engine.h>
+#include <glib/core/nw_gengine.h>
 #include <glib/gcontext/nw_gcontext.h>
 #include <glib/gcontext/nw_framebuf.h>
-#include <glib/control/nw_graph_api.h>
+#include <glib/core/nw_gapi.h>
 #include <glib/gcontext/nw_window.h>
-#include <glib/render/nw_drawable.h>
+#include <glib/nw_drawable.h>
 #include <glib/vision/nw_gcamera.h>
 #include <glib/vision/nw_gmaterial.h>
 
 #include <core/nw_core_engine.h>
-#include <sys/nw_ev_sys.h>
 #include <sys/nw_time_sys.h>
 #include <sys/nw_io_sys.h>
-#include <sys/nw_rand_sys.h>
 #include <sys/nw_data_sys.h>
 #include <sys/nw_mem_sys.h>
 #include <sys/nw_log_sys.h>
@@ -36,7 +32,6 @@
 #endif	// NW_GUI
 
 
-// --==<Static fields>==--
 namespace NW
 {
 	struct NW_API DrawToolsGui
@@ -55,35 +50,21 @@ namespace NW
 	static ImGuiIO *s_pGuiIO = nullptr;
 	static ImGuiStyle *s_pGuiStyle = nullptr;
 }
-// --==</Static fields>==--
 
 namespace NW
 {
 	// --setters
-
-	void GuiSys::SetWindow(GuiWindow* pWindow) {
-		s_pCurrWindow = pWindow;
-	}
+	void GuiSys::SetWindow(GuiWindow* pWindow) { s_pCurrWindow = pWindow; }
 
 	// --==<core_methods>==--
 	void GuiSys::OnInit()
 	{
-		AGraphApi* pGApi = GraphEngine::Get().GetGApi();
-		if (pGApi == nullptr) { return; }
-		AWindow* pWindow = CoreEngine::Get().GetWindow();
-		if (pWindow == nullptr) {
-			return;
-		}
+		AGApi* pGApi = GEngine::Get().GetGApi();
+		if (pGApi == nullptr) { NW_ERR("GraphicsAPI is not not found"); return; }
+		AWindow* pWindow = GEngine::Get().GetWindow();
+		if (pWindow == nullptr) { NW_ERR("Window is not not found"); return; }
 		AGContext* pGContext = pWindow->GetGContext();
-		if (pGContext == nullptr) {
-			NW_ERR("GraphicsContext was not found");
-			return;
-		}
-		GuiOfDataSys::Get().bIsEnabled = true;
-		GuiOfTimeSys::Get().bIsEnabled = true;
-		GuiOfSceneEditor::Get().bIsEnabled = true;
-		GuiOfEntityEditor::Get().bIsEnabled = true;
-
+		if (pGContext == nullptr) { NW_ERR("GraphicsContext was not found"); return; }
 	#if (NW_GUI & NW_GUI_NATIVE)
 	#endif	// NW_GUI
 	#if (NW_GUI & NW_GUI_COUT)
@@ -111,7 +92,7 @@ namespace NW
 			s_pGuiStyle->Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
 
-		ImGui_ImplGlfw_InitForOpenGL(EvSys::s_pNativeWindow, true);
+		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(GEngine::Get().GetWindow()->GetNative()), true);
 		ImGui_ImplOpenGL3_Init("#version 430");
 	#endif	// NW_GUI
 	}
@@ -140,60 +121,7 @@ namespace NW
 		//s_pCurrWindow->Content.whSize.y = ImGui::GetContentRegionAvail().y;
 		//s_pCurrWindow->Content.whMaxSize.x = ImGui::GetContentRegionMax().x;
 		//s_pCurrWindow->Content.whMaxSize.y = ImGui::GetContentRegionMax().y;
-
-		if (ImGui::BeginMenuBar()) {
-			if (ImGui::BeginMenu("Files")) {
-				if (ImGui::MenuItem("New Scene...", "Ctrl+N")) {
-					String strFPath = DataSys::FDialog_save("all_files(*.*)\0*.*\0cn_scene(*.scn)\0*.scn\0");
-					if (!strFPath.empty()) {}
-				}
-				if (ImGui::MenuItem("Save Scene As...", "Ctrl+S")) {
-					String strFPath = DataSys::FDialog_save("all_files(*.*)\0*.*\0cn_scene(*.scn)\0*.scn\0");
-					if (!strFPath.empty()) { Scene::Get().SaveF(&strFPath[0]); }
-				}
-				if (ImGui::MenuItem("Load Scene...", "Ctrl+S")) {
-					String strFPath = DataSys::FDialog_load("all_files(*.*)\0*.*\0cn_scene(*.scn)\0*.scn\0");
-					if (!strFPath.empty()) { Scene::Get().LoadF(&strFPath[0]); }
-				}
-				ImGui::EndMenu();
-			}
-			else if (ImGui::BeginMenu("View")) {
-				ImGui::Checkbox("core_engine",				&GuiOfCoreEngine::Get().bIsEnabled);
-				ImGui::Checkbox("graphichs_engine",			&GuiOfGraphEngine::Get().bIsEnabled);
-				ImGui::Checkbox("console_engine",			&GuiOfCmdEngine::Get().bIsEnabled);
-
-				ImGui::Checkbox("data_system",				&GuiOfDataSys::Get().bIsEnabled);
-				ImGui::Checkbox("memory_mystem",			&GuiOfMemSys::Get().bIsEnabled);
-				ImGui::Checkbox("time_system",				&GuiOfTimeSys::Get().bIsEnabled);
-				//ImGui::Checkbox("log_system",				&GuiOfLogSys::Get().bIsEnabled);
-				//ImGui::Checkbox("random_system",			&GuiOfRandSys::Get().bIsEnabled);
-
-				ImGui::Checkbox("code_Editor",				&GuiOfCodeEditor::Get().bIsEnabled);
-				ImGui::Checkbox("scene_editor",				&GuiOfSceneEditor::Get().bIsEnabled);
-				ImGui::Checkbox("entity_editor",			&GuiOfEntityEditor::Get().bIsEnabled);
-				ImGui::Checkbox("sprite_editor",			&GuiOfSpriteEditor::Get().bIsEnabled);
-				ImGui::Checkbox("gmaterial_editor",			&GuiOfGMaterialEditor::Get().bIsEnabled);
-
-				ImGui::EndMenu();
-			}
-			ImGui::EndMenuBar();
-		}
-	#endif // NW_GUI
-		GuiOfCoreEngine::Get().OnDraw();
-		GuiOfGraphEngine::Get().OnDraw();
-		GuiOfCmdEngine::Get().OnDraw();
-
-		GuiOfDataSys::Get().OnDraw();
-		GuiOfMemSys::Get().OnDraw();
-		GuiOfTimeSys::Get().OnDraw();
-		//GuiOfLogSys::Get().OnDraw();
-		//GuiOfRandSys::Get().OnDraw();
-
-		GuiOfCodeEditor::Get().OnDraw();
-		GuiOfSceneEditor::Get().OnDraw();
-		GuiOfEntityEditor::Get().OnDraw();
-		GuiOfSpriteEditor::Get().OnDraw();
-		GuiOfGMaterialEditor::Get().OnDraw();
+	#endif	// NW_GUI
 	}
 
 	void GuiSys::OnEvent(MouseEvent& rmEvt)
@@ -310,7 +238,7 @@ namespace NW
 		if (s_pGuiIO->ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
-			glfwMakeContextCurrent(EvSys::s_pNativeWindow);
+			glfwMakeContextCurrent(static_cast<GLFWwindow*>(GEngine::Get().GetWindow()->GetNative()));
 		}
 	#endif	// NW_GUI
 	}

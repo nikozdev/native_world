@@ -1,7 +1,6 @@
 #ifndef NW_MEMORY_SYSTEM_H
 #define NW_MEMORY_SYSTEM_H
-
-#include <lib/nw_memory.h>
+#include <nwlib/nw_memory.h>
 
 namespace NW
 {

@@ -69,38 +69,4 @@ namespace NW
 	};
 }
 #endif // NW_GRAPHICS
-#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-namespace NW
-{
-	class NW_API GContextCout : public AGContext
-	{
-	public:
-		GContextCout(CoutWindow* pWindow);
-		~GContextCout();
-
-		// Getters
-		inline const vsi2d& GetPxSize() const { return m_cfInfoEx.dwFontSize; }
-		virtual inline AFrameBuf* GetFrameBuf(UInt32 unFrameBufId) override
-		{
-			return m_rBuffer.get();
-		}
-
-		// Setters
-		void SetPxSize(Int16 pxW, Int16 pxH);
-		void SetPxSize(const vsi2d& pxSizeWH);
-
-		// core_methods
-		virtual bool OnInit() override;
-		virtual void OnQuit() override;
-
-		virtual void SwapBuffers() override;
-	private:
-		RefOwner<CoutFrameBuf> m_pBuffer;
-		CoutWindow* m_pWindow;
-
-		CFontInfoX m_cfInfoEx;
-	};
-}
-#endif // NW_GRAPHICS
-
-#endif // NW_OGL_GCONTEXT_H
+#endif // NW_GCONTEXT_H

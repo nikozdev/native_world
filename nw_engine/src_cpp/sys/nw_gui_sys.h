@@ -2,14 +2,12 @@
 #define NW_GUI_SYSTEM_H
 
 #if (NW_GUI & NW_GUI_NATIVE)
-#include <gui/nw_gui_widget.h>
+#include <glib/nw_gui_widget.h>
 #endif	// NW_GUI
 #if (NW_GUI & NW_GUI_IMGUI)
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
 struct ImGuiIO;
 struct ImGuiStyle;
-//using GuiIO = ImGuiIO;
-//using GuiStyle = ImGuiStyle;
 #endif	// NW_GUI
 
 namespace NW

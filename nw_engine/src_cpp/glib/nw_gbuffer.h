@@ -188,7 +188,6 @@ namespace NW
 	};
 }
 #endif	// NW_GRAPHICS
-
 #if (NW_GRAPHICS & NW_GRAPHICS_OGL)
 namespace NW
 {
@@ -263,75 +262,4 @@ namespace NW
 	};
 }
 #endif // NW_GRAPHICS
-#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-namespace NW
-{
-	/// VertexBufCout
-	/// Description:
-	/// -- Stores all the vertex data we need for drawing
-	/// -- Takes raw pointer and size of the data and loads it into own binary "storage".
-	/// -- This can be used by GraphicsApiCout or can be pointed by CoutVertexArray
-	/// -- CoutVertexArray uses buffer layout to define what the buffer data actually is
-	class NW_API VertexBufCout : public AVertexBuf
-	{
-	public:
-		/// Without the given data it will be loaded dynamically
-		VertexBufCout(UInt32 uiSizeInBytes);
-		/// With the given data it will be loaded statically
-		VertexBufCout(UInt32 uiSizeInBytes, void* vDataPtr);
-		~VertexBufCout();
-
-		// Getters
-		virtual inline UInt32 GetSize() const override
-		{
-			return m_daVData.capacity() * sizeof(char);
-		}
-		virtual inline VertexBufLayout& GetLayout() override
-		{
-			return m_bufLayout;
-		}
-		inline const DArray<char>& GetVData() const
-		{
-			return m_daVData;
-		}
-		// Setters
-		virtual inline void SetLayout(const VertexBufLayout& bLayout) override
-		{
-			m_bufLayout = bLayout;
-		}
-		// Interface methods
-		virtual void SetData(UInt32 unSizeInBytes, void* pVData, UInt32 unOffsetSize = 0) override;
-
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
-	private:
-		VertexBufLayout m_bufLayout;
-		DArray<char> m_daVData;
-	};
-	/// IndexBufCout class
-	class NW_API IndexBufCout : public AIndexBuf
-	{
-	public:
-		/// Without the given data it will be loaded dynamically
-		IndexBufCout(UInt32 unCount);
-		/// With the given data it will be loaded statically
-		IndexBufCout(UInt32 unCount, UInt32* pIndices);
-		~IndexBufCout();
-
-		// Getters
-		virtual inline UInt32 GetCount() const override { return m_unIData.capacity(); }
-		inline const DArray<UInt32>& GetIndices() const { return m_unIData; }
-		// Setters
-
-		// Interface methods
-		virtual void SetData(UInt32 unCount, UInt32* punIndices, UInt32 unOffsetSize = 0) override;
-
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
-	private:
-		DArray<UInt32> m_unIData;
-	};
-}
-#endif // NW_GRAPHICS
-
 #endif	// GLIB_GBUFFER_H

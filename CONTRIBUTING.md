@@ -1,0 +1,7 @@
+--==<If somebody wants>==--
+	- [] If you want to help me with engine
+	-->
+	- [] If you are interested in game engine development
+	--> 
+	- [] If you are interested in more clear solutions
+	--> Make sure that "clear" is not only for you

@@ -5,8 +5,8 @@
 #include <sys/nw_data_sys.h>
 
 #if (defined NW_GRAPHICS)
-#include <glib/control/nw_graph_engine.h>
-#include <glib/render/nw_texture.h>
+#include <glib/core/nw_gengine.h>
+#include <glib/nw_texture.h>
 namespace NW
 {
 	AFrameBuf::AFrameBuf(const char* strName, const FrameBufInfo& rfbInfo) :
@@ -18,7 +18,7 @@ namespace NW
 		m_ColorAttach = ATexture2d::Create(&strClrName[0]);
 		DataSys::AddDataRes<AFrameBuf>(this);
 	}
-	AFrameBuf::~AFrameBuf() { DataSys::RmvDataRes<AFrameBuf>(GetName()); }
+	AFrameBuf::~AFrameBuf() { DataSys::RmvDataRes<AFrameBuf>(GetId()); }
 
 	// --setters
 	void AFrameBuf::SetSizeWH(UInt32 unWidth, UInt32 unHeight) {
@@ -28,21 +28,12 @@ namespace NW
 	AFrameBuf* AFrameBuf::Create(const char* strName, const FrameBufInfo& rfbInfo)
 	{
 		AFrameBuf* pFB = nullptr;
-		switch (GraphEngine::Get().GetGApi()->GetType())
+		switch (GEngine::Get().GetGApi()->GetType())
 		{
-	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-		case GApiTypes::GAPI_COUT:
-			pFB = MemSys::NewT<FrameBufCout>(strName, rfbInfo);
-			break;
-	#endif // NW_GRAPHICS
 	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GApiTypes::GAPI_OPENGL:
-			pFB = MemSys::NewT<FrameBufOgl>(strName, rfbInfo);
-			break;
+		case GApiTypes::GAPI_OPENGL: pFB = MemSys::NewT<FrameBufOgl>(strName, rfbInfo); break;
 	#endif // NW_GRAPHICS
-		default:
-			NW_ERR("Graphics API is not defined");
-			break;
+		default: NW_ERR("Graphics API is not defined"); break;
 		}
 		return pFB;
 	}
@@ -123,82 +114,3 @@ namespace NW
 	// --==</Data methods>==--
 }
 #endif // NW_GRAPHICS
-#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-namespace NW
-{
-	CoutFrameBuf::CoutFrameBuf(CoutWindow* pWindow) :
-		m_ciChars(nullptr), m_pWindow(pWindow),
-		m_xywhRect(m_pWindow->GetRect()), m_whSize({ 0, 0 }), m_whMaxSize({ 0, 0 }),
-		m_unSize(0)
-	{
-		memset(&m_csbInfo, 0, sizeof(m_csbInfo));
-		memset(&m_csbOrigInfo, 0, sizeof(m_csbOrigInfo));
-	}
-	CoutFrameBuf::~CoutFrameBuf()
-	{
-	}
-
-	// --getters
-	// --setters
-	bool CoutFrameBuf::SetSizeWH(Int16 sizeW, Int16 sizeH)
-	{
-		if (m_whSize.X == sizeW || m_whSize.Y == sizeH || !m_pWindow) return false;
-		void* hCout = m_pWindow->GetHCout();
-
-		m_whSize = { sizeW, sizeH }; m_unSize = m_whSize.X * m_whSize.Y;
-		m_xywhRect = { 0, 0, m_whSize.X - 1, m_whSize.Y - 1 };
-
-		m_ciChars = MemSys::NewTArr<ChInfo>(m_unSize);
-		memset(m_ciChars, 0, sizeof(ChInfo) * m_unSize);
-
-		return true;
-	}
-
-	// --==<core_methods>==--
-	bool CoutFrameBuf::OnInit()
-	{
-		if (!SetSizeWH(m_pWindow->GetWindowInfo().usiWidth, m_pWindow->GetWindowInfo().usiHeight))
-		{
-			return false;
-		}
-
-		if (!GetConsoleScreenBufferInfo(m_pWindow->GetHCout(), &m_csbInfo))
-			return false;
-		m_csbOrigInfo = m_csbInfo;
-
-		m_whMaxSize = m_csbInfo.dwMaximumWindowSize;
-		if (m_xywhRect.Right > m_whMaxSize.X || m_xywhRect.Bottom > m_whMaxSize.Y)
-			return false;
-
-		return true;
-	}
-	void CoutFrameBuf::OnQuit()
-	{
-	}
-
-	void CoutFrameBuf::OnUpdate(ChInfo* ciBuffer)
-	{
-		if (ciBuffer == nullptr)
-			ciBuffer = m_ciChars;
-	#ifdef UNICODE
-		WriteConsoleOutputW(m_pWindow->GetHCout(), ciBuffer, m_whSize,
-			{ m_xywhRect.Left, m_xywhRect.Top }, &m_pWindow->GetRect());
-	#else
-		WriteConsoleOutputA(m_pWindow->GetHCout(), ciBuffer, m_whSize,
-			{ m_xywhRect.Left, m_xywhRect.Top }, &m_xywhRect);
-	#endif
-	}
-	// --==</core_methods>==--
-	void CoutFrameBuf::Clear(UInt32 clearColor = 0)
-	{
-		ChInfo clearChar;
-		clearChar.Attributes = clearColor;
-		clearChar.Char.UnicodeChar = ' ';
-		clearChar.Char.AsciiChar = ' ';
-		for (UInt16 px = 0; px < m_unSize; px++)
-		{
-			m_ciChars[px] = clearChar;
-		}
-	}
-}
-#endif	// NW_GRAPHICS

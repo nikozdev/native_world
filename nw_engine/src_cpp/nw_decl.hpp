@@ -9,7 +9,6 @@ namespace NW
 	class NW_API CoreEngine;
 	class NW_API CoreState;
 	// --systems
-	class NW_API EvSys;
 	class NW_API IOSys;
 	class NW_API TimeSys;
 	class NW_API MemSys;

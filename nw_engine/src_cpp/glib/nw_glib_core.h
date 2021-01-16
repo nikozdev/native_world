@@ -1,9 +1,7 @@
 #ifndef GLIB_CORE_H
 #define GLIB_CORE_H
 #include <glib_decl.hpp>
-
-#include <lib/utils/math_vector.h>
-#include <lib/utils/math_matrix.h>
+#include <nw_pch.hpp>
 
 #if (defined NW_GRAPHICS)
 // Functions
@@ -100,6 +98,19 @@ namespace NW
 // Drawing data
 namespace NW
 {
+	/// DrawObjectData struct
+	struct NW_API DrawObjectData
+	{
+		ADrawable* pDrawable = nullptr;
+		UInt8 unDrawOrder = 0;
+		UInt32 unId = 0;
+		// --operators
+		inline bool operator>	(const DrawObjectData& rDOData)	const { return rDOData.unDrawOrder > unDrawOrder; }
+		inline bool operator>=	(const DrawObjectData& rDOData)	const { return rDOData.unDrawOrder >= unDrawOrder; }
+		inline bool operator==	(const DrawObjectData& rDOData)	const { return rDOData.unDrawOrder == unDrawOrder; }
+		inline bool operator<=	(const DrawObjectData& rDOData)	const { return rDOData.unDrawOrder <= unDrawOrder; }
+		inline bool operator<	(const DrawObjectData& rDOData)	const { return rDOData.unDrawOrder < unDrawOrder; }
+	};
 	/// DrawSceneData struct
 	struct NW_API DrawSceneData
 	{
@@ -107,7 +118,7 @@ namespace NW
 		Mat4f m4View;
 	public:
 		DrawSceneData() : pData(&m4Proj[0]), szData(sizeof(Mat4f) * 2) {}
-		inline const void* GetData() const { return pData; }
+		inline const UByte* GetData() const { return static_cast<UByte*>(pData); }
 		inline Size GetDataSize() const { return szData; }
 	private:
 		void* pData;
@@ -116,7 +127,7 @@ namespace NW
 	/// RenderAttributes struct
 	/// Description:
 	/// -- Check and change renderer attributes for more or less performance/resource usage
-	struct NW_API GraphEngineInfo
+	struct NW_API GEngineInfo
 	{
 	public:
 		// Configurations
@@ -136,8 +147,74 @@ namespace NW
 	public:
 		// --setters
 		inline void Reset() {
-			szVtx = szIdx = szShd = unTex = 0;
+			szVtx = szIdx = szShd = 0;
+			unVtx = unIdx = unTex = 0;
 			unDrawCalls = 0;
+		}
+	};
+	struct NW_API DrawTools {
+	public:
+		// --vertex_data
+		UByte* pVtxData = nullptr;
+		UByte* pVtxIter = nullptr;
+		Size szVtxData = 0;
+		// --index_data
+		UInt32* pIdxIter = nullptr;
+		UInt32* pIdxData = nullptr;
+		Size szIdxData = 0;
+		// --shader_data
+		UByte* pShdData = nullptr;
+		UByte* pShdIter = nullptr;
+		Size szShdData = 0;
+		// --texture_data
+		ATexture* pTextures[NW_MAX_TEXTURES];
+		UInt8 unTexCount = 0;
+		// --objects
+		GMaterial* pGMtl = nullptr;
+		AVertexBuf* pVtxBuf = nullptr;
+		AIndexBuf* pIdxBuf = nullptr;
+		AShaderBuf* pShdBuf = nullptr;
+	public:
+		inline void ResetData() {
+			pVtxIter = &pVtxData[0];
+			szVtxData = 0;
+			pIdxIter = &pIdxData[0];
+			szIdxData = 0;
+			pShdIter = &pShdData[0];
+			szShdData = 0;
+			for (UInt8 txi = 0; txi < unTexCount; txi++) { pTextures[txi] = nullptr; }
+			unTexCount = 0;
+		}
+	};
+	struct NW_API DrawConfig {
+		struct {
+			GPrimitiveTypes GPrimitive = PT_TRIANGLES;
+			DrawModes DMode = DM_FILL;
+			Float32 nLineWidth = 0.5f;
+			Float32 nPixelSize = 0.5f;
+		} General;
+		struct {
+			bool bEnable = false;
+			BlendConfigs FactorSrc = BC_SRC_ALPHA;
+			BlendConfigs FactorDest = BC_ONE_MINUS_SRC_ALPHA;
+		} Blending;
+		struct {
+			bool bEnable = false;
+			DepthConfigs Func = DC_GREATER;
+		} DepthTest;
+	public:
+		inline void Reset() {
+			General.GPrimitive = PT_TRIANGLES;
+			General.DMode = DM_FILL;
+			General.nLineWidth = 0.5f;
+			General.nPixelSize = 0.5f;
+
+			Blending.bEnable = false;
+			Blending.FactorSrc = BC_SRC_ALPHA;
+			Blending.FactorDest = BC_ONE_MINUS_SRC_ALPHA;
+
+			DepthTest.bEnable = false;
+			DepthTest.Func = DC_GREATER;
 		}
 	};
 }
@@ -272,7 +349,4 @@ namespace NW
 	extern int OGL_ErrLog_Shader(ShaderTypes ShaderType, UInt32 unShaderId);
 }
 #endif // NW_GRAPHICS
-#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-#endif // NW_GRAPHICS
-
 #endif // GLIB_CORE_H

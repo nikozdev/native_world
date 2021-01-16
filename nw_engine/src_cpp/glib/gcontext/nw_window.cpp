@@ -1,7 +1,10 @@
 #include <nw_pch.hpp>
 #include "nw_window.h"
 
+#include <nwlib/nw_event.h>
+
 #include <sys/nw_mem_sys.h>
+#include <sys/nw_log_sys.h>
 
 #if (defined NW_WINDOW)
 namespace NW
@@ -10,11 +13,6 @@ namespace NW
 	{
 		AWindow* pWindow = nullptr;
 		switch (WApiType) {
-	#if (NW_WINDOW & NW_WINDOW_CONSOLE)
-		case WApiTypes::WAPI_COUT:
-			pWindow = MemSys::NewT<WindowCout>(rWindowInfo);
-			break;
-	#endif	// NW_WINDOW
 	#if (NW_WINDOW & NW_WINDOW_GLFW)
 		case WApiTypes::WAPI_GLFW:
 			pWindow = MemSys::NewT<WindowOgl>(rWindowInfo);
@@ -44,12 +42,10 @@ namespace NW
 		m_WindowInfo.unWidth = rWindowInfo.unWidth;
 		m_WindowInfo.unHeight = rWindowInfo.unHeight;
 		m_WindowInfo.WApiType = WAPI_GLFW;
-		printf("NW::WIN_WINDOW::INIT: %s::%dx%d\n",
+		printf("NW::WINDOW_OGL::INIT: %s::%dx%d\n",
 			&m_WindowInfo.strTitle[0], m_WindowInfo.unWidth, m_WindowInfo.unHeight);
 	}
-	WindowOgl::~WindowOgl()
-	{
-	}
+	WindowOgl::~WindowOgl() { }
 
 	// --setters
 	void WindowOgl::SetTitle(const char* strTitle) {
@@ -62,7 +58,7 @@ namespace NW
 		m_WindowInfo.bVSync = enabled;
 	}
 
-	// --==<Core Functions>==--
+	// --==<core_methods>==--
 	bool WindowOgl::Init()
 	{
 		// init glfw and configure the window
@@ -85,6 +81,16 @@ namespace NW
 		// Bind own data pointer to window. It allows to get this pointer in callback
 		glfwSetWindowUserPointer(m_pNative, &m_WindowInfo);
 
+		glfwSetCursorPosCallback(m_pNative, CbMouseCoord);
+		glfwSetScrollCallback(m_pNative, CbMouseScroll);
+		glfwSetMouseButtonCallback(m_pNative, CbMouseButton);
+		glfwSetKeyCallback(m_pNative, CbKeyboard);
+		glfwSetCharCallback(m_pNative, CbKeyboardChar);
+		glfwSetWindowCloseCallback(m_pNative, CbWindowClose);
+		glfwSetFramebufferSizeCallback(m_pNative, CbWindowSize);
+		glfwSetWindowFocusCallback(m_pNative, CbWindowFocus);
+		glfwSetErrorCallback(CbError);
+
 		return true;
 	}
 	void WindowOgl::OnQuit()
@@ -98,87 +104,68 @@ namespace NW
 	{
 		m_pGContext->SwapBuffers();
 	}
-	// --==</Core Functions>==--
-}
-#endif // NW_WINDOW
-#if (NW_WINDOW & NW_WINDOW_CONSOLE)
+	// --==</core_methods>==--
 
-#include <glib/cout/window/cout_GContext.h>
-#include <glib/cout/render/cout_FrameBuf.h>
+	// --==<callback_methods>==--
+    // --input_callbacks
+    void WindowOgl::CbMouseCoord(GLFWwindow* pWindow, double xCrd, double yCrd)
+    {
+        WindowInfo& rWindowInfo = *(WindowInfo*)(glfwGetWindowUserPointer(pWindow));
+        MouseEvent mEvt = MouseEvent(ET_MOUSE_MOVE, xCrd, yCrd);
+        rWindowInfo.fnEvCallback(mEvt);
+    }
+    void WindowOgl::CbMouseScroll(GLFWwindow* pWindow, double xScrollDelta, double yScrollDelta)
+    {
+        WindowInfo& rWindowInfo = *(WindowInfo*)(glfwGetWindowUserPointer(pWindow));
+        MouseEvent mEvt = MouseEvent(ET_MOUSE_SCROLL, xScrollDelta, yScrollDelta);
+        rWindowInfo.fnEvCallback(mEvt);
+    }
+    void WindowOgl::CbMouseButton(GLFWwindow* pWindow, Int32 nButton, Int32 nAction, Int32 nMode)
+    {   // If the mouse event is gotten - set true/false in the keylist
+        WindowInfo& rWindowInfo = *(WindowInfo*)(glfwGetWindowUserPointer(pWindow));
+        if (nAction == GLFW_PRESS) { rWindowInfo.fnEvCallback(MouseEvent(ET_MOUSE_PRESS, nButton)); }
+        else if (nAction == GLFW_RELEASE) { rWindowInfo.fnEvCallback(MouseEvent(ET_MOUSE_RELEASE, nButton)); }
+    }
+    void WindowOgl::CbKeyboard(GLFWwindow* pWindow, Int32 nKeyCode, Int32 nScanCode, Int32 nAction, Int32 nMode)
+    {   // If the key event is gotten - set true/false in the keylist
+        WindowInfo& rWindowInfo = *(WindowInfo*)(glfwGetWindowUserPointer(pWindow));
+        if (nAction == GLFW_PRESS) { rWindowInfo.fnEvCallback(KeyboardEvent(ET_KEY_PRESS, nKeyCode)); }
+        else if (nAction == GLFW_RELEASE) { rWindowInfo.fnEvCallback(KeyboardEvent(ET_KEY_RELEASE, nKeyCode)); }
+    }
+    void WindowOgl::CbKeyboardChar(GLFWwindow* pWindow, UInt32 unChar)
+    {
+        WindowInfo& rWindowInfo = *(WindowInfo*)(glfwGetWindowUserPointer(pWindow));
+        KeyboardEvent kEvt(ET_KEY_TYPE, unChar);
 
-#include <cn/events/cn_EvSys.h>
+        rWindowInfo.fnEvCallback(kEvt);
+    }
+    // --window_callbacks
+    void WindowOgl::CbWindowClose(GLFWwindow* pWindow)
+    {
+        WindowEvent wEvt = WindowEvent(ET_WINDOW_CLOSE);
+        WindowInfo& rWindowInfo = *(WindowInfo*)(glfwGetWindowUserPointer(pWindow));
 
-#include <cn/library/cn_MemSys.h>
+        glfwSetWindowShouldClose(glfwGetCurrentContext(), true);
+        rWindowInfo.fnEvCallback(wEvt);
+    }
+    void WindowOgl::CbWindowSize(GLFWwindow* pWindow, Int32 nWidth, Int32 nHeight)
+    {
+        WindowEvent wEvt = WindowEvent(ET_WINDOW_RESIZE, nWidth, nHeight);
+        WindowInfo& rWindowInfo = *(WindowInfo*)(glfwGetWindowUserPointer(pWindow));
+        rWindowInfo.unWidth = nWidth; rWindowInfo.unHeight = nHeight;
 
-namespace NW
-{
-	CoutWindow::CoutWindow(const WindowInfo& windowInfo) :
-		AWindow(),
-		m_rGContext(MemSys::NewT<GContextCout>(this)),
-		m_windowInfo(windowInfo), m_xywhRect{ 0, 0, 1, 1 }
-	{
-	}
-	CoutWindow::~CoutWindow()
-	{
-		OnQuit();
-	}
+        glfwSetWindowSize(pWindow, nWidth, nHeight);
+        rWindowInfo.fnEvCallback(wEvt);
+    }
+    void WindowOgl::CbWindowFocus(GLFWwindow* pWindow, Int32 nFocus)
+    {
+        WindowInfo& rWindowInfo = *(WindowInfo*)(glfwGetWindowUserPointer(pWindow));
+        WindowEvent wEvt(ET_WINDOW_FOCUS, nFocus);
 
-	// --setters
-	void CoutWindow::SetVSync(bool enabled)
-	{
-		m_windowInfo.bVSync = enabled;
-	}
-
-	// --core_methods
-	bool CoutWindow::OnInit()
-	{
-		m_hCout = m_hOrigCout = GetStdHandle(STD_OUTPUT_HANDLE);
-		m_hCin = GetStdHandle(STD_INPUT_HANDLE);
-
-		if (m_hCout == INVALID_HANDLE_VALUE || m_hCin == INVALID_HANDLE_VALUE)
-			return false;
-
-		if (!SetConsoleWindowInfo(m_hCout, TRUE, &m_xywhRect))
-			return false;
-		m_xywhRect = { 0, 0, (Int16)m_windowInfo.usiWidth - 1, (Int16)m_windowInfo.usiHeight - 1 };
-
-		if (!SetConsoleScreenBufferSize(m_hCout, { (Int16)m_windowInfo.usiWidth,
-			(Int16)m_windowInfo.usiHeight }) ||
-			!SetConsoleActiveScreenBuffer(m_hCout))
-			return false;
-
-		m_rGContext->SetPxSize({ 8, 16 });
-		if (!m_rGContext->OnInit())
-			return false;
-
-		if (!SetConsoleWindowInfo(m_hCout, TRUE, &m_xywhRect))
-			return false;
-
-		if (!SetConsoleMode(m_hCin, ENABLE_EXTENDED_FLAGS | ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT))
-			return false;
-
-		char title[128];
-		sprintf_s(title, 128, "%s::FPS: %f\0", m_windowInfo.strTitle.c_str(), 0.0f);
-		SetConsoleTitleA(title);
-
-		return true;
-	}
-	void CoutWindow::OnQuit()
-	{
-		m_rGContext->OnQuit();
-		SetConsoleActiveScreenBuffer(m_hOrigCout);
-		system("\a");
-		MemSys::Get().MemoryLog();
-		system("pause");
-	}
-
-	void CoutWindow::OnUpdate()
-	{
-		char title[128];
-		sprintf_s(title, 128, "%s::FPS: %2f\0", m_windowInfo.strTitle.c_str(), EvSys::s_fTimeDelta);
-		SetConsoleTitleA(title);
-
-		m_rGContext->SwapBuffers();
-	}
+        rWindowInfo.fnEvCallback(wEvt);
+    }
+    // Other callbacks
+    void WindowOgl::CbError(Int32 errId, const char* errMsg) { LogSys::WriteErrStr(errId, "{str}", errMsg); }
+	// --==</callback_methods>==--
 }
 #endif // NW_WINDOW

@@ -1,8 +1,6 @@
 #include <nw_pch.hpp>
 #include "nw_gcamera.h"
 
-#include <lib/utils/math_transform.h>
-
 namespace NW
 {
 	GCamera::GCamera() :

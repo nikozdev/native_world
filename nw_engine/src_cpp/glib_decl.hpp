@@ -5,63 +5,64 @@
 
 namespace NW
 {
-	//	--==<Control>==--
-	class NW_API AGraphApi;
-	class NW_API GraphEngine;
-	class NW_API GraphState;
+	//	--==<control>==--
+	class NW_API AGApi;
+	class NW_API GEngine;
+	class NW_API GLayer;
 	class NW_API GCameraLad;
-	//	--==</Control>==--
+	//	--==</control>==--
 
-	//	--==<Vision>==--
+	//	--==<vision>==--
 	class NW_API AShader;
 	class NW_API GMaterial;
 
 	struct NW_API GCamera;
-
 	class NW_API ALightSource3d;
 	class NW_API DirectLight3d;
 	class NW_API PointLight3d;
 	class NW_API SpotLight3d;
-	//	--==</Vision>==--
+	//	--==</vision>==--
 
-	//	--==<Render>==--
-	class NW_API AFrameBuf;
-
+	//	--==<render>==--
 	class NW_API ATexture;
 	class NW_API ATexture1d;
 	class NW_API ATexture2d;
 	class NW_API ATexture3d;
 
-	struct NW_API ADrawable;
-	struct NW_API Particles;
-	struct NW_API PolyLine;
-	struct NW_API Polygons;
-	struct NW_API Triangle;
-	struct NW_API Rectangle;
-	struct NW_API Mesh3d;
-	//	--==</Render>==--
+	class NW_API ADrawable;
+	class NW_API Particles;
+	class NW_API PolyLine;
+	class NW_API Polygons;
+	class NW_API Triangle;
+	class NW_API Rectangle;
+	class NW_API Mesh3d;
+	//	--==</render>==--
 
-	//	--==<GContext>==--
+	//	--==<gcontext>==--
 	class NW_API AWindow;
 	class NW_API AGContext;
-	//	--==</GContext>==--
+	class NW_API AFrameBuf;
+	//	--==</gcontext>==--
 
-	//	--==<Basic Types>==--
+	//	--==<gbuffers>==--
 	class NW_API VertexBufLayout;
 	class NW_API ShaderBufLayout;
 
 	class NW_API AVertexBuf;
 	class NW_API AIndexBuf;
 	class NW_API AShaderBuf;
-	//	--==</Basic Types>==--
+	//	--==</gbuffers>==--
 
-	//	--==<Structs-Enums>==--
+	//	--==<gui>==--
+	struct NW_API GuiIO;
+	struct NW_API GuiStyle;
+	//	--==</gui>==--
+
+	//	--==<structs_enums>==--
 	struct NW_API FrameBufInfo;
 	struct NW_API ImageInfo;
 	struct NW_API TextureInfo;
 	struct NW_API RenderInfo;
-	
-	struct NW_API Pixel;
 
 	struct NW_API VertexBatch1d;
 	struct NW_API VertexBatch2d;
@@ -76,15 +77,18 @@ namespace NW
 	struct NW_API RenderAttribs;
 	struct NW_API RenderLayer;
 
-	/// Graphics API types
+	/// window_api_types
+	enum WApiTypes : UInt32 {
+		WAPI_NONE = 0,
+		WAPI_GLFW = NW_WINDOW_GLFW
+	};
+	/// graphics_api_types
 	/// Interface:
 	/// -> Give it to the GraphicsApi create function
 	/// -> Check the types for the abstracted usage
 	enum GApiTypes : UInt32
 	{
 		GAPI_NONE = 0,
-		GAPI_COUT = NW_GRAPHICS_COUT,
-		GAPI_WIN = NW_GRAPHICS_WIN,
 		GAPI_OPENGL = NW_GRAPHICS_OGL
 	};
 	enum GraphicsBufTypes : UInt32 {
@@ -120,7 +124,7 @@ namespace NW
 		FB_DEPTH = NW_BUFFER_DEPTH_BIT,
 		FB_STENCIL = NW_BUFFER_STENCIL_BIT
 	};
-	enum PrimitiveTypes : UInt32
+	enum GPrimitiveTypes : UInt32
 	{
 		PT_POINTS = NW_POINTS,
 		PT_LINES = NW_LINES,
@@ -164,11 +168,14 @@ namespace NW
 	};
 	enum DepthConfigs : UInt32
 	{
-		DC_ = 0
+		DC_EQUAL = NW_EQUAL,
+		DC_LESS = NW_LESS, DC_LEQUAL = NW_LEQUAL,
+		DC_GREATER = NW_GREATER, DC_GEQUAL = NW_GEQUAL,
+		DC_NEVER = NW_NEVER, DC_ALWAYS = NW_ALWAYS
 	};
-	enum StencilConfigs : UInt32
-	{
-		SC_ = 0
+	enum StencilConfigs : UInt32 {
+		SC_KEEP = NW_KEEP, SC_ZERO = NW_ZERO, SC_REPLACE = NW_REPLACE, SC_INVERT = NW_INVERT,
+		SC_INCR = NW_INCR, SC_DECR = NW_DECR
 	};
 	enum TextureTypes : UInt32 {
 		TT_1D = NW_TEXTURE_1D, TT_2D = NW_TEXTURE_2D, TT_3D = NW_TEXTURE_3D,
@@ -179,16 +186,9 @@ namespace NW
 		TC_FORMAT_RED = NW_RED, TC_FORMAT_GREEN = NW_GREEN, TC_FORMAT_BLUE = NW_BLUE,
 		TC_FORMAT_RGB = NW_RGB, TC_FORMAT_RGBA = NW_RGBA, TC_FORMAT_RGBA8 = NW_RGBA8,
 	};
-	//	--==</Structs-Enums>==--
+	//	--==</structs_enums>==--
 
-	//	--==<Specifications>==--
-#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-	class NW_API WindowCout;
-	class NW_API GContextCout;
-	class NW_API CoutFrameBuf;
-
-	class NW_API GraphicsApiCout;
-#endif	// NW_GRAPHICS
+	//	--==<specifications>==--
 #if (NW_GRAPHICS & NW_GRAPHICS_OGL)
 	class NW_API WindowOgl;
 	class NW_API GContextOgl;
@@ -203,10 +203,10 @@ namespace NW
 	class NW_API AGMaterialOgl;
 	class NW_API Texture2dOgl;
 #endif	// NW_GRAPHICS
-	//	--==</Specifications>==--
+	//	--==</specifications>==--
 }
 
-//	--==<Outside types>==--
+//	--==<extrnal_types>==--
 struct GLFWwindow;
 namespace NW
 {
@@ -214,12 +214,8 @@ namespace NW
 using AppWindow = WindowOgl;
 using NativeWindow = GLFWwindow*;
 #endif	// NW_WINDOW
-#if (NW_WINDOW & NW_WINDOW_CONSOLE)
-using AppWindow = WindowCout;
-using NativeWindow = ::void*;
-#endif	// NW_WINDOW
 }
-//	--==</Outside types>==--
+//	--==</extrnal_types>==--
 
 #define NW_MAX_TEXTURES 8
 #define NW_MIN_TEXTURES 1

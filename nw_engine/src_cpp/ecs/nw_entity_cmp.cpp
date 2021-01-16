@@ -1,28 +1,34 @@
 #include "nw_pch.hpp"
 #include "nw_entity_cmp.h"
 
-#include <ecs/nw_scene.h>
 #include <ecs/nw_entity.h>
+
+#include <sys/nw_data_sys.h>
 
 namespace NW
 {
 	// --==<AbstractEntityCmp>==--
-	AEntityCmp::AEntityCmp(AEntity& rEntity, const CmpTypeId& TypeIndex) :
+	AEntityCmp::AEntityCmp(AEntity& rEntity, const TypeInfo& rTypeInfo) :
+		ADataRes(&(String(&rTypeInfo.name()[10]) + std::to_string(rEntity.GetId()))[0]),
+		m_TypeInfo(rTypeInfo),
 		m_pEntity(&rEntity),
-		m_TypeIndex(TypeIndex), m_bIsEnabled(true)
+		m_bIsEnabled(true)
 	{
-		m_pEntity->AddAComponent(this);
-		Scene::Get().AddAComponent(this);
+		DataSys::AddDataRes<AEntityCmp>(this);
+		m_pEntity->m_ACmps[GetTypeInfo()] = this;
 	}
-	AEntityCmp::AEntityCmp(AEntityCmp& rCpy) :
-		m_pEntity(rCpy.m_pEntity),
-		m_TypeIndex(rCpy.m_TypeIndex), m_bIsEnabled(rCpy.m_bIsEnabled)
+	AEntityCmp::AEntityCmp(const AEntityCmp& rCpy) :
+		ADataRes(rCpy),
+		m_TypeInfo(rCpy.m_TypeInfo),
+		m_pEntity(rCpy.m_pEntity), m_bIsEnabled(rCpy.m_bIsEnabled)
 	{
-		Scene::Get().AddAComponent(this);
+		DataSys::AddDataRes<AEntityCmp>(this);
+		m_pEntity->m_ACmps[GetTypeInfo()] = this;
 	}
 	AEntityCmp::~AEntityCmp()
 	{
-		Scene::Get().RemoveAComponent(this);
+		m_pEntity->m_ACmps.erase(GetTypeInfo());
+		DataSys::RmvDataRes<AEntityCmp>(GetId());
 	}
 	// --==</AbstractEntityCmp>==--
 }

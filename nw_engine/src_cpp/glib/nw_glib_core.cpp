@@ -88,5 +88,3 @@ namespace NW
 	}
 }
 #endif // NW_GRAPHICS
-#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-#endif	// NW_GRAPHICS

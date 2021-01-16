@@ -7,7 +7,7 @@
 
 #if (defined NW_GRAPHICS)
 #include <glib/nw_gbuffer.h>
-#include <glib/control/nw_graph_engine.h>
+#include <glib/core/nw_gengine.h>
 #include <glib/vision/nw_light_source.h>
 namespace NW
 {
@@ -20,7 +20,7 @@ namespace NW
 	ASubShader* ASubShader::Create(const char* strName, ShaderTypes sdType)
 	{
 		ASubShader* pSubShader = nullptr;
-		switch (GraphEngine::Get().GetGApi()->GetType()) {
+		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GAPI_COUT: break;
 	#elif (NW_GRAPHICS & NW_GRAPHICS_OGL)
@@ -41,7 +41,7 @@ namespace NW
 	AShader* AShader::Create(const char* strName)
 	{
 		AShader* pShader = nullptr;
-		switch (GraphEngine::Get().GetGApi()->GetType()) {
+		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GAPI_COUT: break;
 	#elif (NW_GRAPHICS & NW_GRAPHICS_OGL)
@@ -186,7 +186,7 @@ namespace NW
 						}
 						if ((nCurr = strName.find(" ")) != -1) { strName = strName.substr(0, nCurr - 1); }
 						if (nCount > 1) {
-							for (UInt32 bi = 0; bi < nCount; bi++) {
+							for (Int32 bi = 0; bi < nCount; bi++) {
 								Char strCompleteName[128];
 								sprintf(&strCompleteName[0], "%s[%d]", &strName[0], bi);
 								m_pOverShader->m_shdLayout.AddGlobalElem(BufferElement(&strCompleteName[0], sdType, unCount, false));
@@ -197,6 +197,7 @@ namespace NW
 						}
 						return true;
 					}
+					return true;
 				};
 				fnMakeElems("sampler1D", SDT_SAMPLER); fnMakeElems("sampler2D", SDT_SAMPLER); fnMakeElems("sampler3D", SDT_SAMPLER);
 				fnMakeElems("bool", SDT_BOOL); fnMakeElems("char", SDT_INT8); fnMakeElems("short", SDT_INT16); fnMakeElems("int", SDT_INT32);
@@ -335,100 +336,4 @@ namespace NW
 	// --==</core_methods>==--
 }
 
-#endif // NW_GRAPHICS
-#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-#include <app_ecs/cn_ALightSource.h>
-
-#include <math/math_mtx.h>
-
-namespace NW
-{
-	ShaderCout::ShaderCout(const std::string& name) :
-		m_unRId(0), m_strName(name)
-	{
-		Reset();
-	}
-	ShaderCout::~ShaderCout()
-	{
-		Reset();
-	}
-
-	// --getters
-	// --setters
-
-	// --==<Interface Methods>==--
-	void ShaderCout::Enable()
-	{
-	}
-	void ShaderCout::Disable()
-	{
-	}
-	bool ShaderCout::Setup()
-	{
-		if (!SourceCodeProcess());
-		return false;
-
-		return true;
-	}
-	void ShaderCout::Reset()
-	{
-	}
-
-	// -- Attributes&Settings
-	void ShaderCout::SetBool(const char* name, bool value) const
-	{
-	}
-	void ShaderCout::SetInt(const char* name, int value) const
-	{
-	}
-	void ShaderCout::SetFloat(const char* name, float value) const
-	{
-	}
-	void ShaderCout::SetV2f(const char* name, const V2f& value) const
-	{
-	}
-	void ShaderCout::SetV3f(const char* name, const V3f& value) const
-	{
-	}
-	void ShaderCout::SetV4f(const char* name, const V4f& value) const
-	{
-	}
-	void ShaderCout::SetM4f(const char* name, const Mat4f& value) const
-	{
-	}
-
-	// -- Light Sources
-	void ShaderCout::SetLight(const String& name, const DirectLight3d& dtLight) const
-	{
-		SetV3f((name + ".color").c_str(), dtLight.GetColor());
-		SetV3f((name + ".direction").c_str(), dtLight.m_v3Direction);
-	}
-	void ShaderCout::SetLight(const String& name, const PointLight3d& ptLight) const
-	{
-		SetV3f((name + ".color").c_str(), ptLight.GetColor());
-		SetV3f((name + "coord").c_str(), ptLight.m_v3Coord);
-		SetFloat((name + ".atn_const").c_str(), ptLight.m_nAtn_Const);
-		SetFloat((name + ".atn_linear").c_str(), ptLight.m_nAtn_Linear);
-		SetFloat((name + ".atn_quad").c_str(), ptLight.m_nAtn_Quad);
-	}
-	void ShaderCout::SetLight(const String& name, const SpotLight3d& stLight) const
-	{
-		SetV3f((name + ".color").c_str(), stLight.GetColor());
-		SetV3f((name + ".direction").c_str(), stLight.m_v3Direction);
-		SetV3f((name + ".coord").c_str(), stLight.m_v3Coord);
-		SetFloat((name + ".atn_const").c_str(), stLight.m_nAtn_Const);
-		SetFloat((name + ".atn_linear").c_str(), stLight.m_nAtn_Linear);
-		SetFloat((name + ".atn_quad").c_str(), stLight.m_nAtn_Quad);
-		SetFloat((name + ".cutOff_in").c_str(), glm::cos(glm::radians(stLight.m_nAngleIn)));
-		SetFloat((name + ".cutOff_out").c_str(), glm::cos(glm::radians(stLight.m_nAngleOut)));
-	}
-	// --==</Interface Methods>==--
-
-	// --==<Implementation Methods>==--
-	bool ShaderCout::SourceCodeProcess()
-	{
-		return true;
-	}
-	// --==</Implementation Methods>==--
-}
 #endif // NW_GRAPHICS

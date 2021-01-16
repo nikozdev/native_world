@@ -1,9 +1,10 @@
 #ifndef NW_CORE_ENGINE_H
 #define NW_CORE_ENGINE_H
 
-#include <lib/nw_singleton.h>
+#include <nwlib/nw_singleton.h>
 
-#include <nw_decl.hpp>
+#include <core/nw_core_state.h>
+
 #include <glib_decl.hpp>
 
 namespace NW
@@ -20,14 +21,6 @@ namespace NW
 	public:
 		using States = DArray<CoreState*>;
 		friend class ASingleton<CoreEngine>;
-	private: // engine-only attribs
-		String m_strName;
-		bool m_bIsRunning;
-
-		RefOwner<AWindow> m_pWindow;
-
-		States m_States;
-		CoreState* m_pCurrState;
 	private:
 		CoreEngine();
 		CoreEngine(CoreEngine& rCpy) = delete;
@@ -37,16 +30,15 @@ namespace NW
 
 		// --getters
 		inline const char* GetName() { return &m_strName[0]; }
-		inline AWindow* GetWindow() { return m_pWindow.get(); }
 		inline States& GetStates() { return m_States; }
 		inline CoreState* GetState() { return m_pCurrState; }
-		CoreState* GetState(const char* strName);
+		inline CoreState* GetState(const char* strName);
 		// --setters
 		void SetName(const char* strName) { m_strName = strName; }
 		void AddState(CoreState* pState);
 		void RemoveState(const char* strName);
 		void SwitchState(const char* strName);
-		// -- Predicates
+		// --predicates
 		bool IsRunning() const { return m_bIsRunning; }
 
 		// --core_methods
@@ -56,7 +48,18 @@ namespace NW
 	private:
 		inline void Update();
 		inline void OnEvent(AEvent& rEvt);
+	private:
+		String m_strName;
+		bool m_bIsRunning;
+
+		States m_States;
+		CoreState* m_pCurrState;
 	};
+	inline CoreState* CoreEngine::GetState(const char* strName) {
+		States::iterator itState = std::find_if(m_States.begin(), m_States.end(),
+			[=](CoreState* pState)->bool {return strcmp(pState->GetName(), strName) == 0; });
+		return itState == m_States.end() ? nullptr : *itState;
+	}
 }
 
 #endif	// NW_CORE_ENGINE_H

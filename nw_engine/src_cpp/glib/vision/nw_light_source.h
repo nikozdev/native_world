@@ -3,8 +3,6 @@
 
 #include <glib_decl.hpp>
 
-#include <lib/utils/math_vector.h>
-
 namespace NW
 {
 	/// Abstract LightSource class

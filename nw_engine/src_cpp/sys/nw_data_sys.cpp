@@ -3,14 +3,13 @@
 
 #include <core/nw_core_state.h>
 #include <ecs/nw_scene.h>
-#include <lua/nw_lua_vm.h>
+#include <lua/nw_lua_engine.h>
 
 #include <glib/gcontext/nw_window.h>
 #include <glib/vision/nw_gmaterial.h>
 #include <glib/vision/nw_shader.h>
-#include <glib/render/nw_texture.h>
+#include <glib/nw_texture.h>
 
-#include <sys/nw_ev_sys.h>
 #include <sys/nw_mem_sys.h>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -99,7 +98,7 @@ namespace NW
         char strRes[nMaxChars]{ 0 };
         OPENFILENAMEA ofn{ 0 };
         ofn.lStructSize = sizeof(ofn);
-        ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)(EvSys::s_pAppWindow->GetNativeWindow()));
+        ofn.hwndOwner = glfwGetWin32Window(glfwGetCurrentContext());
         ofn.lpstrFile = &strRes[0];
         ofn.nMaxFile = sizeof(strRes);
         ofn.lpstrFilter = strFilter;
@@ -116,7 +115,7 @@ namespace NW
         char strRes[nMaxChars] { 0 };
         OPENFILENAMEA ofn{ 0 };
         ofn.lStructSize = sizeof(ofn);
-        ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)(EvSys::s_pAppWindow->GetNativeWindow()));
+        ofn.hwndOwner = glfwGetWin32Window(glfwGetCurrentContext());
         ofn.lpstrFile = &strRes[0];
         ofn.nMaxFile = nMaxChars;
         ofn.lpstrFilter = strFilter;

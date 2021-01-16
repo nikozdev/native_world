@@ -1,7 +1,7 @@
 #include "nw_pch.hpp"
 #include "nw_log_sys.h"
 
-#include <lua/nw_lua_vm.h>
+#include <lua/nw_lua_engine.h>
 
 NW::LogSys::ErrStack NW::LogSys::s_ErrStack;
 
@@ -72,6 +72,6 @@ namespace NW
 // --==<Log Streams>==--
 namespace NW
 {
-	LogSys::LogOut& operator<<(LogSys::LogOut& rOStream, const LuaVMInfo& rLuaInfo) { return rLuaInfo.operator<<(rOStream); }
+	LogSys::LogOut& operator<<(LogSys::LogOut& rOStream, const LuaEngineInfo& rLuaInfo) { return rLuaInfo.operator<<(rOStream); }
 }
 // --==</Log Streams>==--

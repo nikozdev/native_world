@@ -2,6 +2,11 @@
 #define LUA_WRAPS_H
 
 #include <ecs/nw_scene.h>
+#include <ecs/nw_transform_cmp.h>
+#include <ecs/nw_graphics_cmp.h>
+#include <ecs/nw_physics_cmp.h>
+#include <ecs/nw_script_cmp.h>
+#include <ecs/nw_collider_cmp.h>
 
 #include <lua/nw_lua_core.h>
 
@@ -32,35 +37,35 @@ namespace NW
 	AEntityCmp* CreateCmpOfEnt(AEntity* pEnt, const char* strCmpName) {
 		if (pEnt == nullptr) return nullptr;
 		if (strcmp(strCmpName, "cmp_transform_2d") == 0) {
-			return pEnt->CreateComponent<Transform2dCmp>();
+			return pEnt->AddCmp<Transform2dCmp>();
 		}
 		else if (strcmp(strCmpName, "cmp_transform_3d") == 0) {
-			return pEnt->CreateComponent<Transform3dCmp>();
+			return pEnt->AddCmp<Transform3dCmp>();
 		}
 		else if (strcmp(strCmpName, "cmp_graphics_2d") == 0) {
-			return pEnt->CreateComponent<Graphics2dCmp>();
+			return pEnt->AddCmp<Graphics2dCmp>();
 		}
 		else if (strcmp(strCmpName, "cmp_graphics_3d") == 0) {
-			return pEnt->CreateComponent<Graphics2dCmp>();
+			return pEnt->AddCmp<Graphics2dCmp>();
 		}
 		return nullptr;
 	}
 	AEntityCmp* GetCmpOfEnt(AEntity* pEnt, const char* strCmpName) {
 		if (pEnt == nullptr) return nullptr;
 		if (strcmp(strCmpName, "cmp_transform_2d") == 0 || strcmp(strCmpName, "cmp_transform_3d") == 0) {
-			return pEnt->GetComponent<ATransformCmp>();
+			return pEnt->GetCmp<ATransformCmp>();
 		}
 		else if (strcmp(strCmpName, "cmp_graphics_2d") == 0 || strcmp(strCmpName, "cmp_graphics_3d") == 0) {
-			return pEnt->GetComponent<AGraphicsCmp>();
+			return pEnt->GetCmp<AGraphicsCmp>();
 		}
 		return nullptr;
 	}
 	// -- Support methods
 	static inline AEntity* GetEntByArg(LuaState* pLState, Int32 nIdx) {
 		Int32 nTypeArg = lua_type(pLState, nIdx);
-		if (nTypeArg == LT_STR) { return Scene::Get().GetEntity(lua_tostring(pLState, nIdx)); }
+		if (nTypeArg == LT_STR) { return DataSys::GetDataRes<AEntity>(lua_tostring(pLState, nIdx)); }
 		else if (nTypeArg == LT_LUD) { return static_cast<AEntity*>(lua_touserdata(pLState, nIdx)); }
-		else if (nTypeArg == LT_NUM) { return Scene::Get().GetEntity(lua_tonumber(pLState, nIdx)); }
+		else if (nTypeArg == LT_NUM) { return DataSys::GetDataRes<AEntity>(lua_tonumber(pLState, nIdx)); }
 		else { return nullptr; }
 	}
 	class NW_API LuaCmpSys
@@ -85,7 +90,7 @@ namespace NW
 		static inline Int32 GetCmpId(LuaState* pLState) {
 			AEntityCmp* pCmp = GetCmpByArg(pLState, -1);
 
-			if (pCmp != nullptr) { lua_pushnumber(pLState, pCmp->GetCmpId()); }
+			if (pCmp != nullptr) { lua_pushnumber(pLState, pCmp->GetId()); }
 			else { lua_pushnil(pLState); }
 			return 1;
 		}
@@ -93,7 +98,7 @@ namespace NW
 		static inline Int32 GetCmpName(LuaState* pLState) {
 			AEntityCmp* pCmp = GetCmpByArg(pLState, -1);
 
-			if (pCmp != nullptr) { lua_pushstring(pLState, pCmp->GetTypeName()); }
+			if (pCmp != nullptr) { lua_pushstring(pLState, pCmp->GetName()); }
 			else { lua_pushnil(pLState); }
 			return 1;
 		}
@@ -133,19 +138,21 @@ namespace NW
 			Int32 nTypeArg = lua_type(pLState, -1);
 			if (nTypeArg == LT_LUD) {	// Destroy by ref
 				pCmp = static_cast<AEntityCmp*>(lua_touserdata(pLState, -1));
-				pCmp->GetEntity()->RemoveAComponent(pCmp->GetTypeId());
+				pCmp->GetEntity()->RmvACmp(pCmp->GetTypeInfo());
+				MemSys::DelT<AEntityCmp>(pCmp);
 			}
 			else {
 				AEntity* pEnt = GetEntByArg(pLState, -2);
 				if (pEnt == nullptr) { return 0; }
 				else if (nTypeArg == LT_STR) {	// Destroy by name/id
 					if (pCmp = GetCmpOfEnt(pEnt, lua_tostring(pLState, -1))) {
-						pEnt->RemoveAComponent(pCmp->GetTypeId());
+						pEnt->RmvACmp(pCmp->GetTypeInfo());
 					}
 				}
 				else if (nTypeArg == LT_NUM) {
 					if (pCmp = GetCmpByArg(pLState, -1)) {
-						pEnt->RemoveAComponent(pCmp->GetTypeId());
+						pEnt->RmvACmp(pCmp->GetTypeInfo());
+						MemSys::DelT<AEntityCmp>(pCmp);
 					}
 				}
 			}
@@ -157,11 +164,11 @@ namespace NW
 			const char* strKey = lua_tostring(pLState, -1);
 
 			if (strcmp(strKey, "cmp_id") == 0) {
-				lua_pushnumber(pLState, pCmp->GetCmpId());
+				lua_pushnumber(pLState, pCmp->GetId());
 				return 1;
 			}
 			else if (strcmp(strKey, "name") == 0) {
-				lua_pushstring(pLState, pCmp->GetTypeName());
+				lua_pushstring(pLState, pCmp->GetName());
 				return 1;
 			}
 			else if (strcmp(strKey, "is_enabled") == 0) {
@@ -297,7 +304,7 @@ namespace NW
 		/// In Lua: "ent_sys.create_ent(void/ent_name)"
 		static inline Int32 CreateEnt(LuaState* pLState) {
 			Int32 nType = lua_type(pLState, -1);
-			AEntity* pEnt = Scene::Get().CreateEntity();
+			AEntity* pEnt = MemSys::NewT<AEntity>();
 			
 			if (nType == LT_STR) { pEnt->SetName(lua_tostring(pLState, -1)); }
 			else { lua_pop(pLState, -1); }

@@ -1,8 +1,30 @@
 #include <nw_pch.hpp>
-#include <ecs/nw_scene.h>
+#include "nw_transform_cmp.h"
+
+#include <ecs/nw_entity.h>
+#include <ecs/nw_graphics_cmp.h>
+
+#include <sys/nw_data_sys.h>
 
 namespace NW
 {
+	// --==<ATransformCmp>==--
+	ATransformCmp::ATransformCmp(AEntity& rEntity) :
+		AEntityCmp(rEntity, std::type_index(typeid(ATransformCmp)))
+	{
+		DataSys::AddDataRes<ATransformCmp>(this);
+	}
+	ATransformCmp::ATransformCmp(ATransformCmp& rCpy) :
+		AEntityCmp(rCpy)
+	{
+		DataSys::AddDataRes<ATransformCmp>(this);
+	}
+	ATransformCmp::~ATransformCmp()
+	{
+		DataSys::RmvDataRes<ATransformCmp>(GetId());
+	}
+	// --==</ATransformCmp>==--
+
 	// --==<Transform2dCmp>==--
 	Transform2dCmp::Transform2dCmp(AEntity& rEntity) :
 		ATransformCmp(rEntity),
@@ -23,14 +45,14 @@ namespace NW
 		Mat4f m4TForm = GetTransformMatrix();
 		if (AEntity* pOverEnt = GetEntity()) {
 			while (pOverEnt = pOverEnt->GetOverEnt()) {
-				if (ATransformCmp* pTFCmp = pOverEnt->GetComponent<ATransformCmp>()) {
+				if (ATransformCmp* pTFCmp = pOverEnt->GetCmp<ATransformCmp>()) {
 					m4TForm = glm::translate(m4TForm, V3f{ pTFCmp->GetCoord().x, pTFCmp->GetCoord().y, 0.0f });
 					m4TForm = glm::rotate(m4TForm, pTFCmp->GetRotation().z * 3.14f / 180.0f, V3f(0.0f, 0.0f, 1.0f));
 					m4TForm = glm::scale(m4TForm, V3f{ pTFCmp->GetScale().x, pTFCmp->GetScale().y, 1.0f });
 				}
 			}
 		}
-		if (AGraphicsCmp* pGCmp = GetEntity()->GetComponent<AGraphicsCmp>())
+		if (AGraphicsCmp* pGCmp = GetEntity()->GetCmp<AGraphicsCmp>())
 			pGCmp->GetDrawable()->m4Transform = m4TForm;
 	}
 	// --==</Transform2dCmp>==--
@@ -57,7 +79,7 @@ namespace NW
 		Mat4f m4TForm = GetTransformMatrix();
 		if (AEntity* pOverEnt = GetEntity()) {
 			while (pOverEnt = pOverEnt->GetOverEnt()) {
-				if (ATransformCmp* pTFCmp = pOverEnt->GetComponent<ATransformCmp>()) {
+				if (ATransformCmp* pTFCmp = pOverEnt->GetCmp<ATransformCmp>()) {
 					m4TForm = glm::translate(m4TForm, V3f{ pTFCmp->GetCoord().x, pTFCmp->GetCoord().y, 0.0f });
 					m4TForm = glm::rotate(m4TForm, pTFCmp->GetRotation().x * 3.14f / 180.0f, V3f(1.0f, 0.0f, 0.0f));
 					m4TForm = glm::rotate(m4TForm, pTFCmp->GetRotation().y * 3.14f / 180.0f, V3f(0.0f, 1.0f, 0.0f));
@@ -66,9 +88,8 @@ namespace NW
 				}
 			}
 		}
-		if (AGraphicsCmp* pGCmp = GetEntity()->GetComponent<AGraphicsCmp>())
+		if (AGraphicsCmp* pGCmp = GetEntity()->GetCmp<AGraphicsCmp>())
 			pGCmp->GetDrawable()->m4Transform = m4TForm;
 	}
 	// --==</Transform3dCmp>==--
-
 }

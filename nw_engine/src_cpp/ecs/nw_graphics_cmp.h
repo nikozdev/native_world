@@ -3,7 +3,7 @@
 
 #include <ecs/nw_entity_cmp.h>
 
-#include <glib/render/nw_drawable.h>
+#include <glib/nw_drawable.h>
 #include <glib/vision/nw_gmaterial.h>
 
 namespace NW
@@ -12,12 +12,12 @@ namespace NW
 	class NW_API AGraphicsCmp : public AEntityCmp
 	{
 	public:
-		UInt8 unDrawOrder = 0;
-		GraphState* pGState = nullptr;
+		DrawObjectData DOData;
+		GLayer* pGLayer = nullptr;
 	public:
-		AGraphicsCmp(AEntity& rEntity) :
-			AEntityCmp(rEntity, std::type_index(typeid(AGraphicsCmp))) { }
-		virtual ~AGraphicsCmp() = default;
+		AGraphicsCmp(AEntity& rEntity);
+		AGraphicsCmp(AGraphicsCmp& rCpy);
+		virtual ~AGraphicsCmp();
 
 		// --getters
 		virtual inline ADrawable* GetDrawable() = 0;

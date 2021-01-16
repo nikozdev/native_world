@@ -1,7 +1,6 @@
 #ifndef NW_GCAMERA_H
 #define NW_GCAMERA_H
-
-#include <lib/utils/math_transform.h>
+#include <nw_core.hpp>
 
 namespace NW
 {
