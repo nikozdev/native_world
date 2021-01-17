@@ -361,9 +361,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src_glsl\batch_3d.glsl">
-      <Filter>src_glsl</Filter>
-    </None>
     <None Include="src_glsl\shd_2d_batch.glsl">
       <Filter>src_glsl</Filter>
     </None>
@@ -384,6 +381,9 @@
     </None>
     <None Include="src_lua\estates\est_default.lua">
       <Filter>src_lua\estates</Filter>
+    </None>
+    <None Include="src_glsl\shd_batch_3d.glsl">
+      <Filter>src_glsl</Filter>
     </None>
   </ItemGroup>
 </Project>

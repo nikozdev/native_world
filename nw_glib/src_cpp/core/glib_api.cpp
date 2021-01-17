@@ -1,9 +1,9 @@
 #include <glib_pch.hpp>
-#include "glib_api.h"
+#include "core/glib_api.h"
 
 #if (defined GLIB_GAPI)
 #include <glib_core.hpp>
-#include <glib_context.h>
+#include <core/glib_context.h>
 #include <glib_framebuf.h>
 namespace GLIB
 {
@@ -28,11 +28,10 @@ namespace GLIB
 {
 	GApiOgl::GApiOgl() :
 		m_gapiType(GAPI_OPENGL),
-		m_unPrimitiveTypeId(PT_TRIANGLES),
-		m_pGContext(nullptr) {}
+		m_unPrimitiveTypeId(PT_TRIANGLES) {}
 	GApiOgl::~GApiOgl() = default;
 
-	// --==<Setters>==--
+	// --==<setters>==--
 	void GApiOgl::SetModes(bool bEnable, ProcModes unModeId) {
 		if (bEnable) { glEnable(unModeId); }
 		else { glDisable(unModeId); }
@@ -45,12 +44,12 @@ namespace GLIB
 	void GApiOgl::SetBlendFunc(BlendConfigs unSrcFactorId, BlendConfigs unDestFactorId) { glBlendFunc(unSrcFactorId, unDestFactorId); }
 	void GApiOgl::SetDepthFunc(DepthConfigs unDepthFuncId) { glDepthFunc(unDepthFuncId); }
 	void GApiOgl::SetStencilFunc(StencilConfigs unFuncId, UInt32 unRefValue, UInt8 unBitMask) { glStencilFunc(unFuncId, unRefValue, unBitMask); }
-	// --==</Setters>==--
+	// --==</setters>==--
 
-	// --==<Drawing>==--
+	// --==<drawing>==--
 	void GApiOgl::DrawIndexed(UInt32 unIndexCount) { glDrawElements(m_unPrimitiveTypeId, unIndexCount, GL_UNSIGNED_INT, nullptr); }
 	void GApiOgl::DrawArray(UInt32 unVertexCount) { glDrawArrays(m_unPrimitiveTypeId, 0, unVertexCount); }
-	// --==</Drawing>==--
+	// --==</drawing>==--
 
 }
 #endif // GLIB_GAPI

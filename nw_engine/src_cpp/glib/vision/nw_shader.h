@@ -28,8 +28,8 @@ namespace NW
 		virtual bool Compile() = 0;
 		virtual void Reset() = 0;
 		// --data_methods
-		virtual bool SaveF(const char* strFPath) = 0;
-		virtual bool LoadF(const char* strFPath) = 0;
+		virtual bool SaveF(const char* strFPath) override;
+		virtual bool LoadF(const char* strFPath) override;
 		static ASubShader* Create(const char* strName, ShaderTypes sdType);
 	protected:
 		UInt32 m_unRId;
@@ -73,8 +73,8 @@ namespace NW
 		virtual void Reset() = 0;
 
 		// --data_methods
-		virtual bool SaveF(const char* strFPath) = 0;
-		virtual bool LoadF(const char* strFPath) = 0;
+		virtual bool SaveF(const char* strFPath) override;
+		virtual bool LoadF(const char* strFPath) override;
 
 		static AShader* Create(const char* strName);
 
@@ -121,9 +121,6 @@ namespace NW
 		virtual void Detach() override;
 		virtual bool Compile() override;
 		virtual void Reset() override;
-		// --data_methods
-		virtual bool SaveF(const char* strFPath) override;
-		virtual bool LoadF(const char* strFPath) override;
 	private:
 		inline bool CodeProc();
 	private:
@@ -157,10 +154,6 @@ namespace NW
 		virtual void Disable() override;
 		virtual bool Compile() override;
 		virtual void Reset() override;
-		// --data_methods
-		virtual bool SaveF(const char* strFPath) override;
-		virtual bool LoadF(const char* strFPath) override;
-
 		// --code_setters
 		virtual void SetBool(const char* strName, bool value) const override;
 		virtual void SetInt(const char* strName, int value) const override;

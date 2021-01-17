@@ -1,13 +1,16 @@
 #include <glib_pch.hpp>
 #include "glib_framebuf.h"
+#include <glib_texture.h>
 
 #if (defined GLIB_GAPI)
-#include <glib_engine.h>
-#include <glib_texture.h>
+#include <core/glib_engine.h>
+#include <core/glib_api.h>
 namespace GLIB
 {
 	AFrameBuf::AFrameBuf(const char* strName, const FrameBufInfo& rfbInfo) :
-		m_Info(rfbInfo), m_unRId(0), m_unRIdDepth(0), m_ColorAttach(nullptr)
+		AGRes(strName),
+		m_unRId(0),
+		m_Info(rfbInfo), m_unRIdDepth(0), m_ColorAttach(nullptr)
 	{
 		String strClrName = strName;
 		m_ColorAttach = ATexture2d::Create(&strClrName[0]);
@@ -64,7 +67,6 @@ namespace GLIB
 			m_Info.unWidth > 4096 || m_Info.unWidth == 0) {
 			return;
 		}
-
 		if (m_unRId != 0 || m_ColorAttach->GetRenderId() != 0 || m_unRIdDepth != 0) {
 			glDeleteFramebuffers(1, &m_unRId);
 			glDeleteRenderbuffers(1, &m_unRIdDepth);

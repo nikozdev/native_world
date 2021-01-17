@@ -1,19 +1,20 @@
 #ifndef GLIB_GMATERIAL_H
 #define GLIB_GMATERIAL_H
-
+#include <core/glib_res.h>
 #include <glib_tools.h>
 
 namespace GLIB
 {
 	/// GraphicsMaterial Class
 	/// Description:
-	class GLIB_API GMaterial
+	class GLIB_API GMaterial : public AGRes
 	{
 	public:
 		using Textures = HashMap<String, ATexture*>;
 		using Colors = HashMap<String, V4f>;
 	public:
 		GMaterial(const char* strName);
+		GMaterial(GMaterial& rCpy);
 		virtual ~GMaterial();
 
 		// --getters
@@ -38,8 +39,10 @@ namespace GLIB
 		// --core_methods
 		void Enable();
 		void Disable();
+		// --data_methods
+		virtual bool SaveF(const char* strFPath) override;
+		virtual bool LoadF(const char* strFPath) override;
 	public:
-		String m_strName;
 		AShader* m_pShader;
 		Textures m_Textures;
 		Colors m_Colors;

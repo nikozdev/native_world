@@ -1,5 +1,5 @@
 #include <glib_pch.hpp>
-#include "glib_window.h"
+#include "core/glib_window.h"
 
 #include <glib_event.h>
 
@@ -61,11 +61,7 @@ namespace GLIB
 	// --==<core_methods>==--
 	bool WindowOgl::Init()
 	{
-		// init glfw and configure the window
-		if (!s_GLFWinit) {
-			s_GLFWinit = glfwInit() == GLFW_TRUE;
-			GLIB_ASSERT(s_GLFWinit, "Could not initialize GLFW");
-		}
+		if (!s_GLFWinit) { s_GLFWinit = (glfwInit() == GLFW_TRUE); }
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);

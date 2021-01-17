@@ -107,9 +107,9 @@ namespace NW
 		memcpy(m_DTools.pVtxIter, pVtx, szVtx);
 		m_DTools.pVtxIter += szVtx;
 		m_DTools.szVtxData += szVtx;
-		// idx_data:
-		memcpy(m_DTools.pIdxIter, pIdx, szIdx);
-		m_DTools.pIdxIter += szIdx;
+		// idx_data: WARNING:: it doesn't works because we need to know vertex count
+		UInt32 unCount = szIdx / sizeof(UInt32);
+		for (UInt32 idi = 0; idi < unCount; idi++) { *m_DTools.pIdxIter++ = pIdx[idi]; }
 		m_DTools.szIdxData += szIdx;
 	}
 	void GLayer::UploadShaderData(const void* pShd, Size szShd)

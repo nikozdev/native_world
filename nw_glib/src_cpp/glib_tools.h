@@ -6,7 +6,7 @@
 // Functions
 namespace GLIB
 {
-	inline Size SDType_GetSize(ShaderDataTypes sDataType, UInt32 unCount = 1) {
+	inline Size SDTypeGetSize(ShaderDataTypes sDataType, UInt32 unCount = 1) {
 		Size szData = 0;
 		switch (sDataType) {
 		case SDT_BOOL:	case SDT_INT8:		case SDT_UINT8:		szData = 1;	break;
@@ -17,7 +17,7 @@ namespace GLIB
 		}
 		return szData * unCount;
 	}
-	inline Size SDType_GetAllignedSize(ShaderDataTypes sDataType, UInt32 unCount = 1) {
+	inline Size SDTypeGetAllignedSize(ShaderDataTypes sDataType, UInt32 unCount = 1) {
 		Size szAll = 0;
 		switch (sDataType) {
 		case SDT_BOOL:	case SDT_INT8:	case SDT_UINT8:			szAll = 4;	break;
@@ -29,7 +29,7 @@ namespace GLIB
 		}
 		return szAll * ((unCount + (szAll - 1)) & ~(szAll - 1));
 	}
-	inline const char* SDType_GetString(ShaderDataTypes sdType) {
+	inline const char* SDTypeGetString(ShaderDataTypes sdType) {
 		return sdType == SDT_BOOL ? "boolean" :
 			sdType == SDT_INT8 ? "byte" : sdType == SDT_UINT8 ? "unsigned byte" :
 			sdType == SDT_INT16 ? "short" : sdType == SDT_UINT16 ? "unsigned short" :
@@ -100,10 +100,17 @@ namespace GLIB
 	/// DrawObjectData struct
 	struct GLIB_API DrawObjectData
 	{
-		DArray<UByte> vtxData;
-		DArray<UInt32> IdxData;
+		DArray<UByte> vtxData = DArray<UByte>(1, 1);
+		DArray<UInt32> idxData = DArray<UInt32>(1, 1);
 		UInt8 unDrawOrder = 0;
-		UInt32 unId = 0;
+		GMaterial* pGMtl = nullptr;
+	public:
+		// --getters
+		inline const UByte* GetVtxData() const { return &vtxData[0]; }
+		inline const UInt32* GetIdxData() const { return &idxData[0]; }
+		inline Size GetVtxSize() const { return vtxData.size(); }
+		inline Size GetIdxSize() const { return idxData.size() * sizeof(UInt32); }
+		inline Size GetIdxCount() const { return idxData.size(); }
 		// --operators
 		inline bool operator>	(const DrawObjectData& rDOData)	const { return rDOData.unDrawOrder > unDrawOrder; }
 		inline bool operator>=	(const DrawObjectData& rDOData)	const { return rDOData.unDrawOrder >= unDrawOrder; }
@@ -118,6 +125,7 @@ namespace GLIB
 		Mat4f m4View;
 	public:
 		DrawSceneData() : pData(&m4Proj[0]), szData(sizeof(Mat4f) * 2) {}
+		// --getters
 		inline const UByte* GetData() const { return static_cast<UByte*>(pData); }
 		inline Size GetDataSize() const { return szData; }
 	private:
@@ -165,7 +173,7 @@ namespace GLIB
 		ATexture* pTextures[GLIB_MAX_TEXTURES];
 		UInt8 unTexCount = 0;
 		// --objects
-		GMaterial* pGMtl = nullptr;
+		AShader* pShader = nullptr;
 		AVertexBuf* pVtxBuf = nullptr;
 		AIndexBuf* pIdxBuf = nullptr;
 		AShaderBuf* pShdBuf = nullptr;

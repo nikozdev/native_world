@@ -5,10 +5,9 @@
 
 namespace GLIB
 {
-	class GLIB_API GApi;
+	class GLIB_API AGApi;
 	class GLIB_API GEngine;
-	class GLIB_API GLayer;
-	class GLIB_API GCameraLad;
+	struct GLIB_API GLayer;
 
 	class GLIB_API AShader;
 	class GLIB_API GMaterial;
@@ -17,14 +16,6 @@ namespace GLIB
 	class GLIB_API ATexture1d;
 	class GLIB_API ATexture2d;
 	class GLIB_API ATexture3d;
-
-	class GLIB_API ADrawable;
-	class GLIB_API Particles;
-	class GLIB_API PolyLine;
-	class GLIB_API Polygons;
-	class GLIB_API Triangle;
-	class GLIB_API Rectangle;
-	class GLIB_API Mesh3d;
 
 	class GLIB_API AWindow;
 	class GLIB_API AGContext;
@@ -36,6 +27,8 @@ namespace GLIB
 	class GLIB_API AVertexBuf;
 	class GLIB_API AIndexBuf;
 	class GLIB_API AShaderBuf;
+
+	class GLIB_API GCameraLad;
 }
 namespace GLIB
 {

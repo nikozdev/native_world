@@ -1,6 +1,8 @@
 #include <glib_pch.hpp>
 #include "glib_material.h"
 
+#include <core/glib_engine.h>
+
 #include <glib_buffer.h>
 #include <glib_texture.h>
 #include <glib_shader.h>
@@ -8,8 +10,10 @@
 namespace GLIB
 {
 	GMaterial::GMaterial(const char* strName) :
-	m_strName(strName) { }
-	GMaterial::~GMaterial() { }
+		AGRes(strName) { GEngine::Get().AddGRes<GMaterial>(this); }
+	GMaterial::GMaterial(GMaterial& rCpy) :
+		GMaterial(&rCpy.m_strName[0]) { }
+	GMaterial::~GMaterial() { GEngine::Get().RmvGRes<GMaterial>(GetId()); }
 
 	// --setters
 	void GMaterial::SetShader(AShader* pShader) {
@@ -21,7 +25,7 @@ namespace GLIB
 			for (auto& itGlob : pShader->GetShdLayout().GetGlobals()) {
 				switch (itGlob.sdType) {
 				case SDT_FLOAT32: if (itGlob.unCount == 4) { m_Colors[itGlob.strName] = V4f{ 1.0f, 1.0f, 1.0f, 1.0f }; } break;
-				case SDT_SAMPLER: m_Textures[itGlob.strName] = nullptr; break;
+				case SDT_SAMPLER: m_Textures[itGlob.strName] = GEngine::Get().GetGResource<ATexture>("tex_white"); break;
 				}
 			}
 		}
@@ -56,4 +60,7 @@ namespace GLIB
 	{
 		m_pShader->Disable();
 	}
+	// --data_methods
+	bool GMaterial::SaveF(const char* strFPath) { return true; }
+	bool GMaterial::LoadF(const char* strFPath) { return true; }
 }

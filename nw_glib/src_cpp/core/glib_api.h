@@ -30,13 +30,12 @@ namespace GLIB
 		virtual void SetViewport(Int32 nX = 0, Int32 nY = 0, Int32 nW = 800, Int32 nH = 600) = 0;
 		virtual void SetLineWidth(UInt16 unPxW) = 0;
 		virtual void SetPixelSize(float unPixelSize) = 0;
-
 		virtual void SetDrawMode(DrawModes unDrawModeId, FacePlanes unFacePlaneId) = 0;
 		virtual void SetPrimitiveType(GPrimitiveTypes unPrimitiveId) = 0;
 		virtual void SetDepthFunc(DepthConfigs unFuncId) = 0;
 		virtual void SetStencilFunc(StencilConfigs unFuncId, UInt32 unRefValue, UInt8 unBitMask) = 0;
 		virtual void SetBlendFunc(BlendConfigs unSrcFactorId, BlendConfigs unDestFactorId) = 0;
-		// --Drawing
+		// --drawing
 		virtual void DrawIndexed(UInt32 unIndexCount) = 0;
 		virtual void DrawArray(UInt32 unVertexCount) = 0;
 
@@ -66,22 +65,18 @@ namespace GLIB
 		// --setters
 		virtual inline void SetPrimitiveType(GPrimitiveTypes unPrimitiveId) override { m_unPrimitiveTypeId = unPrimitiveId; }
 		virtual void SetDrawMode(DrawModes unDrawModeId, FacePlanes unFacePlaneId) override;
-		
 		virtual void SetModes(bool bEnable, ProcModes unModeId) override;
 		virtual void SetClearColor(float nRed, float nGreen, float nBlue, float nAlpha = 1.0f) override;
 		virtual void SetViewport(Int32 nX = 0, Int32 nY = 0, Int32 nW = 800, Int32 nH = 600) override;
 		virtual void SetLineWidth(UInt16 unPxW) override;
 		virtual void SetPixelSize(float unPixelSize) override;
-
 		virtual void SetDepthFunc(DepthConfigs unFuncId) override;
 		virtual void SetStencilFunc(StencilConfigs unFuncId, UInt32 unRefValue, UInt8 unBitMask) override;
 		virtual void SetBlendFunc(BlendConfigs unSrcFactorId, BlendConfigs unDestFactorId) override;
-
-		// --Drawing
+		// --drawing
 		virtual void DrawIndexed(UInt32 unIndexCount) override;
 		virtual void DrawArray(UInt32 unVertexCount) override;
 	private:
-		AGContext* m_pGContext;
 		const GApiTypes m_gapiType;
 		UInt32 m_unPrimitiveTypeId;
 		UInt32 m_unDrawModeId;

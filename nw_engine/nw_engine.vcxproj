@@ -209,7 +209,7 @@
     <ClCompile Include="src_cpp\sys\nw_time_sys.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="src_glsl\batch_3d.glsl" />
+    <None Include="src_glsl\shd_batch_3d.glsl" />
     <None Include="src_glsl\shd_2d_batch.glsl" />
     <None Include="src_glsl\shd_2d_display.glsl" />
     <None Include="src_glsl\shd_2d_tile.glsl" />

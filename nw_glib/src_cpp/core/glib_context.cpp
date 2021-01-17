@@ -1,5 +1,5 @@
 #include <glib_pch.hpp>
-#include "glib_context.h"
+#include "core/glib_context.h"
 
 #if (defined GLIB_GAPI)
 #include <glib_framebuf.h>
@@ -38,12 +38,13 @@ namespace GLIB
 	}
 	void GContextOgl::OnQuit()
 	{
-		if (glfwWindowShouldClose(m_pNativeWindow) == GLFW_TRUE) { glfwTerminate(); }
+		glfwTerminate();
 	}
 
 	void GContextOgl::SwapBuffers()
 	{
 		glfwSwapBuffers(m_pNativeWindow);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	}
 	// --==</core_methods>==--
 }

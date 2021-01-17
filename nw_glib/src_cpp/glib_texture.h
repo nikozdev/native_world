@@ -1,5 +1,6 @@
 #ifndef GLIB_ATEXTURE_H
 #define GLIB_ATEXTURE_H
+#include <core/glib_res.h>
 
 #include <glib_tools.h>
 
@@ -93,10 +94,11 @@ namespace GLIB
 	/// -> Set props and data -> LoadData -> MakeTexture -> Bind drawing stuff
 	/// -> Enable -> Draw -> Disable
 	/// --It's a wrapping image which has to wrap a mesh
-	class GLIB_API ATexture
+	class GLIB_API ATexture : public AGRes
 	{
 	public:
 		ATexture(const char* strName);
+		ATexture(ATexture& rCpy);
 		virtual ~ATexture();
 
 		// --getters
@@ -112,8 +114,10 @@ namespace GLIB
 		virtual void Bind(UInt32 unTexSlot) = 0;
 		virtual void Unbind() = 0;
 		virtual void Remake() = 0;
+		// --data_methods
+		virtual bool SaveF(const char* strFPath) override { return true; }
+		virtual bool LoadF(const char* strFPath) override { return true; }
 	protected:
-		String m_strName;
 		UInt32 m_unRId;
 		UInt32 m_unTexSlot;
 		TextureInfo m_TexInfo;
@@ -125,6 +129,7 @@ namespace GLIB
 	{
 	public:
 		ATexture1d(const char* strName);
+		ATexture1d(ATexture1d& rCpy);
 		virtual ~ATexture1d();
 
 		// --getters
@@ -137,6 +142,9 @@ namespace GLIB
 		virtual void Bind(UInt32 unTexSlot) = 0;
 		virtual void Unbind() = 0;
 		virtual void Remake() = 0;
+		// --data_methods
+		virtual bool SaveF(const char* strFPath) override;
+		virtual bool LoadF(const char* strFPath) override;
 
 		static ATexture1d* Create(const char* strName);
 	};
@@ -145,6 +153,7 @@ namespace GLIB
 	{
 	public:
 		ATexture2d(const char* strName);
+		ATexture2d(ATexture2d& rCpy);
 		virtual ~ATexture2d();
 
 		// --getters
@@ -159,7 +168,10 @@ namespace GLIB
 		virtual void Bind(UInt32 unTexSlot) = 0;
 		virtual void Unbind() = 0;
 		virtual void Remake() = 0;
-		
+		// --data_methods
+		virtual bool SaveF(const char* strFPath) override;
+		virtual bool LoadF(const char* strFPath) override;
+
 		static ATexture2d* Create(const char* strName);
 	private:
 		DArray<SubTexture2d> m_SubTexs;
@@ -169,6 +181,7 @@ namespace GLIB
 	{
 	public:
 		ATexture3d(const char* strName);
+		ATexture3d(ATexture3d& rCpy);
 		virtual ~ATexture3d();
 
 		// --getters
@@ -183,6 +196,9 @@ namespace GLIB
 		virtual void Bind(UInt32 unTexSlot) = 0;
 		virtual void Unbind() = 0;
 		virtual void Remake() = 0;
+		// --data_methods
+		virtual bool SaveF(const char* strFPath) override;
+		virtual bool LoadF(const char* strFPath) override;
 
 		static ATexture3d* Create(const char* strName);
 	};

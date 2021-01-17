@@ -8,7 +8,7 @@
 
 #include <native_world.hpp>
 #include <cmd_engine.h>
-#include <glib_engine.h>
+#include <core/glib_engine.h>
 
 #if (NW_GUI & NW_GUI_IMGUI)
 #include <imgui.h>

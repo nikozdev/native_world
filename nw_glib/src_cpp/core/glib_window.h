@@ -1,7 +1,7 @@
 #ifndef GLIB_AWINDOW_H
 #define GLIB_AWINDOW_H
 
-#include <glib_context.h>
+#include <core/glib_context.h>
 
 #if (defined GLIB_WINDOW)
 namespace GLIB

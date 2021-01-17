@@ -1,6 +1,6 @@
 #ifndef GLIB_AFRAME_BUFFER_H
 #define GLIB_AFRAME_BUFFER_H
-
+#include <core/glib_res.h>
 #include <glib_decl.hpp>
 
 #if (defined GLIB_GAPI)
@@ -15,7 +15,7 @@ namespace GLIB
 		bool bSwapChainTarget = false;
 	};
 	/// Abstract FrameBuf class
-	class GLIB_API AFrameBuf
+	class GLIB_API AFrameBuf : public AGRes
 	{
 	public:
 		AFrameBuf(const char* strName, const FrameBufInfo& rFbInfo);
@@ -34,6 +34,10 @@ namespace GLIB
 		virtual void Remake() = 0;
 		virtual void Clear(UInt32 unAttachmentsMask = FB_COLOR | FB_DEPTH | FB_STENCIL) = 0;
 		
+		// --data_methods
+		virtual bool SaveF(const char* strFPath) override { return true; }
+		virtual bool LoadF(const char* strFPath) override { return true; }
+
 		static AFrameBuf* Create(const char* strName, const FrameBufInfo& rFbInfo);
 	protected:
 		UInt32 m_unRId;

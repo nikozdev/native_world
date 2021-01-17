@@ -15,16 +15,16 @@ namespace GLIB
 		Int32 nActiveTextureId = 0;
 		Int32 nMaxTextures = 0;
 		GContextInfo() = default;
-		explicit GContextInfo(CString sRenderer, CString sVersion,
-			CString sVendor, CString sShadingLanguage) :
+		explicit GContextInfo(const char* sRenderer, const char* sVersion,
+			const char* sVendor, const char* sShadingLanguage) :
 			strRenderer(sRenderer), strVersion(sVersion),
 			strVendor(sVendor), strShadingLanguage(sShadingLanguage) { }
-		explicit GContextInfo(const UChar* sRenderer, const UChar* sVersion,
-			const UChar* sVendor, const UChar* sShadingLanguage) :
-			strRenderer((CString)sRenderer), strVersion((CString)sVersion),
-			strVendor((CString)sVendor), strShadingLanguage((CString)sShadingLanguage) { }
+		explicit GContextInfo(const unsigned char* sRenderer, const unsigned char* sVersion,
+			const unsigned char* sVendor, const unsigned char* sShadingLanguage) :
+			strRenderer((const char*)sRenderer), strVersion((const char*)sVersion),
+			strVendor((const char*)sVendor), strShadingLanguage((const char*)sShadingLanguage) { }
 	};
-	/// GraphicalContext Abstract Class
+	/// Abstract GraphicsContext Class
 	/// Interface:
 	/// -> Create the graphical context -> Initialize it
 	/// -> Swap buffers after rendering
@@ -37,7 +37,7 @@ namespace GLIB
 		virtual inline const GContextInfo& GetInfo() = 0;
 		// --setters
 
-		// Interface Methods
+		// --core_methods
 		virtual bool OnInit() = 0;
 		virtual void OnQuit() = 0;
 

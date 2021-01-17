@@ -1,6 +1,6 @@
 #ifndef GLIB_ASHADER_H
 #define GLIB_ASHADER_H
-
+#include <core/glib_res.h>
 #include <glib_tools.h>
 #include <glib_buffer.h>
 
@@ -8,7 +8,7 @@
 namespace GLIB
 {
 	/// Abstract SubShader Class
-	class GLIB_API ASubShader
+	class GLIB_API ASubShader : public AGRes
 	{
 	public:
 		using Attribs = HashMap<String, Int32>;
@@ -30,12 +30,14 @@ namespace GLIB
 		virtual void Detach() = 0;
 		virtual bool Compile() = 0;
 		virtual void Reset() = 0;
-
+		// --data_methods
+		virtual bool SaveF(const char* strFPath) override;
+		virtual bool LoadF(const char* strFPath) override;
+		
 		static ASubShader* Create(const char* strName, ShaderTypes sdType);
 	protected:
-		String m_strName;
-		String m_strCode;
 		UInt32 m_unRId;
+		String m_strCode;
 		ShaderTypes m_shdType;
 	};
 	/// Abstract Shader Class
@@ -53,7 +55,7 @@ namespace GLIB
 	/// Future:
 	/// -> Shader code preprocessing detects specific uniforms (lights/transform_matricies/...)
 	/// And uses them for setting without giving a particular sstrName
-	class GLIB_API AShader
+	class GLIB_API AShader : public AGRes
 	{
 	public:
 		using Globals = HashMap<String, Int32>;
@@ -65,7 +67,7 @@ namespace GLIB
 		// --getters
 		inline UInt32 GetRenderId() const { return m_unRId; }
 		inline const char* GetCode() const { return &m_strCode[0]; }
-		inline const VertexBufLayout& GetVertexLayout() const { return m_vtxLayout; }
+		inline const VertexBufLayout& GetVtxLayout() const { return m_vtxLayout; }
 		inline const ShaderBufLayout& GetShdLayout() const { return m_shdLayout; }
 		inline const Globals& GetGlobals() const { return m_Globals; }
 		inline const Blocks& GetBlocks() const { return m_Blocks; }
@@ -77,6 +79,9 @@ namespace GLIB
 		virtual void Disable() = 0;
 		virtual bool Compile() = 0;
 		virtual void Reset() = 0;
+		// --data_methods
+		virtual bool SaveF(const char* strFPath) override;
+		virtual bool LoadF(const char* strFPath) override;
 
 		static AShader* Create(const char* strName);
 
@@ -92,9 +97,8 @@ namespace GLIB
 		virtual void SetV4f(const char* strName, const V4f& value) const = 0;
 		virtual void SetM4f(const char* strName, const Mat4f& value) const = 0;
 	protected:
-		String m_strName;
-		String m_strCode;
 		UInt32 m_unRId;
+		String m_strCode;
 		VertexBufLayout m_vtxLayout;
 		ShaderBufLayout m_shdLayout;
 		mutable Globals m_Globals;

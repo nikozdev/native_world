@@ -2,38 +2,161 @@
 #include "glib_texture.h"
 
 #if (defined GLIB_GAPI)
-#include <glib_engine.h>
+#include <core/glib_engine.h>
+#include <core/glib_api.h>
 
 GLIB::UByte GLIB::ATexture::s_ClearColorData[4] = { 255, 255, 255, 255 };
 
 namespace GLIB
 {
 	ATexture::ATexture(const char* strName) :
-		m_strName(strName), m_unRId(0), m_unTexSlot(0),
-		m_TexInfo(TextureInfo()), m_ImgInfo(ImageInfo()) { }
-	ATexture::~ATexture() { }
+		AGRes(strName),
+		m_unRId(0), m_unTexSlot(0),
+		m_TexInfo(TextureInfo()), m_ImgInfo(ImageInfo()) { GEngine::Get().AddGRes<ATexture>(this); }
+	ATexture::ATexture(ATexture& rCpy) : ATexture(&rCpy.m_strName[0]) {}
+	ATexture::~ATexture() { GEngine::Get().RmvGRes<ATexture>(GetId()); }
 
 	// --==<ATexture1d>==--
 	ATexture1d::ATexture1d(const char* strName) :
-	ATexture(strName) { }
-	ATexture1d::~ATexture1d() { }
+	ATexture(strName) { GEngine::Get().AddGRes<ATexture1d>(this); }
+	ATexture1d::ATexture1d(ATexture1d& rCpy) : ATexture1d(&rCpy.m_strName[0]) {}
+	ATexture1d::~ATexture1d() { GEngine::Get().RmvGRes<ATexture1d>(GetId()); }
+	
+	// --data_methods
+	bool ATexture1d::SaveF(const char* strFPath) { return true; }
+	bool ATexture1d::LoadF(const char* strFPath)
+	{
+		String strFile("");
+		Size szBytes = 0;
+		bool bSuccess = true;
+
+		ImageInfo ImgInfoTemp;
+		TextureInfo TexInfoTemp;
+
+		if (!GEngine::Get().LoadFImage(strFPath, &ImgInfoTemp)) {
+			TexInfoTemp.FilterMag = TexInfoTemp.FilterMin = TC_FILTER_NEAREST;
+			TexInfoTemp.Format = TexInfoTemp.InterFormat = TC_FORMAT_RGBA;
+			TexInfoTemp.WrapTypeS = TexInfoTemp.WrapTypeT = TexInfoTemp.WrapTypeR = TC_WRAP_REPEAT;
+
+			ImgInfoTemp.nWidth = ImgInfoTemp.nHeight = ImgInfoTemp.nDepth;
+			ImgInfoTemp.nChannels = 4;
+			ImgInfoTemp.ClrData = &s_ClearColorData[0];
+
+			bSuccess = false;
+		}
+		switch (ImgInfoTemp.nChannels) {
+		case 1: TexInfoTemp.Format = TC_FORMAT_RED; TexInfoTemp.InterFormat = TC_FORMAT_RED; break;
+		case 2: GLIB_ERR("Unsupported format!"); break;
+		case 3: TexInfoTemp.InterFormat = TC_FORMAT_RGB; TexInfoTemp.Format = TC_FORMAT_RGB; break;
+		case 4: TexInfoTemp.Format = TC_FORMAT_RGBA; TexInfoTemp.InterFormat = TC_FORMAT_RGBA8; break;
+		}
+		TexInfoTemp.FilterMag = TexInfoTemp.FilterMin = TC_FILTER_NEAREST;
+		TexInfoTemp.Format = TexInfoTemp.InterFormat = TC_FORMAT_RGBA;
+		TexInfoTemp.WrapTypeS = TexInfoTemp.WrapTypeT = TexInfoTemp.WrapTypeR = TC_WRAP_REPEAT;
+
+		SetInfo(TexInfoTemp);
+		SetInfo(ImgInfoTemp);
+		Remake();
+
+		return bSuccess;
+	}
 	// --==</ATexture1d>==--
 
 	// --==<ATexture2d>==--
 	ATexture2d::ATexture2d(const char* strName) :
 		ATexture(strName) { }
-	ATexture2d::~ATexture2d() { }
+	ATexture2d::ATexture2d(ATexture2d& rCpy) : ATexture2d(&rCpy.m_strName[0]) {}
+	ATexture2d::~ATexture2d() { GEngine::Get().RmvGRes<ATexture2d>(GetId()); }
 
 	void ATexture2d::SetSubTexs(const DArray<SubTexture2d>& rSubTexs) {
 		m_SubTexs = rSubTexs;
 		for (auto& rSub : m_SubTexs) { rSub.pOverTex = this; rSub.whOverTexSize = { m_ImgInfo.nWidth, m_ImgInfo.nHeight }; }
 	}
+	
+	// --data_methods
+	bool ATexture2d::SaveF(const char* strFPath) { return true; }
+	bool ATexture2d::LoadF(const char* strFPath)
+	{
+		String strFile("");
+		Size szBytes = 0;
+		bool bSuccess = true;
+
+		ImageInfo ImgInfoTemp;
+		TextureInfo TexInfoTemp;
+
+		if (!GEngine::Get().LoadFImage(strFPath, &ImgInfoTemp)) {
+			TexInfoTemp.FilterMag = TexInfoTemp.FilterMin = TC_FILTER_NEAREST;
+			TexInfoTemp.Format = TexInfoTemp.InterFormat = TC_FORMAT_RGBA;
+			TexInfoTemp.WrapTypeS = TexInfoTemp.WrapTypeT = TexInfoTemp.WrapTypeR = TC_WRAP_REPEAT;
+
+			ImgInfoTemp.nWidth = ImgInfoTemp.nHeight = ImgInfoTemp.nDepth;
+			ImgInfoTemp.nChannels = 4;
+			ImgInfoTemp.ClrData = &s_ClearColorData[0];
+
+			bSuccess = false;
+		}
+		switch (ImgInfoTemp.nChannels) {
+		case 1: TexInfoTemp.Format = TC_FORMAT_RED; TexInfoTemp.InterFormat = TC_FORMAT_RED; break;
+		case 2: GLIB_ERR("Unsupported format!"); break;
+		case 3: TexInfoTemp.InterFormat = TC_FORMAT_RGB; TexInfoTemp.Format = TC_FORMAT_RGB; break;
+		case 4: TexInfoTemp.Format = TC_FORMAT_RGBA; TexInfoTemp.InterFormat = TC_FORMAT_RGBA8; break;
+		}
+		TexInfoTemp.FilterMag = TexInfoTemp.FilterMin = TC_FILTER_NEAREST;
+		TexInfoTemp.Format = TexInfoTemp.InterFormat = TC_FORMAT_RGBA;
+		TexInfoTemp.WrapTypeS = TexInfoTemp.WrapTypeT = TexInfoTemp.WrapTypeR = TC_WRAP_REPEAT;
+
+		SetInfo(TexInfoTemp);
+		SetInfo(ImgInfoTemp);
+		Remake();
+
+		return bSuccess;
+	}
 	// --==</ATexture2d>==--
 
 	// --==<ATexture3d>==--
 	ATexture3d::ATexture3d(const char* strName) :
-		ATexture(strName) { }
-	ATexture3d::~ATexture3d() { }
+		ATexture(strName) { GEngine::Get().AddGRes<ATexture3d>(this); }
+	ATexture3d::ATexture3d(ATexture3d& rCpy) : ATexture3d(&rCpy.m_strName[0]) { }
+	ATexture3d::~ATexture3d() { GEngine::Get().RmvGRes<ATexture3d>(GetId()); }
+
+	// --data_methods
+	bool ATexture3d::SaveF(const char* strFPath) { return true; }
+	bool ATexture3d::LoadF(const char* strFPath)
+	{
+		String strFile("");
+		Size szBytes = 0;
+		bool bSuccess = true;
+
+		ImageInfo ImgInfoTemp;
+		TextureInfo TexInfoTemp;
+
+		if (!GEngine::Get().LoadFImage(strFPath, &ImgInfoTemp)) {
+			TexInfoTemp.FilterMag = TexInfoTemp.FilterMin = TC_FILTER_NEAREST;
+			TexInfoTemp.Format = TexInfoTemp.InterFormat = TC_FORMAT_RGBA;
+			TexInfoTemp.WrapTypeS = TexInfoTemp.WrapTypeT = TexInfoTemp.WrapTypeR = TC_WRAP_REPEAT;
+
+			ImgInfoTemp.nWidth = ImgInfoTemp.nHeight = ImgInfoTemp.nDepth;
+			ImgInfoTemp.nChannels = 4;
+			ImgInfoTemp.ClrData = &s_ClearColorData[0];
+
+			bSuccess = false;
+		}
+		switch (ImgInfoTemp.nChannels) {
+		case 1: TexInfoTemp.Format = TC_FORMAT_RED; TexInfoTemp.InterFormat = TC_FORMAT_RED; break;
+		case 2: GLIB_ERR("Unsupported format!"); break;
+		case 3: TexInfoTemp.InterFormat = TC_FORMAT_RGB; TexInfoTemp.Format = TC_FORMAT_RGB; break;
+		case 4: TexInfoTemp.Format = TC_FORMAT_RGBA; TexInfoTemp.InterFormat = TC_FORMAT_RGBA8; break;
+		}
+		TexInfoTemp.FilterMag = TexInfoTemp.FilterMin = TC_FILTER_NEAREST;
+		TexInfoTemp.Format = TexInfoTemp.InterFormat = TC_FORMAT_RGBA;
+		TexInfoTemp.WrapTypeS = TexInfoTemp.WrapTypeT = TexInfoTemp.WrapTypeR = TC_WRAP_REPEAT;
+
+		SetInfo(TexInfoTemp);
+		SetInfo(ImgInfoTemp);
+		Remake();
+
+		return bSuccess;
+	}
 	// --==</ATexture3d>==--
 
 	ATexture1d* ATexture1d::Create(const char* strName) {

@@ -45,11 +45,9 @@ namespace GLIB
 	class GLIB_API VertexBufLayout
 	{
 	public:
-		VertexBufLayout() : m_unStride(0) { }
+		VertexBufLayout() : m_unStride(1) { }
 		VertexBufLayout(const DArray<BufferElement>& rBufElems) :
-			m_unStride(0) {
-			SetElements(rBufElems);
-		}
+			m_unStride(1) { SetElements(rBufElems); }
 
 		// --getters
 		inline const BufferElement& GetElem(UInt8 unIdx) const { return m_BufElems.at(unIdx); }
@@ -70,7 +68,7 @@ namespace GLIB
 			m_unStride = 0;
 			for (auto& rBufElem : m_BufElems) {
 				rBufElem.unOffset = m_unStride;
-				m_unStride += SDType_GetSize(rBufElem.sdType, rBufElem.unCount);
+				m_unStride += SDTypeGetSize(rBufElem.sdType, rBufElem.unCount);
 			}
 		}
 	};
@@ -106,7 +104,7 @@ namespace GLIB
 				rBlock.szOffset = m_szData;
 				for (auto& rElem : rBlock.BufElems) {
 					rElem.unOffset += rBlock.szAll;
-					rBlock.szAll += SDType_GetAllignedSize(rElem.sdType, rElem.unCount);
+					rBlock.szAll += SDTypeGetAllignedSize(rElem.sdType, rElem.unCount);
 				}
 				m_szData += rBlock.szAll;
 			}
@@ -180,6 +178,7 @@ namespace GLIB
 		virtual void SetSubData(Size szData, const void* pData, Size szOffset = 0) = 0;
 		virtual void SetLayout(const ShaderBufLayout& rShdLayout) = 0;
 		// --core_methods
+		virtual void Bind() const = 0;
 		virtual void Bind(UInt32 unPoint) const = 0;
 		virtual void Bind(UInt32 unPoint, Size szData, Size szOffset = 0) const = 0;
 		virtual void Unbind() const = 0;
@@ -251,6 +250,7 @@ namespace GLIB
 		virtual void SetSubData(Size szAlloc, const void* pVtxData, Size szOffset = 0) override;
 		virtual void SetLayout(const ShaderBufLayout& rBufLayout) override;
 		// --core_methods
+		virtual void Bind() const override;
 		virtual void Bind(UInt32 unPoint) const override;
 		virtual void Bind(UInt32 unPoint, Size szData, Size szOffset = 0) const override;
 		virtual void Unbind() const override;

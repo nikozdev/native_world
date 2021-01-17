@@ -2,20 +2,27 @@
 #include "glib_shader.h"
 
 #if (defined GLIB_GAPI)
+#include <core/glib_engine.h>
+#include <core/glib_api.h>
 #include <glib_buffer.h>
-#include <glib_engine.h>
+
 namespace GLIB
 {
 	ASubShader::ASubShader(const char* strName, ShaderTypes sdType) :
-		m_unRId(0), m_shdType(sdType) { }
-	ASubShader::~ASubShader() { }
+		AGRes(strName),
+		m_shdType(sdType), m_unRId(0), m_strCode("") { GEngine::Get().AddGRes<ASubShader>(this); }
+	ASubShader::~ASubShader() { GEngine::Get().RmvGRes<ASubShader>(GetId()); }
+
+	// --==<data_methods>==--
+	bool ASubShader::SaveF(const char* strFPath) { return true; }
+	bool ASubShader::LoadF(const char* strFPath) { return true; }
+	// --==</data_methods>==--
+
 	ASubShader* ASubShader::Create(const char* strName, ShaderTypes sdType)
 	{
 		ASubShader* pSubShader = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
-	#if (GLIB_GAPI & GLIB_GAPI_COUT)
-		case GAPI_COUT: break;
-	#elif (GLIB_GAPI & GLIB_GAPI_OGL)
+	#if (GLIB_GAPI & GLIB_GAPI_OGL)
 		case GAPI_OPENGL: pSubShader = new SubShaderOgl(strName, sdType); break;
 	#endif // GLIB_GAPI
 		default: GLIB_ERR("Graphics Api is not defined"); break;
@@ -26,16 +33,35 @@ namespace GLIB
 namespace GLIB
 {
 	AShader::AShader(const char* strName) :
-		m_unRId(0) { }
-	AShader::~AShader() { }
+		AGRes(strName), m_unRId(0), m_strCode("") { GEngine::Get().AddGRes<AShader>(this); }
+	AShader::~AShader() { GEngine::Get().RmvGRes<AShader>(GetId()); }
+
+	// --==<data_methods>==--
+	bool AShader::SaveF(const char* strFPath)
+	{
+		String strFile = m_strCode;
+		if (!GEngine::Get().SaveFShaderCode(strFPath, this)) { return false; }
+		return true;
+	}
+	bool AShader::LoadF(const char* strFPath)
+	{
+		bool bSuccess = false;
+		if (GEngine::Get().LoadFShaderCode(strFPath, this)) {
+			if (!Compile()) {
+				String strFile = m_strCode;
+				bSuccess = false;
+			}
+			else { bSuccess = true; }
+		}
+		return bSuccess;
+	}
+	// --==</data_methods>==--
 
 	AShader* AShader::Create(const char* strName)
 	{
 		AShader* pShader = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
-	#if (GLIB_GAPI & GLIB_GAPI_COUT)
-		case GAPI_COUT: break;
-	#elif (GLIB_GAPI & GLIB_GAPI_OGL)
+	#if (GLIB_GAPI & GLIB_GAPI_OGL)
 		case GAPI_OPENGL: pShader = new ShaderOgl(strName); break;
 	#endif // GLIB_GAPI
 		default: GLIB_ERR("Graphics Api is not defined"); break;

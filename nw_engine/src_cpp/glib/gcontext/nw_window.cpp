@@ -70,11 +70,7 @@ namespace NW
 	// --==<core_methods>==--
 	bool WindowOgl::Init()
 	{
-		// init glfw and configure the window
-		if (!s_GLFWinit) {
-			s_GLFWinit = glfwInit() == GLFW_TRUE;
-			NW_ASSERT(s_GLFWinit, "Could not initialize GLFW");
-		}
+		if (!s_GLFWinit) { s_GLFWinit = (glfwInit() == GLFW_TRUE); }
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);

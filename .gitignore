@@ -1,8 +1,8 @@
-# Ignore these directories
+# directories
 .vs/
 bin/
 ext/bin/
 .git/
-# Files
+# files
 **.vcxproj**
 *.sln

@@ -16,6 +16,12 @@ namespace NW
 		DataSys::AddDataRes<ASubShader>(this);
 	}
 	ASubShader::~ASubShader() { DataSys::RmvDataRes<ASubShader>(GetName()); }
+	
+	// --==<data_methods>==--
+	bool ASubShader::SaveF(const char* strFPath) { return true; }
+	bool ASubShader::LoadF(const char* strFPath) { return true; }
+	// --==<data_methods>==--
+
 	ASubShader* ASubShader::Create(const char* strName, ShaderTypes sdType)
 	{
 		ASubShader* pSubShader = nullptr;
@@ -37,6 +43,29 @@ namespace NW
 		m_unRId(0) { DataSys::AddDataRes<AShader>(this); }
 	AShader::~AShader() { DataSys::RmvDataRes<AShader>(GetName()); }
 
+	// --==<data_methods>==--
+	bool AShader::SaveF(const char* strFPath)
+	{
+		String strFile = m_strCode;
+		if (!DataSys::SaveF_string(strFPath, &strFile[0], sizeof(char) * strFile.size())) {
+			return false;
+}
+		return true;
+	}
+	bool AShader::LoadF(const char* strFPath)
+	{
+		bool bSuccess = false;
+		if (DataSys::LoadF_string(strFPath, m_strCode)) {	// try to load source code from file
+			if (!Compile()) {								// try to use the string as a formated cn_file
+				String strFile = m_strCode;
+				bSuccess = false;
+			}
+			else { bSuccess = true; }
+		}
+		return bSuccess;
+	}
+	// --==</data_methods>==--
+	
 	AShader* AShader::Create(const char* strName)
 	{
 		AShader* pShader = nullptr;
@@ -57,15 +86,14 @@ namespace NW
 // SubShaderOgl
 namespace NW
 {
-	// Constructor&Destructor
 	SubShaderOgl::SubShaderOgl(const char* strName, ShaderTypes sdType) :
 		ASubShader(strName, sdType),
 		m_pOverShader(nullptr) { Reset(); }
 	SubShaderOgl::~SubShaderOgl(){ Reset(); }
 
-	// getters
+	// --getters
 	const AShader* SubShaderOgl::GetOverShader() const { return dynamic_cast<const AShader*>(m_pOverShader); }
-	// core_methods
+	// --core_methods
 	void SubShaderOgl::Attach(AShader* pOverShader) {
 		Detach();
 		m_pOverShader = dynamic_cast<ShaderOgl*>(pOverShader);
@@ -90,17 +118,7 @@ namespace NW
 		m_strCode = "";
 	}
 
-	// -- DataRes Methods
-	bool SubShaderOgl::SaveF(const char* strFPath)
-	{
-		return true;
-	}
-	bool SubShaderOgl::LoadF(const char* strFPath)
-	{
-		return true;
-	}
-
-	// -- Implementation Methods
+	// --implementation_methods
 	bool SubShaderOgl::CodeProc() {
 		StrStream strCodeStream(m_strCode);
 		String strToken("", 256);
@@ -248,29 +266,6 @@ namespace NW
 		m_shdLayout.Reset();
 	}
 	// --==</core_methods>==--
-
-	// --==<data_methods>==--
-	bool ShaderOgl::SaveF(const char* strFPath)
-	{
-		String strFile = m_strCode;
-		if (!DataSys::SaveF_string(strFPath, &strFile[0], sizeof(char) * strFile.size())) {
-			return false;
-		}
-		return true;
-	}
-	bool ShaderOgl::LoadF(const char* strFPath)
-	{
-		bool bSuccess = false;
-		if (DataSys::LoadF_string(strFPath, m_strCode)) {	// try to load source code from file
-			if (!Compile()) {								// try to use the string as a formated cn_file
-				String strFile = m_strCode;
-				bSuccess = false;
-			}
-			else { bSuccess = true; }
-		}
-		return bSuccess;
-	}
-	// --==</data_methods>==--
 
 	// --==<setters>==--
 	void ShaderOgl::SetBool(const char* name, bool value) const { glUniform1i(GetUniformLoc(name), value); }
