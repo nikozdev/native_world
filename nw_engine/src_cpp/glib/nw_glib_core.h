@@ -1,6 +1,6 @@
 #ifndef GLIB_CORE_H
 #define GLIB_CORE_H
-#include <glib_decl.hpp>
+#include <nw_glib_decl.hpp>
 #include <nw_pch.hpp>
 
 #if (defined NW_GRAPHICS)

@@ -1,7 +1,7 @@
 #ifndef NW_AGCONTEXT_H
 #define NW_AGCONTEXT_H
 
-#include <glib_decl.hpp>
+#include <nw_glib_decl.hpp>
 
 #if (defined NW_GRAPHICS)
 namespace NW

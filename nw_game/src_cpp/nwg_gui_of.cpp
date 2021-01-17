@@ -31,11 +31,12 @@ namespace NWG
 		ImGui::End();
 	}
 	// --==</GuiOfCoreEngine>==--
-	// --==<GuiOfGlibEngine>==--
-	GuiOfGlibEngine::GuiOfGlibEngine() { pWindow = GlibEngine::Get().GetWindow(); }
-	GuiOfGlibEngine::~GuiOfGlibEngine() {}
 
-	void GuiOfGlibEngine::OnDraw() {
+	// --==<GuiOfGEngine>==--
+	GuiOfGEngine::GuiOfGEngine() { pWindow = GEngine::Get().GetWindow(); }
+	GuiOfGEngine::~GuiOfGEngine() {}
+
+	void GuiOfGEngine::OnDraw() {
 		if (!bIsEnabled) return;
 
 		ImGui::Begin("graph_engine", &bIsEnabled);
@@ -54,21 +55,19 @@ namespace NWG
 		}
 		bGApi = ImGui::TreeNodeEx("--==<gapi>==--", GUI_DEFAULT_TREE_FLAGS);
 		if (bGApi) {
-			AGraphApi* pGApi = GlibEngine::Get().GetGApi();
+			AGApi* pGApi = GEngine::Get().GetGApi();
 			ImGui::Text("Type: %s",
-				pGApi->GetType() == GApiTypes::GAPI_OPENGL ? "OpenGL" : pGApi->GetType() == GApiTypes::GAPI_COUT ? "Console" :
-				pGApi->GetType() == GApiTypes::GAPI_WIN ? "Windows" :
-				"None");
-			if (ImGui::DragFloat("line width", &nLineW, 0.1f)) GlibEngine::Get().GetGApi()->SetLineWidth(nLineW);
-			if (ImGui::DragFloat("pixel size", &nPixelSz, 0.1f)) GlibEngine::Get().GetGApi()->SetPixelSize(nPixelSz);
+				pGApi->GetType() == GApiTypes::GAPI_OPENGL ? "opengl" : "none");
+			if (ImGui::DragFloat("line width", &nLineW, 0.1f)) GEngine::Get().GetGApi()->SetLineWidth(nLineW);
+			if (ImGui::DragFloat("pixel size", &nPixelSz, 0.1f)) GEngine::Get().GetGApi()->SetPixelSize(nPixelSz);
 			if (ImGui::BeginCombo("draw mode", &strDrawMode[0])) {
 				if (ImGui::Selectable("MD_FILL")) {
 					strDrawMode = "MD_FILL";
-					GlibEngine::Get().GetGApi()->SetDrawMode(DrawModes::DM_FILL, FacePlanes::FP_FRONT_AND_BACK);
+					GEngine::Get().GetGApi()->SetDrawMode(DrawModes::DM_FILL, FacePlanes::FP_FRONT_AND_BACK);
 				}
 				else if (ImGui::Selectable("MD_LINE")) {
 					strDrawMode = "MD_LINE";
-					GlibEngine::Get().GetGApi()->SetDrawMode(DrawModes::DM_LINE, FacePlanes::FP_FRONT_AND_BACK);
+					GEngine::Get().GetGApi()->SetDrawMode(DrawModes::DM_LINE, FacePlanes::FP_FRONT_AND_BACK);
 				}
 				ImGui::EndCombo();
 			} ImGui::Separator();
@@ -78,21 +77,20 @@ namespace NWG
 		if (bWindow) {
 			const WindowInfo& rWindowInfo = pWindow->GetWindowInfo();
 			ImGui::Text("window_api: %s",
-				rWindowInfo.WApiType == WAPI_GLFW ? "glfw" : rWindowInfo.WApiType == WAPI_COUT ? "console" :
-				rWindowInfo.WApiType == WAPI_WIN ? "windows" : "None");
-			if (ImGui::InputText("title", &strWindowTitle[0], 128)) { GlibEngine::Get().GetWindow()->SetTitle(&strWindowTitle[0]); }
+				rWindowInfo.WApiType == WAPI_GLFW ? "glfw" : "none");
+			if (ImGui::InputText("title", &strWindowTitle[0], 128)) { GEngine::Get().GetWindow()->SetTitle(&strWindowTitle[0]); }
 
 			ImGui::Text("size: %dx%d;\naspect_ratio = %f;",
 				rWindowInfo.unWidth, rWindowInfo.unHeight, rWindowInfo.nAspectRatio);
-			ImGui::Text("cursor: x = %d; y = %d;", static_cast<Int32>(IOSys::Cursor.xMove), static_cast<Int32>(IOSys::Cursor.yMove));
+			ImGui::Text("cursor: x = %d; y = %d;", static_cast<Int32>(IOSys::s_Cursor.xMove), static_cast<Int32>(IOSys::s_Cursor.yMove));
 
 			bool bVSync = rWindowInfo.bVSync;
-			if (ImGui::Checkbox("vertical synchronization", &bVSync)) { GlibEngine::Get().GetWindow()->SetVSync(bVSync); }
+			if (ImGui::Checkbox("vertical synchronization", &bVSync)) { GEngine::Get().GetWindow()->SetVSync(bVSync); }
 
 			if (ImGui::BeginCombo("switch window", &pWindow->GetWindowInfo().strTitle[0])) {
-				auto itWindow = GlibEngine::Get().GetWindow();
+				auto itWindow = GEngine::Get().GetWindow();
 				if (ImGui::Selectable(&itWindow->GetWindowInfo().strTitle[0])) {
-					pWindow = GlibEngine::Get().GetWindow();
+					pWindow = GEngine::Get().GetWindow();
 					strcpy(&strWindowTitle[0], &pWindow->GetWindowInfo().strTitle[0]);
 				} ImGui::EndCombo();
 			}
@@ -100,8 +98,8 @@ namespace NWG
 		}
 		bStates = ImGui::TreeNodeEx("--==<glayers>==--");
 		if (bStates) {
-			auto itGlibLayer = GlibEngine::Get().GetLayers().begin();
-			for (UInt16 dsi = 0; dsi < GlibEngine::Get().GetLayers().size(); dsi++) {
+			auto itGlibLayer = GEngine::Get().GetLayers().begin();
+			for (UInt16 dsi = 0; dsi < GEngine::Get().GetLayers().size(); dsi++) {
 				itGlibLayer++;
 				ImGui::Text("%dth layer:\nname: %s", dsi, itGlibLayer->GetName());
 			}
@@ -110,7 +108,7 @@ namespace NWG
 					ImGui::OpenPopup("state_creation");
 					if (ImGui::BeginPopup("state_creation")) {
 						ImGui::InputText("layer name", strLayerName, 256);
-						if (ImGui::Button("add layer")) { GlibEngine::Get().AddLayer(strLayerName); }
+						if (ImGui::Button("add layer")) { GEngine::Get().AddLayer(strLayerName); }
 						ImGui::EndPopup();
 					}
 				}
@@ -118,7 +116,7 @@ namespace NWG
 			}
 		}
 
-		const GlibEngineInfo& rDInfo = GlibEngine::Get().GetInfo();
+		const GEngineInfo& rDInfo = GEngine::Get().GetInfo();
 		ImGui::Text("vertex data\nsize in bytes: %d/%d;\n", rDInfo.szVtx, rDInfo.szMaxVtx);
 		ImGui::Text("index data\nsize in bytes: %d/%d;\n", rDInfo.szIdx, rDInfo.szMaxIdx);
 		ImGui::Text("shader data\nsize in bytes: %d/%d;\n", rDInfo.szShd, rDInfo.szMaxShd);
@@ -128,7 +126,7 @@ namespace NWG
 
 		ImGui::End();
 	}
-	// --==</GuiOfGlibEngine>==--
+	// --==</GuiOfGEngine>==--
 
 	// --==<GuiOfCmdEngine>==--
 	GuiOfCmdEngine::GuiOfCmdEngine() :
@@ -659,7 +657,7 @@ namespace NWG
 
 			pVtxBuf->Bind();
 			pIndBuf->Bind();
-			GlibEngine::Get().GetGApi()->DrawIndexed(pIndBuf->GetDataSize() / sizeof(UInt32));
+			GEngine::Get().GetGApi()->DrawIndexed(pIndBuf->GetDataSize() / sizeof(UInt32));
 			pIndBuf->Unbind();
 			pVtxBuf->Unbind();
 
@@ -732,9 +730,9 @@ namespace NWG
 		static auto cbGCmp = [&]()->void {
 			Int32 nDrawOrder = pGCmp->DOData.unDrawOrder;
 			if (ImGui::InputInt("draw order", &nDrawOrder)) { pGCmp->DOData.unDrawOrder = nDrawOrder; }
-			if (ImGui::BeginCombo("graphics state", &pGCmp->pGlibLayer->GetName()[0])) {
-				for (auto& itGState : GlibEngine::Get().GetLayers()) {
-					if (ImGui::MenuItem(&itGState.GetName()[0])) { pGCmp->pGlibLayer = &itGState; }
+			if (ImGui::BeginCombo("graphics state", &pGCmp->pGLayer->GetName()[0])) {
+				for (auto& itGState : GEngine::Get().GetLayers()) {
+					if (ImGui::MenuItem(&itGState.GetName()[0])) { pGCmp->pGLayer = &itGState; }
 				}
 				ImGui::EndCombo();
 			}
@@ -760,10 +758,10 @@ namespace NWG
 				V2i whMapSize = { pTileMap->GetWidth(), pTileMap->GetHeight() };
 
 				if (ImGui::DragFloat("tile size", &ptmSprite->whTileSize[0], 0.3f, 0,
-					max(pTileMap->GetWidth(), pTileMap->GetHeight()))) { }
+					std::max(pTileMap->GetWidth(), pTileMap->GetHeight()))) { }
 
 				else if (ImGui::DragFloat4("tile padding", &ptmSprite->xywhTilePadding[0], 1.0f, 0,
-					max(whMapSize.x, whMapSize.y))) { }
+					std::max(whMapSize.x, whMapSize.y))) { }
 				
 				else if (ImGui::BeginCombo("change texture", pTileMap->GetName())) {
 					auto& rTextures = DataSys::GetDataResources<ATexture2d>();
@@ -931,10 +929,10 @@ namespace NWG
 		
 		UInt32 unSizeW = ImGui::GetContentRegionAvail().x;
 		UInt32 unSizeH = ImGui::GetContentRegionAvail().y - 48.0f;
-		const AFrameBuf* pFrameBuf = GlibEngine::Get().GetLayer()->GetFrameBuf();
+		const AFrameBuf* pFrameBuf = GEngine::Get().GetLayer()->GetFrameBuf();
 		const FrameBufInfo& rfbInfo = pFrameBuf->GetInfo();
 		if (rfbInfo.unWidth != unSizeW || rfbInfo.unHeight != unSizeH) {
-			auto& rLayers = GlibEngine::Get().GetLayers();
+			auto& rLayers = GEngine::Get().GetLayers();
 			for (auto& itLayer : rLayers) {
 				itLayer.SetViewport({0.0f, 0.0f, unSizeW, unSizeH });
 			}

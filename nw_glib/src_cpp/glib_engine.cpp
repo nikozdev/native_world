@@ -9,8 +9,11 @@
 #include <glib_camera.h>
 #include <glib_shader.h>
 #include <glib_material.h>
-
 #include <glib_texture.h>
+
+#include <glib_event.h>
+
+#include <stb_image.h>
 
 namespace GLIB
 {
@@ -43,11 +46,52 @@ namespace GLIB
 	{
 		m_bIsRunning = true;
 
-		WindowInfo WindowInfo{ "default", 1200, 1200 / 4 * 3, true, nullptr };
+		WindowInfo WindowInfo{ "graphics_engine", 1200, 1200 / 4 * 3, true, nullptr };
 		m_pWindow = AWindow::Create(WindowInfo, WindowApiType);
 		if (!m_pWindow->Init()) { m_pWindow->OnQuit(); return false; }
-		
-		m_pGApi = AGraphApi::Create(GraphicsApiType);
+		ImageInfo imgInfo;
+		if (LoadFImage("D:/dev/native_world/nw_glib/data/ico/nw_bat.png", &imgInfo)) {
+			m_pWindow->SetIcon(imgInfo.ClrData, imgInfo.nWidth, imgInfo.nHeight);
+			delete[] imgInfo.ClrData;
+		}
+		m_pWindow->SetEventCallback([this](AEvent& rEvt)->void {
+			if (rEvt.EvtType == ET_MOUSE_PRESS) {
+				MouseEvent* pmEvt = static_cast<MouseEvent*>(&rEvt);
+				switch (pmEvt->nButton) {
+				default: break;
+				}
+			}
+			else if (rEvt.EvtType == ET_MOUSE_RELEASE) {
+				MouseEvent* pmEvt = static_cast<MouseEvent*>(&rEvt);
+				switch (pmEvt->nButton) {
+				default: break;
+				}
+			}
+			else if (rEvt.EvtType == ET_KEY_PRESS) {
+				KeyboardEvent* pkEvt = static_cast<KeyboardEvent*>(&rEvt);
+				switch (pkEvt->unKeyCode) {
+				case GLIB_KEY_ESCAPE_27: Quit();
+				default: break;
+				}
+			}
+			else if (rEvt.EvtType == ET_KEY_RELEASE) {
+				KeyboardEvent* pkEvt = static_cast<KeyboardEvent*>(&rEvt);
+				switch (pkEvt->unKeyCode) {
+				default: break;
+				}
+			}
+			else if (rEvt.EvtType == ET_WINDOW_CLOSE) { Quit(); }
+			else if (rEvt.EvtType == ET_WINDOW_RESIZE) {
+				WindowEvent* pwEvt = static_cast<WindowEvent*>(&rEvt);
+			}
+			else if (rEvt.EvtType == ET_WINDOW_FOCUS) {
+				WindowEvent* pwEvt = static_cast<WindowEvent*>(&rEvt);
+				if (pwEvt->bIsFocused) { m_pWindow->SetOpacity(1.0f); }
+				else { m_pWindow->SetOpacity(0.8f); }
+			}
+			});
+
+		m_pGApi = AGApi::Create(GraphicsApiType);
 		m_pGApi->SetClearColor(0.1f, 0.2f, 0.3f);
 
 		if (!m_bIsRunning) { Quit(); }
@@ -56,7 +100,7 @@ namespace GLIB
 		AddLayer("del_lines");
 		m_GLayer = m_GLayers.begin();
 
-		return m_bIsRunning;
+		return true;
 	}
 	void GEngine::Quit()
 	{
@@ -68,18 +112,28 @@ namespace GLIB
 		m_pWindow->OnQuit();
 		delete m_pWindow;
 	}
-	void GEngine::Update()
+	void GEngine::Run() {
+		m_thrRun = std::thread([this]()->void { while (m_bIsRunning) { Update(); } });
+	}
+	inline void GEngine::Update()
 	{
 		m_pWindow->Update();
 
 		m_DInfo.Reset();
 		
-		for (m_GLayer = m_GLayers.begin(); m_GLayer != m_GLayers.end(); m_GLayer++) {
-			m_GLayer->Update();
-		}
+		for (m_GLayer = m_GLayers.begin(); m_GLayer != m_GLayers.end(); m_GLayer++) { m_GLayer->Update(); }
 		m_GLayer = m_GLayers.begin();
 	}
 	// --==</core_methods>==--
+
+	// --==<data_methods>==--
+	bool GEngine::LoadFImage(const char* strFPath, ImageInfo* pImg) {
+		UByte* pDataTemp = stbi_load(strFPath, &pImg->nWidth, &pImg->nHeight, &pImg->nChannels, 4);
+		if (pDataTemp == nullptr) { return false; }
+		pImg->ClrData = pDataTemp;
+		return true;
+	}
+	// --==</data_methods>==--
 
 	// --==<drawing>==--
 	void GEngine::DrawCall(DrawTools& rDTools)

@@ -8,7 +8,6 @@
 #if (defined NW_GRAPHICS)
 #include <glib/nw_gbuffer.h>
 #include <glib/core/nw_gengine.h>
-#include <glib/vision/nw_light_source.h>
 namespace NW
 {
 	ASubShader::ASubShader(const char* strName, ShaderTypes sdType) :

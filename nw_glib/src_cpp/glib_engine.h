@@ -4,6 +4,7 @@
 #include <glib_layer.h>
 #include <glib_api.h>
 #include <glib_tools.h>
+#include <glib_decl.hpp>
 
 namespace GLIB
 {
@@ -20,9 +21,10 @@ namespace GLIB
 		~GEngine();
 		
 		// --getters
-		static inline GEngine& Get() { GEngine s_GEngine; return s_GEngine; }
+		static inline GEngine& Get() { static GEngine s_GEngine; return s_GEngine; }
+		inline std::thread& GetRunThread() { return m_thrRun; }
 		inline AWindow* GetWindow() { return m_pWindow; }
-		inline AGraphApi* GetGApi() { return m_pGApi; }
+		inline AGApi* GetGApi() { return m_pGApi; }
 		const GEngineInfo& GetInfo() { return m_DInfo; }
 		inline Layers& GetLayers() { return m_GLayers; }
 		inline GLayer* GetLayer() { return &*m_GLayer; }
@@ -31,18 +33,23 @@ namespace GLIB
 		GLayer* AddLayer(const char* strName);
 		void RmvLayer(const char* strName);
 		void ChangeLayerOrder(const char* strName, bool bPushUp);
-		// -- Predicates
+		// --predicates
 		bool IsRunning() { return m_bIsRunning; }
 
-		// -- Core methods
+		// --core_methods
 		bool Init(WApiTypes WindowApiType, GApiTypes GraphicsApiType);
 		void Quit();
-		void Update();
+		void Run();
 		void DrawCall(DrawTools& rDTools);
+		void Update();
+		// --data_methods
+		bool LoadFImage(const char* strFPath, ImageInfo* pImg);
 	private:
 		bool m_bIsRunning;
+		std::thread m_thrRun;
+		
 		AWindow* m_pWindow;
-		AGraphApi* m_pGApi;
+		AGApi* m_pGApi;
 
 		Layers m_GLayers;
 		Layers::iterator m_GLayer;

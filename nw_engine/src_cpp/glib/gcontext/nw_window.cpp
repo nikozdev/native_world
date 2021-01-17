@@ -42,8 +42,6 @@ namespace NW
 		m_WindowInfo.unWidth = rWindowInfo.unWidth;
 		m_WindowInfo.unHeight = rWindowInfo.unHeight;
 		m_WindowInfo.WApiType = WAPI_GLFW;
-		printf("NW::WINDOW_OGL::INIT: %s::%dx%d\n",
-			&m_WindowInfo.strTitle[0], m_WindowInfo.unWidth, m_WindowInfo.unHeight);
 	}
 	WindowOgl::~WindowOgl() { }
 
@@ -57,6 +55,17 @@ namespace NW
 		else glfwSwapInterval(0);
 		m_WindowInfo.bVSync = enabled;
 	}
+	void WindowOgl::SetEventCallback(const EventCallback& fnEvCallback) { m_WindowInfo.fnEvCallback = fnEvCallback; }
+	void WindowOgl::SetIcon(UByte* pData, UInt16 unWidth, UInt16 unHeight) {
+		m_pIcon->pixels = pData;
+		m_pIcon->width = static_cast<Int32>(unWidth);
+		m_pIcon->height = static_cast<Int32>(unHeight);
+		glfwSetWindowIcon(m_pNative, 1, m_pIcon);
+	}
+	void WindowOgl::SetOpacity(float nOpacity) {
+		glfwSetWindowOpacity(m_pNative, nOpacity);
+	}
+
 
 	// --==<core_methods>==--
 	bool WindowOgl::Init()
@@ -73,14 +82,16 @@ namespace NW
 		// Set window pointer
 		m_pNative = glfwCreateWindow(static_cast<Int32>(m_WindowInfo.unWidth), static_cast<Int32>(m_WindowInfo.unHeight),
 			&m_WindowInfo.strTitle[0], nullptr, nullptr);
-
-		m_pGContext.reset(MemSys::NewT<GContextOgl>(m_pNative));
+		m_pIcon = MemSys::NewT<GLFWimage>();
+		
+		m_pGContext = MemSys::NewT<GContextOgl>(m_pNative);
 		m_pGContext->OnInit();
 
+		UByte WhiteIcon[] = { 255, 255, 255, 255 };
+		SetIcon(&WhiteIcon[0], 1, 1);
 		SetVSync(m_WindowInfo.bVSync);
-		// Bind own data pointer to window. It allows to get this pointer in callback
-		glfwSetWindowUserPointer(m_pNative, &m_WindowInfo);
 
+		glfwSetWindowUserPointer(m_pNative, &m_WindowInfo);
 		glfwSetCursorPosCallback(m_pNative, CbMouseCoord);
 		glfwSetScrollCallback(m_pNative, CbMouseScroll);
 		glfwSetMouseButtonCallback(m_pNative, CbMouseButton);
@@ -91,18 +102,25 @@ namespace NW
 		glfwSetWindowFocusCallback(m_pNative, CbWindowFocus);
 		glfwSetErrorCallback(CbError);
 
+		printf("WINDOW_OGL::INIT: %s::%dx%d\nglfw_version: %s",
+			&m_WindowInfo.strTitle[0], m_WindowInfo.unWidth, m_WindowInfo.unHeight,
+			glfwGetVersionString());
+
 		return true;
 	}
 	void WindowOgl::OnQuit()
 	{
 		glfwSetWindowShouldClose(m_pNative, GL_TRUE);
 		glfwDestroyWindow(m_pNative);
+		MemSys::DelT<GLFWimage>(m_pIcon);
 		m_pGContext->OnQuit();
+		MemSys::DelT<GContextOgl>(m_pGContext);
 	}
 
 	void WindowOgl::Update()
 	{
 		m_pGContext->SwapBuffers();
+		glfwPollEvents();
 	}
 	// --==</core_methods>==--
 
@@ -130,7 +148,8 @@ namespace NW
     {   // If the key event is gotten - set true/false in the keylist
         WindowInfo& rWindowInfo = *(WindowInfo*)(glfwGetWindowUserPointer(pWindow));
         if (nAction == GLFW_PRESS) { rWindowInfo.fnEvCallback(KeyboardEvent(ET_KEY_PRESS, nKeyCode)); }
-        else if (nAction == GLFW_RELEASE) { rWindowInfo.fnEvCallback(KeyboardEvent(ET_KEY_RELEASE, nKeyCode)); }
+        else if (nAction == GLFW_RELEASE) { rWindowInfo.fnEvCallback(KeyboardEvent(ET_KEY_RELEASE, nKeyCode));}
+		if (nKeyCode == GLFW_KEY_F11) { glfwMaximizeWindow(glfwGetCurrentContext()); }
     }
     void WindowOgl::CbKeyboardChar(GLFWwindow* pWindow, UInt32 unChar)
     {

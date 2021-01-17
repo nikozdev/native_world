@@ -4,7 +4,7 @@
 #include <glib/gcontext/nw_gcontext.h>
 
 #include <nw_decl.hpp>
-#include <glib_decl.hpp>
+#include <nw_glib_decl.hpp>
 
 #if (defined NW_WINDOW)
 namespace NW
@@ -49,6 +49,8 @@ namespace NW
 		virtual void SetTitle(const char* strTitle) = 0;
 		virtual void SetEventCallback(const EventCallback& fnEvCallback) = 0;
 		virtual void SetVSync(bool enabled) = 0;
+		virtual void SetIcon(UByte* pData, UInt16 unWidth, UInt16 unHeight) = 0;
+		virtual void SetOpacity(float nOpacity) = 0;
 		// --predicates
 		virtual bool IsVSync() const = 0;
 
@@ -80,14 +82,15 @@ namespace NW
 		virtual inline UInt16 GetHeight() const override { return m_WindowInfo.unHeight; }
 		virtual inline const WindowInfo& GetWindowInfo() override { return m_WindowInfo; }
 		virtual inline void* GetNative() override { return m_pNative; }
-		virtual inline AGContext* GetGContext() override { return m_pGContext.get(); }
+		virtual inline AGContext* GetGContext() override { return m_pGContext; }
 		// --setters
 		virtual void SetTitle(const char* strTitle) override;
-		inline void SetEventCallback(const EventCallback& fnEvCallback) override { m_WindowInfo.fnEvCallback = fnEvCallback; }
+		virtual void SetEventCallback(const EventCallback& fnEvCallback) override;
+		virtual void SetVSync(bool enabled) override;
+		virtual void SetIcon(UByte* pData, UInt16 unWidth, UInt16 unHeight) override;
+		virtual void SetOpacity(float nOpacity) override;
 		// --predicates
-		inline bool IsVSync() const override { return m_WindowInfo.bVSync; }
-
-		void SetVSync(bool enabled) override;
+		virtual inline bool IsVSync() const override { return m_WindowInfo.bVSync; }
 
 		// --core_methods
 		virtual bool Init() override;
@@ -108,9 +111,10 @@ namespace NW
 		// --other_callbacks: window
 		static void CbError(Int32 nErrCode, const char* strErrMsg);
 	private:
-		GLFWwindow* m_pNative;
-		RefOwner<AGContext> m_pGContext;
+		GContextOgl* m_pGContext;
 		WindowInfo m_WindowInfo;
+		GLFWwindow* m_pNative;
+		GLFWimage* m_pIcon;
 	};
 }
 #endif // NW_WINDOW

@@ -100,7 +100,8 @@ namespace GLIB
 	/// DrawObjectData struct
 	struct GLIB_API DrawObjectData
 	{
-		ADrawable* pDrawable = nullptr;
+		DArray<UByte> vtxData;
+		DArray<UInt32> IdxData;
 		UInt8 unDrawOrder = 0;
 		UInt32 unId = 0;
 		// --operators
@@ -129,19 +130,14 @@ namespace GLIB
 	struct GLIB_API GEngineInfo
 	{
 	public:
-		// Configurations
-		Size szMaxVtx = 0;
-		Size szMaxIdx = 0;
-		Size szMaxShd = 0;
-		UInt32 unMaxTex = 0;
-		// Counters
+		// --counters
 		Size szVtx = 0;
 		Size unVtx = 0;
 		Size szIdx = 0;
 		Size unIdx = 0;
 		Size szShd = 0;
 		UInt32 unTex = 0;
-		// Drawing
+		// --drawing
 		UInt16 unDrawCalls = 0;
 	public:
 		// --setters

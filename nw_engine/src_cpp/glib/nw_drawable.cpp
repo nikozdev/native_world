@@ -141,7 +141,7 @@ namespace NW
 		whWholeTileSize.y = whTileSize.y + xywhTilePadding.y + xywhTilePadding.w;
 		xyTileCount.x = pTileMap->GetWidth() / (whWholeTileSize.x);
 		xyTileCount.y = pTileMap->GetHeight() / (whWholeTileSize.y);
-		Int16 nVCount = xyTileCount.x * xyTileCount.y * 3;
+		UInt16 nVCount = xyTileCount.x * xyTileCount.y * 3;
 		if (nVCount == 0) { nVCount = 1; }
 		vtxData.resize(nVCount);
 		idxData.resize(nVCount);

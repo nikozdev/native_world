@@ -58,6 +58,11 @@ namespace GLIB
 
 	struct GLIB_API RenderAttribs;
 	struct GLIB_API RenderLayer;
+
+	struct GLIB_API AEvent;
+	struct GLIB_API MouseEvent;
+	struct GLIB_API KeyboardEvent;
+	struct GLIB_API WindowEvent;
 }
 namespace GLIB
 {
@@ -219,6 +224,7 @@ namespace GLIB
 
 #if (GLIB_WINDOW & GLIB_WINDOW_GLFW)
 struct GLFWwindow;
+struct GLFWimage;
 #endif	// GLIB_WINDOW
 
 #define GLIB_MAX_TEXTURES 8

@@ -39,6 +39,7 @@ namespace GLIB
 		void Enable();
 		void Disable();
 	public:
+		String m_strName;
 		AShader* m_pShader;
 		Textures m_Textures;
 		Colors m_Colors;

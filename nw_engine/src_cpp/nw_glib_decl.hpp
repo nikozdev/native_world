@@ -1,5 +1,5 @@
-#ifndef GLIB_DECL_HPP
-#define GLIB_DECL_HPP
+#ifndef NW_GLIB_DECL_HPP
+#define NW_GLIB_DECL_HPP
 
 #include <nw_core.hpp>
 
@@ -16,11 +16,6 @@ namespace NW
 	class NW_API AShader;
 	class NW_API GMaterial;
 
-	struct NW_API GCamera;
-	class NW_API ALightSource3d;
-	class NW_API DirectLight3d;
-	class NW_API PointLight3d;
-	class NW_API SpotLight3d;
 	//	--==</vision>==--
 
 	//	--==<render>==--
@@ -53,12 +48,7 @@ namespace NW
 	class NW_API AShaderBuf;
 	//	--==</gbuffers>==--
 
-	//	--==<gui>==--
-	struct NW_API GuiIO;
-	struct NW_API GuiStyle;
-	//	--==</gui>==--
-
-	//	--==<structs_enums>==--
+	//	--==<structs>==--
 	struct NW_API FrameBufInfo;
 	struct NW_API ImageInfo;
 	struct NW_API TextureInfo;
@@ -73,10 +63,14 @@ namespace NW
 	struct NW_API SubTexture1d;
 	struct NW_API SubTexture2d;
 	struct NW_API SubTexture3d;
-	
+
 	struct NW_API RenderAttribs;
 	struct NW_API RenderLayer;
-
+	
+	struct NW_API GCamera;
+}
+namespace NW
+{
 	/// window_api_types
 	enum WApiTypes : UInt32 {
 		WAPI_NONE = 0,
@@ -208,6 +202,7 @@ namespace NW
 
 //	--==<extrnal_types>==--
 struct GLFWwindow;
+struct GLFWimage;
 namespace NW
 {
 #if (NW_WINDOW & NW_WINDOW_GLFW)
@@ -223,4 +218,4 @@ using NativeWindow = GLFWwindow*;
 #define NW_MAX_DRAW_LAYERS 10
 #define NW_MAX_DRAW_ORDERS 10
 
-#endif // GLIB_DECL_HPP
+#endif // NW_GLIB_DECL_HPP

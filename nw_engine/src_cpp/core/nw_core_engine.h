@@ -5,7 +5,7 @@
 
 #include <core/nw_core_state.h>
 
-#include <glib_decl.hpp>
+#include <nw_glib_decl.hpp>
 
 namespace NW
 {

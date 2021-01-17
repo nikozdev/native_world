@@ -1,9 +1,7 @@
 #ifndef GLIB_CAMERA_LAD_H
 #define GLIB_CAMERA_LAD_H
 
-#include <glib/vision/glib_camera.h>
-
-#include <nwlib/glib_singleton.h>
+#include <glib_camera.h>
 
 #include <glib_decl.hpp>
 
@@ -13,9 +11,8 @@ namespace GLIB
 	/// Interface:
 	/// -> Get static instance -> set current camera -> configure if it's required
 	/// -> Update every frame with the set camera -> Dispatch events to GCameraLad
-	class GLIB_API GCameraLad : public ASingleton<GCameraLad>
+	class GLIB_API GCameraLad
 	{
-		friend class ASingleton<GCameraLad>;
 	public: // Configurable Attributes
 		float nRtnSpeed, nMoveSpeed, nZoomSpeed;
 
@@ -32,15 +29,13 @@ namespace GLIB
 		void operator=(const GCameraLad& rCpy) = delete;
 	public:
 		~GCameraLad();
-
 		// --getters
+		static inline GCameraLad& Get() { static GCameraLad s_Lad; return s_Lad; }
 		inline GCamera* GetGCamera() { return &m_GCamera; }
 		// --setters
-
 		// --core_methods
-		inline void UpdateCamera() { UpdateCamera(&m_GCamera); }
-		void UpdateCamera(GCamera* pGCamera);
-
+		inline void UpdateCamera(float nDeltaTime) { UpdateCamera(&m_GCamera, nDeltaTime); }
+		void UpdateCamera(GCamera* pGCamera, float nDeltaTime);
 		// --on_event_methods
 		void OnEvent(MouseEvent& rmEvt, GCamera* pGCamera);
 		void OnEvent(KeyboardEvent& rkEvt, GCamera* pGCamera);
@@ -48,7 +43,7 @@ namespace GLIB
 		inline void OnEvent(MouseEvent& rmEvt) { OnEvent(rmEvt, &m_GCamera); }
 		inline void OnEvent(KeyboardEvent& rkEvt) { OnEvent(rkEvt, &m_GCamera); }
 		inline void OnEvent(WindowEvent& rwEvt) { OnEvent(rwEvt, &m_GCamera); }
-	private:// Implementation Attributes
+	private:
 		GCamera m_GCamera;
 	};
 }

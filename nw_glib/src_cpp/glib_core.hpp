@@ -8,7 +8,7 @@
 #elif defined GLIB_BUILD_EXE
 #define GLIB_API __declspec(dllimport)
 #endif
-#elif defined GLIB_LINK_STATIC
+#else
 #define GLIB_API
 #endif
 // --==</linking>==--
@@ -99,7 +99,7 @@ namespace NW
 	extern inline void OGL_ClearErr();
 	extern inline bool OGL_ErrLog(const char* funcName, const char* file, int line);
 }
-#define GL_CALL(function) OGL_ClearErr();\
+#define OGL_CALL(function) OGL_ClearErr();\
 		function;\
 		GLIB_ASSERT(OGL_ErrLog(#function, NW_FNAME_APATH((std::string)__FILE__), __LINE__), "GL_ERROR: ")
 #endif // NW_GRAPHICS
@@ -109,7 +109,7 @@ namespace NW
 #define GLIB_ASSERT(expr, comment);
 #define GLIB_ERR(function);
 
-#define GL_CALL(function);
+#define OGL_CALL(function);
 #endif // GLIB_DEBUG
 // --==</support_macroses>==--
 

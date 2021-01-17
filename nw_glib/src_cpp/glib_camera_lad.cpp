@@ -3,6 +3,7 @@
 
 #include <glib_event.h>
 
+#if false
 namespace GLIB
 {
 	GCameraLad::GCameraLad() :
@@ -13,7 +14,7 @@ namespace GLIB
 	GCameraLad::~GCameraLad() = default;
 
 	// --==<core_methods>==--
-	void GCameraLad::UpdateCamera(GCamera* pGCamera)
+	void GCameraLad::UpdateCamera(GCamera* pGCamera, float nDeltaTime)
 	{
 		float MoveSpeed = this->nMoveSpeed * TimeSys::GetRealDelta();
 		if (!IOSys::s_Cursor.bBlocked) return;
@@ -138,3 +139,4 @@ namespace GLIB
 	}
 	// --==</--on_event_methods>==--
 }
+#endif

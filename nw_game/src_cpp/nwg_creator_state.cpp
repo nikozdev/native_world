@@ -36,19 +36,19 @@ namespace NWG
 
 		GuiOfDataSys::Get().bIsEnabled = true;
 		GuiOfTimeSys::Get().bIsEnabled = true;
-		GuiOfGlibEngine::Get().bIsEnabled = true;
+		GuiOfGEngine::Get().bIsEnabled = true;
 		GuiOfCoreEngine::Get().bIsEnabled = true;
 
 		return true;
 	}
 	void CreatorState::Update() {
-		GCameraLad::Get().UpdateCamera(GlibEngine::Get().GetLayer()->GetGCamera());
+		GCameraLad::Get().UpdateCamera(GEngine::Get().GetLayer()->GetGCamera());
 
 		if (true) {
 			if (ImGui::BeginMenuBar()) {
 				if (ImGui::BeginMenu("view")) {
 					ImGui::Checkbox("core_engine", &GuiOfCoreEngine::Get().bIsEnabled);
-					ImGui::Checkbox("graphichs_engine", &GuiOfGlibEngine::Get().bIsEnabled);
+					ImGui::Checkbox("graphichs_engine", &GuiOfGEngine::Get().bIsEnabled);
 					ImGui::Checkbox("console_engine", &GuiOfCmdEngine::Get().bIsEnabled);
 
 					ImGui::Checkbox("data_system", &GuiOfDataSys::Get().bIsEnabled);
@@ -66,7 +66,7 @@ namespace NWG
 				ImGui::EndMenuBar();
 			}
 			GuiOfCoreEngine::Get().OnDraw();
-			GuiOfGlibEngine::Get().OnDraw();
+			GuiOfGEngine::Get().OnDraw();
 			GuiOfCmdEngine::Get().OnDraw();
 			GuiOfDataSys::Get().OnDraw();
 			GuiOfMemSys::Get().OnDraw();
@@ -86,15 +86,15 @@ namespace NWG
 	// --==<--on_event_methods>==--
 	void CreatorState::OnEvent(MouseEvent& rmEvt)
 	{
-		GCameraLad::Get().OnEvent(rmEvt, GlibEngine::Get().GetLayer()->GetGCamera());
+		GCameraLad::Get().OnEvent(rmEvt, GEngine::Get().GetLayer()->GetGCamera());
 	}
 	void CreatorState::OnEvent(KeyboardEvent& rkEvt)
 	{
-		GCameraLad::Get().OnEvent(rkEvt, GlibEngine::Get().GetLayer()->GetGCamera());
+		GCameraLad::Get().OnEvent(rkEvt, GEngine::Get().GetLayer()->GetGCamera());
 	}
 	void CreatorState::OnEvent(WindowEvent& rwEvt)
 	{
-		GCameraLad::Get().OnEvent(rwEvt, GlibEngine::Get().GetLayer()->GetGCamera());
+		GCameraLad::Get().OnEvent(rwEvt, GEngine::Get().GetLayer()->GetGCamera());
 	}
 	// --==</--on_event_methods>==--
 }

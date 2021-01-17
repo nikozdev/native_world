@@ -127,9 +127,8 @@
     <ClInclude Include="src_cpp\glib\vision\nw_gcamera.h" />
     <ClInclude Include="src_cpp\glib\vision\nw_gcamera_lad.h" />
     <ClInclude Include="src_cpp\glib\vision\nw_gmaterial.h" />
-    <ClInclude Include="src_cpp\glib\vision\nw_light_source.h" />
     <ClInclude Include="src_cpp\glib\vision\nw_shader.h" />
-    <ClInclude Include="src_cpp\glib_decl.hpp" />
+    <ClInclude Include="src_cpp\nw_glib_decl.hpp" />
     <ClInclude Include="src_cpp\lua\nw_lua_core.h" />
     <ClInclude Include="src_cpp\lua\nw_lua_engine.h" />
     <ClInclude Include="src_cpp\lua\nw_lua_wraps.h" />
@@ -236,4 +235,4 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-</Project> 
+</Project>

@@ -47,7 +47,7 @@ namespace GLIB
 		V2f whSize = { xywhViewport.z - xywhViewport.x, xywhViewport.w - xywhViewport.y };
 		m_pFrameBuf->SetSizeWH(whSize.x, whSize.y);
 	}
-	void GLayer::AddDrawData(const DrawObjectData& rDOData) { m_Drawables[rDOData.pDrawable->pGMtl].push_back(rDOData); }
+	void GLayer::AddDrawData(const DrawObjectData& rDOData) { }
 	void GLayer::RmvDrawData(UInt32 unId) {
 		Drawables::iterator itDOData = m_Drawables.begin();
 		while (itDOData != m_Drawables.end()) {
@@ -63,7 +63,7 @@ namespace GLIB
 		m_DTools.ResetData();
 		m_GCamera.nAspectRatio = (m_xywhViewport.z - m_xywhViewport.x) / (m_xywhViewport.w - m_xywhViewport.y);
 
-		AGraphApi* pGApi = GEngine::Get().GetGApi();
+		AGApi* pGApi = GEngine::Get().GetGApi();
 		pGApi->SetViewport(m_xywhViewport.x, m_xywhViewport.y, m_xywhViewport.z, m_xywhViewport.w);
 
 		if (DConfig.General.GPrimitive != pGApi->GetPrimitiveType()) { pGApi->SetPrimitiveType(DConfig.General.GPrimitive); }
@@ -87,7 +87,6 @@ namespace GLIB
 			m_DTools.pGMtl = itDrbs.first;
 			std::sort(itDrbs.second.begin(), itDrbs.second.end());
 			for (auto& itDrb : itDrbs.second) {
-				itDrb.pDrawable->OnDraw();
 			}
 			GEngine::Get().DrawCall(m_DTools);
 			m_DTools.ResetData();

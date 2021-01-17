@@ -2,6 +2,7 @@
 #define GLIB_GLAYER_H
 
 #include <glib_camera.h>
+#include <glib_tools.h>
 
 namespace GLIB
 {

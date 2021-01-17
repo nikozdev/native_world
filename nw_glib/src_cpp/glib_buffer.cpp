@@ -13,7 +13,7 @@ namespace GLIB
 		AVertexBuf* pVB = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (GLIB_GAPI & GLIB_GAPI_OGL)
-		case GApiTypes::GAPI_OPENGL: pVB = MemSys::NewT<VertexBufOgl>(); break;
+		case GApiTypes::GAPI_OPENGL: pVB = new VertexBufOgl(); break;
 	#endif	// GLIB_GAPI
 		default: GLIB_ERR("There is no accessible API"); break;
 		}
@@ -25,7 +25,7 @@ namespace GLIB
 		AIndexBuf* pIB = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (GLIB_GAPI & GLIB_GAPI_OGL)
-		case GApiTypes::GAPI_OPENGL: pIB = MemSys::NewT<IndexBufOgl>(); break;
+		case GApiTypes::GAPI_OPENGL: pIB = new IndexBufOgl(); break;
 	#endif // GLIB_GAPI
 		default: GLIB_ERR("Graphics API is not defined"); break;
 		}
@@ -36,7 +36,7 @@ namespace GLIB
 		AShaderBuf* pSB = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (GLIB_GAPI & GLIB_GAPI_OGL)
-		case GApiTypes::GAPI_OPENGL: pSB = MemSys::NewT<ShaderBufOgl>(); break;
+		case GApiTypes::GAPI_OPENGL: pSB = new ShaderBufOgl(); break;
 	#endif // GLIB_GAPI
 		default: GLIB_ERR("Graphics API is not defined"); break;
 		}

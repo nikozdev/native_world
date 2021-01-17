@@ -33,10 +33,10 @@ namespace NW
 		GLayer* AddLayer(const char* strName);
 		void RmvLayer(const char* strName);
 		void ChangeLayerOrder(const char* strName, bool bPushUp);
-		// -- Predicates
+		// --predicates
 		bool IsRunning() { return m_bIsRunning; }
 
-		// -- Core methods
+		// --core_methods
 		bool Init(WApiTypes WindowApiType, GApiTypes GraphicsApiType);
 		void Quit();
 		void Update();

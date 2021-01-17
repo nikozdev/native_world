@@ -18,22 +18,18 @@ namespace NW
 	public:
 		ASubShader(const char* strName, ShaderTypes sdType);
 		virtual ~ASubShader();
-
 		// --getters
 		inline UInt32 GetRenderId() const { return m_unRId; }
 		inline ShaderTypes GetType() const { return m_shdType; }
 		virtual inline const AShader* GetOverShader() const = 0;
-
 		// --core_methods
 		virtual void Attach(AShader* pOverShader) = 0;
 		virtual void Detach() = 0;
 		virtual bool Compile() = 0;
 		virtual void Reset() = 0;
-
 		// --data_methods
 		virtual bool SaveF(const char* strFPath) = 0;
 		virtual bool LoadF(const char* strFPath) = 0;
-
 		static ASubShader* Create(const char* strName, ShaderTypes sdType);
 	protected:
 		UInt32 m_unRId;
@@ -82,7 +78,7 @@ namespace NW
 
 		static AShader* Create(const char* strName);
 
-		// --setters
+		// --code_setters
 		virtual void SetBool(const char* strName, bool value) const = 0;
 		virtual void SetInt(const char* strName, int value) const = 0;
 		virtual void SetIntArray(const char *strName, Int32 *pIntArr, UInt32 unCount) const = 0;
@@ -147,7 +143,7 @@ namespace NW
 	class NW_API ShaderOgl : public AShader
 	{
 		friend class SubShaderOgl;
-	public: // Interface Methods
+	public:
 		ShaderOgl(const char* strName);
 		~ShaderOgl();
 
@@ -165,7 +161,7 @@ namespace NW
 		virtual bool SaveF(const char* strFPath) override;
 		virtual bool LoadF(const char* strFPath) override;
 
-		// --setters
+		// --code_setters
 		virtual void SetBool(const char* strName, bool value) const override;
 		virtual void SetInt(const char* strName, int value) const override;
 		virtual void SetIntArray(const char* strName, Int32* pIntArr, UInt32 unCount) const override;

@@ -48,7 +48,7 @@ namespace NW
 		inline void OnEvent(MouseEvent& rmEvt) { OnEvent(rmEvt, &m_GCamera); }
 		inline void OnEvent(KeyboardEvent& rkEvt) { OnEvent(rkEvt, &m_GCamera); }
 		inline void OnEvent(WindowEvent& rwEvt) { OnEvent(rwEvt, &m_GCamera); }
-	private:// Implementation Attributes
+	private:
 		GCamera m_GCamera;
 	};
 }

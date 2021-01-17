@@ -19,8 +19,11 @@ namespace GLIB
 
 		// --getters
 		inline UInt32 GetRenderId() const { return m_unRId; }
+		inline const char* GetCode() const { return &m_strCode[0]; }
 		inline ShaderTypes GetType() const { return m_shdType; }
 		virtual inline const AShader* GetOverShader() const = 0;
+		// --setters
+		inline void SetCode(const char* strCode) { m_strCode = strCode; }
 
 		// --core_methods
 		virtual void Attach(AShader* pOverShader) = 0;
@@ -61,24 +64,23 @@ namespace GLIB
 
 		// --getters
 		inline UInt32 GetRenderId() const { return m_unRId; }
+		inline const char* GetCode() const { return &m_strCode[0]; }
 		inline const VertexBufLayout& GetVertexLayout() const { return m_vtxLayout; }
 		inline const ShaderBufLayout& GetShdLayout() const { return m_shdLayout; }
 		inline const Globals& GetGlobals() const { return m_Globals; }
 		inline const Blocks& GetBlocks() const { return m_Blocks; }
 		virtual inline const ASubShader* GetSubShader(ShaderTypes sdType) = 0;
+		// --setters
+		inline void SetCode(const char* strCode) { m_strCode = strCode; }
 		// --core_methods
 		virtual void Enable() = 0;
 		virtual void Disable() = 0;
 		virtual bool Compile() = 0;
 		virtual void Reset() = 0;
 
-		// --data_methods
-		virtual bool SaveF(const char* strFPath) = 0;
-		virtual bool LoadF(const char* strFPath) = 0;
-
 		static AShader* Create(const char* strName);
 
-		// --setters
+		// --code_setters
 		virtual void SetBool(const char* strName, bool value) const = 0;
 		virtual void SetInt(const char* strName, int value) const = 0;
 		virtual void SetIntArray(const char *strName, Int32 *pIntArr, UInt32 unCount) const = 0;
@@ -156,11 +158,7 @@ namespace GLIB
 		virtual void Disable() override;
 		virtual bool Compile() override;
 		virtual void Reset() override;
-		// --data_methods
-		virtual bool SaveF(const char* strFPath) override;
-		virtual bool LoadF(const char* strFPath) override;
-
-		// --setters
+		// --code_setters
 		virtual void SetBool(const char* strName, bool value) const override;
 		virtual void SetInt(const char* strName, int value) const override;
 		virtual void SetIntArray(const char* strName, Int32* pIntArr, UInt32 unCount) const override;

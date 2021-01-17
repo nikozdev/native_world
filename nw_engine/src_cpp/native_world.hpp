@@ -2,18 +2,20 @@
 #define NATIVE_WORLD_HPP
 /// For usage by CheerNik applications
 
-// --==<core_engine>==--
+// --==<global>==--
 #include <core/nw_core_engine.h>
 #include <core/nw_core_state.h>
-#include <core/nw_data_res.h>
+#include <glib/core/nw_gengine.h>
+#include <lua/nw_lua_engine.h>
+#include <sys/nw_io_sys.h>
+#include <sys/nw_log_sys.h>
+#include <sys/nw_time_sys.h>
+#include <sys/nw_mem_sys.h>
+#include <sys/nw_data_sys.h>
+#include <sys/nw_gui_sys.h>
 // --==</core_engine>==--
 
-// --==<lua_engine>==--
-#include <lua/nw_lua_engine.h>
-// --==</lua_engine>==--
-
-// --==<graph_engine>==--
-#include <glib/core/nw_gengine.h>
+// --==<graphics_library>==--
 #include <glib/gcontext/nw_framebuf.h>
 #include <glib/gcontext/nw_gcontext.h>
 #include <glib/gcontext/nw_window.h>
@@ -22,17 +24,7 @@
 #include <glib/vision/nw_gmaterial.h>
 #include <glib/vision/nw_gcamera.h>
 #include <glib/vision/nw_gcamera_lad.h>
-// --==</graph_engine>==--
-
-// --==<systems>==--
-#include <sys/nw_ev_sys.h>
-#include <sys/nw_io_sys.h>
-#include <sys/nw_log_sys.h>
-#include <sys/nw_time_sys.h>
-#include <sys/nw_mem_sys.h>
-#include <sys/nw_data_sys.h>
-#include <sys/nw_gui_sys.h>
-// --==</systems>==--
+// --==</graphics_library>==--
 
 // --==<entity_component_system>==--
 #include <ecs/nw_scene.h>

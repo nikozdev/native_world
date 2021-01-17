@@ -8,7 +8,7 @@
 namespace GLIB
 {
 	GMaterial::GMaterial(const char* strName) :
-	{ }
+	m_strName(strName) { }
 	GMaterial::~GMaterial() { }
 
 	// --setters

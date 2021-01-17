@@ -4,7 +4,7 @@
 
 #include <nw_decl.hpp>
 #include <ecs_decl.hpp>
-#include <glib_decl.hpp>
+#include <nw_glib_decl.hpp>
 
 namespace NW
 {

@@ -15,10 +15,10 @@ namespace GLIB
 	/// -- This is the tool of the engine renderer
 	/// -- Renderer owns an instance of the derrived from this class
 	/// -- Renderer is static and he owns any API with which he can draw
-	class GLIB_API AGraphApi
+	class GLIB_API AGApi
 	{
 	public:
-		virtual ~AGraphApi() = default;
+		virtual ~AGApi() = default;
 		
 		// --getters
 		virtual inline const GApiTypes GetType() const = 0;
@@ -40,7 +40,7 @@ namespace GLIB
 		virtual void DrawIndexed(UInt32 unIndexCount) = 0;
 		virtual void DrawArray(UInt32 unVertexCount) = 0;
 
-		static AGraphApi* Create(GApiTypes gapiType);
+		static AGApi* Create(GApiTypes gapiType);
 	};
 }
 #endif	// GLIB_GAPI
@@ -53,11 +53,11 @@ namespace GLIB
 	/// --Draws everything you give him
 	/// --Gets data and draws it
 	/// --Can draw throught abstraction classes and VBO/VAO/EBO
-	class GLIB_API GraphicsApiOgl : public AGraphApi
+	class GLIB_API GApiOgl : public AGApi
 	{
 	public:
-		GraphicsApiOgl();
-		~GraphicsApiOgl();
+		GApiOgl();
+		~GApiOgl();
 
 		// --getters
 		virtual inline const GApiTypes GetType() const override { return m_gapiType; }

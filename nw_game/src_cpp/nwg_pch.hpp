@@ -1,16 +1,14 @@
 #ifndef NWG_PCH_H
 #define NWG_PCH_H
-/// PreCompiled header file
+/// PreCompiledHeader
 /// This file contains the most usable include files
 /// cn_pch.cpp file gets it and generates .pch file in the intermediate files
 /// .pch header isn't essentially compiles every time we want to run the app
 /// .pch header includes in every cpp file of project
 
-#define GLIB_PLATFORM_WINDOWS
-#define CMD_PLATFORM_WINDOWS
-
 #include <native_world.hpp>
 #include <cmd_engine.h>
+#include <glib_engine.h>
 
 #if (NW_GUI & NW_GUI_IMGUI)
 #include <imgui.h>

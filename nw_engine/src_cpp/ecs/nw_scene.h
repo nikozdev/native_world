@@ -5,7 +5,7 @@
 
 #include <nwlib/nw_singleton.h>
 
-#include <glib_decl.hpp>
+#include <nw_glib_decl.hpp>
 
 namespace NW
 {

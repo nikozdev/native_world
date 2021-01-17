@@ -48,6 +48,8 @@ namespace GLIB
 		virtual void SetVSync(bool enabled) = 0;
 		// --predicates
 		virtual bool IsVSync() const = 0;
+		virtual void SetIcon(UByte* pData, UInt16 unWidth, UInt16 unHeight) = 0;
+		virtual void SetOpacity(float nOpacity) = 0;
 
 		// --core_methods
 		virtual bool Init() = 0;
@@ -77,14 +79,16 @@ namespace GLIB
 		virtual inline UInt16 GetHeight() const override { return m_WindowInfo.unHeight; }
 		virtual inline const WindowInfo& GetWindowInfo() override { return m_WindowInfo; }
 		virtual inline void* GetNative() override { return m_pNative; }
-		virtual inline AGContext* GetGContext() override { return m_pGContext.get(); }
+		virtual inline AGContext* GetGContext() override { return m_pGContext; }
 		// --setters
 		virtual void SetTitle(const char* strTitle) override;
 		inline void SetEventCallback(const EventCallback& fnEvCallback) override { m_WindowInfo.fnEvCallback = fnEvCallback; }
 		// --predicates
 		inline bool IsVSync() const override { return m_WindowInfo.bVSync; }
 
-		void SetVSync(bool enabled) override;
+		virtual void SetVSync(bool enabled) override;
+		virtual void SetIcon(UByte* pData, UInt16 unWidth, UInt16 unHeight) override;
+		virtual void SetOpacity(float nOpacity) override;
 
 		// --core_methods
 		virtual bool Init() override;
@@ -105,9 +109,10 @@ namespace GLIB
 		// --other_callbacks: window
 		static void CbError(Int32 nErrCode, const char* strErrMsg);
 	private:
-		GLFWwindow* m_pNative;
-		RefOwner<AGContext> m_pGContext;
+		GContextOgl* m_pGContext;
 		WindowInfo m_WindowInfo;
+		GLFWwindow* m_pNative;
+		GLFWimage* m_pIcon;
 	};
 }
 #endif // GLIB_WINDOW

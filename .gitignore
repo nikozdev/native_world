@@ -1,11 +1,8 @@
 # Ignore these directories
 .vs/
 bin/
-ext/
-bin/
+ext/bin/
 .git/
-nw_engine/ext/
-nw_game/ext/
 # Files
 **.vcxproj**
 *.sln

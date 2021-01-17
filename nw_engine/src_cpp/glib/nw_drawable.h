@@ -4,7 +4,7 @@
 #include <glib/nw_texture.h>
 #include <glib/nw_glib_core.h>
 
-#include <glib_decl.hpp>
+#include <nw_glib_decl.hpp>
 
 namespace NW
 {

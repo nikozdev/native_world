@@ -3,7 +3,7 @@
 
 #include <core/nw_data_res.h>
 
-#include <glib_decl.hpp>
+#include <nw_glib_decl.hpp>
 
 #if (defined NW_GRAPHICS)
 namespace NW

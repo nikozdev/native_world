@@ -129,14 +129,8 @@
     <ClInclude Include="src_cpp\glib\vision\nw_gmaterial.h">
       <Filter>src_cpp\glib\vision</Filter>
     </ClInclude>
-    <ClInclude Include="src_cpp\glib\vision\nw_light_source.h">
-      <Filter>src_cpp\glib\vision</Filter>
-    </ClInclude>
     <ClInclude Include="src_cpp\glib\vision\nw_shader.h">
       <Filter>src_cpp\glib\vision</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib_decl.hpp">
-      <Filter>src_cpp</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\lua\nw_lua_core.h">
       <Filter>src_cpp\lua</Filter>
@@ -230,6 +224,9 @@
     </ClInclude>
     <ClInclude Include="src_cpp\sys\nw_time_sys.h">
       <Filter>src_cpp\sys</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\nw_glib_decl.hpp">
+      <Filter>src_cpp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -5,10 +5,10 @@
 #include <nwlib/nw_code_chunk.h>
 
 #include <glib/nw_gbuffer.h>
-#include <glib/render/nw_texture.h>
+#include <glib/nw_texture.h>
 
 #include <nw_decl.hpp>
-#include <graph_decl.hpp>
+#include <nw_glib_decl.hpp>
 #include <ecs_decl.hpp>
 
 namespace NWG
@@ -51,13 +51,13 @@ namespace NWG
 		// --core_engine
 		CoreState* pCoreState = nullptr;
 	};
-	/// GuiOfGlibEngine struct
-	struct NW_API GuiOfGlibEngine : public AGuiOf<GuiOfGlibEngine>
+	/// GuiOfGEngine struct
+	struct NW_API GuiOfGEngine : public AGuiOf<GuiOfGEngine>
 	{
-		friend class AGuiOf<GuiOfGlibEngine>;
+		friend class AGuiOf<GuiOfGEngine>;
 	private:
-		GuiOfGlibEngine();
-		~GuiOfGlibEngine();
+		GuiOfGEngine();
+		~GuiOfGEngine();
 	private:
 		bool bGApi = false, bWindow = false, bGContext = false, bStates = false;
 		AWindow* pWindow = nullptr;

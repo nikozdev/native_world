@@ -1,6 +1,5 @@
 #ifndef GLIB_PCH_HPP
 
-
 // --<standard>--
 // --stl
 #include <array>
@@ -46,7 +45,9 @@
 // --</platform>--
 
 #if (GLIB_MATH & GLIB_MATH_GLM)
-#include <glm/vector.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/matrix.hpp>
 #endif	// GLIB_MATH

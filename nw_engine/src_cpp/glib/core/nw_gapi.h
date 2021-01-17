@@ -1,7 +1,7 @@
 #ifndef NW_GAPI_H
 #define NW_GAPI_H
 
-#include <glib_decl.hpp>
+#include <nw_glib_decl.hpp>
 
 #if (defined NW_GRAPHICS)	// This has to be defined anyway
 namespace NW
