@@ -7,7 +7,7 @@
 // Functions
 namespace NW
 {
-	inline Size SDType_GetSize(ShaderDataTypes sDataType, UInt32 unCount = 1) {
+	inline Size SdTypeGetSize(ShaderDataTypes sDataType, UInt32 unCount = 1) {
 		Size szData = 0;
 		switch (sDataType) {
 		case SDT_BOOL:	case SDT_INT8:		case SDT_UINT8:		szData = 1;	break;
@@ -18,7 +18,7 @@ namespace NW
 		}
 		return szData * unCount;
 	}
-	inline Size SDType_GetAllignedSize(ShaderDataTypes sDataType, UInt32 unCount = 1) {
+	inline Size SdTypeGetAllignSize(ShaderDataTypes sDataType, UInt32 unCount = 1) {
 		Size szAll = 0;
 		switch (sDataType) {
 		case SDT_BOOL:	case SDT_INT8:	case SDT_UINT8:			szAll = 4;	break;
@@ -30,7 +30,7 @@ namespace NW
 		}
 		return szAll * ((unCount + (szAll - 1)) & ~(szAll - 1));
 	}
-	inline const char* SDType_GetString(ShaderDataTypes sdType) {
+	inline const char* SdTypeGetStr(ShaderDataTypes sdType) {
 		return sdType == SDT_BOOL ? "boolean" :
 			sdType == SDT_INT8 ? "byte" : sdType == SDT_UINT8 ? "unsigned byte" :
 			sdType == SDT_INT16 ? "short" : sdType == SDT_UINT16 ? "unsigned short" :
@@ -101,14 +101,21 @@ namespace NW
 	/// DrawObjectData struct
 	struct NW_API DrawObjectData
 	{
-		ADrawable* pDrawable = nullptr;
+	public:
+		DArray<UByte> vtxData;
+		DArray<UInt32> idxData;
 		UInt8 unDrawOrder = 0;
-		UInt32 unId = 0;
+		GMaterial* pGMtl = nullptr;
+	public:
+		// --getters
+		inline const UByte* GetVtxData() const { return &vtxData[0]; }
+		inline const UInt32* GetIdxData() const { return &idxData[0]; }
+		inline Size GetVtxSize() const { return vtxData.size(); }
+		inline Size GetIdxSize() const { return idxData.size(); }
+		inline UInt32 GetIdxCount() const { return idxData.size(); }
 		// --operators
 		inline bool operator>	(const DrawObjectData& rDOData)	const { return rDOData.unDrawOrder > unDrawOrder; }
-		inline bool operator>=	(const DrawObjectData& rDOData)	const { return rDOData.unDrawOrder >= unDrawOrder; }
-		inline bool operator==	(const DrawObjectData& rDOData)	const { return rDOData.unDrawOrder == unDrawOrder; }
-		inline bool operator<=	(const DrawObjectData& rDOData)	const { return rDOData.unDrawOrder <= unDrawOrder; }
+		inline bool operator==	(const DrawObjectData& rDOData)	const { return rDOData.pGMtl == pGMtl; }
 		inline bool operator<	(const DrawObjectData& rDOData)	const { return rDOData.unDrawOrder < unDrawOrder; }
 	};
 	/// DrawSceneData struct
@@ -336,7 +343,7 @@ namespace NW
 }
 #endif	// NW_GRAPHICS
 #if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-#define GL_DEBUG_ERR_LOG(errType, objectID) (OGL_ErrLog_Shader(errType, objectID))
+#define GL_DEBUG_ERR_LOG(errType, objectID) (OglErrLogShader(errType, objectID))
 // Functions
 namespace NW
 {
@@ -346,7 +353,7 @@ namespace NW
 	/// Return suitable error message accordingly to glGetError()
 	extern bool OGL_ErrLog(const char* funcName, const char* file, int line);
 	/// Get compile and linking status return true if there are errors
-	extern int OGL_ErrLog_Shader(ShaderTypes ShaderType, UInt32 unShaderId);
+	extern int OglErrLogShader(ShaderTypes ShaderType, UInt32 unShaderId);
 }
 #endif // NW_GRAPHICS
 #endif // GLIB_CORE_H

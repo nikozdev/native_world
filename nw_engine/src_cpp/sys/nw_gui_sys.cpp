@@ -1,8 +1,6 @@
 #include <nw_pch.hpp>
 #include "nw_gui_sys.h"
 
-#include <ecs/nw_scene.h>
-
 #include <glib/vision/nw_gcamera.h>
 #include <glib/vision/nw_gmaterial.h>
 

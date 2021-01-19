@@ -99,6 +99,8 @@
     <ClInclude Include="src_cpp\nwg_gamer_state.h" />
     <ClInclude Include="src_cpp\nwg_gui_of.h" />
     <ClInclude Include="src_cpp\nwg_pch.hpp" />
+    <ClInclude Include="src_cpp\nwg_mem_sys.h" />
+    <ClInclude Include="src_cpp\nwg_memory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src_cpp\nwg_creator_state.cpp" />
@@ -108,6 +110,8 @@
     <ClCompile Include="src_cpp\nwg_pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src_cpp\nwg_mem_sys.cpp" />
+    <ClCompile Include="src_cpp\nwg_memory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\nw_engine\nw_engine.vcxproj">

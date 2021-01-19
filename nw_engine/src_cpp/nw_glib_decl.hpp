@@ -8,7 +8,7 @@ namespace NW
 	//	--==<control>==--
 	class NW_API AGApi;
 	class NW_API GEngine;
-	class NW_API GLayer;
+	struct NW_API GLayer;
 	class NW_API GCameraLad;
 	//	--==</control>==--
 
@@ -203,13 +203,6 @@ namespace NW
 //	--==<extrnal_types>==--
 struct GLFWwindow;
 struct GLFWimage;
-namespace NW
-{
-#if (NW_WINDOW & NW_WINDOW_GLFW)
-using AppWindow = WindowOgl;
-using NativeWindow = GLFWwindow*;
-#endif	// NW_WINDOW
-}
 //	--==</extrnal_types>==--
 
 #define NW_MAX_TEXTURES 8

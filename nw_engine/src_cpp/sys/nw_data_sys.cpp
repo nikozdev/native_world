@@ -2,7 +2,6 @@
 #include "nw_data_sys.h"
 
 #include <core/nw_core_state.h>
-#include <ecs/nw_scene.h>
 #include <lua/nw_lua_engine.h>
 
 #include <glib/gcontext/nw_window.h>
@@ -30,10 +29,6 @@ NW::String NW::DataSys::s_strRscDir = &std::filesystem::current_path().generic_s
 namespace NW
 {
     // --getters
-    template <> static inline DataSys::DRs<Scene>& DataSys::GetDataResources() = delete;
-    template <> Scene* DataSys::GetDataRes<Scene>(const char* strName) = delete;
-
-    template <> Scene* DataSys::GetDataRes<Scene>(UInt32 unId) = delete;
     template <> AShader* DataSys::GetDataRes<AShader>(UInt32 unId) {
         if (AShader* pShader = dynamic_cast<AShader*>(GetADataRes(unId))) {
             return pShader;
@@ -78,11 +73,11 @@ namespace NW
     void DataSys::OnQuit()
     {
         if (true) {
-            MemSys::DelT<AShader>(GetDataRes<AShader>("shd_2d_tile"));
-            MemSys::DelT<AShader>(GetDataRes<AShader>("shd_3d_batch"));
+            delete (GetDataRes<AShader>("shd_2d_tile"));
+            delete (GetDataRes<AShader>("shd_3d_batch"));
         }
         if (true) {
-            MemSys::DelT<ATexture2d>(GetDataRes<ATexture2d>("tex_white_solid"));
+            delete (GetDataRes<ATexture2d>("tex_white_solid"));
         }
         if (true) {
             MemSys::DelT<GMaterial>(GetDataRes<GMaterial>("gmt_2d_tile"));

@@ -102,25 +102,19 @@
     <ClInclude Include="src_cpp\core\nw_core_engine.h" />
     <ClInclude Include="src_cpp\core\nw_core_state.h" />
     <ClInclude Include="src_cpp\core\nw_data_res.h" />
-    <ClInclude Include="src_cpp\ecs\nw_collider_cmp.h" />
-    <ClInclude Include="src_cpp\ecs\nw_ent_sys.h" />
-    <ClInclude Include="src_cpp\ecs\nw_entity.h" />
-    <ClInclude Include="src_cpp\ecs\nw_entity_cmp.h" />
-    <ClInclude Include="src_cpp\ecs\nw_graphics_cmp.h" />
-    <ClInclude Include="src_cpp\ecs\nw_physics_cmp.h" />
-    <ClInclude Include="src_cpp\ecs\nw_scene.h" />
-    <ClInclude Include="src_cpp\ecs\nw_script_cmp.h" />
-    <ClInclude Include="src_cpp\ecs\nw_transform_cmp.h" />
-    <ClInclude Include="src_cpp\ecs_decl.hpp" />
-    <ClInclude Include="src_cpp\glib\core\nw_gapi.h" />
+    <ClInclude Include="src_cpp\nwlib\nw_memory.h" />
+    <ClInclude Include="src_cpp\sys\nw_mem_sys.h" />
+    <ClInclude Include="src_cpp\sys\nw_ent_sys.h" />
+    <ClInclude Include="src_cpp\core\nw_scene.h" />
     <ClInclude Include="src_cpp\glib\core\nw_gengine.h" />
     <ClInclude Include="src_cpp\glib\core\nw_glayer.h" />
+    <ClInclude Include="src_cpp\glib\core\nw_gapi.h" />
     <ClInclude Include="src_cpp\glib\gcontext\nw_framebuf.h" />
     <ClInclude Include="src_cpp\glib\gcontext\nw_gcontext.h" />
     <ClInclude Include="src_cpp\glib\gcontext\nw_window.h" />
     <ClInclude Include="src_cpp\glib\nw_drawable.h" />
     <ClInclude Include="src_cpp\glib\nw_gbuffer.h" />
-    <ClInclude Include="src_cpp\glib\nw_glib_core.h" />
+    <ClInclude Include="src_cpp\glib\glib_tools.h" />
     <ClInclude Include="src_cpp\glib\nw_gui_core.h" />
     <ClInclude Include="src_cpp\glib\nw_gui_widget.h" />
     <ClInclude Include="src_cpp\glib\nw_texture.h" />
@@ -140,15 +134,12 @@
     <ClInclude Include="src_cpp\nw_pch.hpp" />
     <ClInclude Include="src_cpp\nwlib\math_matrix.h" />
     <ClInclude Include="src_cpp\nwlib\math_transform.h" />
-    <ClInclude Include="src_cpp\nwlib\math_trigonometry.h" />
     <ClInclude Include="src_cpp\nwlib\math_vector.h" />
-    <ClInclude Include="src_cpp\nwlib\nw_algorithm.h" />
     <ClInclude Include="src_cpp\nwlib\nw_code_chunk.h" />
     <ClInclude Include="src_cpp\nwlib\nw_container.h" />
     <ClInclude Include="src_cpp\nwlib\nw_event.h" />
     <ClInclude Include="src_cpp\nwlib\nw_io_lib.h" />
     <ClInclude Include="src_cpp\nwlib\nw_math.h" />
-    <ClInclude Include="src_cpp\nwlib\nw_memory.h" />
     <ClInclude Include="src_cpp\nwlib\nw_random.h" />
     <ClInclude Include="src_cpp\nwlib\nw_singleton.h" />
     <ClInclude Include="src_cpp\nwlib\nw_string.h" />
@@ -158,24 +149,18 @@
     <ClInclude Include="src_cpp\sys\nw_gui_sys.h" />
     <ClInclude Include="src_cpp\sys\nw_io_sys.h" />
     <ClInclude Include="src_cpp\sys\nw_log_sys.h" />
-    <ClInclude Include="src_cpp\sys\nw_mem_sys.h" />
     <ClInclude Include="src_cpp\sys\nw_time_sys.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src_cpp\core\nw_core_engine.cpp" />
     <ClCompile Include="src_cpp\core\nw_data_res.cpp" />
-    <ClCompile Include="src_cpp\ecs\nw_collider_cmp.cpp" />
-    <ClCompile Include="src_cpp\ecs\nw_ent_sys.cpp" />
-    <ClCompile Include="src_cpp\ecs\nw_entity.cpp" />
-    <ClCompile Include="src_cpp\ecs\nw_entity_cmp.cpp" />
-    <ClCompile Include="src_cpp\ecs\nw_graphics_cmp.cpp" />
-    <ClCompile Include="src_cpp\ecs\nw_physics_cmp.cpp" />
-    <ClCompile Include="src_cpp\ecs\nw_scene.cpp" />
-    <ClCompile Include="src_cpp\ecs\nw_script_cmp.cpp" />
-    <ClCompile Include="src_cpp\ecs\nw_transform_cmp.cpp" />
-    <ClCompile Include="src_cpp\glib\core\nw_gapi.cpp" />
+    <ClCompile Include="src_cpp\nwlib\nw_memory.cpp" />
+    <ClCompile Include="src_cpp\sys\nw_mem_sys.cpp" />
+    <ClCompile Include="src_cpp\sys\nw_ent_sys.cpp" />
+    <ClCompile Include="src_cpp\core\nw_scene.cpp" />
     <ClCompile Include="src_cpp\glib\core\nw_gengine.cpp" />
     <ClCompile Include="src_cpp\glib\core\nw_glayer.cpp" />
+    <ClCompile Include="src_cpp\glib\core\nw_gapi.cpp" />
     <ClCompile Include="src_cpp\glib\gcontext\nw_framebuf.cpp" />
     <ClCompile Include="src_cpp\glib\gcontext\nw_gcontext.cpp" />
     <ClCompile Include="src_cpp\glib\gcontext\nw_window.cpp" />
@@ -196,7 +181,6 @@
     </ClCompile>
     <ClCompile Include="src_cpp\nwlib\nw_code_chunk.cpp" />
     <ClCompile Include="src_cpp\nwlib\nw_imgui_build.cpp" />
-    <ClCompile Include="src_cpp\nwlib\nw_memory.cpp" />
     <ClCompile Include="src_cpp\nwlib\nw_random.cpp" />
     <ClCompile Include="src_cpp\nwlib\nw_string.cpp" />
     <ClCompile Include="src_cpp\nwlib\nw_time.cpp" />
@@ -205,7 +189,6 @@
     <ClCompile Include="src_cpp\sys\nw_gui_sys.cpp" />
     <ClCompile Include="src_cpp\sys\nw_io_sys.cpp" />
     <ClCompile Include="src_cpp\sys\nw_log_sys.cpp" />
-    <ClCompile Include="src_cpp\sys\nw_mem_sys.cpp" />
     <ClCompile Include="src_cpp\sys\nw_time_sys.cpp" />
   </ItemGroup>
   <ItemGroup>

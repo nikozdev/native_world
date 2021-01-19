@@ -19,7 +19,7 @@ namespace NW
 	void GCameraLad::UpdateCamera(GCamera* pGCamera)
 	{
 		float MoveSpeed = this->nMoveSpeed * TimeSys::GetRealDelta();
-		if (!IOSys::s_Cursor.bBlocked) return;
+		if (IOSys::GetMouseIMode() != IM_CURSOR_DISABLED) return;
 		pGCamera->nAspectRatio = whBounds.x / whBounds.y;
 		if (pGCamera->GetMode() == GCamera::GCM_2D)
 		{
@@ -64,13 +64,13 @@ namespace NW
 	{
 		switch (rmEvt.EvtType) {
 		case ET_MOUSE_MOVE:
-			if (!IOSys::s_Cursor.bBlocked) return;
+			if (IOSys::GetMouseIMode() != IM_CURSOR_DISABLED) return;
 			if (pGCamera->GetMode() == GCamera::GCM_2D) {
-				if (IOSys::GetMsButtonHeld(NW_MS_BTN_2)) {
-					pGCamera->xyzCrd.x += -IOSys::s_Cursor.xMoveDelta * TimeSys::GetRealDelta() * nMoveSpeed;
-					pGCamera->xyzCrd.y += IOSys::s_Cursor.yMoveDelta * TimeSys::GetRealDelta() * nMoveSpeed;
+				if (IOSys::GetMouseHeld(MB_BUTTON_2)) {
+					pGCamera->xyzCrd.x += -IOSys::s_Mouse.xMoveDelta * TimeSys::GetRealDelta() * nMoveSpeed;
+					pGCamera->xyzCrd.y += IOSys::s_Mouse.yMoveDelta * TimeSys::GetRealDelta() * nMoveSpeed;
 				}
-				float nRoll_deg = pGCamera->nRoll + IOSys::s_Cursor.xMoveDelta * nRtnSpeed * TimeSys::GetRealDelta();
+				float nRoll_deg = pGCamera->nRoll + IOSys::s_Mouse.xMoveDelta * nRtnSpeed * TimeSys::GetRealDelta();
 				if (nRoll_deg < -nMaxRoll)
 					pGCamera->nRoll = nMaxRoll;
 				else if (nRoll_deg > nMaxRoll)
@@ -79,8 +79,8 @@ namespace NW
 					pGCamera->nRoll = nRoll_deg;
 			}
 			else if (pGCamera->GetMode() == GCamera::GCM_3D) {
-				float nYaw_deg = pGCamera->nYaw - IOSys::s_Cursor.xMoveDelta * nRtnSpeed * TimeSys::GetRealDelta();
-				float nPitch_deg = pGCamera->nPitch - IOSys::s_Cursor.yMoveDelta * nRtnSpeed * TimeSys::GetRealDelta();
+				float nYaw_deg = pGCamera->nYaw - IOSys::s_Mouse.xMoveDelta * nRtnSpeed * TimeSys::GetRealDelta();
+				float nPitch_deg = pGCamera->nPitch - IOSys::s_Mouse.yMoveDelta * nRtnSpeed * TimeSys::GetRealDelta();
 
 				if (nYaw_deg < -nMaxYaw)
 					pGCamera->nYaw = nMaxYaw;
@@ -98,7 +98,7 @@ namespace NW
 			}
 			break;
 		case ET_MOUSE_SCROLL:
-			if (!IOSys::s_Cursor.bBlocked) return;
+			if (IOSys::GetMouseIMode() != IM_CURSOR_DISABLED) return;
 			float nZoom = -rmEvt.nY * TimeSys::GetRealDelta() * nZoomSpeed;
 			if (pGCamera->GetType() == GCamera::GCT_ORTHO) {
 				float nScale = pGCamera->nViewScale + nZoom * pGCamera->nViewScale / 40.0f + 0.01f;

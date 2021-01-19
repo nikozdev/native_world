@@ -6,6 +6,7 @@
 
 #if (defined NW_GRAPHICS)
 #include <glib/core/nw_gengine.h>
+#include <glib/core/nw_gapi.h>
 
 #include <sys/nw_log_sys.h>
 
@@ -146,7 +147,7 @@ namespace NW
 		ATexture1d* pTex = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GAPI_OPENGL: pTex = MemSys::NewT<Texture1dOgl>(strName); break;
+		case GAPI_OPENGL: pTex = new Texture1dOgl(strName); break;
 	#endif	// NW_GRAPHICS
 		default: break;
 		}
@@ -156,7 +157,7 @@ namespace NW
 		ATexture2d* pTex = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GAPI_OPENGL: pTex = MemSys::NewT<Texture2dOgl>(strName); break;
+		case GAPI_OPENGL: pTex = new Texture2dOgl(strName); break;
 	#endif	// NW_GRAPHICS
 		default: break;
 		}
@@ -166,7 +167,7 @@ namespace NW
 		ATexture3d* pTex = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GAPI_OPENGL: pTex = MemSys::NewT<Texture3dOgl>(strName); break;
+		case GAPI_OPENGL: pTex = new Texture3dOgl(strName); break;
 	#endif	// NW_GRAPHICS
 		default: break;
 		}

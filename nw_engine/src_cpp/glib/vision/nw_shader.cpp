@@ -6,8 +6,9 @@
 #include <sys/nw_log_sys.h>
 
 #if (defined NW_GRAPHICS)
-#include <glib/nw_gbuffer.h>
 #include <glib/core/nw_gengine.h>
+#include <glib/core/nw_gapi.h>
+#include <glib/nw_gbuffer.h>
 namespace NW
 {
 	ASubShader::ASubShader(const char* strName, ShaderTypes sdType) :
@@ -29,7 +30,7 @@ namespace NW
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GAPI_COUT: break;
 	#elif (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GAPI_OPENGL: pSubShader = MemSys::NewT<SubShaderOgl>(strName, sdType); break;
+		case GAPI_OPENGL: pSubShader = new SubShaderOgl(strName, sdType); break;
 	#endif // NW_GRAPHICS
 		default: NW_ERR("Graphics Api is not defined"); break;
 		}
@@ -73,7 +74,7 @@ namespace NW
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GAPI_COUT: break;
 	#elif (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GAPI_OPENGL: pShader = MemSys::NewT<ShaderOgl>(strName); break;
+		case GAPI_OPENGL: pShader = new ShaderOgl(strName); break;
 	#endif // NW_GRAPHICS
 		default: NW_ERR("Graphics Api is not defined"); break;
 		}
@@ -108,7 +109,7 @@ namespace NW
 		const char* strSource = &m_strCode[0];
 		glShaderSource(m_unRId, 1, &strSource, nullptr);
 		glCompileShader(m_unRId);
-		if (OGL_ErrLog_Shader(m_shdType, m_unRId) != 0) { return false; }
+		if (OglErrLogShader(m_shdType, m_unRId) != 0) { return false; }
 		return true;
 	}
 	void SubShaderOgl::Reset() {
@@ -252,7 +253,7 @@ namespace NW
 			if (!rSub.Compile()) { return false; }
 		}
 		glLinkProgram(m_unRId);
-		if (OGL_ErrLog_Shader(ST_SHADER, m_unRId) != 0) return false;
+		if (OglErrLogShader(ST_SHADER, m_unRId) != 0) return false;
 		
 		return true;
 	}

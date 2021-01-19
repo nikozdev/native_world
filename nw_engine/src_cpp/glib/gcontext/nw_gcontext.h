@@ -15,14 +15,14 @@ namespace NW
 		Int32 nActiveTextureId = 0;
 		Int32 nMaxTextures = 0;
 		GContextInfo() = default;
-		explicit GContextInfo(CString sRenderer, CString sVersion,
-			CString sVendor, CString sShadingLanguage) :
+		explicit GContextInfo(const char* sRenderer, const char* sVersion,
+			const char* sVendor, const char* sShadingLanguage) :
 			strRenderer(sRenderer), strVersion(sVersion),
 			strVendor(sVendor), strShadingLanguage(sShadingLanguage) { }
 		explicit GContextInfo(const UChar* sRenderer, const UChar* sVersion,
 			const UChar* sVendor, const UChar* sShadingLanguage) :
-			strRenderer((CString)sRenderer), strVersion((CString)sVersion),
-			strVendor((CString)sVendor), strShadingLanguage((CString)sShadingLanguage) { }
+			strRenderer((const char*)sRenderer), strVersion((const char*)sVersion),
+			strVendor((const char*)sVendor), strShadingLanguage((const char*)sShadingLanguage) { }
 	};
 	/// GraphicalContext Abstract Class
 	/// Interface:

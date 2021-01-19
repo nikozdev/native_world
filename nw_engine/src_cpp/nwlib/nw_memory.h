@@ -1,245 +1,135 @@
 #ifndef NW_MEMORY_H
 #define NW_MEMORY_H
+
 #include <nw_core.hpp>
 
 namespace NW
 {
-	/// Memory Info struct
-	struct NW_API MemInfo
-	{
-	public:
-		Size szAlloc;
-		UInt32 unAlloc;
-	public:
-		OutStream& operator<<(OutStream& rStream) const;
-	};
-	inline OutStream& operator<<(OutStream& rStream, const MemInfo& rInfo) { return rInfo.operator<<(rStream); }
-	/// MemoryLink struct
-	/// Description:
-	/// -- Stores pointers to some block of memory
-	/// -- References list of other MemoryLinks
-	/// while next link doesn't have last == nullptr
-	struct NW_API MemLink
-	{
-	public:
-		MemLink* pNext = nullptr;
-	};
-#if (NW_LIBS & NW_LIBS_NATIVE_PTR)
-	/// ReferenceOwnerer class (same as unique_ptr)
-	/// Interface:
-	/// -> Create RefOwner with defined type
-	/// and address of an object of that type
-	/// -> Use this reference as default object allocated in the heap
-	/// ==>To get the object reference - use it as a functor class()
-	/// --The main feature is that this is heap allocated object
-	/// which will be deleted if it's address is lost
-	/// --If this RefOwner is deleted
-	/// --> destructor will delete the pointed object
-	/// --Local Reference should point on the unique object
-	/// which is not pointed by other pointers
-	template <typename Type>
-	class NW_API RefOwner
-	{
-		friend class RefOwner<Type>;
-	public:
-		// Constructors&Destructor
-		RefOwner(Type* object)
-		{
-			SetNew(object);
-		}
-		RefOwner(const RefOwner& lrCopy) = delete;
-		RefOwner(RefOwner&& movedRef)
-		{
-			Clear();
-			m_address = movedRef.m_address;
-			movedRef.m_address = nullptr;
-		}
-		~RefOwner()
-		{
-			Clear();
-		}
-
-		// Getters
-		inline void SetNew(Type* object)
-		{
-			Clear();
-			m_address = object;
-		}
-		// Setters
-		inline Type* Get()
-		{
-			return m_address;
-		}
-		inline void Clear()
-		{
-			if (m_address)
-			{
-				MemSys::DelT<Type>(m_address);
-			}
-			m_address = nullptr;
-		}
-
-		// Methods
-
-		// Overloaded operators
-		inline Type* operator->()
-		{
-			return m_address;
-		}
-		inline Type& operator*()
-		{
-			return *m_address;
-		}
-	private:
-		Type* m_address;
-	};
-	/// RefKeeper class
-	/// Interface:
-	/// -> Create RefKeeper with defined type -> Set the address of a heap allocated object
-	/// -> Share this addres with other RefKeepers
-	template <typename Type>
-	class NW_API RefKeeper
-	{
-		friend class RefKeeper<Type>;
-	public:
-		RefKeeper(Type* object)
-		{
-			m_object = object;
-			m_refCount++;
-		}
-		RefKeeper(const RefKeeper& globalRef)
-		{
-			ConnectRefs(this, globalRef);
-		}
-		~RefKeeper()
-		{
-			MemSys::DelT<Type>(m_address);
-		}
-		// Getters
-		inline void SetNew(Type* object)
-		{
-			Clear();
-			m_address = object;
-		}
-		// Setters
-		inline Type* Get()
-		{
-			return m_address;
-		}
-		inline void Clear()
-		{
-			if (m_address && m_refCount == 1)
-			{
-				MemSys::DelT<Type>(m_address);
-			}
-			m_refCount--;
-			m_address = nullptr;
-		}
-
-		/// Methods
-		inline void Share(RefKeeper<Type> otherRef)
-		{
-			m_refCount++;
-			otherRef.m_address = m_address;
-		}
-
-		// Overloaded operators
-		inline Type* operator->()
-		{
-			return m_address;
-		}
-		inline Type& operator*()
-		{
-			return *m_address;
-		}
-
-		// Static functions
-		static void ConnectRefs(const RefKeeper<Type>& emptyRef, const RefKeeper<Type>& objectHandler)
-		{
-			if (globRef.m_address == nullptr) return;
-			emptyRef.m_address = globRef.m_address();
-			emptyRef.m_refCount++;
-			objectHandler.m_refCount++;
-		}
-	private:
-		Type* m_address;
-
-		uint16_t m_refCount;
-	};
-	template <typename RefType> class NW_API RefUser
-	{
-		//
-	};
-#elif (NW_LIBS & NW_LIBS_STD_PTR)
-#endif
-	/// MemoryLad(Allocator) class
-	/// Description:
-	/// --Allocates the memory for uninitialized objects
-	/// Interface:
-	/// -> Allocate some memory of required type
-	/// -> Construct the object that you need in the allocated block
-	/// -> When you dont need that object - destruct it
-	/// -> After the destruction - deallocate the memory
-	template<typename ValType>
-	class NW_API MemLad
-	{
-	public:
-		// core_methods
-		inline ValType* Alloc(UInt32 InstancesCount) {
-			return reinterpret_cast<ValType*>(malloc(sizeof(ValType) * InstancesCount));
-		}
-		inline void Delloc(ValType* pBlock, UInt32 InstancesCount) {
-			free(pBlock);
-		}
-
-		inline void Construct(ValType* pBlock, ValType& rValue, UInt32 unInstancesCount = 1) {
-			for (UInt32 i = 0; i < unInstancesCount; i++)
-				MemSys::NewPlaceT(pBlock[i], rValue);
-		}
-		inline void Destruct(ValType* pBlock, UInt32 InstancesCount = 1) {
-			for (UInt32 i = 0; i < InstancesCount; i++)
-			{
-				pBlock[i].~ValType();
-				pBlock = nullptr;
-			}
-		}
-	};
+	inline static const Size s_szMaxMemorySize = 1 << 30;
 }
 namespace NW
 {
-	/// MemoryArena class
-	/// -- Allocates the memory in the given pool
-	/// -- Uses FreeList to track deallocated blocks
-	/// -- If there is not enough space - uses glogal allocation
+	/// MemInfo struct
+	struct NW_API MemInfo
+	{
+	public:
+		Size szAlloc = 0;
+		UInt32 unAlloc = 0;
+	public:
+		OutStream& operator<<(OutStream& rStream) const;
+	};
+	inline OutStream& MemInfo::operator<<(OutStream& rStream) const {
+		return rStream << "MEMORY_INFO::" << std::endl <<
+			"location: " << std::hex << reinterpret_cast<uintptr_t>(this) << std::dec << std::endl <<
+			"allocated_bytes: " << szAlloc << std::endl <<
+			"allocated_blocks: " << unAlloc << std::endl;
+	}
+	inline OutStream& operator<<(OutStream& rStream, const MemInfo& rInfo) { return rInfo.operator<<(rStream); }
+	/// MemLink struct
+	struct MemLink { MemLink* pNext = nullptr; };
+}
+namespace NW
+{
+	template <typename MType>
 	class NW_API MemArena
 	{
-	private:
-		Byte* m_pCurr;
-		Byte* m_pBegin;
-		Byte* m_pEnd;
-		MemLink* m_FreeList;
-
-		Size m_szAllignment = 8;
-		Size m_szBlock = m_szAllignment * 8;
 	public:
-		MemArena(Size szSpace) :
+		MemArena(UInt32 unBlocks) :
 			m_pBegin(nullptr), m_pEnd(nullptr),
 			m_pCurr(nullptr),
-			m_FreeList(nullptr)
-		{
-			Reset(szSpace);
-		}
+			m_FreeList(nullptr),
+			m_szBlocks(unBlocks * sizeof(MType)), m_unBlocks(unBlocks),
+			m_bIsDynamic(true) { Reset(unBlocks); }
+		MemArena(MType* pBlock, UInt32 unBlocks) :
+			m_pBegin(pBlock), m_pEnd(nullptr),
+			m_pCurr(nullptr),
+			m_FreeList(nullptr),
+			m_szBlocks(unBlocks * sizeof(MType)), m_unBlocks(unBlocks),
+			m_bIsDynamic(false) { Reset(pBlock, unBlocks); }
 		~MemArena() { Reset(0); }
 
 		// --getters
-		inline Size GetMinBlockSize(Size szBlock) { return szBlock < m_szBlock ? m_szBlock : szBlock; }
+		inline MType* GetData() { return m_pBegin; }
+		inline UInt32 GetCount() const { return m_unBlocks; }
+		inline Size GetSize() const { return m_szBlocks; }
+		inline Size GetBlockSize() const { return sizeof(MType); }
 		// --setters
-		void Reset(Size szSpace);
+		inline void Reset(UInt32 unBlocks);
+		inline void Reset(MType* pBlock, UInt32 unBlocks);
+		// --predicates
+		inline bool IsDynamic() const { return m_bIsDynamic; }
+		inline bool HasSpace(UInt32 unHowMuch) const { return ((uintptr_t)(m_pEnd - m_pCurr)) > unHowMuch; }
 
 		// --core_methods
-		void* Alloc(Size szAlloc);
-		void Dealloc(void* pBlock, Size szDealloc);
-		void* Realloc(void* pBlock, Size szOld, Size szNew);
+		inline MType* Alloc(UInt32 unBlocks = 1);
+		inline void Dealloc(MType* pBlock, UInt32 unDealloc = 1);
+		inline MType* Realloc(MType* pBlock, UInt32 unOld, UInt32 unNew);
+	private:
+		MType *m_pCurr, *m_pBegin, *m_pEnd;
+		MemLink* m_FreeList;
+
+		Size m_szBlocks;
+		UInt32 m_unBlocks;
+		bool m_bIsDynamic;
 	};
+	// -- setters
+	template<typename MType>
+	inline void MemArena<MType>::Reset(UInt32 unBlocks) {
+		m_unBlocks = unBlocks;
+		m_szBlocks = unBlocks * sizeof(MType);
+		m_FreeList = nullptr;
+		if (m_bIsDynamic) { if (m_pBegin != nullptr) { delete[] m_pBegin; m_pBegin = nullptr; } m_bIsDynamic = false; }
+		if (unBlocks <= 1 || m_szBlocks > s_szMaxMemorySize) { m_szBlocks = m_unBlocks = 0; return; }
+		m_pCurr = m_pBegin = reinterpret_cast<MType*>(malloc(unBlocks * sizeof(MType)));
+		m_bIsDynamic = true;
+		m_pEnd = m_pBegin + unBlocks;
+	}
+	template<typename MType>
+	inline void MemArena<MType>::Reset(MType* pBlock, UInt32 unBlocks) {
+		m_unBlocks = unBlocks;
+		m_szBlocks = unBlocks * sizeof(MType);
+		m_FreeList = nullptr;
+		if (m_bIsDynamic) { if (m_pBegin != nullptr) { delete[] m_pBegin; m_pBegin = nullptr; } m_bIsDynamic = false; }
+		if (unBlocks <= 1 || m_szBlocks > s_szMaxMemorySize) { m_szBlocks = m_unBlocks = 0; return; }
+		m_pCurr = m_pBegin = pBlock;
+		m_pEnd = m_pBegin + unBlocks;
+	}
+	// --==<core_methods>==--
+	template<typename MType>
+	inline MType* MemArena<MType>::Alloc(UInt32 unBlocks) {
+		MType* pBlock = nullptr;
+		if (unBlocks == 0) { return nullptr; }
+		if (m_FreeList != nullptr) {
+			pBlock = reinterpret_cast<MType*>(&m_FreeList);
+			m_FreeList = m_FreeList->pNext;
+		}
+		else {
+			m_pCurr = reinterpret_cast<MType*>((uintptr_t(m_pCurr) + (alignof(MType) - 1)) & ~(alignof(MType) - 1));
+			if (m_pCurr + unBlocks < m_pEnd) {
+				pBlock = m_pCurr;
+				m_pCurr += unBlocks;
+			}
+			else { pBlock = reinterpret_cast<MType*>(malloc(sizeof(MType) * unBlocks)); }
+		}
+		return pBlock;
+	}
+	template<typename MType>
+	inline void MemArena<MType>::Dealloc(MType* pBlock, UInt32 unDealloc) {
+		if (pBlock >= m_pBegin && pBlock <= m_pEnd) {	// somewhere inside our memory
+			MemLink* pNextFreeList = reinterpret_cast<MemLink*>(pBlock);
+			pNextFreeList->pNext = m_FreeList;
+			m_FreeList = pNextFreeList;
+		}
+		else { return; }
+	}
+	template<typename MType>
+	inline MType* MemArena<MType>::Realloc(MType* pBlock, UInt32 unOld, UInt32 unNew) {
+		UInt32 unCpy = unOld < unNew ? unOld : unNew;
+		MType* pRealloc = Alloc(unNew);
+		memcpy(pRealloc, pBlock, unCpy);
+		Dealloc(pBlock, unOld);
+		return pRealloc;
+	}
+	// --==</core_methods>==--
 }
 #endif // NW_MEMORY_H

@@ -1,5 +1,5 @@
 #include <nw_pch.hpp>
-#include "nw_glib_core.h"
+#include "glib_tools.h"
 
 #include <sys/nw_mem_sys.h>
 
@@ -10,12 +10,12 @@
 // Functions
 namespace NW
 {
-	void OGL_ClearErr()
+	void OglClearErr()
 	{// glGetError gets last message and clears errorLog
 		while (glGetError() != GL_NO_ERROR);
 	}
 
-	bool OGL_ErrLog(const char* funcName, const char* file, int line)
+	bool OglErrLog(const char* funcName, const char* file, int line)
 	{// Get error and match error message for it
 		UInt32 errorCode;
 		while ((errorCode = glGetError()) != GL_NO_ERROR)
@@ -49,7 +49,7 @@ namespace NW
 		return true;
 	}
 
-	Int32 OGL_ErrLog_Shader(ShaderTypes shaderType, UInt32 shaderID)
+	Int32 OglErrLogShader(ShaderTypes shaderType, UInt32 shaderID)
 	{
 		if (shaderID == 0) return NW_ERR_UNKNOWN_ID;
 		Int32 success = 0;

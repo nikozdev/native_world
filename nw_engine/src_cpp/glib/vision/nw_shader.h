@@ -1,7 +1,7 @@
 #ifndef NW_ASHADER_H
 #define NW_ASHADER_H
 
-#include <glib/nw_glib_core.h>
+#include <glib/glib_tools.h>
 #include <glib/nw_gbuffer.h>
 
 #include <nwlib/nw_code_chunk.h>
@@ -61,7 +61,7 @@ namespace NW
 
 		// --getters
 		inline UInt32 GetRenderId() const { return m_unRId; }
-		inline const VertexBufLayout& GetVertexLayout() const { return m_vtxLayout; }
+		inline const VertexBufLayout& GetVtxLayout() const { return m_vtxLayout; }
 		inline const ShaderBufLayout& GetShdLayout() const { return m_shdLayout; }
 		inline const Globals& GetGlobals() const { return m_Globals; }
 		inline const Blocks& GetBlocks() const { return m_Blocks; }
@@ -145,10 +145,7 @@ namespace NW
 		~ShaderOgl();
 
 		// --getters
-		virtual inline const ASubShader* GetSubShader(ShaderTypes sdType) {
-			auto itSub = FIND_BY_FUNC(m_SubShaders, ASubShader&, sdType, .GetType);
-			return itSub == m_SubShaders.end() ? nullptr : &*itSub;
-		}
+		virtual inline const ASubShader* GetSubShader(ShaderTypes sdType);
 		// --core_methods
 		virtual void Enable() override;
 		virtual void Disable() override;
@@ -178,6 +175,11 @@ namespace NW
 		inline Int32 GetUniformLoc(const char* strName) const;
 		inline Int32 GetBlockIdx(const char* strName) const;
 	};
+	inline const ASubShader* ShaderOgl::GetSubShader(ShaderTypes sdType) {
+		auto& itSub = find_if(m_SubShaders.begin(), m_SubShaders.end(),
+			[=](SubShaderOgl& rSub)->bool { return rSub.GetType() == sdType; });
+		return itSub == m_SubShaders.end() ? nullptr : &*itSub;
+	}
 }
 #endif // NW_GRAPHICS
 #endif // NW_ASHADER_H

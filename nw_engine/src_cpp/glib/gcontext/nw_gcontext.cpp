@@ -5,7 +5,7 @@
 
 #if (defined NW_GRAPHICS)
 #include <glib/gcontext/nw_framebuf.h>
-#include <glib/nw_glib_core.h>
+#include <glib/glib_tools.h>
 #endif	// NW_WINDOW
 #if (NW_GRAPHICS & NW_GRAPHICS_OGL)
 #include <GLFW/glfw3.h>

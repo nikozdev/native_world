@@ -1,55 +1,8 @@
-#ifndef NW_COLLECTION_H
-#define NW_COLLECTION_H
+#ifndef NW_CONTAINER_H
+#define NW_CONTAINER_H
 
 namespace NW
 {
-	/// SArrayId class
-	/// Description:
-	/// -- Contains a static array with booleans and sets flags to true if they are owned
-	/// -- Counts from 1 to IdCount
-	template<UInt32 IdCount> class SArrayId
-	{
-	public:
-		SArrayId() = default;
-		SArrayId(SArrayId<IdCount>& rIdList) = default;
-		~SArrayId() = default;
-
-		// --getters
-		inline UInt32 GetFreeId() {
-			for (UInt32 idi = 1; idi < IdCount; idi++) {
-				if (IsFree(idi)) return idi;
-			}
-		}
-		inline UInt32 GetLastOwned() { return m_unLastOwned; }
-		inline UInt32 GetSize() { return IdCount; }
-		// --setters
-		inline void SetFree(UInt32 unId) {
-			m_bOwnedIds[unId - 1] = false;
-		}
-		inline void SetOwned(UInt32 unId) {
-			m_bOwnedIds[unId - 1] = true;
-		}
-		inline UInt32 SetFreeAll() {
-			m_unLast = IdCount;
-			UInt32 unCurr = 1;
-			while (unCurr < IdCount) {
-				m_bOwnedIds[unCurr - 1] = false;
-			}
-		}
-		inline UInt32 SetOwnedAll() {
-			m_unLast = IdCount;
-			UInt32 unCurr = 1;
-			while (unCurr < IdCount) {
-				m_bOwnedIds[unCurr - 1] = true;
-			}
-		}
-		// -- Predicates
-		inline bool IsFree(UInt32 unId) { return unId > IdCount ? false : !m_bOwnedIds[unId]; }
-		inline bool IsOwned(UInt32 unId) { return unId > IdCount ? false : m_bOwnedIds[unId]; }
-	private:
-		UInt32 m_unLast = 0;
-		bool m_bOwnedIds[IdCount]{ false };
-	};
 	/// IdStack class
 	/// Description:
 	/// --It's like a simple stack of unsigned 32-bit integers but for identificators
@@ -65,7 +18,7 @@ namespace NW
 		// -- setters
 		inline void SetFreeId(UInt32 unFreeId) { if (unFreeId != top()) { push(unFreeId); } }
 	};
-#if (NW_LIBS & NW_LIBS_NATIVE_COLLECTION)
+#if false
 	template <typename Type, int size>
 	class NW_API SArray
 	{
@@ -200,7 +153,6 @@ namespace NW
 		UInt32 m_unCount;
 		UInt32 m_unSlots;
 	};
-#elif (NW_LIBS & NW_LIBS_STD_COLLECTION)
-#endif // NW_LIBS
+#endif
 }
-#endif // NW_COLLECTION_H
+#endif // NW_CONTAINER_H

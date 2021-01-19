@@ -1,9 +1,11 @@
 #include "nw_pch.hpp"
 #include "nw_glayer.h"
 
+#include <glib/core/nw_gapi.h>
 #include <glib/core/nw_gengine.h>
 #include <glib/nw_gbuffer.h>
 #include <glib/gcontext/nw_framebuf.h>
+#include <glib/nw_texture.h>
 #include <glib/vision/nw_shader.h>
 #include <glib/vision/nw_gmaterial.h>
 
@@ -13,61 +15,67 @@
 namespace NW
 {
 	GLayer::GLayer(const char* strName) :
-		m_strName(strName),
-		m_xywhViewport{ 0, 0, 800, 600 },
-		m_GCamera(GCamera()), m_pFrameBuf(nullptr),
-		m_DTools(DrawTools())
+		strName(strName)
 	{
         FrameBufInfo fbInfo;
-        fbInfo.unWidth = m_xywhViewport.z - m_xywhViewport.x;
-        fbInfo.unHeight = m_xywhViewport.w - m_xywhViewport.y;
+        fbInfo.unWidth = xywhViewport.z - xywhViewport.x;
+        fbInfo.unHeight = xywhViewport.w - xywhViewport.y;
         fbInfo.unSamples = 1;
-		m_pFrameBuf = AFrameBuf::Create(&("fmb_" + m_strName)[0], fbInfo);
-		
-		m_DTools.pVtxBuf = AVertexBuf::Create(2 << 10);
-		m_DTools.pIdxBuf = AIndexBuf::Create(2 << 10);
-		m_DTools.pShdBuf = AShaderBuf::Create(2 << 10);
+		pFrameBuf.reset(AFrameBuf::Create(&("fmb_" + this->strName)[0], fbInfo));
 
-		m_DTools.pVtxData = MemSys::NewTArr<UByte>(m_DTools.pVtxBuf->GetDataSize());
-		m_DTools.pIdxData = MemSys::NewTArr<UInt32>(m_DTools.pIdxBuf->GetDataSize());
-		m_DTools.pShdData = MemSys::NewTArr<UByte>(m_DTools.pShdBuf->GetDataSize());
+		pVtxBuf.reset(AVertexBuf::Create(2 << 10));
+		pIdxBuf.reset(AIndexBuf::Create(2 << 10));
+		pShdBuf.reset(AShaderBuf::Create(2 << 10));
+
+		pVtxData = MemSys::NewTArr<UByte>(pVtxBuf->GetDataSize());
+		pIdxData = MemSys::NewTArr<UInt32>(pIdxBuf->GetDataSize());
+		pShdData = MemSys::NewTArr<UByte>(pShdBuf->GetDataSize());
 	}
-	GLayer::GLayer(const GLayer& rCpy) : GLayer(&rCpy.m_strName[0]) { }
+	GLayer::GLayer(const GLayer& rCpy) : GLayer(&rCpy.strName[0]) { }
 	GLayer::~GLayer() {
-		MemSys::DelTArr<UByte>(m_DTools.pVtxData, m_DTools.pVtxBuf->GetDataSize());
-		MemSys::DelTArr<UInt32>(m_DTools.pIdxData, m_DTools.pIdxBuf->GetDataSize());
-		MemSys::DelTArr<UByte>(m_DTools.pShdData, m_DTools.pShdBuf->GetDataSize());
-
-		MemSys::DelT<AFrameBuf>(m_pFrameBuf);
-		MemSys::DelT<AVertexBuf>(m_DTools.pVtxBuf);
-		MemSys::DelT<AIndexBuf>(m_DTools.pIdxBuf);
-		MemSys::DelT<AShaderBuf>(m_DTools.pShdBuf);
+		MemSys::DelTArr<UByte>(pVtxData, pVtxBuf->GetDataSize());
+		MemSys::DelTArr<UInt32>(pIdxData, pIdxBuf->GetDataSize());
+		MemSys::DelTArr<UByte>(pShdData, pShdBuf->GetDataSize());
 	}
 
 	// --setters
+	void GLayer::SetShader(AShader* pShader) {
+		this->pShader = pShader;
+		if (pShader == nullptr) { return; }
+		pShdBuf->SetLayout(pShader->GetShdLayout());
+		pVtxBuf->SetLayout(pShader->GetVtxLayout());
+	}
 	void GLayer::SetViewport(const V4f& xywhViewport) {
-		m_xywhViewport = xywhViewport;
+		this->xywhViewport = xywhViewport;
 		V2f whSize = { xywhViewport.z - xywhViewport.x, xywhViewport.w - xywhViewport.y };
-		m_pFrameBuf->SetSizeWH(whSize.x, whSize.y);
+		pFrameBuf->SetSizeWH(whSize.x, whSize.y);
 	}
-	void GLayer::AddDrawData(const DrawObjectData& rDOData) { m_Drawables[rDOData.pDrawable->pGMtl].push_back(rDOData); }
-	void GLayer::RmvDrawData(UInt32 unId) {
-		Drawables::iterator itDOData = m_Drawables.begin();
-		while (itDOData != m_Drawables.end()) {
-			auto& itDrb = std::find_if(itDOData->second.begin(), itDOData->second.end(),
-				[=](DrawObjectData& rDOData)->bool {return rDOData.unId == unId; });
-			if (itDrb == itDOData->second.end()) { return; }
-			itDOData->second.erase(itDrb);
-		}
+	void GLayer::AddDrawData(const DrawObjectData& rDOData) {
+		if (rDOData.pGMtl == nullptr) { return; }
+		if (rDOData.pGMtl->GetShader() != pShader) { return; }
+		Drawables[rDOData.pGMtl].push_back(rDOData);
 	}
-	// --core_methods
-	void GLayer::Update()
+	void GLayer::OnDraw(AGApi* pGApi)
 	{
-		m_DTools.ResetData();
-		m_GCamera.nAspectRatio = (m_xywhViewport.z - m_xywhViewport.x) / (m_xywhViewport.w - m_xywhViewport.y);
+		static auto fnDrawCall = [&](GMaterial* pGMtl)->void {
+			pGMtl->Enable();
+			pShdBuf->SetSubData(szShdData, pShdData);
+			pVtxBuf->SetSubData(szVtxData, pVtxData);
+			pIdxBuf->SetSubData(szIdxData, pIdxData);
+			pShdBuf->Bind();
+			pVtxBuf->Bind();
+			pIdxBuf->Bind();
+			pGApi->DrawIndexed(unIdxData);
+			pIdxBuf->Unbind();
+			pVtxBuf->Unbind();
+			pShdBuf->Unbind();
+			pGMtl->Disable();
+			unDrawCalls++;
+		};
+		ResetData();
+		Camera.nAspectRatio = (xywhViewport.z - xywhViewport.x) / (xywhViewport.w - xywhViewport.y);
 
-		AGApi* pGApi = GEngine::Get().GetGApi();
-		pGApi->SetViewport(m_xywhViewport.x, m_xywhViewport.y, m_xywhViewport.z, m_xywhViewport.w);
+		pGApi->SetViewport(xywhViewport.x, xywhViewport.y, xywhViewport.z, xywhViewport.w);
 
 		if (DConfig.General.GPrimitive != pGApi->GetPrimitiveType()) { pGApi->SetPrimitiveType(DConfig.General.GPrimitive); }
 		pGApi->SetPixelSize(DConfig.General.nPixelSize);
@@ -78,46 +86,49 @@ namespace NW
 		if (DConfig.DepthTest.bEnable) {}
 		pGApi->SetModes(DConfig.DepthTest.bEnable, PM_DEPTH_TEST);
 
+		DSData.m4Proj = Camera.GetProjMatrix();
+		DSData.m4View = Camera.GetViewMatrix();
+		if (!UploadShdData(DSData)) { return; }
 
-		DrawSceneData DSData;
-		DSData.m4Proj = m_GCamera.GetProjMatrix();
-		DSData.m4View = m_GCamera.GetViewMatrix();
-		UploadShaderData(DSData.GetData(), DSData.GetDataSize());
-
-		m_pFrameBuf->Bind();
-		m_pFrameBuf->Clear(FB_COLOR | FB_DEPTH | FB_STENCIL);
-		for (auto& itDrbs : m_Drawables) {
-			m_DTools.pGMtl = itDrbs.first;
+		pFrameBuf->Bind();
+		pFrameBuf->Clear(FB_COLOR | FB_DEPTH | FB_STENCIL);
+		for (auto& itDrbs : Drawables) {
 			std::sort(itDrbs.second.begin(), itDrbs.second.end());
-			for (auto& itDrb : itDrbs.second) {
-				itDrb.pDrawable->OnDraw();
-			}
-			GEngine::Get().DrawCall(m_DTools);
-			m_DTools.ResetData();
+			for (auto& itDrb : itDrbs.second) { if (!UploadVtxData(itDrb)) { fnDrawCall(itDrbs.first); } }
+			fnDrawCall(itDrbs.first);
 		}
-		m_pFrameBuf->Unbind();
+		pFrameBuf->Unbind();
+		Drawables.clear();
 	}
-
-	void GLayer::UploadObjectData(const void* pVtx, Size szVtx, const UInt32* pIdx, Size szIdx)
+	// --core_methods
+	bool GLayer::UploadVtxData(const DrawObjectData& rDOData)
 	{
-		if (m_DTools.szVtxData + szVtx > m_DTools.pVtxBuf->GetDataSize() ||
-			m_DTools.szIdxData + szIdx > m_DTools.pIdxBuf->GetDataSize()) { return; }
-
+		Size szVtx = rDOData.GetVtxSize();
+		Size szIdx = rDOData.GetIdxSize();
+		UInt32 unVtx = szVtx / pVtxBuf->GetLayout().GetStride();
+		UInt32 unIdx = rDOData.GetIdxCount();
+		if (szVtxData + szVtx > pVtxBuf->GetDataSize() ||
+			szIdxData + szIdx > pIdxBuf->GetDataSize()) { return false; }
 		// vtx_data:
-		memcpy(m_DTools.pVtxIter, pVtx, szVtx);
-		m_DTools.pVtxIter += szVtx;
-		m_DTools.szVtxData += szVtx;
-		// idx_data: WARNING:: it doesn't works because we need to know vertex count
-		UInt32 unCount = szIdx / sizeof(UInt32);
-		for (UInt32 idi = 0; idi < unCount; idi++) { *m_DTools.pIdxIter++ = pIdx[idi]; }
-		m_DTools.szIdxData += szIdx;
+		memcpy(pVtxIter, rDOData.GetVtxData(), szVtx);
+		pVtxIter += szVtx;
+		// idx_data:
+		for (UInt32 idi = 0; idi < unIdx; idi++) { *pIdxIter++ = rDOData.idxData[idi] + unVtxData; }
+		
+		szVtxData += szVtx;
+		unVtxData += unVtx;
+		szIdxData += szIdx;
+		unIdxData += unIdx;
+		return true;
 	}
-	void GLayer::UploadShaderData(const void* pShd, Size szShd)
+	bool GLayer::UploadShdData(const DrawSceneData& rDSData)
 	{
-		if (m_DTools.szShdData + szShd > m_DTools.pShdBuf->GetDataSize()) { return; }
-		// shd_data
-		memcpy(m_DTools.pShdData, pShd, szShd);
-		m_DTools.pShdIter += szShd;
-		m_DTools.szShdData += szShd;
+		Size szData = rDSData.GetDataSize();
+		if (szShdData + szData > pShdBuf->GetDataSize()) { return false; }
+		// shd_data:
+		memcpy(pShdIter, rDSData.GetData(), szData);
+		pShdIter += szData;
+		szShdData += szData;
+		return true;
 	}
 }

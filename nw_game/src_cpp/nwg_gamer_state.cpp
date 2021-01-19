@@ -26,13 +26,9 @@ namespace NWG
 		if (true) {	// materials
 		}
 
-		Scene::Get();
-
 		return true;
 	}
-	void GamerState::Update() {
-		Scene::Get().Update();
-	}
+	void GamerState::Update() { }
 	void GamerState::OnEnable() { }
 	void GamerState::OnDisable() { }
 	// --==</core_methods>==--

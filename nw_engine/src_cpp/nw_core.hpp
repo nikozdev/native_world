@@ -21,12 +21,6 @@
 #define NW_WINDOW				NW_WINDOW_GLFW
 // --window_choice
 
-// --mathematics_library_choice
-#define NW_MATH_NATIVE			1 << 1
-#define NW_MATH_GLM				1 << 2
-#define NW_MATH					NW_MATH_GLM
-// --mathematics_library_choice
-
 // --gui_library_choice
 #define NW_GUI_NATIVE			1 << 1
 #define NW_GUI_IMGUI			1 << 2
@@ -40,16 +34,6 @@
 #if (NW_WINDOW & NW_WINDOW_GLFW)
 	#define GLFW_INCLUDE_NONE
 #endif	// NW_WINDOW
-
-// --standard_libraries_choice
-#define NW_LIBS_NATIVE_PTR			0b0000'0001
-#define NW_LIBS_STD_PTR				0b0000'0010
-#define NW_LIBS_NATIVE_STR			0b0000'0100
-#define NW_LIBS_STD_STR				0b0000'1000
-#define NW_LIBS_NATIVE_COLLECTION	0b0001'0000
-#define NW_LIBS_STD_COLLECTION		0b0010'0000
-#define NW_LIBS (NW_LIBS_STD_PTR | NW_LIBS_STD_STR | NW_LIBS_NATIVE_STR | NW_LIBS_STD_COLLECTION)
-// --==</configurations>==--
 
 // --==<support_macroses>==--
 ///Translate anything to the C string(char array)
@@ -105,16 +89,17 @@
 	// --opengl_debug
 namespace NW
 {
-	extern inline void OGL_ClearErr();
-	extern inline bool OGL_ErrLog(const char* funcName, const char* file, int line);
+	extern inline void OglClearErr();
+	extern inline bool OglErrLog(const char* funcName, const char* file, int line);
 }
 	#define GL_CALL(function) OGL_ClearErr();\
 		function;\
-		NW_ASSERT(OGL_ErrLog(#function, NW_FNAME_APATH((std::string)__FILE__), __LINE__), "GL_ERROR: ")
+		NW_ASSERT(OglErrLog(#function, NW_FNAME_APATH((std::string)__FILE__), __LINE__), "GL_ERROR: ")
 	#endif // NW_GRAPHICS
 #else
 	#define NW_LOG(loc, what);
 	#define NW_LOG_LC(loc, what);
+	#define NW_BREAK();
 	#define NW_ASSERT(expr, comment);
 	#define NW_ERR(function);
 

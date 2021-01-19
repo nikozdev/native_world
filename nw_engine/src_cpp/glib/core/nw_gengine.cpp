@@ -1,5 +1,5 @@
 #include <nw_pch.hpp>
-#include "nw_gengine.h"
+#include "glib/core/nw_gengine.h"
 
 #include <glib/core/nw_gapi.h>
 
@@ -7,12 +7,13 @@
 #include <glib/gcontext/nw_framebuf.h>
 
 #include <glib/vision/nw_gcamera.h>
-#include <glib/vision/nw_gmaterial.h>
-#include <glib/vision/nw_shader.h>
-
 #include <glib/nw_texture.h>
-#include <glib/nw_drawable.h>
+#include <glib/vision/nw_shader.h>
+#include <glib/vision/nw_gmaterial.h>
 
+#include <nwlib/nw_event.h>
+
+#include <sys/nw_data_sys.h>
 #include <sys/nw_mem_sys.h>
 
 namespace NW
@@ -29,87 +30,65 @@ namespace NW
 		m_GLayers.push_back(GLayer(strName));
 		return &m_GLayers.back();
 	}
-	void GEngine::RmvLayer(const char* strName){
-		Layers::iterator& itDest = FIND_BY_NAME(m_GLayers, GLayer&, strName, .GetName);
+	void GEngine::RmvLayer(const char* strName) {
+		Layers::iterator& itDest = std::find_if(m_GLayers.begin(), m_GLayers.end(),
+			[=](GLayer& rObj)->bool {return rObj.strName == strName; });
 		if (itDest != m_GLayers.end()) { return; }
 		m_GLayers.erase(itDest);
-	}
-	void GEngine::ChangeLayerOrder(const char* strName, bool bPushUp) {
-		Layers::iterator itLayer = std::find_if(m_GLayers.begin(), m_GLayers.end(),
-			[=](GLayer& rObj)->bool {return strcmp(&rObj.GetName()[0], strName) == 0; });
-		Layers::iterator itLayerChanged = itLayer;
-		if (bPushUp) { std::swap(itLayerChanged, ++itLayer); }
-		else { std::swap(itLayerChanged, --itLayer); }
 	}
 	// --==<core_methods>==--
 	bool GEngine::Init(WApiTypes WindowApiType, GApiTypes GraphicsApiType)
 	{
 		m_bIsRunning = true;
 
-		WindowInfo WindowInfo{ "default", 1200, 1200 / 4 * 3, true, nullptr };
-		m_pWindow = AWindow::Create(WindowInfo, WindowApiType);
+		WindowInfo WindowInfo{ "graphics_engine", 1200, 1200 / 4 * 3, true, nullptr };
+		m_pWindow.reset(AWindow::Create(WindowInfo, WindowApiType));
 		if (!m_pWindow->Init()) { m_pWindow->OnQuit(); return false; }
-		
-		m_pGApi = AGApi::Create(GraphicsApiType);
-		m_pGApi->SetClearColor(0.1f, 0.2f, 0.3f);
 
-		if (!m_bIsRunning) { Quit(); }
+		m_pGApi.reset(AGApi::Create(GraphicsApiType));
+		m_pGApi->SetClearColor(0.1f, 0.3f, 0.3f);
 
-		AddLayer("del_default");
-		AddLayer("del_lines");
+		if (true) {
+			ImageInfo imgInfo;
+			if (DataSys::LoadF_image("D:/dev/native_world/nw_engine/data/graphics/ico/nw_bat.png", &imgInfo)) {
+				m_pWindow->SetIcon(imgInfo.ClrData, imgInfo.nWidth, imgInfo.nHeight);
+				MemSys::DelTArr<UByte>(imgInfo.ClrData, imgInfo.nWidth * imgInfo.nHeight * imgInfo.nChannels);
+			}
+		}
+		AddLayer("gel_default");
 		m_GLayer = m_GLayers.begin();
-
-		return m_bIsRunning;
+		
+		if (!m_bIsRunning) { Quit(); }
+		return true;
 	}
 	void GEngine::Quit()
 	{
 		if (!m_bIsRunning) { return; }
 		m_bIsRunning = false;
-		
+
 		m_GLayers.clear();
-		MemSys::DelT<AGApi>(m_pGApi);
 		m_pWindow->OnQuit();
+	}
+	void GEngine::Run() {
+		m_thrRun = std::thread([this]()->void { while (m_bIsRunning) { Update(); } });
 	}
 	void GEngine::Update()
 	{
 		m_pWindow->Update();
 
 		m_DInfo.Reset();
-		
+
+		std::sort(m_GLayers.begin(), m_GLayers.end());
 		for (m_GLayer = m_GLayers.begin(); m_GLayer != m_GLayers.end(); m_GLayer++) {
-			m_GLayer->Update();
+			m_GLayer->OnDraw(GetGApi());
+			m_DInfo.szShd = m_DInfo.szShd + m_GLayer->szShdData;
+			m_DInfo.szVtx = m_DInfo.szVtx + m_GLayer->szVtxData;
+			m_DInfo.szIdx = m_DInfo.szIdx + m_GLayer->szIdxData;
+			m_DInfo.unDrawCalls += m_GLayer->unDrawCalls;
 		}
 		m_GLayer = m_GLayers.begin();
 	}
 	// --==</core_methods>==--
-
-	// --==<drawing>==--
-	void GEngine::DrawCall(DrawTools& rDTools)
-	{
-		rDTools.pGMtl->Enable();
-
-		rDTools.pShdBuf->SetSubData(rDTools.szShdData, &rDTools.pShdData[0]);
-		rDTools.pVtxBuf->SetSubData(rDTools.szVtxData, &rDTools.pVtxData[0]);
-		rDTools.pIdxBuf->SetSubData(rDTools.szIdxData, &rDTools.pIdxData[0]);
-
-		rDTools.pShdBuf->SetLayout(rDTools.pGMtl->GetShader()->GetShdLayout());
-		rDTools.pVtxBuf->SetLayout(rDTools.pGMtl->GetShader()->GetVertexLayout());
-		rDTools.pVtxBuf->Bind();
-		rDTools.pIdxBuf->Bind();
-		m_pGApi->DrawIndexed(rDTools.szIdxData / sizeof(UInt32));
-		rDTools.pIdxBuf->Unbind();
-		rDTools.pVtxBuf->Unbind();
-		rDTools.pShdBuf->Unbind();
-
-		rDTools.pGMtl->Disable();
-
-		m_DInfo.szShd = m_DInfo.szShd + rDTools.szShdData;
-		m_DInfo.szVtx = m_DInfo.szVtx + rDTools.szVtxData;
-		m_DInfo.szIdx = m_DInfo.szIdx + rDTools.szIdxData;
-		if (m_DInfo.unTex < rDTools.unTexCount) { m_DInfo.unTex = rDTools.unTexCount; }
-		m_DInfo.unDrawCalls++;
-	}
-	// --==<drawing>==--
 }
 
 /// OnDraw (AShape)

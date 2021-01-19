@@ -1,7 +1,7 @@
 #ifndef NW_ATEXTURE_H
 #define NW_ATEXTURE_H
 
-#include <glib/nw_glib_core.h>
+#include <glib/glib_tools.h>
 
 #include <core/nw_data_res.h>
 

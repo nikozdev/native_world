@@ -14,13 +14,9 @@ namespace NW
 		AWindow* pWindow = nullptr;
 		switch (WApiType) {
 	#if (NW_WINDOW & NW_WINDOW_GLFW)
-		case WApiTypes::WAPI_GLFW:
-			pWindow = MemSys::NewT<WindowOgl>(rWindowInfo);
-			break;
+		case WApiTypes::WAPI_GLFW: pWindow = new WindowOgl(rWindowInfo); break;
 	#endif	// NW_WINDOW
-		default:
-			NW_ERR("Window type is undefined");
-			break;
+		default: NW_ERR("Window type is undefined"); break;
 		}
 		return pWindow;
 	}
@@ -41,6 +37,7 @@ namespace NW
 		m_WindowInfo.strTitle = rWindowInfo.strTitle;
 		m_WindowInfo.unWidth = rWindowInfo.unWidth;
 		m_WindowInfo.unHeight = rWindowInfo.unHeight;
+		m_WindowInfo.nOpacity = rWindowInfo.nOpacity;
 		m_WindowInfo.WApiType = WAPI_GLFW;
 	}
 	WindowOgl::~WindowOgl() { }
@@ -63,9 +60,10 @@ namespace NW
 		glfwSetWindowIcon(m_pNative, 1, m_pIcon);
 	}
 	void WindowOgl::SetOpacity(float nOpacity) {
+		nOpacity = nOpacity > 1.0f ? 1.0f : nOpacity < 0.1f ? 0.1f : nOpacity;
+		m_WindowInfo.nOpacity = nOpacity;
 		glfwSetWindowOpacity(m_pNative, nOpacity);
 	}
-
 
 	// --==<core_methods>==--
 	bool WindowOgl::Init()
@@ -78,9 +76,9 @@ namespace NW
 		// Set window pointer
 		m_pNative = glfwCreateWindow(static_cast<Int32>(m_WindowInfo.unWidth), static_cast<Int32>(m_WindowInfo.unHeight),
 			&m_WindowInfo.strTitle[0], nullptr, nullptr);
-		m_pIcon = MemSys::NewT<GLFWimage>();
+		m_pIcon = (MemSys::NewT<GLFWimage>());
 		
-		m_pGContext = MemSys::NewT<GContextOgl>(m_pNative);
+		m_pGContext = (MemSys::NewT<GContextOgl>(m_pNative));
 		m_pGContext->OnInit();
 
 		UByte WhiteIcon[] = { 255, 255, 255, 255 };

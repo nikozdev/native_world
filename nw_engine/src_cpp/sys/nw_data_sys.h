@@ -3,7 +3,6 @@
 #include <core/nw_data_res.h>
 
 #include <nw_decl.hpp>
-#include <ecs_decl.hpp>
 #include <nw_glib_decl.hpp>
 
 namespace NW
@@ -78,31 +77,38 @@ namespace NW
 	};
 	// --implementation
 	inline ADataRes* DataSys::GetADataRes(UInt32 unId) {
+		if (s_ADRs.empty()) { return nullptr; }
 		ADRs::iterator itDR = s_ADRs.find(unId);
 		return itDR == s_ADRs.end() ? nullptr : itDR->second;
 	}
 	template <class DRType> inline DRType* DataSys::GetDataRes(UInt32 unId) {
-		return static_cast<DRType*>(GetADataRes(unId));
+		DRs<DRType>& s_DRs = GetDataResources<DRType>();
+		if (s_DRs.empty()) { return nullptr; }
+		DRs<DRType>::iterator itDR = s_DRs.find(unId);
+		return itDR == s_DRs.end() ? nullptr : itDR->second;
 	}
 	template <class DRType> inline DRType* DataSys::GetDataRes(const char* strName) {
 		DRs<DRType>& s_DRs = GetDataResources<DRType>();
+		if (s_DRs.empty()) { return nullptr; }
 		DRs<DRType>::iterator itDR = std::find_if(s_DRs.begin(), s_DRs.end(),
-			[=](std::pair<const UInt32, DRType*>& rObj)->bool {return strcmp(&rObj.second->GetName()[0], strName) == 0; });
+			[=](std::pair<const UInt32, DRType*>& rObj)->bool { return strcmp(&rObj.second->GetName()[0], strName) == 0; });
 		return itDR == s_DRs.end() ? s_DRs.begin()->second : itDR->second;
 	}
 	template <class DRType> inline void DataSys::AddDataRes(DRType* pDataRes) {
-		if (pDataRes == nullptr) return;
+		if (pDataRes == nullptr) { return; }
 		GetDataResources<DRType>()[pDataRes->GetId()] = (pDataRes);
 	}
 	template <class DRType> inline void DataSys::RmvDataRes(const char* strName) {
 		DRs<DRType>& s_DRs = GetDataResources<DRType>();
+		if (s_DRs.empty()) { return; }
 		DRs<DRType>::iterator itDR = std::find_if(s_DRs.begin(), s_DRs.end(),
-			[=](std::pair<const UInt32, DRType*>& rObj)->bool {return strcmp(&rObj.second->GetName()[0], strName) == 0; });
+			[=](std::pair<const UInt32, DRType*>& rObj)->bool { return strcmp(&rObj.second->GetName()[0], strName) == 0; });
 		if (itDR == s_DRs.end()) { return; }
 		s_DRs.erase(itDR);
 	}
 	template <class DRType> inline void DataSys::RmvDataRes(UInt32 unId) {
 		DRs<DRType>& s_DRs = GetDataResources<DRType>();
+		if (s_DRs.empty()) { return; }
 		DRs<DRType>::iterator itDR = s_DRs.find(unId);
 		if (itDR == s_DRs.end()) { return; }
 		s_DRs.erase(itDR);

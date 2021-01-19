@@ -20,11 +20,6 @@ namespace NW
     // --==<core_methods>==--
     void Scene::Update()
     {
-        auto& ACmps = DataSys::GetDataResources<AEntityCmp>();
-        for (auto& itCmp : ACmps) {
-            if (!itCmp.second->IsEnabled()) { continue; }
-            itCmp.second->OnUpdate();
-        }
     }
 	// --==</core_methods>==--
 }

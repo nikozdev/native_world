@@ -20,8 +20,9 @@ layout(std140) uniform unf_Matrices{
 
 void main()
 {
-	gl_Position = unf_camProj * unf_camView * atb_mdlTransform *
-	vec4(atb_vtxCrd.xyz, 1.0f);
+	gl_Position = //unf_camProj * unf_camView *
+		//atb_mdlTransform *
+		vec4(atb_vtxCrd.xyz, 1.0f);
 
 	vs_out.vtxClr = atb_vtxClr;
 	vs_out.texCrd = atb_texCrd;
@@ -45,5 +46,5 @@ uniform sampler2D unf_tex[7];
 void main()
 {
 	ps_pxClr = vec4(texture(unf_tex[int(vs_in.texSlot)], vs_in.texCrd).rgba *
-	vs_in.vtxClr * unf_albedoClr);
+		vs_in.vtxClr * unf_albedoClr);
 }

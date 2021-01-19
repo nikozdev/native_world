@@ -15,7 +15,7 @@ namespace NW
 {
 	LuaEngine::LuaEngine() :
 		m_LState(nullptr),
-		m_MemAllocator(MemArena(0))
+		m_MemAllocator(MemArena<Byte>(0))
 	{
 		m_LState = CreateLuaState();
 	}
@@ -91,8 +91,8 @@ namespace NW
 	}
 
 	// --==<core_methods>==--
-	LuaRegTable LuaCmpSys::lrtCmpSys = LuaRegTable("cmp_sys");
-	LuaRegTable LuaEntSys::lrtEntSys = LuaRegTable("ent_sys");
+	//LuaRegTable LuaCmpSys::lrtCmpSys = LuaRegTable("cmp_sys");
+	//LuaRegTable LuaEntSys::lrtEntSys = LuaRegTable("ent_sys");
 	LuaState* LuaEngine::CreateLuaState()
 	{
 		//m_MemAllocator = MemArena(1024 * 8);
@@ -103,7 +103,7 @@ namespace NW
 
 		luaL_openlibs(pLState);
 		m_LState = pLState;
-		
+#if false
 		{
 			// Cmp methods
 			LuaRegFunc lrfGetCmpId = LuaRegFunc("get_cmp_id", LuaCmpSys::GetCmpId);
@@ -157,6 +157,7 @@ namespace NW
 
 			LuaReg(LuaEntSys::lrtEntSys);
 		}
+#endif
 
 		return pLState;
 	}
@@ -423,13 +424,13 @@ namespace NW
 	}
 	void* LuaEngine::LuaAllocate(void* pAllocator, void* pBlock, Size szOld, Size szNew)
 	{
-		MemArena* pMemArena = static_cast<MemArena*>(pAllocator);
+		MemArena<Byte>* pMemArena = static_cast<MemArena<Byte>*>(pAllocator);
 		if (pBlock != nullptr) {
 			if (szNew == 0) {
-				pMemArena->Dealloc(pBlock, szOld);
+				pMemArena->Dealloc(static_cast<Byte*>(pBlock), szOld);
 			}
 			else if (szOld > 0) {
-				pBlock = pMemArena->Realloc(pBlock, szOld, szNew);
+				pBlock = pMemArena->Realloc(static_cast<Byte*>(pBlock), szOld, szNew);
 			}
 		}
 		else if (szNew > 0) {

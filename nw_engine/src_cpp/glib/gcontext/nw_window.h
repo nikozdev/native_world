@@ -16,6 +16,7 @@ namespace NW
 		UInt16 unWidth = 800, unHeight = 600;
 		Float32 nAspectRatio = 800.0f / 600.0f;
 		bool bVSync = false;
+		float nOpacity = 0.0f;
 
 		WApiTypes WApiType = WAPI_NONE;
 

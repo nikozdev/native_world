@@ -8,6 +8,7 @@
 
 #if (defined NW_GRAPHICS)
 #include <glib/core/nw_gengine.h>
+#include <glib/core/nw_gapi.h>
 // Buffers
 namespace NW
 {
@@ -16,7 +17,7 @@ namespace NW
 		AVertexBuf* pVB = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GApiTypes::GAPI_OPENGL: pVB = MemSys::NewT<VertexBufOgl>(); break;
+		case GApiTypes::GAPI_OPENGL: pVB = new VertexBufOgl(); break;
 	#endif	// NW_GRAPHICS
 		default: NW_ERR("There is no accessible API"); break;
 		}
@@ -28,7 +29,7 @@ namespace NW
 		AIndexBuf* pIB = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GApiTypes::GAPI_OPENGL: pIB = MemSys::NewT<IndexBufOgl>(); break;
+		case GApiTypes::GAPI_OPENGL: pIB = new IndexBufOgl(); break;
 	#endif // NW_GRAPHICS
 		default: NW_ERR("Graphics API is not defined"); break;
 		}
@@ -39,7 +40,7 @@ namespace NW
 		AShaderBuf* pSB = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GApiTypes::GAPI_OPENGL: pSB = MemSys::NewT<ShaderBufOgl>(); break;
+		case GApiTypes::GAPI_OPENGL: pSB = new ShaderBufOgl(); break;
 	#endif // NW_GRAPHICS
 		default: NW_ERR("Graphics API is not defined"); break;
 		}
@@ -161,6 +162,9 @@ namespace NW
 	}
 
 	// --core_methods
+	void ShaderBufOgl::Bind() const {
+		for (auto& rBlock : m_BufLayout.GetBlocks()) { Bind(rBlock.unBindPoint, rBlock.szAll, rBlock.szOffset); }
+	}
 	void ShaderBufOgl::Bind(UInt32 unPoint) const {
 		glBindBuffer(GL_UNIFORM_BUFFER, m_unRId);
 		glBindBufferBase(GL_UNIFORM_BUFFER, unPoint, m_unRId);

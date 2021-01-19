@@ -18,7 +18,7 @@ namespace NW
 	private:
 		LuaState* m_LState;
 		LuaEngineInfo m_Info;
-		MemArena m_MemAllocator;
+		MemArena<Byte> m_MemAllocator;
 	private:
 		LuaEngine();
 		LuaEngine(LuaEngine& rCpy) = delete;

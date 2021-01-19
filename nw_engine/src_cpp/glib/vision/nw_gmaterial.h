@@ -2,7 +2,7 @@
 #define NW_GMATERIAL_H
 
 #include <core/nw_data_res.h>
-#include <glib/nw_glib_core.h>
+#include <glib/glib_tools.h>
 
 namespace NW
 {

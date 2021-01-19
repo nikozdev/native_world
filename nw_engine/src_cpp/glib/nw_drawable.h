@@ -2,7 +2,7 @@
 #define NW_ADRAWABLE_H
 
 #include <glib/nw_texture.h>
-#include <glib/nw_glib_core.h>
+#include <glib/glib_tools.h>
 
 #include <nw_glib_decl.hpp>
 

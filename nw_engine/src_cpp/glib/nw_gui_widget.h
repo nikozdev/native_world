@@ -38,10 +38,6 @@ namespace NW
 		String strName = "gui_window";
 		UInt32 unId = 0;
 
-		CursorState Cursor;
-		ButtonState KeyboardStates[NW_KEY_LAST];
-		ButtonState MouseStates[NW_MS_BTN_LAST];
-
 		V2i xyCrd = { 0, 0 };
 		V2i whSize = { 0, 0 }, whMaxSize = { 0, 0 };
 

@@ -29,6 +29,7 @@ namespace NW
 		~CoreEngine();
 
 		// --getters
+		inline std::thread* GetRunThread() { return &m_thrRun; }
 		inline const char* GetName() { return &m_strName[0]; }
 		inline States& GetStates() { return m_States; }
 		inline CoreState* GetState() { return m_pCurrState; }
@@ -36,7 +37,7 @@ namespace NW
 		// --setters
 		void SetName(const char* strName) { m_strName = strName; }
 		void AddState(CoreState* pState);
-		void RemoveState(const char* strName);
+		void RmvState(const char* strName);
 		void SwitchState(const char* strName);
 		// --predicates
 		bool IsRunning() const { return m_bIsRunning; }
@@ -51,6 +52,7 @@ namespace NW
 	private:
 		String m_strName;
 		bool m_bIsRunning;
+		std::thread m_thrRun;
 
 		States m_States;
 		CoreState* m_pCurrState;

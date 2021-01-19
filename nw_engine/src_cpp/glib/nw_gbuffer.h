@@ -1,7 +1,7 @@
-#ifndef GLIB_GBUFFER_H
-#define GLIB_GBUFFER_H
+#ifndef NW_GBUFFER_H
+#define NW_GBUFFER_H
 
-#include <glib/nw_glib_core.h>
+#include <glib/glib_tools.h>
 
 #if (defined NW_GRAPHICS)
 // VertexBufLayout
@@ -70,7 +70,7 @@ namespace NW
 			m_unStride = 0;
 			for (auto& rBufElem : m_BufElems) {
 				rBufElem.unOffset = m_unStride;
-				m_unStride += SDType_GetSize(rBufElem.sdType, rBufElem.unCount);
+				m_unStride += SdTypeGetSize(rBufElem.sdType, rBufElem.unCount);
 			}
 		}
 	};
@@ -106,7 +106,7 @@ namespace NW
 				rBlock.szOffset = m_szData;
 				for (auto& rElem : rBlock.BufElems) {
 					rElem.unOffset += rBlock.szAll;
-					rBlock.szAll += SDType_GetAllignedSize(rElem.sdType, rElem.unCount);
+					rBlock.szAll += SdTypeGetAllignSize(rElem.sdType, rElem.unCount);
 				}
 				m_szData += rBlock.szAll;
 			}
@@ -180,6 +180,7 @@ namespace NW
 		virtual void SetSubData(Size szData, const void* pData, Size szOffset = 0) = 0;
 		virtual void SetLayout(const ShaderBufLayout& rShdLayout) = 0;
 		// --core_methods
+		virtual void Bind() const = 0;
 		virtual void Bind(UInt32 unPoint) const = 0;
 		virtual void Bind(UInt32 unPoint, Size szData, Size szOffset = 0) const = 0;
 		virtual void Unbind() const = 0;
@@ -251,6 +252,7 @@ namespace NW
 		virtual void SetSubData(Size szAlloc, const void* pVtxData, Size szOffset = 0) override;
 		virtual void SetLayout(const ShaderBufLayout& rBufLayout) override;
 		// --core_methods
+		virtual void Bind() const override;
 		virtual void Bind(UInt32 unPoint) const override;
 		virtual void Bind(UInt32 unPoint, Size szData, Size szOffset = 0) const override;
 		virtual void Unbind() const override;
@@ -262,4 +264,4 @@ namespace NW
 	};
 }
 #endif // NW_GRAPHICS
-#endif	// GLIB_GBUFFER_H
+#endif	// NW_GBUFFER_H

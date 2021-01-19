@@ -2,19 +2,14 @@
 #define NW_GENGINE_H
 
 #include <glib/core/nw_glayer.h>
-#include <glib/core/nw_gapi.h>
-#include <glib/nw_glib_core.h>
-
-#include <nwlib/nw_singleton.h>
 
 namespace NW
 {
 	/// GEngine singleton class
-	class NW_API GEngine : public ASingleton<GEngine>
+	class NW_API GEngine
 	{
 	public:
-		using Layers = List2<GLayer>;
-		friend class ASingleton<GEngine>;
+		using Layers = DArray<GLayer>;
 	private:
 		GEngine();
 		GEngine(const GEngine& rCpy) = delete;
@@ -23,8 +18,10 @@ namespace NW
 		~GEngine();
 		
 		// --getters
-		inline AWindow* GetWindow() { return m_pWindow; }
-		inline AGApi* GetGApi() { return m_pGApi; }
+		static inline GEngine& Get() { static GEngine s_GEngine; return s_GEngine; }
+		inline std::thread& GetRunThread() { return m_thrRun; }
+		inline AWindow* GetWindow() { return m_pWindow.get(); }
+		inline AGApi* GetGApi() { return m_pGApi.get(); }
 		const GEngineInfo& GetInfo() { return m_DInfo; }
 		inline Layers& GetLayers() { return m_GLayers; }
 		inline GLayer* GetLayer() { return &*m_GLayer; }
@@ -32,19 +29,20 @@ namespace NW
 		// --setters
 		GLayer* AddLayer(const char* strName);
 		void RmvLayer(const char* strName);
-		void ChangeLayerOrder(const char* strName, bool bPushUp);
 		// --predicates
 		bool IsRunning() { return m_bIsRunning; }
 
 		// --core_methods
 		bool Init(WApiTypes WindowApiType, GApiTypes GraphicsApiType);
 		void Quit();
+		void Run();
 		void Update();
-		void DrawCall(DrawTools& rDTools);
 	private:
 		bool m_bIsRunning;
-		AWindow* m_pWindow;
-		AGApi* m_pGApi;
+		std::thread m_thrRun;
+
+		RefOwner<AWindow> m_pWindow;
+		RefOwner<AGApi> m_pGApi;
 
 		Layers m_GLayers;
 		Layers::iterator m_GLayer;
@@ -53,7 +51,7 @@ namespace NW
 	};
 	inline GLayer* GEngine::GetLayer(const char* strName) {
 		Layers::iterator itLayer = std::find_if(m_GLayers.begin(), m_GLayers.end(),
-			[=](GLayer& rObj)->bool {return strcmp(&rObj.GetName()[0], strName) == 0; });
+			[=](GLayer& rObj)->bool { return rObj.strName == strName; });
 		return itLayer == m_GLayers.end() ? nullptr : &*itLayer;
 	}
 }

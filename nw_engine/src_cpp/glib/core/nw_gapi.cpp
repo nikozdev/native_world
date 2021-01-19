@@ -4,7 +4,7 @@
 #include <sys/nw_mem_sys.h>
 
 #if (defined NW_GRAPHICS)
-#include <glib/nw_glib_core.h>
+#include <glib/glib_tools.h>
 #include <glib/gcontext/nw_gcontext.h>
 #include <glib/gcontext/nw_framebuf.h>
 namespace NW
@@ -14,7 +14,7 @@ namespace NW
 		AGApi* pGApi = nullptr;
 		switch (GApitype) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case (GAPI_OPENGL): pGApi = MemSys::NewT<GApiOgl>(); break;
+		case (GAPI_OPENGL): pGApi = new GApiOgl(); break;
 	#endif // NW_GRAPHICS
 		default: NW_ERR("This graphics API is not defined"); break;
 		}

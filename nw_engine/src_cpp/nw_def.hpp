@@ -273,8 +273,8 @@ typedef double GLclampd;
 #define NW_KEY_ENTER_10              GLFW_KEY_ENTER              
 #define NW_KEY_INS_45             GLFW_KEY_INSERT             
 #define NW_KEY_DEL_46             GLFW_KEY_DELETE             
-#define NW_KEY_RIGHT_38              GLFW_KEY_RIGHT              
 #define NW_KEY_LEFT_37               GLFW_KEY_LEFT               
+#define NW_KEY_RIGHT_39              GLFW_KEY_RIGHT              
 #define NW_KEY_DOWN_40               GLFW_KEY_DOWN               
 #define NW_KEY_UP_38                 GLFW_KEY_UP                 
 #define NW_KEY_PAGE_UP            GLFW_KEY_PAGE_UP            

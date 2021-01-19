@@ -8,16 +8,15 @@
 #include <GLFW/glfw3.h>
 #endif  // NW_WINDOW
 
-NW::CursorState NW::IOSys::s_Cursor{ 0 };
-NW::ButtonState NW::IOSys::s_bsMsBtns[NW_MS_BTN_LAST] { NW::ButtonState { false, false, false, false, false } };
-NW::ButtonState NW::IOSys::s_bsKeys[NW_KEY_LAST] { NW::ButtonState { false, false, false, false, false } };
-double NW::IOSys::s_xScroll{ 0.0 }, NW::IOSys::s_yScroll{0.0f};
+NW::MouseState NW::IOSys::s_Mouse{ 0 };
+NW::KeyboardState NW::IOSys::s_Keyboard { NW::ButtonState { false, false, false, false, false } };
 
 namespace NW
 {
     // --setters
-    void IOSys::SetInputMode(InputModes IMode) {
-        switch (IMode) {
+    void IOSys::SetCursorIMode(InputModes iMode) {
+        s_Mouse.iMode = iMode;
+        switch (iMode) {
         case IM_CURSOR_NORMAL:
             glfwSetInputMode(static_cast<GLFWwindow*>(GEngine::Get().GetWindow()->GetNative()), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             break;
@@ -27,12 +26,25 @@ namespace NW
         case IM_CURSOR_HIDDEN:
             glfwSetInputMode(static_cast<GLFWwindow*>(GEngine::Get().GetWindow()->GetNative()), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
             break;
+        default:    break;
+        }
+    }
+    void IOSys::SetKeyboardIMode(InputModes iMode) {
+        s_Keyboard.iMode = iMode;
+        switch (iMode) {
+        case IM_KEYBOARD_STICK:
+            glfwSetInputMode(static_cast<GLFWwindow*>(GEngine::Get().GetWindow()->GetNative()), GLFW_STICKY_KEYS, GLFW_TRUE);
+            break;
+        case IM_KEYBOARD_LOCK:
+            glfwSetInputMode(static_cast<GLFWwindow*>(GEngine::Get().GetWindow()->GetNative()), GLFW_LOCK_KEY_MODS, GLFW_TRUE);
+            break;
+        default:    break;
         }
     }
     // --==<core_methods>==--
     void IOSys::Update()
     {
-        s_Cursor.xMoveDelta = s_Cursor.yMoveDelta = 0.0f;
+        s_Mouse.xMoveDelta = s_Mouse.yMoveDelta = 0.0f;
         UpdateKeyboard();
         UpdateMouseButtons();
     }
@@ -40,35 +52,36 @@ namespace NW
     inline void IOSys::UpdateKeyboard()
     {
         for (UInt16 ki = 0; ki < NW_KEY_LAST; ki++) {
-            s_bsKeys[ki].bPressed = s_bsKeys[ki].bReleased = false;
-            if (s_bsKeys[ki].bNew != s_bsKeys[ki].bOld) {
-                if (s_bsKeys[ki].bNew == true) {
-                    s_bsKeys[ki].bPressed = s_bsKeys[ki].bHeld = true;
+            ButtonState& rBs = s_Keyboard.bsKeys[ki];
+            rBs.bPressed = rBs.bReleased = false;
+            if (rBs.bNew != rBs.bOld) {
+                if (rBs.bNew == true) {
+                    rBs.bPressed = rBs.bHeld = true;
                 } else {
-                    s_bsKeys[ki].bHeld = false;
-                    s_bsKeys[ki].bReleased = true;
+                    rBs.bHeld = false;
+                    rBs.bReleased = true;
                 }
             }
-            s_bsKeys[ki].bOld = s_bsKeys[ki].bNew;
+            rBs.bOld = rBs.bNew;
         }
     }
     inline void IOSys::UpdateMouseButtons()
     {
-        for (UInt16 mi = NW_MS_BTN_0; mi < NW_MS_BTN_LAST; mi++)
-        {
-            s_bsMsBtns[mi].bPressed = s_bsMsBtns[mi].bReleased = false;
-            if (s_bsMsBtns[mi].bNew != s_bsMsBtns[mi].bOld) {
-                if (s_bsMsBtns[mi].bNew) {
-                    s_bsMsBtns[mi].bPressed = s_bsMsBtns[mi].bHeld = true;
-                    s_Cursor.xHeld = s_Cursor.xMove;
-                    s_Cursor.yHeld = s_Cursor.yMove;
+        for (UInt16 mi = NW_MS_BTN_0; mi < NW_MS_BTN_LAST; mi++) {
+            ButtonState& rBs = s_Mouse.bsButtons[mi];
+            rBs.bPressed = rBs.bReleased = false;
+            if (rBs.bNew != rBs.bOld) {
+                if (rBs.bNew) {
+                    rBs.bPressed = rBs.bHeld = true;
+                    s_Mouse.xHeld = s_Mouse.xMove;
+                    s_Mouse.yHeld = s_Mouse.yMove;
                 }
                 else {
-                    s_bsMsBtns[mi].bHeld = false;
-                    s_bsMsBtns[mi].bReleased = true;
+                    rBs.bHeld = false;
+                    rBs.bReleased = true;
                 }
             }
-            s_bsMsBtns[mi].bOld = s_bsMsBtns[mi].bNew;
+            rBs.bOld = rBs.bNew;
         }
     }
 }

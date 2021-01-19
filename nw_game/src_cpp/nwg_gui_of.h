@@ -1,15 +1,7 @@
 #ifndef NWG_GUI_OF_H
 #define NWG_GUI_OF_H
 
-#include <core/nw_data_res.h>
-#include <nwlib/nw_code_chunk.h>
-
-#include <glib/nw_gbuffer.h>
-#include <glib/nw_texture.h>
-
-#include <nw_decl.hpp>
-#include <nw_glib_decl.hpp>
-#include <ecs_decl.hpp>
+#include <nwg_pch.hpp>
 
 namespace NWG
 {
@@ -59,12 +51,13 @@ namespace NWG
 		GuiOfGEngine();
 		~GuiOfGEngine();
 	private:
-		bool bGApi = false, bWindow = false, bGContext = false, bStates = false;
+		bool bWindow = false, bLayers = false, bFrameBufs = false;
 		AWindow* pWindow = nullptr;
-		String strDrawMode = "MD_FILL";
-		float nLineW = 0.01f, nPixelSz = 0.01f;
-		Char strLayerName[256];
+		AFrameBuf* pFrameBuf = nullptr;
+		float nLineW = 0.01f, nPixelSz = 0.01f, nWndOpacity = 1.0f;
+		Char strLayerName[256] = "del_default";
 		Char strWindowTitle[256] = "nw_engine";
+		DrawObjectData DOData;
 	public:
 		virtual void OnDraw() override;
 	};
@@ -179,8 +172,8 @@ namespace NWG
 		ATexture2d* pBGTex = nullptr;
 		float nAspectRatio = 1.0f;
 		
-		RefOwner<AVertexBuf> pVtxBuf;
-		RefOwner<AIndexBuf> pIndBuf;
+		AVertexBuf* pVtxBuf;
+		AIndexBuf* pIndBuf;
 		AShader* pShader = nullptr;
 
 		ImageInfo ImgInfo;
@@ -188,6 +181,7 @@ namespace NWG
 
 		bool bIsSelection = false;
 	};
+#if false
 	/// GuiOfEntityEditor struct
 	struct NW_API GuiOfEntityEditor : public AGuiOf<GuiOfEntityEditor>
 	{
@@ -226,6 +220,7 @@ namespace NWG
 		ATexture2d* pIcoCamera = nullptr;
 		AEntity* pDestroyEnt = nullptr;
 	};
+#endif
 }
 
 #endif	// NW_GUI_OF_H

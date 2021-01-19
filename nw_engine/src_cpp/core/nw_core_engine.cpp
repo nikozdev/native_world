@@ -16,8 +16,8 @@ namespace NW
 	CoreEngine::CoreEngine() :
 		m_strName("nw_engine"),
 		m_bIsRunning(false),
-		m_pCurrState(nullptr) { }
-	CoreEngine::~CoreEngine() { }
+		m_pCurrState(nullptr) { MemSys::OnInit(1 << 20); }
+	CoreEngine::~CoreEngine() { MemSys::OnQuit(); }
 
 	// --setters
 	void CoreEngine::AddState(CoreState* pState)
@@ -29,9 +29,10 @@ namespace NW
 		if (!pState->Init()) { Quit(); }
 		if (m_pCurrState == nullptr) { SwitchState(pState->GetName()); }
 	}
-	void CoreEngine::RemoveState(const char* strName)
+	void CoreEngine::RmvState(const char* strName)
 	{
-		States::iterator itState = FIND_BY_FUNC(m_States, CoreState*, strName, ->GetName);
+		States::iterator itState = find_if(m_States.begin(), m_States.end(),
+			[=](CoreState* pState)->bool { return strcmp(strName, &pState->GetName()[0]) == 0; });
 		if (itState == m_States.end()) return;
 		CoreState* pState = *itState;
 		pState->OnDisable();
@@ -44,8 +45,8 @@ namespace NW
 	}
 	void CoreEngine::SwitchState(const char* strName)
 	{
-		States::iterator itState = FIND_BY_FUNC(m_States, CoreState*, strName, ->GetName);
-		if (itState == m_States.end()) { return; }
+		States::iterator itState = find_if(m_States.begin(), m_States.end(),
+			[=](CoreState* pState)->bool { return strcmp(strName, &pState->GetName()[0]) == 0; }); if (itState == m_States.end()) { return; }
 		if (m_pCurrState != nullptr) { m_pCurrState->OnDisable(); }
 		m_pCurrState = *itState;
 		m_pCurrState->OnEnable();
@@ -55,23 +56,19 @@ namespace NW
 	bool CoreEngine::Init()
 	{
 	#if (defined NW_WINDOW)
-		WApiTypes WApiType = WApiTypes::WAPI_NONE;
+		WApiTypes WApiType = WAPI_NONE;
 		#if (NW_WINDOW_GLFW & NW_WINDOW_GLFW)
-		WApiType = WApiTypes::WAPI_GLFW;
+		WApiType = WAPI_GLFW;
 		#endif
 	#endif	// NW_WINDOW
 	#if (defined NW_GRAPHICS)
-		GApiTypes GApiType = GApiTypes::GAPI_NONE;
+		GApiTypes GApiType = GAPI_NONE;
 		#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		GApiType = GApiTypes::GAPI_OPENGL;
+		GApiType = GAPI_OPENGL;
 		#endif
 	#endif	// NW_GRAPHICS
-		if (!GEngine::Get().Init(WApiType, GApiType)) {
-			LogSys::WriteErrStr(NW_ERR_NO_INIT, "GEngine is not initialized!");
-			return false;
-		}
+		if (!GEngine::Get().Init(WApiType, GApiType)) { LogSys::WriteErrStr(NW_ERR_NO_INIT, "GEngine is not initialized!"); return false; }
 		GEngine::Get().GetWindow()->SetEventCallback([this](AEvent& rEvt)->void { return OnEvent(rEvt); });
-
 		DataSys::OnInit();
 		GuiSys::OnInit();
 
@@ -81,28 +78,20 @@ namespace NW
 	{
 		if (!m_bIsRunning) { return; }
 		m_bIsRunning = false;
-		system("\a");
 	}
 
 	void CoreEngine::Run()
 	{
 		m_bIsRunning = true;
 		if (m_pCurrState == nullptr) { Quit(); }
-		while (m_bIsRunning) { Update(); }
-
-		while (!m_States.empty()) {
-			(*m_States.begin())->OnDisable();
-			MemSys::DelT<CoreState>(*m_States.begin());
-			m_States.erase(m_States.begin());
-		}
+		
+		// m_thrRun = std::thread([this]()->void { while (m_bIsRunning) { Update(); } });
+		while (m_bIsRunning) { Update(); };
+		
+		while (!m_States.empty()) { (*m_States.begin())->OnDisable(); m_States.erase(m_States.begin()); }
 		DataSys::OnQuit();
 		GuiSys::OnQuit();
-
 		GEngine::Get().Quit();
-
-
-		system("\a");
-		LogSys::WriteStr("CoreEngine has been quited");
 	}
 	inline void CoreEngine::Update()
 	{
@@ -127,19 +116,19 @@ namespace NW
 		if (MouseEvent* pmEvt = dynamic_cast<MouseEvent*>(&rEvt)) {
 			switch (pmEvt->EvtType) {
 			case ET_MOUSE_MOVE:
-				IOSys::s_Cursor.xMoveDelta = pmEvt->nX - IOSys::s_Cursor.xMove;
-				IOSys::s_Cursor.yMoveDelta = pmEvt->nY - IOSys::s_Cursor.yMove;
-				IOSys::s_Cursor.xMove = pmEvt->nX;
-				IOSys::s_Cursor.yMove = pmEvt->nY;
+				IOSys::s_Mouse.xMoveDelta = pmEvt->nX - IOSys::s_Mouse.xMove;
+				IOSys::s_Mouse.yMoveDelta = pmEvt->nY - IOSys::s_Mouse.yMove;
+				IOSys::s_Mouse.xMove = pmEvt->nX;
+				IOSys::s_Mouse.yMove = pmEvt->nY;
 				break;
 			case ET_MOUSE_SCROLL:
-				IOSys::s_xScroll = pmEvt->nX;
-				IOSys::s_yScroll = pmEvt->nY;
+				IOSys::s_Mouse.xScroll = pmEvt->nX;
+				IOSys::s_Mouse.yScroll = pmEvt->nY;
 				break;
 			case ET_MOUSE_RELEASE:
-				IOSys::s_bsMsBtns[pmEvt->nButton].bNew = false;
+				IOSys::s_Mouse.bsButtons[pmEvt->nButton].bNew = false;
 			case ET_MOUSE_PRESS:
-				IOSys::s_bsMsBtns[pmEvt->nButton].bNew = true;
+				IOSys::s_Mouse.bsButtons[pmEvt->nButton].bNew = true;
 			}
 			if (rEvt.bIsHandled) return;
 			m_pCurrState->OnEvent(*pmEvt);
@@ -147,16 +136,15 @@ namespace NW
 		else if (KeyboardEvent* pkEvt = dynamic_cast<KeyboardEvent*>(&rEvt)) {
 			switch (pkEvt->EvtType) {
 			case ET_KEY_RELEASE:
-				IOSys::s_bsKeys[pkEvt->unKeyCode].bNew = false;
+				IOSys::s_Keyboard.bsKeys[pkEvt->unKeyCode].bNew = false;
 				switch (pkEvt->unKeyCode) {
 				case NW_KEY_ESCAPE_27: Quit(); break;
 				case NW_KEY_M_77:
-					IOSys::SetInputMode(IOSys::s_Cursor.bBlocked ? IM_CURSOR_NORMAL : IM_CURSOR_DISABLED);
-					IOSys::s_Cursor.bBlocked = !IOSys::s_Cursor.bBlocked;
+					IOSys::SetCursorIMode(IOSys::s_Mouse.iMode == IM_CURSOR_NORMAL ? IM_CURSOR_DISABLED : IM_CURSOR_NORMAL);
 					break;
 				}
 			case ET_KEY_PRESS:
-				IOSys::s_bsKeys[pkEvt->unKeyCode].bNew = true;
+				IOSys::s_Keyboard.bsKeys[pkEvt->unKeyCode].bNew = true;
 				break;
 			}
 			if (rEvt.bIsHandled) return;

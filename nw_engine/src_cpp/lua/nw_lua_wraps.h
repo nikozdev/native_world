@@ -1,12 +1,6 @@
-#ifndef LUA_WRAPS_H
+#if false
+//#ifndef LUA_WRAPS_H
 #define LUA_WRAPS_H
-
-#include <ecs/nw_scene.h>
-#include <ecs/nw_transform_cmp.h>
-#include <ecs/nw_graphics_cmp.h>
-#include <ecs/nw_physics_cmp.h>
-#include <ecs/nw_script_cmp.h>
-#include <ecs/nw_collider_cmp.h>
 
 #include <lua/nw_lua_core.h>
 

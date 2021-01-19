@@ -82,10 +82,20 @@
 #endif
 // --</platform>--
 
+// --<math_lib>--
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <glm/mat3x3.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/trigonometric.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
+// --</math_lib>--
+
 // --<native_world_lib>--
 #include <nwlib/nw_string.h>
 #include <nwlib/nw_container.h>
-#include <nwlib/nw_algorithm.h>
 #include <nwlib/nw_memory.h>
 #include <nwlib/nw_math.h>
 // --</native_world_lib>--

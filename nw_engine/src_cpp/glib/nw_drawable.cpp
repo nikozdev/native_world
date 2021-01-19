@@ -100,9 +100,6 @@ namespace NW
 			vtxData[vti].m4Transform = m4Transform;
 			vtxData[vti].vtxClr = *pGMtl->GetColor();
 		}
-
-		GEngine::Get().GetLayer()->UploadObjectData(&vtxData[0],
-			4 * sizeof(VertexBatch3d), &idxData[0], 6 * sizeof(UInt32));
 	}
 	// --==</Rectangle>==--
 

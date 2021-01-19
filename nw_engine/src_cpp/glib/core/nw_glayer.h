@@ -1,53 +1,81 @@
 #ifndef NW_GLAYER_H
 #define NW_GLAYER_H
 
-#include <glib/nw_drawable.h>
 #include <glib/vision/nw_gcamera.h>
+#include <glib/glib_tools.h>
 
 namespace NW
 {
-	/// Abstract GLayer class
+	/// Abstract GLayer struct
 	/// Description:
 	/// -- GEngine works via this class
 	/// -- This is set of data required for organized rendering
 	/// -- Here are all relevant setting for every draw call
-	class NW_API GLayer
+	/// -- Every layer has own configuration and only one shader
+	/// -- It unites some data for draw call as a result
+	/// -- Rendering is sorted in orders
+	struct NW_API GLayer
 	{
-		using Drawables = HashMap<GMaterial*, DArray<DrawObjectData>>;
-		friend class GEngine;
+		using OnDrawData = HashMap<GMaterial*, DArray<DrawObjectData>>;
 	public:
+		String strName = "gel_default";
+		UInt32 unDrawOrder = 0;
+
 		DrawConfig DConfig;
+		OnDrawData Drawables;
+		DrawSceneData DSData;
+
+		V4f xywhViewport = { 0, 0, 800, 600 };
+		GCamera Camera = GCamera();
+
+		UInt32 unDrawCalls = 0;
+		// --vertex_data
+		UByte* pVtxData = nullptr;
+		UByte* pVtxIter = nullptr;
+		Size szVtxData = 0;
+		UInt32 unVtxData = 0;
+		// --index_data
+		UInt32* pIdxIter = nullptr;
+		UInt32* pIdxData = nullptr;
+		Size szIdxData = 0;
+		UInt32 unIdxData = 0;
+		// --shader_data
+		UByte* pShdData = nullptr;
+		UByte* pShdIter = nullptr;
+		Size szShdData = 0;
+		// --objects
+		AShader* pShader = nullptr;
+		RefKeeper<AFrameBuf> pFrameBuf{ nullptr };
+		RefKeeper<AVertexBuf> pVtxBuf{ nullptr };
+		RefKeeper<AIndexBuf> pIdxBuf{ nullptr };
+		RefKeeper<AShaderBuf> pShdBuf{ nullptr };
 	public:
 		GLayer(const char* sName);
 		GLayer(const GLayer& rCpy);
 		~GLayer();
 
-		// --getters
-		inline const char* GetName() { return &m_strName[0]; }
-		inline GCamera* GetGCamera() { return &m_GCamera; }
-		inline V4f GetViewport() { return m_xywhViewport; }
-		inline Drawables GetDrawData() { return m_Drawables; }
-		inline const AFrameBuf* GetFrameBuf() const { return m_pFrameBuf; }
-		inline const AVertexBuf* GetVertexBuf() const { return m_DTools.pVtxBuf; }
-		inline const AIndexBuf* GetIndexBuf() const { return m_DTools.pIdxBuf; }
-		inline const AShaderBuf* GetShaderBuf() const { return m_DTools.pShdBuf; }
 		// --setters
+		void SetShader(AShader* pShader);
 		void SetViewport(const V4f& xywhViewport);
 		void AddDrawData(const DrawObjectData& rDOData);
-		void RmvDrawData(UInt32 unId);
 		// --core_methods
-		void Update();
-		void UploadObjectData(const void* pVtx, Size szVtx, const UInt32* pIdx, Size szIdx);
-		void UploadShaderData(const void* pShd, Size szShd);
-	private:
-		String m_strName;
-		V4f m_xywhViewport;
-		GCamera m_GCamera;
-		Drawables m_Drawables;
-	
-		AFrameBuf* m_pFrameBuf;
-		DrawTools m_DTools;
+		void OnDraw(AGApi* pGApi);
+		bool UploadVtxData(const DrawObjectData& rDOData);
+		bool UploadShdData(const DrawSceneData& rDSData);
+		inline void ResetData();
+		// --operators
+		inline bool operator>	(GLayer& rLayer)	{ return rLayer.unDrawOrder > unDrawOrder; }
+		inline bool operator<	(GLayer& rLayer)	{ return rLayer.unDrawOrder < unDrawOrder; }
 	};
+	inline void GLayer::ResetData() {
+		pVtxIter = &pVtxData[0];
+		szVtxData = unVtxData = 0;
+		pIdxIter = &pIdxData[0];
+		szIdxData = unIdxData = 0;
+		pShdIter = &pShdData[0];
+		szShdData = 0;
+		unDrawCalls = 0;
+	}
 }
 
 #endif	// NW_GLAYER_H

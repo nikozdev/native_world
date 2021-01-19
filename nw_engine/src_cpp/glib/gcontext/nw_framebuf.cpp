@@ -6,6 +6,7 @@
 
 #if (defined NW_GRAPHICS)
 #include <glib/core/nw_gengine.h>
+#include <glib/core/nw_gapi.h>
 #include <glib/nw_texture.h>
 namespace NW
 {
@@ -21,17 +22,14 @@ namespace NW
 	AFrameBuf::~AFrameBuf() { DataSys::RmvDataRes<AFrameBuf>(GetId()); }
 
 	// --setters
-	void AFrameBuf::SetSizeWH(UInt32 unWidth, UInt32 unHeight) {
-		m_Info.unWidth = unWidth; m_Info.unHeight = unHeight; Remake();
-	}
+	void AFrameBuf::SetSizeWH(UInt32 unWidth, UInt32 unHeight) { m_Info.unWidth = unWidth; m_Info.unHeight = unHeight; Remake(); }
 
 	AFrameBuf* AFrameBuf::Create(const char* strName, const FrameBufInfo& rfbInfo)
 	{
 		AFrameBuf* pFB = nullptr;
-		switch (GEngine::Get().GetGApi()->GetType())
-		{
+		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GApiTypes::GAPI_OPENGL: pFB = MemSys::NewT<FrameBufOgl>(strName, rfbInfo); break;
+		case GApiTypes::GAPI_OPENGL: pFB = new FrameBufOgl(strName, rfbInfo); break;
 	#endif // NW_GRAPHICS
 		default: NW_ERR("Graphics API is not defined"); break;
 		}
