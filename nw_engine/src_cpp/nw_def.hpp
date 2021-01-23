@@ -7,53 +7,6 @@
 // --==<alias>==--
 namespace NW
 {
-	// --number
-	typedef __int8				Int8;
-	typedef __int16				Int16;
-	typedef __int32				Int32;
-	typedef __int64				Int64;
-	typedef unsigned __int8		UInt8;
-	typedef unsigned __int16	UInt16;
-	typedef unsigned __int32	UInt32;
-	typedef unsigned __int64	UInt64;
-	typedef float				Float32;
-	typedef double				Float64;
-	typedef long double			Float128;
-	// --memory
-	typedef size_t				Size;
-	typedef char				Byte;
-	typedef unsigned char		UByte;
-	template <typename RefType>
-	using RefOwner = std::unique_ptr<RefType>;
-	template <typename RefType>
-	using RefKeeper = std::shared_ptr<RefType>;
-	// --string
-	typedef char Char;
-	typedef char Char8;
-	typedef unsigned char UChar;
-	typedef unsigned char UChar8;
-	typedef wchar_t Char16;
-	using String = std::string;
-	using WString = std::wstring;
-	// --stream
-	using InStream = std::istream;
-	using OutStream = std::ostream;
-	using IOStream = std::iostream;
-	using StrStream = std::stringstream;
-	// --container
-	template <typename ValType, Size szCapacity>
-	using SArray = std::array<ValType, szCapacity>;
-	template <typename ValType>
-	using DArray = std::vector<ValType>;
-	template <typename ValType>
-	using DStack = std::stack<ValType>;
-	template <typename ValType>
-	using List2 = std::list<ValType>;
-	template <typename KeyType, typename ValType>
-	using HashMap = std::unordered_map<KeyType, ValType>;
-	// --info
-	using TypeInfo = std::type_index;
-	// --platform
 #if defined NW_PLATFORM_WINDOWS
 	using V2xy = COORD;
 	using V2wh = COORD;
@@ -755,21 +708,21 @@ typedef double GLclampd;
 #define NW_STACK_UNDERFLOW				GL_STACK_UNDERFLOW  
 #define NW_OUT_OF_MEMORY				GL_OUT_OF_MEMORY  
 
-#define NW_ERR_DATA_LOSS				0b1110'0000'0000
+#define NWL_ERR_DATA_LOSS				0b1110'0000'0000
 
-#define NW_ERR_NO_SUPPORT				0b1110'0000'0001
-#define NW_ERR_NO_DATA					0b1110'0000'0001
-#define NW_ERR_NO_INIT					0b1110'0000'0010
-#define NW_ERR_NO_QUIT					0b1110'0000'0011
-#define NW_ERR_NO_STATE					0b1110'0000'0100
+#define NWL_ERR_NO_SUPPORT				0b1110'0000'0001
+#define NWL_ERR_NO_DATA					0b1110'0000'0001
+#define NWL_ERR_NO_INIT					0b1110'0000'0010
+#define NWL_ERR_NO_QUIT					0b1110'0000'0011
+#define NWL_ERR_NO_STATE					0b1110'0000'0100
 
-#define NW_ERR_UNKNOWN_ID				0b1111'0000'0000
+#define NWL_ERR_UNKNOWN_ID				0b1111'0000'0000
 
-#define NW_ERR_SHADER_INVALID_FORMAT	0b0011'0000'0000
-#define NW_ERR_SHADER_LOAD_PATH			0b1000'0000'0000
-#define NW_ERR_SHADER_LOAD_FAIL			0b1001'0000'0000
-#define NW_ERR_SHADER_LINK				0b1011'0000'0000
-#define NW_ERR_SHADER_COMPILE			0b1100'0000'0000
+#define NWL_ERR_SHADER_INVALID_FORMAT	0b0011'0000'0000
+#define NWL_ERR_SHADER_LOAD_PATH			0b1000'0000'0000
+#define NWL_ERR_SHADER_LOAD_FAIL			0b1001'0000'0000
+#define NWL_ERR_SHADER_LINK				0b1011'0000'0000
+#define NWL_ERR_SHADER_COMPILE			0b1100'0000'0000
 // --==</error_codes_nw>==--
 
 // --==<info_ogl>==--

@@ -1,18 +1,21 @@
-#ifndef GLIB_AWINDOW_H
-#define GLIB_AWINDOW_H
+#ifndef NW_AWINDOW_H
+#define NW_AWINDOW_H
 
-#include <core/glib_context.h>
+#include <nw_decl.hpp>
+#include <nw_glib_decl.hpp>
 
-#if (defined GLIB_WINDOW)
-namespace GLIB
+#if (defined NW_WINDOW)
+#include <glib/gcontext/nw_gcontext.h>
+namespace NW
 {
 	using EventCallback = std::function<void(AEvent&)>;
-	struct GLIB_API WindowInfo
+	struct NW_API WindowInfo
 	{
 		String strTitle = "window";
 		UInt16 unWidth = 800, unHeight = 600;
 		Float32 nAspectRatio = 800.0f / 600.0f;
 		bool bVSync = false;
+		float nOpacity = 0.0f;
 
 		WApiTypes WApiType = WAPI_NONE;
 
@@ -31,7 +34,7 @@ namespace GLIB
 	/// -> Make Create method for a particular implementation
 	/// -> Create the window by that function
 	/// -> Call OnUpdate() and OnRender every frame
-	class GLIB_API AWindow
+	class NW_API AWindow
 	{
 	public:
 		virtual ~AWindow() = default;
@@ -46,29 +49,29 @@ namespace GLIB
 		virtual void SetTitle(const char* strTitle) = 0;
 		virtual void SetEventCallback(const EventCallback& fnEvCallback) = 0;
 		virtual void SetVSync(bool enabled) = 0;
-		// --predicates
-		virtual bool IsVSync() const = 0;
 		virtual void SetIcon(UByte* pData, UInt16 unWidth, UInt16 unHeight) = 0;
 		virtual void SetOpacity(float nOpacity) = 0;
+		// --predicates
+		virtual bool IsVSync() const = 0;
 
 		// --core_methods
 		virtual bool Init() = 0;
 		virtual void OnQuit() = 0;
 		virtual void Update() = 0;
 
-		static AWindow* Create(const WindowInfo& rWindowInfo, WApiTypes WindowType);
+		static AWindow* Create(const WindowInfo& rWindowInfo);
 	protected:
 		AWindow() = default;
 	};
 }
-#endif // GLIB_WINDOW
-#if (GLIB_WINDOW & GLIB_WINDOW_GLFW)
-namespace GLIB
+#endif // NW_WINDOW
+#if (NW_WINDOW & NW_WINDOW_GLFW)
+namespace NW
 {
 	/// WindowOgl class
 	/// --Works with GLFW
 	/// --Can interact mostly by events but not with the application directly
-	class GLIB_API WindowOgl : public AWindow
+	class NW_API WindowOgl : public AWindow
 	{
 	public:
 		WindowOgl(const WindowInfo& rWindowInfo);
@@ -82,13 +85,12 @@ namespace GLIB
 		virtual inline AGContext* GetGContext() override { return m_pGContext; }
 		// --setters
 		virtual void SetTitle(const char* strTitle) override;
-		inline void SetEventCallback(const EventCallback& fnEvCallback) override { m_WindowInfo.fnEvCallback = fnEvCallback; }
-		// --predicates
-		inline bool IsVSync() const override { return m_WindowInfo.bVSync; }
-
+		virtual void SetEventCallback(const EventCallback& fnEvCallback) override;
 		virtual void SetVSync(bool enabled) override;
 		virtual void SetIcon(UByte* pData, UInt16 unWidth, UInt16 unHeight) override;
 		virtual void SetOpacity(float nOpacity) override;
+		// --predicates
+		virtual inline bool IsVSync() const override { return m_WindowInfo.bVSync; }
 
 		// --core_methods
 		virtual bool Init() override;
@@ -115,8 +117,8 @@ namespace GLIB
 		GLFWimage* m_pIcon;
 	};
 }
-#endif // GLIB_WINDOW
-#endif	// GLIB_AWINDOW_H
+#endif // NW_WINDOW
+#endif	// NW_AWINDOW_H
 /*
 * Development started 18.10.2020
 * --Tutorials used:

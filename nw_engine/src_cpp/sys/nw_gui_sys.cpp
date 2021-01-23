@@ -1,23 +1,10 @@
 #include <nw_pch.hpp>
 #include "nw_gui_sys.h"
 
-#include <glib/vision/nw_gcamera.h>
-#include <glib/vision/nw_gmaterial.h>
-
-#include <glib/core/nw_gengine.h>
-#include <glib/gcontext/nw_gcontext.h>
-#include <glib/gcontext/nw_framebuf.h>
-#include <glib/core/nw_gapi.h>
-#include <glib/gcontext/nw_window.h>
-#include <glib/nw_drawable.h>
-#include <glib/vision/nw_gcamera.h>
-#include <glib/vision/nw_gmaterial.h>
-
 #include <core/nw_core_engine.h>
 #include <sys/nw_time_sys.h>
 #include <sys/nw_io_sys.h>
 #include <sys/nw_data_sys.h>
-#include <sys/nw_mem_sys.h>
 #include <sys/nw_log_sys.h>
 
 #if (NW_GUI & NW_GUI_IMGUI)
@@ -28,7 +15,6 @@
 #include <glfw/glfw3.h>
 #define GUI_DEFAULT_TREE_FLAGS ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick
 #endif	// NW_GUI
-
 
 namespace NW
 {
@@ -58,11 +44,11 @@ namespace NW
 	void GuiSys::OnInit()
 	{
 		AGApi* pGApi = GEngine::Get().GetGApi();
-		if (pGApi == nullptr) { NW_ERR("GraphicsAPI is not not found"); return; }
-		AWindow* pWindow = GEngine::Get().GetWindow();
-		if (pWindow == nullptr) { NW_ERR("Window is not not found"); return; }
+		if (pGApi == nullptr) { NWL_ERR("GraphicsAPI is not not found"); return; }
+		AWindow* pWindow = CoreEngine::Get().GetWindow();
+		if (pWindow == nullptr) { NWL_ERR("Window is not not found"); return; }
 		AGContext* pGContext = pWindow->GetGContext();
-		if (pGContext == nullptr) { NW_ERR("GraphicsContext was not found"); return; }
+		if (pGContext == nullptr) { NWL_ERR("GraphicsContext was not found"); return; }
 	#if (NW_GUI & NW_GUI_NATIVE)
 	#endif	// NW_GUI
 	#if (NW_GUI & NW_GUI_COUT)
@@ -90,7 +76,7 @@ namespace NW
 			s_pGuiStyle->Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
 
-		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(GEngine::Get().GetWindow()->GetNative()), true);
+		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(CoreEngine::Get().GetWindow()->GetNative()), true);
 		ImGui_ImplOpenGL3_Init("#version 430");
 	#endif	// NW_GUI
 	}
@@ -170,7 +156,7 @@ namespace NW
 	// --==<Drawing>==--
 	void GuiSys::BeginDraw()
 	{
-		bool bCanDraw = !s_bIsDrawing; if (!bCanDraw) { NW_ERR("Can not draw for now"); return; } s_bIsDrawing = true;
+		bool bCanDraw = !s_bIsDrawing; if (!bCanDraw) { NWL_ERR("Can not draw for now"); return; } s_bIsDrawing = true;
 	#if (NW_GUI & NW_GUI_NATIVE)
 	#endif	// NW_GUI
 	#if (NW_GUI & NW_GUI_COUT)
@@ -220,7 +206,7 @@ namespace NW
 	void GuiSys::EndDraw()
 	{
 		bool bCanDraw = s_bIsDrawing;
-		if (!bCanDraw) { NW_ERR("Can not draw for now"); return; }
+		if (!bCanDraw) { NWL_ERR("Can not draw for now"); return; }
 		s_bIsDrawing = false;
 	#if (NW_GUI & NW_GUI_NATIVE)
 	#endif	// NW_GUI
@@ -236,7 +222,7 @@ namespace NW
 		if (s_pGuiIO->ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
-			glfwMakeContextCurrent(static_cast<GLFWwindow*>(GEngine::Get().GetWindow()->GetNative()));
+			glfwMakeContextCurrent(static_cast<GLFWwindow*>(CoreEngine::Get().GetWindow()->GetNative()));
 		}
 	#endif	// NW_GUI
 	}
@@ -244,67 +230,7 @@ namespace NW
 	void GuiSys::OnDraw(AGuiWidget* pAGuiWidget)
 	{
 	}
-	void GuiSys::OnDrawStr(const char* str, V2f whSize, V2f xyCoord, float zRotation)
-	{
-		#if (NW_GUI & NW_GUI_NATIVE)
-		#endif // NW_GUI
-		#if (NW_GUI & NW_GUI_COUT)
-		#endif // NW_GUI
-		#if (NW_GUI & NW_GUI_IMGUI)
-		#endif	// NW_GUI
-	}
-	inline void GuiSys::OnDrawCh(Char cCharacter, V2f whSize, V2f xyCoord, float zRotation)
-	{
-	}
 	// --==</Drawing>==--
 
-	// --==<Widgets>==--
-	 void GuiSys::OnDrawTextF(const V2i& xyCoord, const V2i& whSize, const char* sFormat, ...)
-	 {
-	#if (NW_GUI & NW_GUI_NATIVE)
-	#endif	// NW_GUI
-	#if (NW_GUI & NW_GUI_COUT)
-	#endif	// NW_GUI
-	#if (NW_GUI & NW_GUI_IMGUI)
-		 va_list args;
-		 va_start(args, sFormat);
-		 //ImGui::Text(sFormat, args);
-		 ImGui::TextV(sFormat, args);
-		 va_end(args);
-	#endif	// NW_GUI
-	 }
-	 void GuiSys::OnDrawImage(void* pImgId, const V2i& xyCoord, const V2i& whSize)
-	 {
-		 ImGui::Image(pImgId, ImVec2{ (float)whSize.x, (float)whSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-	 }
-	 bool GuiSys::OnDrawSliderI8(Int8* pFirst, UInt16 unCount, Int32 nMin, Int32 nMax, const V2i& xyCoord, const V2i& whSize, const char* sLabel)
-	 {
-		return ImGui::SliderScalarN(sLabel, ImGuiDataType_S8, pFirst, unCount, &nMin, &nMax);
-	 }
-	 bool GuiSys::OnDrawSliderI32(Int32* pFirst, UInt16 unCount, Int32 nMin, Int32 nMax, const V2i& xyCoord, const V2i& whSize, const char* sLabel)
-	 {
-		 return ImGui::SliderScalarN(sLabel, ImGuiDataType_S32, pFirst, unCount, &nMin, &nMax);
-	 }
-	 bool GuiSys::OnDrawSliderF(float* pFirst, UInt16 unCount, float nMin, float nMax, const V2i& xyCoord, const V2i& whSize, const char* sLabel)
-	 {
-		 return ImGui::SliderScalarN(sLabel, ImGuiDataType_Float, pFirst, unCount, &nMin, &nMax);
-	 }
-	 bool GuiSys::OnDrawInputI8(Int8* pFirst, UInt16 unCount, const V2ui& xyCoord, const V2ui& whSize, const char* sLabel)
-	 {
-		 return ImGui::InputScalarN(sLabel, ImGuiDataType_S8, pFirst, unCount);
-	 }
-	 bool GuiSys::OnDrawInputI32(Int32* pFirst, UInt16 unCount, const V2ui& xyCoord, const V2ui& whSize, const char* sLabel)
-	 {
-		 return ImGui::InputScalarN(sLabel, ImGuiDataType_S32, pFirst, unCount);
-	 }
-	 bool GuiSys::OnDrawInputF(float* pFirst, UInt16 unCount, const V2ui& xyCoord, const V2ui& whSize, const char* sLabel)
-	 {
-		 return ImGui::InputScalarN(sLabel, ImGuiDataType_Float, pFirst, unCount);
-	 }
-	 bool GuiSys::OnDrawButton(const V2ui& xyCoord, const V2ui& whSize, const char* sLabel)
-	 {
-		 return ImGui::ButtonEx(sLabel, ImVec2{ (float)whSize.x, (float)whSize.y }, ImGuiButtonFlags_None);
-	 }
-	// --==</Widgets>==--
 	// --==</core_methods>==--
 }

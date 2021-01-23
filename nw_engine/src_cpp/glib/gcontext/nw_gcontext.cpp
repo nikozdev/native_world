@@ -1,8 +1,6 @@
 #include <nw_pch.hpp>
 #include "nw_gcontext.h"
 
-#include <sys/nw_mem_sys.h>
-
 #if (defined NW_GRAPHICS)
 #include <glib/gcontext/nw_framebuf.h>
 #include <glib/glib_tools.h>

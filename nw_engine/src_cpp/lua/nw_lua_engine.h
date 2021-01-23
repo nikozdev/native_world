@@ -1,9 +1,6 @@
 #ifndef LUA_ENGINE_H
 #define LUA_ENGINE_H
 
-#include <nwlib/nw_singleton.h>
-#include <nwlib/nw_memory.h>
-
 #include <lua/nw_lua_core.h>
 
 namespace NW
@@ -15,10 +12,6 @@ namespace NW
 	{
 	public:
 		friend class ASingleton<LuaEngine>;
-	private:
-		LuaState* m_LState;
-		LuaEngineInfo m_Info;
-		MemArena<Byte> m_MemAllocator;
 	private:
 		LuaEngine();
 		LuaEngine(LuaEngine& rCpy) = delete;
@@ -36,6 +29,8 @@ namespace NW
 		template <typename ValType> bool SetLuaValueGlb(const ValType& tValue, const char* strName);
 		template <typename ValType> bool SetLuaValueLoc(const ValType& tValue, const char* strName);
 		template <typename ValType> bool SetLuaValue(const ValType& tValue, const char* strLoc, const char* strName);
+		// --predicates
+		inline Bit IsRunning() const { return m_bIsRunning; }
 
 		// --core_methods
 		LuaState* CreateLuaState();
@@ -52,6 +47,12 @@ namespace NW
 		
 		bool LuaReg(LuaRegFunc& rRegFunc);
 		bool LuaReg(LuaRegTable& rRegTab);
+	private:
+		Bit m_bIsRunning;
+		MemArena m_MemAllocator;
+
+		LuaState* m_LState;
+		LuaEngineInfo m_Info;
 	private:	// Implementation Methods
 		inline bool LuaMoveGlb(const char* strName);
 		inline bool LuaMoveLoc(const char* strName);
@@ -70,8 +71,8 @@ namespace NW
 
 		static int LuaWrite(LuaState* pState, void* pBlock, Size szData, void* pWriter);
 		static const char* LuaRead(LuaState* pState, void* pReader, Size* szData);
-		static void* LuaAllocate(void* pAllocator, void* pBlock, Size szNew, Size szOld);
-		static void* LuaWarn(void* pWarner, const char* strMsg, Int32 nTocont);
+		static void* LuaAllocate(Ptr pAllocator, void* pBlock, Size szNew, Size szOld);
+		static void* LuaWarn(Ptr pWarner, const char* strMsg, Int32 nTocont);
 	};
 }
 

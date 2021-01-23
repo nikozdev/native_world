@@ -1,8 +1,6 @@
 #include <nw_pch.hpp>
 #include "nw_gapi.h"
 
-#include <sys/nw_mem_sys.h>
-
 #if (defined NW_GRAPHICS)
 #include <glib/glib_tools.h>
 #include <glib/gcontext/nw_gcontext.h>
@@ -16,7 +14,7 @@ namespace NW
 	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
 		case (GAPI_OPENGL): pGApi = new GApiOgl(); break;
 	#endif // NW_GRAPHICS
-		default: NW_ERR("This graphics API is not defined"); break;
+		default: NWL_ERR("This graphics API is not defined"); break;
 		}
 		return pGApi;
 	}

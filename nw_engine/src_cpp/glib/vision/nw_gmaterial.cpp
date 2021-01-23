@@ -12,9 +12,9 @@ namespace NW
 	GMaterial::GMaterial(const char* strName) :
 		ADataRes(strName)
 	{
-		DataSys::AddDataRes<GMaterial>(this);
+		ADataRes::AddDataRes<GMaterial>(this);
 	}
-	GMaterial::~GMaterial() { DataSys::RmvDataRes<GMaterial>(GetName()); }
+	GMaterial::~GMaterial() { ADataRes::RmvDataRes<GMaterial>(GetName()); }
 
 	// --setters
 	void GMaterial::SetShader(AShader* pShader) {
@@ -26,11 +26,11 @@ namespace NW
 			for (auto& itGlob : pShader->GetShdLayout().GetGlobals()) {
 				switch (itGlob.sdType) {
 				case SDT_FLOAT32: if (itGlob.unCount == 4) { m_Colors[itGlob.strName] = V4f{ 1.0f, 1.0f, 1.0f, 1.0f }; } break;
-				case SDT_SAMPLER: m_Textures[itGlob.strName] = DataSys::GetDataRes<ATexture2d>("tex_white_solid"); break;
+				case SDT_SAMPLER: m_Textures[itGlob.strName] = ADataRes::GetDataRes<ATexture2d>("tex_white_solid"); break;
 				}
 			}
 		}
-		if (m_Textures.empty()) { m_Textures[""] = DataSys::GetDataRes<ATexture2d>("tex_white_solid"); }
+		if (m_Textures.empty()) { m_Textures[""] = ADataRes::GetDataRes<ATexture2d>("tex_white_solid"); }
 		if (m_Colors.empty()) { m_Colors[""] = V4f{ 1.0f, 1.0f, 1.0f, 1.0f }; }
 	}
 	void GMaterial::SetTexture(ATexture* pTex, const char* strType) {

@@ -4,12 +4,10 @@
 #include <core/nw_core_state.h>
 #include <lua/nw_lua_engine.h>
 
-#include <glib/gcontext/nw_window.h>
+#include <core/nw_window.h>
 #include <glib/vision/nw_gmaterial.h>
 #include <glib/vision/nw_shader.h>
 #include <glib/nw_texture.h>
-
-#include <sys/nw_mem_sys.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -23,30 +21,12 @@
 #endif  // NW_WINDOW
 #endif  // NW_PLATFORM
 
-NW::DataSys::ADRs NW::DataSys::s_ADRs;
-NW::String NW::DataSys::s_strRscDir = &std::filesystem::current_path().generic_string()[0];
+String NW::DataSys::s_strRscDir = &std::filesystem::current_path().generic_string()[0];
 
 namespace NW
 {
-    // --getters
-    template <> AShader* DataSys::GetDataRes<AShader>(UInt32 unId) {
-        if (AShader* pShader = dynamic_cast<AShader*>(GetADataRes(unId))) {
-            return pShader;
-        }
-        return nullptr;
-    }
     // --setters
     void DataSys::SetDirectory(const char* strDir) { s_strRscDir = strDir; }
-    void DataSys::AddADataRes(ADataRes* pDataRes) {
-        if (pDataRes == nullptr) return;
-        s_ADRs[pDataRes->GetId()] = (pDataRes);
-    }
-    void DataSys::RmvADataRes(UInt32 unId) {
-        ADRs::iterator itDR = s_ADRs.find(unId);
-        if (s_ADRs.size() == 0) return;
-        if (itDR == s_ADRs.end()) return;
-        s_ADRs.erase(itDR);
-    }
 
     // --==<core_methods>==--=
     bool DataSys::OnInit()
@@ -63,9 +43,13 @@ namespace NW
             ATexture2d::Create("tex_white_solid")->LoadF("");
         }
         if (true) {
-            MemSys::NewT<GMaterial>("gmt_2d_batch")->SetShader(GetDataRes<AShader>("shd_2d_batch"));
-            MemSys::NewT<GMaterial>("shd_2d_tile")->SetShader(GetDataRes<AShader>("shd_2d_tile"));
-            MemSys::NewT<GMaterial>("gmt_3d_batch")->SetShader(GetDataRes<AShader>("shd_3d_batch"));
+            GMaterial* pGMtl = nullptr;
+            pGMtl = new GMaterial("gmt_2d_batch");
+            pGMtl->SetShader(ADataRes::GetDataRes<AShader>("shd_2d_batch"));
+            pGMtl = new GMaterial("shd_2d_tile");
+            pGMtl->SetShader(ADataRes::GetDataRes<AShader>("shd_2d_tile"));
+            pGMtl = new GMaterial("gmt_3d_batch");
+            pGMtl->SetShader(ADataRes::GetDataRes<AShader>("shd_3d_batch"));
         }
         return true;
     }
@@ -73,16 +57,16 @@ namespace NW
     void DataSys::OnQuit()
     {
         if (true) {
-            delete (GetDataRes<AShader>("shd_2d_tile"));
-            delete (GetDataRes<AShader>("shd_3d_batch"));
+            delete (ADataRes::GetDataRes<AShader>("shd_2d_tile"));
+            delete (ADataRes::GetDataRes<AShader>("shd_3d_batch"));
         }
         if (true) {
-            delete (GetDataRes<ATexture2d>("tex_white_solid"));
+            delete (ADataRes::GetDataRes<ATexture2d>("tex_white_solid"));
         }
         if (true) {
-            MemSys::DelT<GMaterial>(GetDataRes<GMaterial>("gmt_2d_tile"));
-            MemSys::DelT<GMaterial>(GetDataRes<GMaterial>("gmt_2d_batch"));
-            MemSys::DelT<GMaterial>(GetDataRes<GMaterial>("gmt_3d_batch"));
+            delete ADataRes::GetDataRes<GMaterial>("gmt_2d_tile");
+            delete ADataRes::GetDataRes<GMaterial>("gmt_2d_batch");
+            delete ADataRes::GetDataRes<GMaterial>("gmt_3d_batch");
         }
     }
     // -- File Dialogs
@@ -257,7 +241,7 @@ namespace NW
             fStream.clear();
             return true;
         } catch (std::exception ex) {
-            NW_ERR("Failed to load a file by path " + strFilePath + "\n" + ex.what());
+            NWL_ERR("Failed to load a file by path " + strFilePath + "\n" + ex.what());
             fStream.clear();
             fStream.close();
             return false;

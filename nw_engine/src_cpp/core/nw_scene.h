@@ -1,8 +1,6 @@
 #ifndef ECS_SCENE_H
 #define ECS_SCENE_H
 
-#include <nwlib/nw_singleton.h>
-
 #include <nw_glib_decl.hpp>
 
 namespace NW

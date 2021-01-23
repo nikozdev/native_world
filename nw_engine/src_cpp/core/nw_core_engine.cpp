@@ -1,12 +1,11 @@
 #include <nw_pch.hpp>
 #include <core/nw_core_engine.h>
 
+#include <core/nw_window.h>
 #include <glib/core/nw_gengine.h>
-#include <glib/gcontext/nw_window.h>
 
 #include <sys/nw_io_sys.h>
 #include <sys/nw_time_sys.h>
-#include <sys/nw_mem_sys.h>
 #include <sys/nw_log_sys.h>
 #include <sys/nw_data_sys.h>
 #include <sys/nw_gui_sys.h>
@@ -14,10 +13,10 @@
 namespace NW
 {
 	CoreEngine::CoreEngine() :
-		m_strName("nw_engine"),
-		m_bIsRunning(false),
-		m_pCurrState(nullptr) { MemSys::OnInit(1 << 20); }
-	CoreEngine::~CoreEngine() { MemSys::OnQuit(); }
+		m_bIsRunning(false), m_thrRun(Thread()), m_Memory(nullptr, 0),
+		m_strName("nw_engine"), m_wapiType(WApiTypes::WAPI_NONE),
+		m_pCurrState(nullptr) { }
+	CoreEngine::~CoreEngine() { }
 
 	// --setters
 	void CoreEngine::AddState(CoreState* pState)
@@ -53,22 +52,22 @@ namespace NW
 	}
 
 	// --==<core_methods>==--
-	bool CoreEngine::Init()
+	bool CoreEngine::Init(Size szMem)
 	{
+		m_Memory = MemArena(new Byte[szMem], szMem);
+		m_bIsRunning = true;
 	#if (defined NW_WINDOW)
-		WApiTypes WApiType = WAPI_NONE;
+		m_wapiType = WAPI_NONE;
+		WindowInfo WindowInfo{ "graphics_engine", 1200, 1200 / 4 * 3, true, nullptr };
 		#if (NW_WINDOW_GLFW & NW_WINDOW_GLFW)
-		WApiType = WAPI_GLFW;
+		m_wapiType = WAPI_GLFW;
+		m_pWindow.MakeRef<WindowOgl>(GetMemory(), WindowInfo);
+		if (!m_pWindow->Init()) { m_pWindow->OnQuit(); return false; }
 		#endif
 	#endif	// NW_WINDOW
-	#if (defined NW_GRAPHICS)
-		GApiTypes GApiType = GAPI_NONE;
-		#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		GApiType = GAPI_OPENGL;
-		#endif
-	#endif	// NW_GRAPHICS
-		if (!GEngine::Get().Init(WApiType, GApiType)) { LogSys::WriteErrStr(NW_ERR_NO_INIT, "GEngine is not initialized!"); return false; }
-		GEngine::Get().GetWindow()->SetEventCallback([this](AEvent& rEvt)->void { return OnEvent(rEvt); });
+
+		if (!GEngine::Get().Init(szMem >> 2)) { LogSys::WriteErrStr(NWL_ERR_NO_INIT, "GEngine is not initialized!"); return false; }
+		m_pWindow->SetEventCallback([this](AEvent& rEvt)->void { return OnEvent(rEvt); });
 		DataSys::OnInit();
 		GuiSys::OnInit();
 
@@ -78,6 +77,15 @@ namespace NW
 	{
 		if (!m_bIsRunning) { return; }
 		m_bIsRunning = false;
+
+		while (!m_States.empty()) { (*m_States.begin())->OnDisable(); m_States.erase(m_States.begin()); }
+		DataSys::OnQuit();
+		GuiSys::OnQuit();
+		GEngine::Get().Quit();
+
+		m_pWindow->OnQuit();
+		delete[] m_Memory.GetDataBeg();
+		m_Memory = MemArena(nullptr, 0);
 	}
 
 	void CoreEngine::Run()
@@ -87,11 +95,7 @@ namespace NW
 		
 		// m_thrRun = std::thread([this]()->void { while (m_bIsRunning) { Update(); } });
 		while (m_bIsRunning) { Update(); };
-		
-		while (!m_States.empty()) { (*m_States.begin())->OnDisable(); m_States.erase(m_States.begin()); }
-		DataSys::OnQuit();
-		GuiSys::OnQuit();
-		GEngine::Get().Quit();
+		Quit();
 	}
 	inline void CoreEngine::Update()
 	{
@@ -113,7 +117,8 @@ namespace NW
 	void CoreEngine::OnEvent(AEvent& rEvt)
 	{
 		// Dispatch particular events
-		if (MouseEvent* pmEvt = dynamic_cast<MouseEvent*>(&rEvt)) {
+		if (rEvt.EvtType == ET_MOUSE_MOVE || rEvt.EvtType == ET_MOUSE_SCROLL || rEvt.EvtType == ET_MOUSE_RELEASE || rEvt.EvtType == ET_MOUSE_PRESS) {
+			MouseEvent* pmEvt = static_cast<MouseEvent*>(&rEvt);
 			switch (pmEvt->EvtType) {
 			case ET_MOUSE_MOVE:
 				IOSys::s_Mouse.xMoveDelta = pmEvt->nX - IOSys::s_Mouse.xMove;

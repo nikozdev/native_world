@@ -14,7 +14,7 @@ namespace NW
 	Particles::Particles() :
 		ADrawable(),
 		unPartCount(0), unPartScale(0.0f),
-		DrawPrimitive(PT_POINTS) { pGMtl = DataSys::GetDataRes<GMaterial>("gmt_default"); }
+		DrawPrimitive(PT_POINTS) { pGMtl = ADataRes::GetDataRes<GMaterial>("gmt_default"); }
 
 	// --core_methods
 	void Particles::OnDraw()
@@ -24,7 +24,7 @@ namespace NW
 	
 	// --==<PolyLine>==--
 	PolyLine::PolyLine() :
-		ADrawable() { pGMtl = DataSys::GetDataRes<GMaterial>("gmt_default"); }
+		ADrawable() { pGMtl = ADataRes::GetDataRes<GMaterial>("gmt_default"); }
 
 	// --core_methods
 	void PolyLine::OnDraw()
@@ -37,7 +37,7 @@ namespace NW
 		xyzCrd{ 0.0f, 0.0f, 0.0f }, xyzRtn{ 0.0f, 0.0f, 0.0f }, xyzScale{ 1.0f, 1.0f, 1.0f },
 		rgbaClr{ 1.0f, 1.0f, 1.0f, 1.0f }
 	{
-		pGMtl = DataSys::GetDataRes<GMaterial>("gmt_default");
+		pGMtl = ADataRes::GetDataRes<GMaterial>("gmt_default");
 	}
 
 	// --core_methods
@@ -54,7 +54,7 @@ namespace NW
 	// --==<Triangle>==--
 	Triangle::Triangle(const V2f& xyV0, const V2f& xyV1, const V2f& xyV2) :
 		ADrawable(),
-		vtxCrds{ xyV0, xyV1, xyV2 } { pGMtl = DataSys::GetDataRes<GMaterial>("gmt_default"); }
+		vtxCrds{ xyV0, xyV1, xyV2 } { pGMtl = ADataRes::GetDataRes<GMaterial>("gmt_default"); }
 
 	// --core_methods
 	void Triangle::OnDraw() { }
@@ -67,7 +67,7 @@ namespace NW
 		idxData{ 0, 1, 2,	2, 3, 0 },
 		SubTex(SubTexture2d())
 	{
-		pGMtl = DataSys::GetDataRes<GMaterial>("gmt_3d_batch");
+		pGMtl = ADataRes::GetDataRes<GMaterial>("gmt_3d_batch");
 	}
 
 	// --core_methods
@@ -105,10 +105,10 @@ namespace NW
 
 	// --==<TileMapSprite>==--
 	TileMapSprite::TileMapSprite() :
-		pTileMap(DataSys::GetDataRes<ATexture2d>("tex_white_solid")),
+		pTileMap(ADataRes::GetDataRes<ATexture2d>("tex_white_solid")),
 		whTileSize{ 1, 1 }, xywhTilePadding{ 1, 1, 1, 1 }
 	{
-		pGMtl = DataSys::GetDataRes<GMaterial>("gmt_default_tile");
+		pGMtl = ADataRes::GetDataRes<GMaterial>("gmt_default_tile");
 		UpdateTileData();
 	}
 

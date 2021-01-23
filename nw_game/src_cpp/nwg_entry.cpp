@@ -16,30 +16,29 @@
 #endif	// NWG_LAUNCH
 #if (NWG_LAUNCH & NWG_LAUNCH_CMD)
 #endif	// NWG_LAUNCH
-#if (NWG_LAUNCH & NWG_LAUNCH_TEST)
+#if (NWG_LAUNCH & NWG_LAUNCH_ENGINE)
 #include <nwg_mem_sys.h>
+#include <sys/nw_ent_sys.h>
 #endif	// NWG_LAUNCH
-
-using namespace NWG;
 
 int main(int nArgs, char* strArgs[])
 {
 	try {
-	#if (NWG_LAUNCH & NWG_LAUNCH_ENGINE)
+#if (NWG_LAUNCH & NWG_LAUNCH_ENGINE)
 		NW::CoreEngine* pGameEngine = &NW::CoreEngine::Get();
-		if (!pGameEngine->Init()) { return -1; }
+		if (!pGameEngine->Init(NW_GLOBAL_MEMORY)) { return -1; }
 		NWG::CreatorState crtState;
 		pGameEngine->AddState(&crtState);
 		pGameEngine->Run();
-		// pGameEngine->GetRunThread()->join();
-	#endif
-	#if (NWG_LAUNCH & NWG_LAUNCH_CMD)
+		// pGameEngine->GetRunThread().join();
+#endif
+#if (NWG_LAUNCH & NWG_LAUNCH_CMD)
 		CMD::CmdEngine* pCmdEngine = &CMD::CmdEngine::Get();
 		pCmdEngine->SetWndSize(96, 32);
 		pCmdEngine->SetPxSize(8, 16);
-		if (!pCmdEngine->Init()) { return -1; }
+		if (!pCmdEngine->Init(1 << 24)) { return -1; }
 		pCmdEngine->Run();
-		
+
 		CMD::CMenu cmMenu("root");
 		cmMenu["menu0"].yCrd += 10;
 		cmMenu["menu1"].yCrd += 20;
@@ -60,7 +59,7 @@ int main(int nArgs, char* strArgs[])
 			else if (pCmdEngine->GetKeyPressed(CMD::KC_UP)) {
 				cmMenu.OnAction(CMD::CMA_MOVE_UP);
 			}
-			
+
 			if (pCmdEngine->GetKeyHeld(CMD::KC_R)) {
 				if (pCmdEngine->GetMouseHeld(CMD::MSB_LEFT)) {
 					pCmdEngine->DrawRectXY(
@@ -106,47 +105,39 @@ int main(int nArgs, char* strArgs[])
 				pCmdEngine->DrawStrXY(pCmdEngine->GetWndWidth() - 16, 8, CMD::CCN_BG_1 | CMD::CCN_FG_16, &(std::string("held_y_r: ") + std::to_string(pCmdEngine->GetMouseHeldY(CMD::MSB_RIGHT)))[0]);
 			}
 		}
-		pCmdEngine->GetRunThread()->join();
-	#endif
-	#if (NWG_LAUNCH & NWG_LAUNCH_GLIB)
-	#endif
-	#if (NWG_LAUNCH & NWG_LAUNCH_TEST)
-		double nExeTime = 0.0f;
-		std::chrono::steady_clock::time_point tpBeg;
-		std::chrono::steady_clock::time_point tpEnd;
-		std::chrono::duration<double> durExeTime(tpBeg - tpEnd);
+		pCmdEngine->GetRunThread().join();
+#endif
+#if (NWG_LAUNCH & NWG_LAUNCH_GLIB)
+#endif
+#if (NWG_LAUNCH & NWG_LAUNCH_TEST)
+#if false
+		Size szMem = (1 << 26);
 		{
-			tpBeg = std::chrono::steady_clock::now();
-			MemSys::OnInit(1 << 20);
-			for (UInt32 i = 0; i < 1'000'000; i++) {
-				NW::GCamera* pMemInfo = nullptr;
-				pMemInfo = MemSys::NewTArr<NW::GCamera>(64);
-				MemSys::DelTArr<NW::GCamera>(pMemInfo, 64);
+			NW::MemSys::OnInit(szMem);
+			NW::EntSys::OnInit(szMem >> 8);
+			NW::CmpSys::OnInit(szMem >> 4);
+			for (UInt32 ei = 0; ei < 1 << 8; ei++) {
+				NW::EntId eId = NW::EntSys::AddEnt();
+				NW::CmpSys::AddCmp<NW::TransformCmp>(eId);
+				auto pCmp = NW::CmpSys::GetCmp<NW::TransformCmp>(eId);
+				pCmp->xyzCrd = { eId, eId, eId };
 			}
-			MemSys::OnQuit();
-			tpEnd = std::chrono::steady_clock::now();
-			durExeTime = std::chrono::duration(tpBeg - tpEnd);
-			nExeTime = durExeTime.count();
-			std::cout << "arena allocation takes " << nExeTime << " seconds" << std::endl;
-		}
-		{
-			tpBeg = std::chrono::steady_clock::now();
-			NW::MemSys::OnInit(1 << 20);
-			for (UInt32 i = 0; i < 1'000'000; i++) {
-				NW::GCamera* pMemInfo = nullptr;
-				pMemInfo = NW::MemSys::NewTArr<NW::GCamera>(64);
-				NW::MemSys::DelTArr<NW::GCamera>(pMemInfo, 64);
+			for (UInt32 ei = 0; ei < 1 << 8; ei++) {
+				auto pCmp = NW::CmpSys::GetCmp<NW::TransformCmp>(ei);
+				NW::CmpSys::RmvCmp<NW::TransformCmp>(ei);
+				NW::EntSys::RmvEnt(ei);
 			}
+			NW::CmpSys::OnQuit();
+			NW::EntSys::OnQuit();
 			NW::MemSys::OnQuit();
-			tpEnd = std::chrono::steady_clock::now();
-			durExeTime = std::chrono::duration(tpBeg - tpEnd);
-			nExeTime = durExeTime.count();
-			std::cout << "heap allocation takes " << nExeTime << " seconds" << std::endl;
 		}
+#endif
+		NW::TimeSys::Update();
+		NW::LogSys::WriteStr("The test takes {flt} milliseconds\n", NW::TimeSys::GetRealDelta());
 #endif
 	}
 	catch (std::exception Exc) {
-		NW_ERR(Exc.what());
+		NWL_ERR(Exc.what());
 	}
 
 	return 0;

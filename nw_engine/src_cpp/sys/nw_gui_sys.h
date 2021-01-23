@@ -1,6 +1,8 @@
 #ifndef NW_GUI_SYSTEM_H
 #define NW_GUI_SYSTEM_H
 
+#include <nw_glib_decl.hpp>
+
 #if (NW_GUI & NW_GUI_NATIVE)
 #include <glib/nw_gui_widget.h>
 #endif	// NW_GUI
@@ -40,18 +42,6 @@ namespace NW
 		static void EndWindow();
 		static void EndDraw();
 
-		static void OnDrawStr(const char* str, V2f whSize = V2f{ 8.0f, 16.0f }, V2f xyCoord = V2f{ 0.0f, 0.0f }, float zRotation = 0.0f);
-		static inline void OnDrawCh(char cCharacter, V2f whSize = V2f{ 8.0f, 16.0f }, V2f xyCoord = V2f{ 0.0f, 0.0f }, float zRotation = 0.0f);
-
-		static void OnDrawTextF(const V2i& xyCoord, const V2i& whSize, const char* sFormat, ...);
-		static void OnDrawImage(void* pImgId, const V2i& xyCoord, const V2i& whSize);
-		static bool OnDrawSliderI8(Int8* pFirst, UInt16 unCount, Int32 nMin, Int32 nMax, const V2i& xyCoord, const V2i& whSize, const char* sLabel);
-		static bool OnDrawSliderI32(Int32* pFirst, UInt16 unCount, Int32 nMin, Int32 nMax, const V2i& xyCoord, const V2i& whSize, const char* sLabel);
-		static bool OnDrawSliderF(float* pFirst, UInt16 unCount, float nMin, float nMax, const V2i& xyCoord, const V2i& whSize, const char* sLabel);
-		static bool OnDrawInputI8(Int8* pFirst, UInt16 unCount, const V2ui& xyCoord, const V2ui& whSize, const char* sLabel);
-		static bool OnDrawInputI32(Int32* pFirst, UInt16 unCount, const V2ui& xyCoord, const V2ui& whSize, const char* sLabel);
-		static bool OnDrawInputF(float* pFirst, UInt16 unCount, const V2ui& xyCoord, const V2ui& whSize, const char* sLabel);
-		static bool OnDrawButton(const V2ui& xyCoord, const V2ui& whSize, const char* sLabel);
 	private:	// Implementation Attribs
 		static GuiIO s_GuiIO;
 		static GuiStyle s_GuiStyle;

@@ -2,7 +2,6 @@
 #include "nw_lua_engine.h"
 
 #include <sys/nw_data_sys.h>
-#include <sys/nw_mem_sys.h>
 #include <sys/nw_log_sys.h>
 
 #include <lua.hpp>
@@ -14,8 +13,8 @@
 namespace NW
 {
 	LuaEngine::LuaEngine() :
-		m_LState(nullptr),
-		m_MemAllocator(MemArena<Byte>(0))
+		m_MemAllocator(MemArena(nullptr, 0)),
+		m_LState(nullptr)
 	{
 		m_LState = CreateLuaState();
 	}
@@ -95,10 +94,10 @@ namespace NW
 	//LuaRegTable LuaEntSys::lrtEntSys = LuaRegTable("ent_sys");
 	LuaState* LuaEngine::CreateLuaState()
 	{
-		//m_MemAllocator = MemArena(1024 * 8);
+		//m_MemAllocator = MemPool(1024 * 8);
 
-		//LuaState* pLState = lua_newstate(LuaEngine::LuaAllocate, &m_MemAllocator);
-		LuaState* pLState = luaL_newstate();
+		LuaState* pLState = lua_newstate(LuaEngine::LuaAllocate, &m_MemAllocator);
+		//LuaState* pLState = luaL_newstate();
 		//lua_setallocf(pLState, LuaEngine::LuaAllocate, &m_MemAllocator);
 
 		luaL_openlibs(pLState);
@@ -164,14 +163,15 @@ namespace NW
 	void LuaEngine::DestroyLuaState(LuaState* pLState)
 	{
 		lua_close(pLState);
-		m_MemAllocator.Reset(0);
+		m_MemAllocator = MemArena(nullptr, 0);
 	}
 
 	bool LuaEngine::LoadScript(const String& strScript)
 	{
 		LuaReaderState lRState;
 		lRState.strChunk = &strScript;
-		Int32 nResult = 0;//lua_load(m_LState, LuaEngine::LuaRead, &lRState, "lua_chunk", "r");
+		Int32 nResult = 0;
+		//lua_load(m_LState, LuaEngine::LuaRead, &lRState, "lua_chunk", "r");
 		return nResult == LUA_OK;
 	}
 
@@ -400,7 +400,7 @@ namespace NW
 		va_end(valArgs);
 		if (lua_isstring(m_LState, -1)) { strErrLog += lua_tolstring(m_LState, -1, 0); }
 		LuaClear();
-		NW_ERR(&strErrLog[0]);
+		NWL_ERR(&strErrLog[0]);
 	}
 	// --==</Implementation Methods>==--
 
@@ -422,19 +422,19 @@ namespace NW
 		}
 		return nullptr;
 	}
-	void* LuaEngine::LuaAllocate(void* pAllocator, void* pBlock, Size szOld, Size szNew)
+	void* LuaEngine::LuaAllocate(Ptr pAllocator, void* pBlock, Size szOld, Size szNew)
 	{
-		MemArena<Byte>* pMemArena = static_cast<MemArena<Byte>*>(pAllocator);
+		AMemAllocator* pMemAllocator = static_cast<AMemAllocator*>(pAllocator);
 		if (pBlock != nullptr) {
 			if (szNew == 0) {
-				pMemArena->Dealloc(static_cast<Byte*>(pBlock), szOld);
+				pMemAllocator->Dealloc(pBlock, szOld);
 			}
 			else if (szOld > 0) {
-				pBlock = pMemArena->Realloc(static_cast<Byte*>(pBlock), szOld, szNew);
+				pBlock = pMemAllocator->Realloc(pBlock, szOld, szNew);
 			}
 		}
 		else if (szNew > 0) {
-			pBlock = pMemArena->Alloc(szNew);
+			pBlock = pMemAllocator->Alloc(szNew);
 		}
 		return pBlock;
 	}

@@ -4,13 +4,11 @@
 #include <glib/glib_tools.h>
 #include <glib/nw_gbuffer.h>
 
-#include <nwlib/nw_code_chunk.h>
-
 #if (defined NW_GRAPHICS)
 namespace NW
 {
 	/// Abstract SubShader Class
-	class NW_API ASubShader : public ACodeChunk
+	class NW_API ASubShader : public ACodeRes
 	{
 	public:
 		using Attribs = HashMap<String, Int32>;
@@ -50,7 +48,7 @@ namespace NW
 	/// Future:
 	/// -> Shader code preprocessing detects specific uniforms (lights/transform_matricies/...)
 	/// And uses them for setting without giving a particular sstrName
-	class NW_API AShader : public ACodeChunk
+	class NW_API AShader : public ACodeRes
 	{
 	public:
 		using Globals = HashMap<String, Int32>;

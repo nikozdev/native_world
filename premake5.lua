@@ -9,20 +9,21 @@ workspace "native_world"
 dir_out = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/"
 
 dir_cpp = {}
-dir_cpp["nw_engine"] = "nw_engine/src_cpp/"
+dir_cpp["nw_lib"] = "nw_lib/src_cpp/"
 dir_cpp["nw_glib"] = "nw_glib/src_cpp/"
+dir_cpp["nw_engine"] = "nw_engine/src_cpp/"
 dir_cpp["nw_cmd"] = "nw_cmd/src_cpp/"
 dir_cpp["nw_game"] = "nw_game/src_cpp/"
 dir_cpp["glfw"] = "ext/glfw/include/"
 dir_cpp["glad"] = "ext/glad/include/"
-dir_cpp["glm"] = "ext/glm/"
 dir_cpp["stbi"] = "ext/stbi/"
 dir_cpp["imgui"] = "ext/imgui/"
 dir_cpp["lualib"] = "ext/lualib/src/"
 
 dir_lib = {}
-dir_lib["nw_engine"] = "nw_engine/"
+dir_lib["nw_lib"] = "nw_lib/"
 dir_lib["nw_glib"] = "nw_glib/"
+dir_lib["nw_engine"] = "nw_engine/"
 dir_lib["nw_cmd"] = "nw_cmd/"
 dir_lib["nw_game"] = "nw_game/"
 dir_lib["glfw"] = "ext/glfw/"
@@ -30,69 +31,46 @@ dir_lib["glad"] = "ext/glad/"
 dir_lib["imgui"] = "ext/imgui/"
 dir_lib["lualib"] = "ext/lualib/"
 
---==<engine project>==--
-project "nw_engine"
-	location "nw_engine"
-	kind "staticlib" --.lib
+--==<library project>==--
+project "nw_lib"
+	location "nw_lib"
+	kind "staticlib"
 	staticruntime "on"
 	language "c++"
 	cppdialect "c++17"
 	targetdir("bin/"..dir_out.."%{prj.name}")
-	objdir ("bin/int/"..dir_out.."%{prj.name}")
-	pchheader "nw_pch.hpp"
-	pchsource "%{dir_cpp.nw_engine}nw_pch.cpp"
+	objdir("bin/"..dir_out.."%{prj.name}")
+
 	files
 	{
-		"%{dir_cpp.nw_engine}/**.cpp",
-		"%{dir_cpp.nw_engine}**.h**",
-		"%{prj.name}/src_glsl/**.glsl",
-		"%{prj.name}/src_lua/**.lua",
+		"%{dir_cpp.nw_lib}/**.cpp",
+		"%{dir_cpp.nw_lib}/**.h**",
 	}
 	includedirs
 	{
-		"%{dir_cpp.nw_engine}",
-		"%{dir_cpp.glfw}",
-		"%{dir_cpp.glad}",
-		"%{dir_cpp.imgui}",
-		"%{dir_cpp.glm}",
-		"%{dir_cpp.stbi}",
-		"%{dir_cpp.lualib}"
-	}
-	libdirs
-	{
-		"%{dir_lib.nw_engine}",
-		"%{dir_lib.glfw}",
-		"%{dir_lib.glad}",
-		"%{dir_lib.imgui}",
-		"%{dir_lib.lualib}"
+		"%{dir_cpp.nw_lib}",
+		"%{prj.name}/"
 	}
 	links
 	{
-		"glfw",
-		"glad",
-		"imgui",
-		"lualib",
-		"opengl32.lib"
 	}
 	defines
 	{
-		--"NW_LINK_DYNAMIC",
-		"NW_LINK_STATIC",
-		"NW_BUILD_LIB"
+		--"NWL_LINK_DYNAMIC",
+		"NWL_LINK_STATIC",
+		"NWL_BUILD_LIB"
 	}
 	filter "system:windows"
 		systemversion "latest"
-		defines
-		{
-			"NW_PLATFORM_WINDOWS"
-		}
+		defines "NWL_PLATFORM_WINDOWS"
 	filter "configurations:debug"
-		defines {"NW_DEBUG"}
+		defines {"NWL_DEBUG"}
 		symbols "on"
 	filter "configurations:release"
-		defines {"NW_RELEASE"}
+		defines {"NWL_RELEASE"}
 		optimize "on"
---==</engine_project>==--
+--==</library project>==--
+
 
 --==<graphics_library_project>==--
 project "nw_glib"
@@ -114,7 +92,7 @@ project "nw_glib"
 	includedirs
 	{
 		"%{dir_cpp.nw_glib}",
-		"%{dir_cpp.glfw}",
+		"%{dir_cpp.nw_lib}",
 		"%{dir_cpp.glad}",
 		"%{dir_cpp.imgui}",
 		"%{dir_cpp.glm}",
@@ -123,13 +101,13 @@ project "nw_glib"
 	libdirs
 	{
 		"%{dir_lib.nw_glib}",
+		"%{dir_lib.nw_lib}",
 		"%{dir_lib.glfw}",
 		"%{dir_lib.glad}",
 		"%{dir_lib.imgui}"
 	}
 	links
 	{
-		"glfw",
 		"glad",
 		"imgui",
 		"opengl32.lib"
@@ -172,14 +150,17 @@ project "nw_cmd"
 	}
 	includedirs
 	{
-		"%{dir_cpp.nw_cmd}"
+		"%{dir_cpp.nw_cmd}",
+		"%{dir_cpp.nw_lib}"
 	}
 	libdirs
 	{
-		"%{dir_lib.nw_cmd}"
+		"%{dir_lib.nw_cmd}",
+		"%{dir_lib.nw_lib}"
 	}
 	links
 	{
+		"nw_lib"
 	}
 	defines
 	{
@@ -200,6 +181,72 @@ project "nw_cmd"
 		defines "CMD_RELEASE"
 		optimize "on"
 --==</console_project>==--
+
+--==<engine project>==--
+project "nw_engine"
+	location "nw_engine"
+	kind "staticlib" --.lib
+	staticruntime "on"
+	language "c++"
+	cppdialect "c++17"
+	targetdir("bin/"..dir_out.."%{prj.name}")
+	objdir("bin/int/"..dir_out.."%{prj.name}")
+	pchheader "nw_pch.hpp"
+	pchsource "%{dir_cpp.nw_engine}nw_pch.cpp"
+	files
+	{
+		"%{dir_cpp.nw_engine}/**.cpp",
+		"%{dir_cpp.nw_engine}**.h**",
+		"%{prj.name}/src_glsl/**.glsl",
+		"%{prj.name}/src_lua/**.lua",
+	}
+	includedirs
+	{
+		"%{dir_cpp.nw_engine}",
+		"%{dir_cpp.nw_lib}",
+		"%{dir_cpp.glfw}",
+		"%{dir_cpp.glad}",
+		"%{dir_cpp.imgui}",
+		"%{dir_cpp.stbi}",
+		"%{dir_cpp.lualib}"
+	}
+	libdirs
+	{
+		"%{dir_lib.nw_engine}",
+		"%{dir_lib.nw_lib}",
+		"%{dir_lib.glfw}",
+		"%{dir_lib.glad}",
+		"%{dir_lib.imgui}",
+		"%{dir_lib.lualib}"
+	}
+	links
+	{
+		"nw_lib",
+		"glfw",
+		"glad",
+		"imgui",
+		"lualib",
+		"opengl32.lib"
+	}
+	defines
+	{
+		--"NW_LINK_DYNAMIC",
+		"NW_LINK_STATIC",
+		"NW_BUILD_LIB"
+	}
+	filter "system:windows"
+		systemversion "latest"
+		defines
+		{
+			"NW_PLATFORM_WINDOWS"
+		}
+	filter "configurations:debug"
+		defines {"NW_DEBUG"}
+		symbols "on"
+	filter "configurations:release"
+		defines {"NW_RELEASE"}
+		optimize "on"
+--==</engine_project>==--
 
 --==<editor_project>==--
 project "nw_game"
@@ -222,38 +269,47 @@ project "nw_game"
 	includedirs
 	{
 		"%{dir_cpp.nw_game}",
-		"%{dir_cpp.nw_engine}",
+		"%{dir_cpp.nw_lib}",
 		"%{dir_cpp.nw_glib}",
 		"%{dir_cpp.nw_cmd}",
+		"%{dir_cpp.nw_engine}",
 		"%{dir_cpp.glm}",
 		"%{dir_cpp.imgui}"
 	}
 	libdirs
 	{
 		"%{dir_lib.nw_game}",
-		"%{dir_lib.nw_engine}",
+		"%{dir_lib.nw_lib}",
 		"%{dir_lib.nw_glib}",
 		"%{dir_lib.nw_cmd}",
+		"%{dir_lib.nw_engine}",
 		"%{dir_lib.lualib}",
 		"%{dir_lib.imgui}",	
 	}
 	links
 	{
-		"nw_engine",
+		"nw_lib",
+		"nw_glib",
 		"nw_cmd",
-		"nw_glib"
+		"nw_engine"
 	}
 	defines
 	{
 		"NW_BUILD_EXE",
 		"NW_LINK_STATIC",
 		--"NW_LINK_DYNAMIC",
+		
 		"GLIB_BUILD_EXE",
 		"GLIB_LINK_STATIC",
 		--"GLIB_LINK_DYNAMIC",
+
 		"CMD_BUILD_EXE",
-		"CMD_LINK_STATIC"
+		"CMD_LINK_STATIC",
 		--"CMD_LINK_DYNAMIC"
+
+		"NWL_BUILD_EXE",
+		"NWL_LINK_STATIC"
+		--"NWL_LINK_DYNAMIC"
 	}
 	filter "system:windows"
 		systemversion "latest"

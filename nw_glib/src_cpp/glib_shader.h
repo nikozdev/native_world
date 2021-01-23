@@ -1,6 +1,6 @@
 #ifndef GLIB_ASHADER_H
 #define GLIB_ASHADER_H
-#include <core/glib_res.h>
+
 #include <glib_tools.h>
 #include <glib_buffer.h>
 
@@ -8,7 +8,7 @@
 namespace GLIB
 {
 	/// Abstract SubShader Class
-	class GLIB_API ASubShader : public AGRes
+	class GLIB_API ASubShader : public ADataRes
 	{
 	public:
 		using Attribs = HashMap<String, Int32>;
@@ -36,8 +36,9 @@ namespace GLIB
 		
 		static ASubShader* Create(const char* strName, ShaderTypes sdType);
 	protected:
-		UInt32 m_unRId;
+		String m_strName;
 		String m_strCode;
+		UInt32 m_unRId;
 		ShaderTypes m_shdType;
 	};
 	/// Abstract Shader Class
@@ -55,7 +56,7 @@ namespace GLIB
 	/// Future:
 	/// -> Shader code preprocessing detects specific uniforms (lights/transform_matricies/...)
 	/// And uses them for setting without giving a particular sstrName
-	class GLIB_API AShader : public AGRes
+	class GLIB_API AShader : public ADataRes
 	{
 	public:
 		using Globals = HashMap<String, Int32>;
@@ -154,7 +155,7 @@ namespace GLIB
 
 		// --getters
 		virtual inline const ASubShader* GetSubShader(ShaderTypes sdType) {
-			auto itSub = FIND_BY_FUNC(m_SubShaders, ASubShader&, sdType, .GetType);
+			auto itSub = NWL_FIND_BY_FUNC(m_SubShaders, ASubShader&, sdType, .GetType);
 			return itSub == m_SubShaders.end() ? nullptr : &*itSub;
 		}
 		// --core_methods

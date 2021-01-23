@@ -58,7 +58,7 @@
       <PrecompiledHeaderFile>nw_pch.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NW_LINK_STATIC;NW_BUILD_LIB;NW_PLATFORM_WINDOWS;NW_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src_cpp;..\ext\glfw\include;..\ext\glad\include;..\ext\imgui;..\ext\glm;..\ext\stbi;..\ext\lualib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src_cpp;..\nw_lib\src_cpp;..\ext\glfw\include;..\ext\glad\include;..\ext\imgui;..\ext\stbi;..\ext\lualib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -70,7 +70,7 @@
     </Link>
     <Lib>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>.;..\ext\glfw;..\ext\glad;..\ext\imgui;..\ext\lualib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.;..\nw_lib;..\ext\glfw;..\ext\glad;..\ext\imgui;..\ext\lualib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
@@ -79,7 +79,7 @@
       <PrecompiledHeaderFile>nw_pch.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NW_LINK_STATIC;NW_BUILD_LIB;NW_PLATFORM_WINDOWS;NW_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src_cpp;..\ext\glfw\include;..\ext\glad\include;..\ext\imgui;..\ext\glm;..\ext\stbi;..\ext\lualib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src_cpp;..\nw_lib\src_cpp;..\ext\glfw\include;..\ext\glad\include;..\ext\imgui;..\ext\stbi;..\ext\lualib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -95,26 +95,22 @@
     </Link>
     <Lib>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>.;..\ext\glfw;..\ext\glad;..\ext\imgui;..\ext\lualib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.;..\nw_lib;..\ext\glfw;..\ext\glad;..\ext\imgui;..\ext\lualib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src_cpp\core\nw_core_engine.h" />
     <ClInclude Include="src_cpp\core\nw_core_state.h" />
-    <ClInclude Include="src_cpp\core\nw_data_res.h" />
-    <ClInclude Include="src_cpp\nwlib\nw_memory.h" />
-    <ClInclude Include="src_cpp\sys\nw_mem_sys.h" />
-    <ClInclude Include="src_cpp\sys\nw_ent_sys.h" />
     <ClInclude Include="src_cpp\core\nw_scene.h" />
+    <ClInclude Include="src_cpp\core\nw_window.h" />
+    <ClInclude Include="src_cpp\glib\core\nw_gapi.h" />
     <ClInclude Include="src_cpp\glib\core\nw_gengine.h" />
     <ClInclude Include="src_cpp\glib\core\nw_glayer.h" />
-    <ClInclude Include="src_cpp\glib\core\nw_gapi.h" />
     <ClInclude Include="src_cpp\glib\gcontext\nw_framebuf.h" />
     <ClInclude Include="src_cpp\glib\gcontext\nw_gcontext.h" />
-    <ClInclude Include="src_cpp\glib\gcontext\nw_window.h" />
+    <ClInclude Include="src_cpp\glib\glib_tools.h" />
     <ClInclude Include="src_cpp\glib\nw_drawable.h" />
     <ClInclude Include="src_cpp\glib\nw_gbuffer.h" />
-    <ClInclude Include="src_cpp\glib\glib_tools.h" />
     <ClInclude Include="src_cpp\glib\nw_gui_core.h" />
     <ClInclude Include="src_cpp\glib\nw_gui_widget.h" />
     <ClInclude Include="src_cpp\glib\nw_texture.h" />
@@ -122,7 +118,6 @@
     <ClInclude Include="src_cpp\glib\vision\nw_gcamera_lad.h" />
     <ClInclude Include="src_cpp\glib\vision\nw_gmaterial.h" />
     <ClInclude Include="src_cpp\glib\vision\nw_shader.h" />
-    <ClInclude Include="src_cpp\nw_glib_decl.hpp" />
     <ClInclude Include="src_cpp\lua\nw_lua_core.h" />
     <ClInclude Include="src_cpp\lua\nw_lua_engine.h" />
     <ClInclude Include="src_cpp\lua\nw_lua_wraps.h" />
@@ -131,21 +126,11 @@
     <ClInclude Include="src_cpp\nw_core.hpp" />
     <ClInclude Include="src_cpp\nw_decl.hpp" />
     <ClInclude Include="src_cpp\nw_def.hpp" />
+    <ClInclude Include="src_cpp\nw_glib_decl.hpp" />
     <ClInclude Include="src_cpp\nw_pch.hpp" />
-    <ClInclude Include="src_cpp\nwlib\math_matrix.h" />
-    <ClInclude Include="src_cpp\nwlib\math_transform.h" />
-    <ClInclude Include="src_cpp\nwlib\math_vector.h" />
-    <ClInclude Include="src_cpp\nwlib\nw_code_chunk.h" />
-    <ClInclude Include="src_cpp\nwlib\nw_container.h" />
-    <ClInclude Include="src_cpp\nwlib\nw_event.h" />
-    <ClInclude Include="src_cpp\nwlib\nw_io_lib.h" />
-    <ClInclude Include="src_cpp\nwlib\nw_math.h" />
-    <ClInclude Include="src_cpp\nwlib\nw_random.h" />
-    <ClInclude Include="src_cpp\nwlib\nw_singleton.h" />
-    <ClInclude Include="src_cpp\nwlib\nw_string.h" />
-    <ClInclude Include="src_cpp\nwlib\nw_time.h" />
     <ClInclude Include="src_cpp\phys\nw_phys_engine.h" />
     <ClInclude Include="src_cpp\sys\nw_data_sys.h" />
+    <ClInclude Include="src_cpp\sys\nw_ent_sys.h" />
     <ClInclude Include="src_cpp\sys\nw_gui_sys.h" />
     <ClInclude Include="src_cpp\sys\nw_io_sys.h" />
     <ClInclude Include="src_cpp\sys\nw_log_sys.h" />
@@ -153,17 +138,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src_cpp\core\nw_core_engine.cpp" />
-    <ClCompile Include="src_cpp\core\nw_data_res.cpp" />
-    <ClCompile Include="src_cpp\nwlib\nw_memory.cpp" />
-    <ClCompile Include="src_cpp\sys\nw_mem_sys.cpp" />
-    <ClCompile Include="src_cpp\sys\nw_ent_sys.cpp" />
     <ClCompile Include="src_cpp\core\nw_scene.cpp" />
+    <ClCompile Include="src_cpp\core\nw_window.cpp" />
+    <ClCompile Include="src_cpp\glib\core\nw_gapi.cpp" />
     <ClCompile Include="src_cpp\glib\core\nw_gengine.cpp" />
     <ClCompile Include="src_cpp\glib\core\nw_glayer.cpp" />
-    <ClCompile Include="src_cpp\glib\core\nw_gapi.cpp" />
     <ClCompile Include="src_cpp\glib\gcontext\nw_framebuf.cpp" />
     <ClCompile Include="src_cpp\glib\gcontext\nw_gcontext.cpp" />
-    <ClCompile Include="src_cpp\glib\gcontext\nw_window.cpp" />
     <ClCompile Include="src_cpp\glib\nw_drawable.cpp" />
     <ClCompile Include="src_cpp\glib\nw_gbuffer.cpp" />
     <ClCompile Include="src_cpp\glib\nw_glib_core.cpp" />
@@ -179,20 +160,15 @@
     <ClCompile Include="src_cpp\nw_pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src_cpp\nwlib\nw_code_chunk.cpp" />
-    <ClCompile Include="src_cpp\nwlib\nw_imgui_build.cpp" />
-    <ClCompile Include="src_cpp\nwlib\nw_random.cpp" />
-    <ClCompile Include="src_cpp\nwlib\nw_string.cpp" />
-    <ClCompile Include="src_cpp\nwlib\nw_time.cpp" />
     <ClCompile Include="src_cpp\phys\nw_phys_engine.cpp" />
     <ClCompile Include="src_cpp\sys\nw_data_sys.cpp" />
+    <ClCompile Include="src_cpp\sys\nw_ent_sys.cpp" />
     <ClCompile Include="src_cpp\sys\nw_gui_sys.cpp" />
     <ClCompile Include="src_cpp\sys\nw_io_sys.cpp" />
     <ClCompile Include="src_cpp\sys\nw_log_sys.cpp" />
     <ClCompile Include="src_cpp\sys\nw_time_sys.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="src_glsl\shd_batch_3d.glsl" />
     <None Include="src_glsl\shd_2d_batch.glsl" />
     <None Include="src_glsl\shd_2d_display.glsl" />
     <None Include="src_glsl\shd_2d_tile.glsl" />
@@ -202,6 +178,9 @@
     <None Include="src_lua\estates\est_default.lua" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\nw_lib\nw_lib.vcxproj">
+      <Project>{40CF1511-2C71-40E7-152C-543B016DC737}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\ext\glfw\glfw.vcxproj">
       <Project>{9563977C-819A-980D-2A87-7E10169D140F}</Project>
     </ProjectReference>

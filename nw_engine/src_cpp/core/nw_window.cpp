@@ -1,22 +1,20 @@
 #include <nw_pch.hpp>
 #include "nw_window.h"
 
-#include <nwlib/nw_event.h>
-
-#include <sys/nw_mem_sys.h>
 #include <sys/nw_log_sys.h>
 
 #if (defined NW_WINDOW)
+#include <core/nw_core_engine.h>
 namespace NW
 {
-	AWindow* AWindow::Create(const WindowInfo& rWindowInfo, WApiTypes WApiType)
+	AWindow* AWindow::Create(const WindowInfo& rWindowInfo)
 	{
 		AWindow* pWindow = nullptr;
-		switch (WApiType) {
+		switch (CoreEngine::Get().GetWApiType()) {
 	#if (NW_WINDOW & NW_WINDOW_GLFW)
-		case WApiTypes::WAPI_GLFW: pWindow = new WindowOgl(rWindowInfo); break;
+		case WApiTypes::WAPI_GLFW: pWindow = NewT<WindowOgl>(CoreEngine::Get().GetMemory(), rWindowInfo); break;
 	#endif	// NW_WINDOW
-		default: NW_ERR("Window type is undefined"); break;
+		default: NWL_ERR("Window type is undefined"); break;
 		}
 		return pWindow;
 	}
@@ -76,9 +74,9 @@ namespace NW
 		// Set window pointer
 		m_pNative = glfwCreateWindow(static_cast<Int32>(m_WindowInfo.unWidth), static_cast<Int32>(m_WindowInfo.unHeight),
 			&m_WindowInfo.strTitle[0], nullptr, nullptr);
-		m_pIcon = (MemSys::NewT<GLFWimage>());
+		m_pIcon = new GLFWimage();
 		
-		m_pGContext = (MemSys::NewT<GContextOgl>(m_pNative));
+		m_pGContext = new GContextOgl(m_pNative);
 		m_pGContext->OnInit();
 
 		UByte WhiteIcon[] = { 255, 255, 255, 255 };
@@ -96,7 +94,7 @@ namespace NW
 		glfwSetWindowFocusCallback(m_pNative, CbWindowFocus);
 		glfwSetErrorCallback(CbError);
 
-		printf("WINDOW_OGL::INIT: %s::%dx%d\nglfw_version: %s",
+		printf("WINDOW_OGL::INIT: %s::%dx%d\nglfw_version: %s\n",
 			&m_WindowInfo.strTitle[0], m_WindowInfo.unWidth, m_WindowInfo.unHeight,
 			glfwGetVersionString());
 
@@ -106,9 +104,9 @@ namespace NW
 	{
 		glfwSetWindowShouldClose(m_pNative, GL_TRUE);
 		glfwDestroyWindow(m_pNative);
-		MemSys::DelT<GLFWimage>(m_pIcon);
+		delete m_pIcon;
 		m_pGContext->OnQuit();
-		MemSys::DelT<GContextOgl>(m_pGContext);
+		delete m_pGContext;
 	}
 
 	void WindowOgl::Update()

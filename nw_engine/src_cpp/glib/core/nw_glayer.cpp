@@ -10,7 +10,6 @@
 #include <glib/vision/nw_gmaterial.h>
 
 #include <sys/nw_data_sys.h>
-#include <sys/nw_mem_sys.h>
 
 namespace NW
 {
@@ -21,21 +20,24 @@ namespace NW
         fbInfo.unWidth = xywhViewport.z - xywhViewport.x;
         fbInfo.unHeight = xywhViewport.w - xywhViewport.y;
         fbInfo.unSamples = 1;
-		pFrameBuf.reset(AFrameBuf::Create(&("fmb_" + this->strName)[0], fbInfo));
+		pFrameBuf.MakeRef<FrameBufOgl>(GEngine::Get().GetMemory(), &("fmb_" + this->strName)[0], fbInfo);
 
-		pVtxBuf.reset(AVertexBuf::Create(2 << 10));
-		pIdxBuf.reset(AIndexBuf::Create(2 << 10));
-		pShdBuf.reset(AShaderBuf::Create(2 << 10));
+		pVtxBuf.MakeRef<VertexBufOgl>(GEngine::Get().GetMemory());
+		pVtxBuf->SetData(2 << 10, nullptr);
+		pIdxBuf.MakeRef<IndexBufOgl>(GEngine::Get().GetMemory());
+		pIdxBuf->SetData(2 << 10, nullptr);
+		pShdBuf.MakeRef<ShaderBufOgl>(GEngine::Get().GetMemory());
+		pShdBuf->SetData(2 << 10, nullptr);
 
-		pVtxData = MemSys::NewTArr<UByte>(pVtxBuf->GetDataSize());
-		pIdxData = MemSys::NewTArr<UInt32>(pIdxBuf->GetDataSize());
-		pShdData = MemSys::NewTArr<UByte>(pShdBuf->GetDataSize());
+		pVtxData = new Byte[pVtxBuf->GetDataSize()];
+		pIdxData = new UInt32[pIdxBuf->GetDataSize()];
+		pShdData = new Byte[pShdBuf->GetDataSize()];
 	}
 	GLayer::GLayer(const GLayer& rCpy) : GLayer(&rCpy.strName[0]) { }
 	GLayer::~GLayer() {
-		MemSys::DelTArr<UByte>(pVtxData, pVtxBuf->GetDataSize());
-		MemSys::DelTArr<UInt32>(pIdxData, pIdxBuf->GetDataSize());
-		MemSys::DelTArr<UByte>(pShdData, pShdBuf->GetDataSize());
+		delete[] pVtxData;
+		delete[] pIdxData;
+		delete[] pShdData;
 	}
 
 	// --setters

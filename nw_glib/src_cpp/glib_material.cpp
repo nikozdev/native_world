@@ -10,10 +10,10 @@
 namespace GLIB
 {
 	GMaterial::GMaterial(const char* strName) :
-		AGRes(strName) { GEngine::Get().AddGRes<GMaterial>(this); }
+		ADataRes(strName) { ADataRes::AddDataRes<GMaterial>(this); }
 	GMaterial::GMaterial(GMaterial& rCpy) :
 		GMaterial(&rCpy.m_strName[0]) { }
-	GMaterial::~GMaterial() { GEngine::Get().RmvGRes<GMaterial>(GetId()); }
+	GMaterial::~GMaterial() { ADataRes::RmvDataRes<GMaterial>(GetId()); }
 
 	// --setters
 	void GMaterial::SetShader(AShader* pShader) {
@@ -25,7 +25,7 @@ namespace GLIB
 			for (auto& itGlob : pShader->GetShdLayout().GetGlobals()) {
 				switch (itGlob.sdType) {
 				case SDT_FLOAT32: if (itGlob.unCount == 4) { m_Colors[itGlob.strName] = V4f{ 1.0f, 1.0f, 1.0f, 1.0f }; } break;
-				case SDT_SAMPLER: m_Textures[itGlob.strName] = GEngine::Get().GetGResource<ATexture>("tex_white"); break;
+				case SDT_SAMPLER: m_Textures[itGlob.strName] = ADataRes::GetDataRes<ATexture>("tex_white"); break;
 				}
 			}
 		}

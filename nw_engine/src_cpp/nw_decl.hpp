@@ -8,6 +8,7 @@ namespace NW
 	// --==<global>==--
 	class NW_API CoreEngine;
 	class NW_API CoreState;
+	class NW_API AWindow;
 	// --systems
 	class NW_API IOSys;
 	class NW_API TimeSys;
@@ -15,24 +16,8 @@ namespace NW
 	class NW_API DataSys;
 	class NW_API GuiSys;
 	// --objects
-	class NW_API ADataRes;
-	// --==</global>==--
-
-	// --==<events>==--
-	struct NW_API AEvent;
-	struct NW_API WindowEvent;
-	struct NW_API MouseEvent;
-	struct NW_API KeyboardEvent;
-	// --==</events>==--
 	
 	// --==<enums>==--
-	enum EventTypes : UInt32 {
-		ET_NONE = 0,
-		ET_WINDOW_CLOSE, ET_WINDOW_RESIZE, ET_WINDOW_MOVE, ET_WINDOW_FOCUS,
-		ET_APP_TICK, ET_APP_UPDATE, ET_APP_RENDER,
-		ET_MOUSE_MOVE, ET_MOUSE_SCROLL, ET_MOUSE_PRESS, ET_MOUSE_RELEASE,
-		ET_KEY_RELEASE, ET_KEY_PRESS, ET_KEY_TYPE
-	};
 	enum KeyCodes : Char16 {
 		KC_NONE = 0,
 		KC_BELL = '\a', KC_BACKSPACE = NW_KEY_BACKSPACE_8, KC_HTAB = NW_KEY_HTAB_9, KC_ENTER = NW_KEY_ENTER_10, KC_VTAB = 11,
@@ -59,10 +44,6 @@ namespace NW
 		KC_RETURN, KC_SCROLL,
 		KC_NP_MUL, KC_NP_DIV, KC_NP_ADD, KC_NP_SUB, KC_NP_DECIMAL, KC_PERIOD,
 		KC_COUNT = NW_KEY_LAST
-	};
-	enum InputModes : UInt32 {
-		IM_CURSOR_NORMAL = 0, IM_CURSOR_DISABLED, IM_CURSOR_HIDDEN,
-		IM_KEYBOARD_NORMAL, IM_KEYBOARD_STICK, IM_KEYBOARD_LOCK
 	};
 	enum MouseButtons : UInt32 {
 		MB_BUTTON_LEFT = NW_MS_BTN_0, MB_BUTTON_RIGHT = NW_MS_BTN_1,

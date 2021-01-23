@@ -65,7 +65,7 @@ namespace GLIB
 				errLog.resize(errLogSize);
 
 				glGetShaderInfoLog(shaderID, errLogSize, NULL, &errLog[0]);
-				GLIB_ERR(errLog);
+				NWL_ERR(errLog);
 				return GLIB_ERR_SHADER_COMPILE;
 			}
 		}
@@ -78,7 +78,7 @@ namespace GLIB
 				errLog.resize(errLogSize);
 
 				glGetProgramInfoLog(shaderID, errLogSize, NULL, &errLog[0]);
-				GLIB_ERR(&errLog[0]);
+				NWL_ERR(&errLog[0]);
 				return GLIB_ERR_SHADER_LINK;
 			}
 		}

@@ -1,6 +1,5 @@
 #ifndef GLIB_ATEXTURE_H
 #define GLIB_ATEXTURE_H
-#include <core/glib_res.h>
 
 #include <glib_tools.h>
 
@@ -94,7 +93,7 @@ namespace GLIB
 	/// -> Set props and data -> LoadData -> MakeTexture -> Bind drawing stuff
 	/// -> Enable -> Draw -> Disable
 	/// --It's a wrapping image which has to wrap a mesh
-	class GLIB_API ATexture : public AGRes
+	class GLIB_API ATexture : public ADataRes
 	{
 	public:
 		ATexture(const char* strName);
@@ -117,7 +116,6 @@ namespace GLIB
 		// --data_methods
 		virtual bool SaveF(const char* strFPath) override { return true; }
 		virtual bool LoadF(const char* strFPath) override { return true; }
-	protected:
 		UInt32 m_unRId;
 		UInt32 m_unTexSlot;
 		TextureInfo m_TexInfo;
@@ -171,7 +169,6 @@ namespace GLIB
 		// --data_methods
 		virtual bool SaveF(const char* strFPath) override;
 		virtual bool LoadF(const char* strFPath) override;
-
 		static ATexture2d* Create(const char* strName);
 	private:
 		DArray<SubTexture2d> m_SubTexs;
@@ -212,6 +209,7 @@ namespace GLIB
 	{
 	public:
 		Texture1dOgl(const char* strName);
+		Texture1dOgl(Texture1dOgl& rCpy);
 		~Texture1dOgl();
 
 		// --setters
@@ -228,6 +226,7 @@ namespace GLIB
 	{
 	public:
 		Texture2dOgl(const char* strName);
+		Texture2dOgl(Texture2dOgl& rCpy);
 		~Texture2dOgl();
 
 		// --setters
@@ -244,6 +243,7 @@ namespace GLIB
 	{
 	public:
 		Texture3dOgl(const char* strName);
+		Texture3dOgl(Texture3dOgl& rCpy);
 		~Texture3dOgl();
 
 		// --setters

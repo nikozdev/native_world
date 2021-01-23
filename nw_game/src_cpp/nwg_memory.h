@@ -3,16 +3,18 @@
 
 #include <nwg_pch.hpp>
 
-using Byte = char;
-using UByte = unsigned char;
-using Int32 = int;
-using UInt32 = unsigned int;
-using Size = size_t;
-using OutStream = std::ostream;
-
 namespace NWG
 {
-	inline static const Size s_szMaxMemorySize = 1 << 30;
+	using Int8 = char;
+	using UInt8 = unsigned char;
+	using Byte = char;
+	using UByte = unsigned char;
+	using Int32 = int;
+	using UInt32 = unsigned int;
+	using UInt64 = unsigned long int;
+	using Size = size_t;
+	using Ptr = void*;
+	using OutStream = std::ostream;
 }
 namespace NWG
 {
@@ -20,122 +22,150 @@ namespace NWG
 	struct MemInfo
 	{
 	public:
+		Size szMem = 0;
+		UInt64 unMem = 0;
 		Size szAlloc = 0;
-		UInt32 unAlloc = 0;
+		UInt64 unAlloc = 0;
+		Ptr pLoc = this;
 	public:
+		// --getters
+		inline uintptr_t GetLocDec() const { return reinterpret_cast<uintptr_t>(pLoc); }
+		// --operators
 		OutStream& operator<<(OutStream& rStream) const;
 	};
 	inline OutStream& MemInfo::operator<<(OutStream& rStream) const {
 		return rStream << "MEMORY_INFO::" << std::endl <<
-			"location: " << std::hex << reinterpret_cast<uintptr_t>(this) << std::dec << std::endl <<
-			"allocated_bytes: " << szAlloc << std::endl <<
-			"allocated_blocks: " << unAlloc << std::endl;
+			"address: " << std::hex << GetLocDec() << std::dec << std::endl <<
+			"total bytes: " << szMem << std::endl <<
+			"total blocks: " << unMem << std::endl <<
+			"allocated bytes: " << szAlloc << std::endl <<
+			"allocated blocks: " << unAlloc << std::endl;
 	}
 	inline OutStream& operator<<(OutStream& rStream, const MemInfo& rInfo) { return rInfo.operator<<(rStream); }
 	/// MemLink struct
-	struct MemLink { MemLink* pNext = nullptr; };
+	struct MemLink
+	{
+	public:
+		MemLink* pNext = nullptr;
+		UInt32 szBlock = 0;
+	public:
+		// --getters
+		inline MemLink* GetBlock(UInt32 szMem) {
+			if (szBlock >= szMem) { this->szBlock -= szMem; return this; }
+			for (MemLink* pBlock = this, *pBlockNext = pBlock->pNext;
+				pBlockNext != nullptr;
+				pBlock = pBlockNext, pBlockNext = pBlockNext->pNext)
+			{
+				if (pBlockNext->szBlock >= szMem) {
+					pBlock->szBlock -= szMem;
+					if (pBlock->szBlock == 0) { pBlock->pNext = pBlockNext->pNext; }
+					return pBlockNext;
+				}
+			}
+			return nullptr;
+		}
+		template <typename MType>
+		inline MType* GetCasted() { return reinterpret_cast<MType*>(this); }
+	};
 }
 namespace NWG
 {
-	template <typename MType>
-	class NW_API MemArena
+	/// Abstract MemAllocator class
+	class AMemAllocator
 	{
 	public:
-		MemArena(UInt32 unBlocks) :
-			m_pBegin(nullptr), m_pEnd(nullptr),
-			m_pCurr(nullptr),
-			m_FreeList(nullptr),
-			m_szBlocks(unBlocks * sizeof(MType)), m_unBlocks(unBlocks),
-			m_bIsDynamic(true) { Reset(unBlocks); }
-		MemArena(MType* pBlock, UInt32 unBlocks) :
-			m_pBegin(pBlock), m_pEnd(nullptr),
-			m_pCurr(nullptr),
-			m_FreeList(nullptr),
-			m_szBlocks(unBlocks * sizeof(MType)), m_unBlocks(unBlocks),
-			m_bIsDynamic(false) { Reset(pBlock, unBlocks); }
-		~MemArena() { Reset(0); }
+		AMemAllocator(Ptr pBlock, Size szMem) :
+			m_pBeg(static_cast<Byte*>(pBlock)), m_Info(MemInfo())
+		{
+			m_Info.szMem = m_Info.unMem = szMem;
+			m_Info.szAlloc = 0; m_Info.unAlloc = 0;
+			m_Info.pLoc = pBlock;
+		}
+		virtual ~AMemAllocator() { NWL_ASSERT(GetAllocSize() == 0 && GetAllocCount() == 0, "memory leak"); }
 
 		// --getters
-		inline MType* GetData() { return m_pBegin; }
-		inline UInt32 GetCount() const { return m_unBlocks; }
-		inline Size GetSize() const { return m_szBlocks; }
-		inline Size GetBlockSize() const { return sizeof(MType); }
-		// --setters
-		inline void Reset(UInt32 unBlocks);
-		inline void Reset(MType* pBlock, UInt32 unBlocks);
+		inline Ptr GetDataBeg() { return &m_pBeg[0]; }
+		inline Ptr GetDataCur() { return &m_pBeg[m_Info.unAlloc]; }
+		inline Ptr GetDataEnd() { return &m_pBeg[m_Info.szMem]; }
+		inline Size GetDataSize() const { return m_Info.szMem; }
+		inline Size GetAllocSize() const { return m_Info.szAlloc; }
+		inline UInt64 GetAllocCount() const { return m_Info.unAlloc; }
+		inline Size GetFreeSize() { return m_Info.szMem - m_Info.szAlloc; }
+		inline UInt64 GetFreeCount() { return m_Info.unMem - m_Info.unAlloc; }
+		inline const MemInfo& GetInfo() const { return m_Info; }
 		// --predicates
-		inline bool IsDynamic() const { return m_bIsDynamic; }
-		inline bool HasSpace(UInt32 unHowMuch) const { return ((uintptr_t)(m_pEnd - m_pCurr)) > unHowMuch; }
+		inline bool HasBlock(Ptr pBlock) { return (pBlock >= GetDataBeg()) && (pBlock <= GetDataEnd()); }
+		inline bool HasEnoughSize(Size szHowMuch) { return GetFreeSize() > szHowMuch; }
+		inline bool HasEnoughCount(Size szHowMuch) { return GetFreeCount() > szHowMuch; }
+		// --core_methods
+		virtual inline Ptr Alloc(Size szMem, UInt8 szAlign = 4) = 0;
+		virtual inline void Dealloc(Ptr pBlock, Size szDealloc) = 0;
+		virtual inline Ptr Realloc(Ptr pBlock, Size szOld, Size szNew) = 0;
+	protected:
+		Byte* m_pBeg;
+		MemInfo m_Info;
+	};
+}
+namespace NWG
+{
+	/// MemArena class
+	/// Description:
+	/// --just a chunk of bytes works with Ptr and char* pointers
+	class MemArena : public AMemAllocator
+	{
+	public:
+		MemArena(Ptr pBlock, Size szMemory) :
+			AMemAllocator(pBlock, szMemory),
+			m_FreeList(nullptr) { }
+		~MemArena() { }
 
 		// --core_methods
-		inline MType* Alloc(UInt32 unBlocks = 1);
-		inline void Dealloc(MType* pBlock, UInt32 unDealloc = 1);
-		inline MType* Realloc(MType* pBlock, UInt32 unOld, UInt32 unNew);
+		virtual inline Ptr Alloc(Size szMemory, UInt8 szAlign = sizeof(MemLink)) override;
+		virtual inline void Dealloc(Ptr pBlock, Size szDealloc) override;
+		virtual inline Ptr Realloc(Ptr pBlock, Size szOld, Size szNew) override;
 	private:
-		MType *m_pCurr, *m_pBegin, *m_pEnd;
 		MemLink* m_FreeList;
-
-		Size m_szBlocks;
-		UInt32 m_unBlocks;
-		bool m_bIsDynamic;
 	};
-	// -- setters
-	template<typename MType>
-	inline void MemArena<MType>::Reset(UInt32 unBlocks) {
-		m_unBlocks = unBlocks;
-		m_szBlocks = unBlocks * sizeof(MType);
-		m_FreeList = nullptr;
-		if (m_bIsDynamic) { if (m_pBegin != nullptr) { delete[] m_pBegin; m_pBegin = nullptr; } m_bIsDynamic = false; }
-		if (unBlocks <= 1 || m_szBlocks > s_szMaxMemorySize) { m_szBlocks = m_unBlocks = 0; return; }
-		m_pCurr = m_pBegin = new MType[unBlocks];
-		m_bIsDynamic = true;
-		m_pEnd = m_pBegin + unBlocks;
-	}
-	template<typename MType>
-	inline void MemArena<MType>::Reset(MType* pBlock, UInt32 unBlocks) {
-		m_unBlocks = unBlocks;
-		m_szBlocks = unBlocks * sizeof(MType);
-		m_FreeList = nullptr;
-		if (m_bIsDynamic) { if (m_pBegin != nullptr) { delete[] m_pBegin; m_pBegin = nullptr; } m_bIsDynamic = false; }
-		if (unBlocks <= 1 || m_szBlocks > s_szMaxMemorySize) { m_szBlocks = m_unBlocks = 0; return; }
-		m_pCurr = m_pBegin = pBlock;
-		m_pEnd = m_pBegin + unBlocks;
-	}
 	// --==<core_methods>==--
-	template<typename MType>
-	inline MType* MemArena<MType>::Alloc(UInt32 unBlocks) {
-		MType* pBlock = nullptr;
-		if (unBlocks == 0) { return nullptr; }
+	inline Ptr MemArena::Alloc(Size szMemory, UInt8 szAlign) {
+		Ptr pBlock = nullptr;
+		if (szMemory == 0) { return nullptr; }
+		szMemory = (szMemory + szAlign - 1) & ~(szAlign - 1);
 		if (m_FreeList != nullptr) {
-			pBlock = reinterpret_cast<MType*>(&m_FreeList);
-			m_FreeList = m_FreeList->pNext;
+			if (MemLink* pLink = m_FreeList->GetBlock(szMemory)) {
+				pBlock = pLink->GetCasted<Byte>();
+				if (pLink == m_FreeList && m_FreeList->szBlock == 0) { m_FreeList = m_FreeList->pNext; }
+			}
+			else {
+				if (HasEnoughSize(szMemory)) { pBlock = &m_pBeg[szMemory]; }
+				else { NWL_ERR("the memory is exhausted!"); }
+			}
 		}
 		else {
-			m_pCurr = reinterpret_cast<MType*>((uintptr_t(m_pCurr) + (alignof(MType) - 1)) & ~(alignof(MType) - 1));
-			if (m_pCurr + unBlocks < m_pEnd) {
-				pBlock = m_pCurr;
-				m_pCurr += unBlocks;
-			}
-			else { if (unBlocks == 1) { pBlock = static_cast<MType*>(malloc(sizeof(MType))); } else { pBlock = new MType[unBlocks]; } }
+			if (HasEnoughSize(szMemory)) { pBlock = &m_pBeg[GetAllocSize()]; }
+			else { NWL_ERR("the memory is exhausted!"); }
 		}
+		m_Info.unAlloc++;
+		m_Info.szAlloc += szMemory;
 		return pBlock;
 	}
-	template<typename MType>
-	inline void MemArena<MType>::Dealloc(MType* pBlock, UInt32 unDealloc) {
-		if (pBlock >= m_pBegin && pBlock <= m_pEnd) {	// somewhere inside our memory
-			m_pCurr -= unDealloc;
-			//MemLink* pNextFreeList = reinterpret_cast<MemLink*>(pBlock);
-			//pNextFreeList->pNext = m_FreeList;
-			//m_FreeList = pNextFreeList;
+	inline void MemArena::Dealloc(Ptr pBlock, Size szMemory) {
+		if (HasBlock(pBlock)) {
+			MemLink* pNextFreeList = reinterpret_cast<MemLink*>(pBlock);
+			pNextFreeList->pNext = m_FreeList;
+			pNextFreeList->szBlock = szMemory;
+			m_FreeList = pNextFreeList;
 		}
-		else { return; }
+		else { NWL_ERR("the memory is exhausted!"); }
+		memset(pBlock, 0, szMemory);
+		m_Info.unAlloc--;
+		m_Info.szAlloc -= szMemory;
 	}
-	template<typename MType>
-	inline MType* MemArena<MType>::Realloc(MType* pBlock, UInt32 unOld, UInt32 unNew) {
-		UInt32 unCpy = unOld < unNew ? unOld : unNew;
-		MType* pRealloc = Alloc(unNew);
-		memcpy(pRealloc, pBlock, unCpy);
-		Dealloc(pBlock, unOld);
+	inline Ptr MemArena::Realloc(Ptr pBlock, Size szOld, Size szNew) {
+		Size szCpy = szOld < szNew ? szOld : szNew;
+		Ptr pRealloc = Alloc(szNew);
+		memcpy(pRealloc, pBlock, szCpy);
+		Dealloc(pBlock, szOld);
 		return pRealloc;
 	}
 	// --==</core_methods>==--

@@ -34,7 +34,6 @@ namespace NW
 	//	--==</render>==--
 
 	//	--==<gcontext>==--
-	class NW_API AWindow;
 	class NW_API AGContext;
 	class NW_API AFrameBuf;
 	//	--==</gcontext>==--
@@ -93,7 +92,7 @@ namespace NW
 	/// Data that can be loaded in a shader
 	enum ShaderDataTypes : UInt32
 	{
-		SDT_NONE = NW_ERR_NO_DATA,
+		SDT_NONE = NWL_ERR_NO_DATA,
 		SDT_BOOL = NW_BOOL, SDT_INT8 = NW_INT8, SDT_UINT8 = NW_UINT8,
 		SDT_INT16 = NW_INT16, SDT_UINT16 = NW_UINT16,
 		SDT_INT32 = NW_INT32, SDT_UINT32 = NW_UINT32,
@@ -193,8 +192,6 @@ namespace NW
 	class NW_API IndexBufOgl;
 
 	class NW_API ShaderOgl;
-	class NW_API ShaderProg;
-	class NW_API AGMaterialOgl;
 	class NW_API Texture2dOgl;
 #endif	// NW_GRAPHICS
 	//	--==</specifications>==--

@@ -64,7 +64,7 @@ namespace NW
 		va_start(valArgs, strFormat);	// the pointer to ... arguments is after strFormat
 		GetLogOut() << "ERROR::CODE_" << nErrCode << '\n';
 		GetLogOut() << "ERROR::MESSAGE_" << &MakeFormatStr(strFormat, valArgs)[0] << '\n';
-		NW_BREAK();
+		NWL_BREAK();
 		va_end(valArgs);					// Essentialy close the list
 	}
 	// --==</core_methods>==--

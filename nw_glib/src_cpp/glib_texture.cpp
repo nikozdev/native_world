@@ -5,22 +5,22 @@
 #include <core/glib_engine.h>
 #include <core/glib_api.h>
 
-GLIB::UByte GLIB::ATexture::s_ClearColorData[4] = { 255, 255, 255, 255 };
+UByte GLIB::ATexture::s_ClearColorData[4] = { 255, 255, 255, 255 };
 
 namespace GLIB
 {
 	ATexture::ATexture(const char* strName) :
-		AGRes(strName),
+		ADataRes(strName),
 		m_unRId(0), m_unTexSlot(0),
-		m_TexInfo(TextureInfo()), m_ImgInfo(ImageInfo()) { GEngine::Get().AddGRes<ATexture>(this); }
-	ATexture::ATexture(ATexture& rCpy) : ATexture(&rCpy.m_strName[0]) {}
-	ATexture::~ATexture() { GEngine::Get().RmvGRes<ATexture>(GetId()); }
+		m_TexInfo(TextureInfo()), m_ImgInfo(ImageInfo()) { ADataRes::AddDataRes<ATexture>(this); }
+	ATexture::ATexture(ATexture& rCpy) : ADataRes(rCpy) {}
+	ATexture::~ATexture() { ADataRes::RmvDataRes<ATexture>(GetId()); }
 
 	// --==<ATexture1d>==--
 	ATexture1d::ATexture1d(const char* strName) :
-	ATexture(strName) { GEngine::Get().AddGRes<ATexture1d>(this); }
+	ATexture(strName) { ADataRes::AddDataRes<ATexture1d>(this); }
 	ATexture1d::ATexture1d(ATexture1d& rCpy) : ATexture1d(&rCpy.m_strName[0]) {}
-	ATexture1d::~ATexture1d() { GEngine::Get().RmvGRes<ATexture1d>(GetId()); }
+	ATexture1d::~ATexture1d() { ADataRes::RmvDataRes<ATexture1d>(GetId()); }
 	
 	// --data_methods
 	bool ATexture1d::SaveF(const char* strFPath) { return true; }
@@ -46,7 +46,7 @@ namespace GLIB
 		}
 		switch (ImgInfoTemp.nChannels) {
 		case 1: TexInfoTemp.Format = TC_FORMAT_RED; TexInfoTemp.InterFormat = TC_FORMAT_RED; break;
-		case 2: GLIB_ERR("Unsupported format!"); break;
+		case 2: NWL_ERR("Unsupported format!"); break;
 		case 3: TexInfoTemp.InterFormat = TC_FORMAT_RGB; TexInfoTemp.Format = TC_FORMAT_RGB; break;
 		case 4: TexInfoTemp.Format = TC_FORMAT_RGBA; TexInfoTemp.InterFormat = TC_FORMAT_RGBA8; break;
 		}
@@ -60,13 +60,12 @@ namespace GLIB
 
 		return bSuccess;
 	}
-	// --==</ATexture1d>==--
 
 	// --==<ATexture2d>==--
 	ATexture2d::ATexture2d(const char* strName) :
 		ATexture(strName) { }
-	ATexture2d::ATexture2d(ATexture2d& rCpy) : ATexture2d(&rCpy.m_strName[0]) {}
-	ATexture2d::~ATexture2d() { GEngine::Get().RmvGRes<ATexture2d>(GetId()); }
+	ATexture2d::ATexture2d(ATexture2d& rCpy) : ATexture(rCpy) {}
+	ATexture2d::~ATexture2d() { ADataRes::RmvDataRes<ATexture2d>(GetId()); }
 
 	void ATexture2d::SetSubTexs(const DArray<SubTexture2d>& rSubTexs) {
 		m_SubTexs = rSubTexs;
@@ -97,7 +96,7 @@ namespace GLIB
 		}
 		switch (ImgInfoTemp.nChannels) {
 		case 1: TexInfoTemp.Format = TC_FORMAT_RED; TexInfoTemp.InterFormat = TC_FORMAT_RED; break;
-		case 2: GLIB_ERR("Unsupported format!"); break;
+		case 2: NWL_ERR("Unsupported format!"); break;
 		case 3: TexInfoTemp.InterFormat = TC_FORMAT_RGB; TexInfoTemp.Format = TC_FORMAT_RGB; break;
 		case 4: TexInfoTemp.Format = TC_FORMAT_RGBA; TexInfoTemp.InterFormat = TC_FORMAT_RGBA8; break;
 		}
@@ -115,9 +114,9 @@ namespace GLIB
 
 	// --==<ATexture3d>==--
 	ATexture3d::ATexture3d(const char* strName) :
-		ATexture(strName) { GEngine::Get().AddGRes<ATexture3d>(this); }
-	ATexture3d::ATexture3d(ATexture3d& rCpy) : ATexture3d(&rCpy.m_strName[0]) { }
-	ATexture3d::~ATexture3d() { GEngine::Get().RmvGRes<ATexture3d>(GetId()); }
+		ATexture(strName) { ADataRes::AddDataRes<ATexture3d>(this); }
+	ATexture3d::ATexture3d(ATexture3d& rCpy) : ATexture(rCpy) { }
+	ATexture3d::~ATexture3d() { ADataRes::RmvDataRes<ATexture3d>(GetId()); }
 
 	// --data_methods
 	bool ATexture3d::SaveF(const char* strFPath) { return true; }
@@ -143,7 +142,7 @@ namespace GLIB
 		}
 		switch (ImgInfoTemp.nChannels) {
 		case 1: TexInfoTemp.Format = TC_FORMAT_RED; TexInfoTemp.InterFormat = TC_FORMAT_RED; break;
-		case 2: GLIB_ERR("Unsupported format!"); break;
+		case 2: NWL_ERR("Unsupported format!"); break;
 		case 3: TexInfoTemp.InterFormat = TC_FORMAT_RGB; TexInfoTemp.Format = TC_FORMAT_RGB; break;
 		case 4: TexInfoTemp.Format = TC_FORMAT_RGBA; TexInfoTemp.InterFormat = TC_FORMAT_RGBA8; break;
 		}
@@ -236,7 +235,7 @@ namespace GLIB
 
 		switch (m_ImgInfo.nChannels) {
 		case 1: m_TexInfo.InterFormat = m_TexInfo.Format = TC_FORMAT_RED; break;
-		case 2: GLIB_ERR("Unknown format!"); break;
+		case 2: NWL_ERR("Unknown format!"); break;
 		case 3: m_TexInfo.InterFormat = m_TexInfo.Format = TC_FORMAT_RGB; break;
 		case 4: m_TexInfo.InterFormat = m_TexInfo.Format = TC_FORMAT_RGBA; break;
 		default: return;

@@ -10,7 +10,7 @@ namespace NWG
 		if (true) {	// materials
 		}
 		if (true) {	// textures
-			MemSys::DelT<ATexture2d>(DataSys::GetDataRes<ATexture2d>("spt_nw_hero"));
+			delete ADataRes::GetDataRes<ATexture2d>("spt_nw_hero");
 		}
 		if (true) {	// shaders
 		}
@@ -21,7 +21,8 @@ namespace NWG
 		if (true) {	// shaders
 		}
 		if (true) {	// textures
-			ATexture2d::Create("spt_nw_hero")->LoadF("data/tex/spt_nw_hero.png");
+			ATexture2d* pTex = ATexture2d::Create("spt_nw_hero");
+			pTex->LoadF("data/tex/spt_nw_hero.png");
 		}
 		if (true) {	// materials
 		}
