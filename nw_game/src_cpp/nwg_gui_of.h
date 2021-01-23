@@ -95,14 +95,16 @@ namespace NWG
 		virtual void OnDraw() override;
 	private:
 	// --data_system
-		Char strDir[256];
-		Char strCurrDir[256];
+		Char strDir[256]{ 0 };
+		Char strCurrDir[256]{ 0 };
 	// --time system
 	};
 	struct NW_API GuiOfMemSys : public AGuiOf<GuiOfMemSys>
 	{
 	public:
 		virtual void OnDraw() override;
+	private:
+		Size szOffset = 0;
 	};
 	/// GuiOfTimeSys struct
 	struct NW_API GuiOfTimeSys : public AGuiOf<GuiOfTimeSys>
@@ -120,14 +122,13 @@ namespace NWG
 	{
 		friend class AGuiOf<GuiOfCodeEditor>;
 	private:
-		LuaScript* pContextScr = nullptr;
 		AShader* pContextShd = nullptr;
 		DArray<char> strCodeBuf;
 	private:
 		GuiOfCodeEditor();
 	public:
 		// --setters
-		void SetContext(ACodeChunk* pContext);
+		void SetContext(ACodeRes* pContext);
 		
 		// --core_methods
 		virtual void OnDraw() override;

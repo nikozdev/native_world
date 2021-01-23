@@ -8,9 +8,8 @@
 namespace GLIB
 {
 	AFrameBuf::AFrameBuf(const char* strName, const FrameBufInfo& rfbInfo) :
-		AGRes(strName),
-		m_unRId(0),
-		m_Info(rfbInfo), m_unRIdDepth(0), m_ColorAttach(nullptr)
+		ADataRes(strName),
+		m_Info(rfbInfo), m_unRId(0), m_unRIdDepth(0), m_ColorAttach(nullptr)
 	{
 		String strClrName = strName;
 		m_ColorAttach = ATexture2d::Create(&strClrName[0]);
@@ -35,7 +34,7 @@ namespace GLIB
 	#if (GLIB_GAPI & GLIB_GAPI_OGL)
 		case GApiTypes::GAPI_OPENGL: pFB = new FrameBufOgl(strName, rfbInfo); break;
 	#endif // GLIB_GAPI
-		default: GLIB_ERR("Graphics API is not defined"); break;
+		default: NWL_ERR("Graphics API is not defined"); break;
 		}
 		return pFB;
 	}
@@ -98,7 +97,7 @@ namespace GLIB
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_unRIdDepth);
 
 		bool bIsCompleted = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
-		GLIB_ASSERT(bIsCompleted, "FrameBufOgl is not created!");
+		NWL_ASSERT(bIsCompleted, "FrameBufOgl is not created!");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}

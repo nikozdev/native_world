@@ -68,7 +68,7 @@ namespace GLIB
 			m_unStride = 0;
 			for (auto& rBufElem : m_BufElems) {
 				rBufElem.unOffset = m_unStride;
-				m_unStride += SDTypeGetSize(rBufElem.sdType, rBufElem.unCount);
+				m_unStride += SdTypeGetSize(rBufElem.sdType, rBufElem.unCount);
 			}
 		}
 	};
@@ -104,7 +104,7 @@ namespace GLIB
 				rBlock.szOffset = m_szData;
 				for (auto& rElem : rBlock.BufElems) {
 					rElem.unOffset += rBlock.szAll;
-					rBlock.szAll += SDTypeGetAllignedSize(rElem.sdType, rElem.unCount);
+					rBlock.szAll += SdTypeGetAllignedSize(rElem.sdType, rElem.unCount);
 				}
 				m_szData += rBlock.szAll;
 			}

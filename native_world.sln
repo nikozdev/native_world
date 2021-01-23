@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_game", "nw_game\nw_game.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_glib", "nw_glib\nw_glib.vcxproj", "{6707CD33-D3E6-4BCF-DCFE-D6A5485DB230}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_lib", "nw_lib\nw_lib.vcxproj", "{40CF1511-2C71-40E7-152C-543B016DC737}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		debug|x64 = debug|x64
@@ -55,6 +57,10 @@ Global
 		{6707CD33-D3E6-4BCF-DCFE-D6A5485DB230}.debug|x64.Build.0 = debug|x64
 		{6707CD33-D3E6-4BCF-DCFE-D6A5485DB230}.release|x64.ActiveCfg = release|x64
 		{6707CD33-D3E6-4BCF-DCFE-D6A5485DB230}.release|x64.Build.0 = release|x64
+		{40CF1511-2C71-40E7-152C-543B016DC737}.debug|x64.ActiveCfg = debug|x64
+		{40CF1511-2C71-40E7-152C-543B016DC737}.debug|x64.Build.0 = debug|x64
+		{40CF1511-2C71-40E7-152C-543B016DC737}.release|x64.ActiveCfg = release|x64
+		{40CF1511-2C71-40E7-152C-543B016DC737}.release|x64.Build.0 = release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

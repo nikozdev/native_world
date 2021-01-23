@@ -30,8 +30,8 @@ namespace NW
 
 		UInt32 unDrawCalls = 0;
 		// --vertex_data
-		UByte* pVtxData = nullptr;
-		UByte* pVtxIter = nullptr;
+		Byte* pVtxData = nullptr;
+		Byte* pVtxIter = nullptr;
 		Size szVtxData = 0;
 		UInt32 unVtxData = 0;
 		// --index_data
@@ -40,15 +40,15 @@ namespace NW
 		Size szIdxData = 0;
 		UInt32 unIdxData = 0;
 		// --shader_data
-		UByte* pShdData = nullptr;
-		UByte* pShdIter = nullptr;
+		Byte* pShdData = nullptr;
+		Byte* pShdIter = nullptr;
 		Size szShdData = 0;
 		// --objects
 		AShader* pShader = nullptr;
-		RefKeeper<AFrameBuf> pFrameBuf{ nullptr };
-		RefKeeper<AVertexBuf> pVtxBuf{ nullptr };
-		RefKeeper<AIndexBuf> pIdxBuf{ nullptr };
-		RefKeeper<AShaderBuf> pShdBuf{ nullptr };
+		RefOwner<AFrameBuf> pFrameBuf;
+		RefOwner<AVertexBuf> pVtxBuf;
+		RefOwner<AIndexBuf> pIdxBuf;
+		RefOwner<AShaderBuf> pShdBuf;
 	public:
 		GLayer(const char* sName);
 		GLayer(const GLayer& rCpy);

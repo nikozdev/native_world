@@ -14,7 +14,7 @@ namespace NWG
 		if (true) {	// materials
 		}
 		if (true) {	// textures
-			delete (DataSys::GetDataRes<ATexture2d>("spt_nw_hero"));
+			delete (ADataRes::GetDataRes<ATexture2d>("spt_nw_hero"));
 		}
 		if (true) {	// shaders
 		}
@@ -23,7 +23,7 @@ namespace NWG
 	// --==<core_methods>==--
 	bool CreatorState::Init() {
 		if (true) {	// shaders
-			GEngine::Get().GetLayer()->SetShader(DataSys::GetDataRes<AShader>("shd_3d_batch"));
+			GEngine::Get().GetLayer()->SetShader(ADataRes::GetDataRes<AShader>("shd_3d_batch"));
 		}
 		if (true) {	// textures
 			ATexture2d::Create("spt_nw_hero")->LoadF("data/tex/spt_nw_hero.png");
@@ -31,10 +31,11 @@ namespace NWG
 		if (true) {	// materials
 		}
 
+		GuiOfCoreEngine::Get().bIsEnabled = true;
+		GuiOfGEngine::Get().bIsEnabled = true;
 		GuiOfDataSys::Get().bIsEnabled = true;
 		GuiOfTimeSys::Get().bIsEnabled = true;
-		GuiOfGEngine::Get().bIsEnabled = true;
-		GuiOfCoreEngine::Get().bIsEnabled = true;
+		GuiOfMemSys::Get().bIsEnabled = true;
 
 		return true;
 	}

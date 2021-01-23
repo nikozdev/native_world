@@ -1,7 +1,6 @@
 #include <nw_pch.hpp>
 #include "nw_gbuffer.h"
 
-#include <sys/nw_mem_sys.h>
 #include <sys/nw_data_sys.h>
 
 #pragma warning(disable : 4312)
@@ -12,37 +11,37 @@
 // Buffers
 namespace NW
 {
-	AVertexBuf* AVertexBuf::Create(Size szAlloc, const void* pVtxData)
+	AVertexBuf* AVertexBuf::Create(Size szAlloc, const Ptr pVtxData)
 	{
 		AVertexBuf* pVB = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GApiTypes::GAPI_OPENGL: pVB = new VertexBufOgl(); break;
+		case GApiTypes::GAPI_OPENGL: pVB = NewT<VertexBufOgl>(GEngine::Get().GetMemory()); break;
 	#endif	// NW_GRAPHICS
-		default: NW_ERR("There is no accessible API"); break;
+		default: NWL_ERR("There is no accessible API"); break;
 		}
 		pVB->SetData(szAlloc, pVtxData);
 		return pVB;
 	}
-	AIndexBuf* AIndexBuf::Create(Size szAlloc, const void* pIdxData)
+	AIndexBuf* AIndexBuf::Create(Size szAlloc, const Ptr pIdxData)
 	{
 		AIndexBuf* pIB = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GApiTypes::GAPI_OPENGL: pIB = new IndexBufOgl(); break;
+		case GApiTypes::GAPI_OPENGL: pIB = NewT<IndexBufOgl>(GEngine::Get().GetMemory()); break;
 	#endif // NW_GRAPHICS
-		default: NW_ERR("Graphics API is not defined"); break;
+		default: NWL_ERR("Graphics API is not defined"); break;
 		}
 		pIB->SetData(szAlloc, pIdxData);
 		return pIB;
 	}
-	AShaderBuf* AShaderBuf::Create(Size szAlloc, const void* pIdxData) {
+	AShaderBuf* AShaderBuf::Create(Size szAlloc, const Ptr pIdxData) {
 		AShaderBuf* pSB = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GApiTypes::GAPI_OPENGL: pSB = new ShaderBufOgl(); break;
+		case GApiTypes::GAPI_OPENGL: pSB = NewT<ShaderBufOgl>(GEngine::Get().GetMemory()); break;
 	#endif // NW_GRAPHICS
-		default: NW_ERR("Graphics API is not defined"); break;
+		default: NWL_ERR("Graphics API is not defined"); break;
 		}
 		pSB->SetData(szAlloc, pIdxData);
 		return pSB;

@@ -1,8 +1,6 @@
 #ifndef NW_CORE_ENGINE_H
 #define NW_CORE_ENGINE_H
 
-#include <nwlib/nw_singleton.h>
-
 #include <core/nw_core_state.h>
 
 #include <nw_glib_decl.hpp>
@@ -29,8 +27,13 @@ namespace NW
 		~CoreEngine();
 
 		// --getters
-		inline std::thread* GetRunThread() { return &m_thrRun; }
+		inline AMemAllocator& GetMemory() { return m_Memory; }
+		inline Thread& GetRunThread() { return m_thrRun; }
+
 		inline const char* GetName() { return &m_strName[0]; }
+		inline WApiTypes GetWApiType() { return m_wapiType; }
+
+		inline AWindow* GetWindow() { return m_pWindow.GetRef(); }
 		inline States& GetStates() { return m_States; }
 		inline CoreState* GetState() { return m_pCurrState; }
 		inline CoreState* GetState(const char* strName);
@@ -40,19 +43,23 @@ namespace NW
 		void RmvState(const char* strName);
 		void SwitchState(const char* strName);
 		// --predicates
-		bool IsRunning() const { return m_bIsRunning; }
+		Bit IsRunning() const { return m_bIsRunning; }
 
 		// --core_methods
-		bool Init();
+		bool Init(Size szMem);
 		void Run();
 		void Quit();
 	private:
 		inline void Update();
 		inline void OnEvent(AEvent& rEvt);
 	private:
+		Bit m_bIsRunning;
+		Thread m_thrRun;
+		MemArena m_Memory;
+
 		String m_strName;
-		bool m_bIsRunning;
-		std::thread m_thrRun;
+		WApiTypes m_wapiType;
+		RefOwner<AWindow> m_pWindow;
 
 		States m_States;
 		CoreState* m_pCurrState;

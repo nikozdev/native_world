@@ -1,48 +1,153 @@
 #ifndef NW_ENTITY_SYSTEM_H
 #define NW_ENTITY_SYSTEM_H
 
+#include <core/nw_core_engine.h>
+
+namespace NW
+{
+	using EntId = UInt32;
+	using CmpId = UInt32;
+
+	class NW_API EntSys;
+	class NW_API AEntity;
+
+	class NW_API CmpSys;
+}
+
 namespace NW
 {
 	/// Abstract Entity class
 	class NW_API AEntity
 	{
+		friend class EntSys;
 	public:
-		AEntity() = default;
-		AEntity(const AEntity& rCpy) = delete;
-		virtual ~AEntity() = default;
+		AEntity(EntId eId);
+		AEntity(const AEntity& rCpy);
+		virtual ~AEntity();
 
 		// --getters
-		inline UInt32 GetId() const { return m_unId; }
-		virtual inline UInt32 GetStaticId() const = 0;
+		inline const EntId GetEntId() const { return m_eId; }
+		// --setters
+		void SetEnabled(bool bIsEnabled);
+		// --predicates
+		inline bool IsEnabled() { return m_bIsEnabled; }
+		// --operators
 	protected:
-		UInt32 m_unId;
+		EntId m_eId;
+		bool m_bIsEnabled;
 	};
-	template <class EType>
-	class NW_API Entity : public AEntity
-	{
-	public:
-		Entity() = default;
-		Entity(const Entity<EType>& rCpy) = delete;
-		virtual ~Entity() = default;
-		virtual inline UInt32 GetStaticId() override {}
-	private:
-		static const UInt32 s_TypeId;
-	};
-	template <class EType> inline const UInt32 Entity<EType>::s_TypeId = util::internal::FamilyTypeId::Get();
+}
+namespace NW
+{
 	/// EntitySystem static class
 	class NW_API EntSys
 	{
-		template <class CmpType> using Cmps = HashMap<UInt32, CmpType>;
 	public:
 		// --getters
+		static inline AMemAllocator& GetMemory() { static MemArena s_Memory; return s_Memory; }
+		static inline AEntity* GetEnt(EntId eId);
+		// --setters
+		template<typename...Args>
+		static inline EntId AddEnt(Args...Arguments);
+		static inline void RmvEnt(EntId eId);
+		// --core_methods
+		static void OnInit(Size szMem);
+		static void OnQuit();
+	};
+	inline AEntity* EntSys::GetEnt(EntId eId) {
+		AEntity* pEnt = &static_cast<AEntity*>(GetMemory().GetDataBeg())[eId];
+		return pEnt->GetEntId() == eId ? pEnt : nullptr;
+	}
+	template<typename...Args>
+	inline EntId EntSys::AddEnt(Args...Arguments) {
+		EntId eId = GetEnts()->GetAllocCount();
+		MemSys::NewT<AEntity>(*GetEnts(), eId, std::forward<Args>(Arguments)...);
+		return eId;
+	}
+	inline void EntSys::RmvEnt(EntId eId) {
+		AEntity* pEnt = GetEnt(eId);
+		if (pEnt == nullptr) { return; }
+		DelT<AEntity>(GetMemory(), pEnt);
+	}
+}
+
+namespace NW
+{
+	class NW_API ACmp
+	{
+	public:
+		ACmp() : m_eId(0) {}
+		virtual ~ACmp() {}
+		// --getters
+		inline EntId GetEntId() const { return m_eId; }
+		inline void SetEntId(EntId eId) { m_eId = eId; }
+	private:
+		EntId m_eId;
+	};
+	/// TransformCmp class
+	class NW_API TransformCmp : public ACmp
+	{
+	public:
+		TransformCmp() {}
+		~TransformCmp() {}
+
+		// --operators
+	public:
+		V3f xyzCrd = { 0.0f ,0.0f, 0.0f };
+		V3f xyzRtn = { 0.0f ,0.0f, 0.0f };
+		V3f xyzScl = { 0.0f ,0.0f, 0.0f };
+	};
+}
+namespace NW
+{
+	/// CmpSys static class
+	class NW_API CmpSys
+	{
+	public:
+		// --getters
+		static inline AMemAllocator& GetMemory() { static MemArena s_Memory; return s_Memory; }
+		template<class CType>
+		static inline AMemAllocator& GetCmps();
+		template<class CType>
+		static inline CType* GetCmp(EntId eId);
 		// --setters
 		// --core_methods
-		bool OnInit();
-		void OnQuit();
+		static void OnInit(Size szMem);
+		static void OnQuit();
 
+		template<class CType, typename ... Args>
+		static inline CType* AddCmp(EntId eId, Args... Arguments);
+		template<class EType>
+		static inline void RmvCmp(EntId eId);
 	private:
-		static IdStack s_IdStack;
 	};
+	// --getters
+	template<class CType>
+	inline AMemAllocator& CmpSys::GetCmps() {
+		static Size szMem = GetMemory().GetDataSize() >> 4;
+		static Ptr pMem = GetMemory().Alloc(szMem);
+		static MemArena* s_tCmps = MemSys::NewT<MemArena>(GetMemory(), pMem, szMem);
+		return s_tCmps;
+	}
+	template<class CType>
+	inline CType* CmpSys::GetCmp(EntId eId) {
+		CType* pCmp = &( static_cast<CType*>(GetCmps<CType>().GetDataBeg()) )[eId];
+		return pCmp;
+	}
+	// --setters
+	template<class CType, typename...Args>
+	static inline CType* CmpSys::AddCmp(EntId eId, Args...Arguments) {
+		CType* pCmp = &( static_cast<CType*>(GetCmps<CType>().GetDataBeg()) )[eId];
+		new(pCmp)CType(std::forward<Args>(Arguments)...);
+		pCmp->SetEntId(eId);
+		return pCmp;
+	}
+	template<class CType>
+	static inline void CmpSys::RmvCmp(EntId eId) {
+		CType* pCmp = GetCmp<CType>(eId);
+		if (pCmp->GetEntId() != eId) { return; }
+		MemSys::DelT<CType>(GetCmps<CType>(), pCmp);
+	}
 }
 
 #endif	// NW_ENTITY_SYSTEM_H

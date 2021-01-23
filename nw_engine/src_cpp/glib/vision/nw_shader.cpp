@@ -2,7 +2,6 @@
 #include "nw_shader.h"
 
 #include <sys/nw_data_sys.h>
-#include <sys/nw_mem_sys.h>
 #include <sys/nw_log_sys.h>
 
 #if (defined NW_GRAPHICS)
@@ -12,11 +11,11 @@
 namespace NW
 {
 	ASubShader::ASubShader(const char* strName, ShaderTypes sdType) :
-		ACodeChunk(strName),
+		ACodeRes(strName),
 		m_unRId(0), m_shdType(sdType) {
-		DataSys::AddDataRes<ASubShader>(this);
+		ADataRes::AddDataRes<ASubShader>(this);
 	}
-	ASubShader::~ASubShader() { DataSys::RmvDataRes<ASubShader>(GetName()); }
+	ASubShader::~ASubShader() { ADataRes::RmvDataRes<ASubShader>(GetName()); }
 	
 	// --==<data_methods>==--
 	bool ASubShader::SaveF(const char* strFPath) { return true; }
@@ -27,12 +26,10 @@ namespace NW
 	{
 		ASubShader* pSubShader = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
-	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
-		case GAPI_COUT: break;
-	#elif (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GAPI_OPENGL: pSubShader = new SubShaderOgl(strName, sdType); break;
+	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
+		case GAPI_OPENGL: pSubShader = NewT<SubShaderOgl>(GEngine::Get().GetMemory(), strName, sdType); break;
 	#endif // NW_GRAPHICS
-		default: NW_ERR("Graphics Api is not defined"); break;
+		default: NWL_ERR("Graphics Api is not defined"); break;
 		}
 		return pSubShader;
 	}
@@ -40,9 +37,9 @@ namespace NW
 namespace NW
 {
 	AShader::AShader(const char* strName) :
-		ACodeChunk(strName),
-		m_unRId(0) { DataSys::AddDataRes<AShader>(this); }
-	AShader::~AShader() { DataSys::RmvDataRes<AShader>(GetName()); }
+		ACodeRes(strName),
+		m_unRId(0) { ADataRes::AddDataRes<AShader>(this); }
+	AShader::~AShader() { ADataRes::RmvDataRes<AShader>(GetName()); }
 
 	// --==<data_methods>==--
 	bool AShader::SaveF(const char* strFPath)
@@ -74,9 +71,9 @@ namespace NW
 	#if (NW_GRAPHICS & NW_GRAPHICS_COUT)
 		case GAPI_COUT: break;
 	#elif (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GAPI_OPENGL: pShader = new ShaderOgl(strName); break;
+		case GAPI_OPENGL: pShader = NewT<ShaderOgl>(GEngine::Get().GetMemory(), strName); break;
 	#endif // NW_GRAPHICS
-		default: NW_ERR("Graphics Api is not defined"); break;
+		default: NWL_ERR("Graphics Api is not defined"); break;
 		}
 		return pShader;
 	}

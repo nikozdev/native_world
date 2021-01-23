@@ -1,8 +1,7 @@
 #ifndef NW_TIME_SYSTEM_H
 #define NW_TIME_SYSTEM_H
-#include <nwlib/nw_time.h>
 
-#include <nw_decl.hpp>
+#include <nw_core.hpp>
 
 namespace NW
 {
@@ -18,13 +17,13 @@ namespace NW
 		static inline float GetRealLast() { return s_nRealLast; }
 		static inline float GetRealTime() { return s_nRealTime; }
 		static inline float GetRealDelta() { return s_nRealDelta; }
-		static inline RealTimeCounter& GetRealTimeCounter() { return s_RealTimeCounter; }
+		static inline TimeCounter& GetRealTimeCounter() { static TimeCounter s_tc; return s_tc; }
 
 		static inline float GetAppTime() { return s_nAppTime; }
 		static inline float GetAppLast() { return s_nAppLast; }
 		static inline float GetAppDelta() { return s_nAppDelta; }
 		static inline float GetAppSpeed() { return s_nTimeSpeed; }
-		static inline AppTimeCounter& GetAppTimeCounter() { return s_AppTimeCounter; }
+		static inline TimeCounter& GetAppTimeCounter() { static TimeCounter s_tc; return s_tc; }
 
 		static const TimeInfo& GetTimeInfo();
 		static const char* GetTimeString();
@@ -38,9 +37,6 @@ namespace NW
 		static float s_nAppTime, s_nAppDelta, s_nAppLast;
 		static float s_nRealTime, s_nRealDelta, s_nRealLast;
 		static float s_nTimeSpeed;
-
-		static RealTimeCounter s_RealTimeCounter;
-		static AppTimeCounter s_AppTimeCounter;
 
 		static TimeInfo s_TimeInfo;
 	};

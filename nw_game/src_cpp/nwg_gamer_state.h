@@ -23,9 +23,9 @@ namespace NWG
 		virtual void OnEnable() override;
 		virtual void OnDisable() override;
 		// --on_event_methods
-		virtual void OnEvent(NW::MouseEvent& rmEvt) override;
-		virtual void OnEvent(NW::KeyboardEvent& rkEvt) override;
-		virtual void OnEvent(NW::WindowEvent& rwEvt) override;
+		virtual void OnEvent(MouseEvent& rmEvt) override;
+		virtual void OnEvent(KeyboardEvent& rkEvt) override;
+		virtual void OnEvent(WindowEvent& rwEvt) override;
 	};
 }
 

@@ -9,15 +9,16 @@
 namespace GLIB
 {
 	ASubShader::ASubShader(const char* strName, ShaderTypes sdType) :
-		AGRes(strName),
-		m_shdType(sdType), m_unRId(0), m_strCode("") { GEngine::Get().AddGRes<ASubShader>(this); }
-	ASubShader::~ASubShader() { GEngine::Get().RmvGRes<ASubShader>(GetId()); }
+		ADataRes(strName),
+		m_shdType(sdType), m_unRId(0), m_strCode("") { ADataRes::AddDataRes<ASubShader>(this); }
+	ASubShader::~ASubShader() { ADataRes::RmvDataRes<ASubShader>(GetId()); }
 
 	// --==<data_methods>==--
 	bool ASubShader::SaveF(const char* strFPath) { return true; }
 	bool ASubShader::LoadF(const char* strFPath) { return true; }
 	// --==</data_methods>==--
 
+	// --core_methods
 	ASubShader* ASubShader::Create(const char* strName, ShaderTypes sdType)
 	{
 		ASubShader* pSubShader = nullptr;
@@ -25,7 +26,7 @@ namespace GLIB
 	#if (GLIB_GAPI & GLIB_GAPI_OGL)
 		case GAPI_OPENGL: pSubShader = new SubShaderOgl(strName, sdType); break;
 	#endif // GLIB_GAPI
-		default: GLIB_ERR("Graphics Api is not defined"); break;
+		default: NWL_ERR("Graphics Api is not defined"); break;
 		}
 		return pSubShader;
 	}
@@ -33,8 +34,9 @@ namespace GLIB
 namespace GLIB
 {
 	AShader::AShader(const char* strName) :
-		AGRes(strName), m_unRId(0), m_strCode("") { GEngine::Get().AddGRes<AShader>(this); }
-	AShader::~AShader() { GEngine::Get().RmvGRes<AShader>(GetId()); }
+		ADataRes(strName),
+		m_unRId(0), m_strCode("") { ADataRes::AddDataRes<AShader>(this); }
+	AShader::~AShader() { ADataRes::RmvDataRes<AShader>(GetId()); }
 
 	// --==<data_methods>==--
 	bool AShader::SaveF(const char* strFPath)
@@ -64,7 +66,7 @@ namespace GLIB
 	#if (GLIB_GAPI & GLIB_GAPI_OGL)
 		case GAPI_OPENGL: pShader = new ShaderOgl(strName); break;
 	#endif // GLIB_GAPI
-		default: GLIB_ERR("Graphics Api is not defined"); break;
+		default: NWL_ERR("Graphics Api is not defined"); break;
 		}
 		return pShader;
 	}
@@ -98,7 +100,6 @@ namespace GLIB
 		const char* strSource = &m_strCode[0];
 		glShaderSource(m_unRId, 1, &strSource, nullptr);
 		glCompileShader(m_unRId);
-		if (OglErrLogShader(m_shdType, m_unRId) != 0) { return false; }
 		return true;
 	}
 	void SubShaderOgl::Reset() {

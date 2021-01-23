@@ -14,7 +14,7 @@ namespace NW
 		case SDT_INT16:	case SDT_UINT16:	case SDT_SAMPLER:	szData = 4;	break;
 		case SDT_INT32:	case SDT_UINT32:	case SDT_FLOAT32:	szData = 4;	break;
 		case SDT_FLOAT64:										szData = 8;	break;
-		default:	NW_ERR("Invalid shader data type");			szData = 0;	break;
+		default:	NWL_ERR("Invalid shader data type");		szData = 0;	break;
 		}
 		return szData * unCount;
 	}
@@ -26,7 +26,7 @@ namespace NW
 		case SDT_INT32:	case SDT_UINT32:	case SDT_SAMPLER:	szAll = 4;	break;
 		case SDT_FLOAT32:										szAll = 4;	break;
 		case SDT_FLOAT64:										szAll = 8;	break;
-		default:	NW_ERR("Invalid shader data type");			szAll = 0;	break;
+		default:	NWL_ERR("Invalid shader data type");		szAll = 0;	break;
 		}
 		return szAll * ((unCount + (szAll - 1)) & ~(szAll - 1));
 	}
@@ -102,13 +102,13 @@ namespace NW
 	struct NW_API DrawObjectData
 	{
 	public:
-		DArray<UByte> vtxData;
+		DArray<Byte> vtxData;
 		DArray<UInt32> idxData;
 		UInt8 unDrawOrder = 0;
 		GMaterial* pGMtl = nullptr;
 	public:
 		// --getters
-		inline const UByte* GetVtxData() const { return &vtxData[0]; }
+		inline const Byte* GetVtxData() const { return &vtxData[0]; }
 		inline const UInt32* GetIdxData() const { return &idxData[0]; }
 		inline Size GetVtxSize() const { return vtxData.size(); }
 		inline Size GetIdxSize() const { return idxData.size(); }
@@ -124,11 +124,11 @@ namespace NW
 		Mat4f m4Proj;
 		Mat4f m4View;
 	public:
-		DrawSceneData() : pData(&m4Proj[0]), szData(sizeof(Mat4f) * 2) {}
-		inline const UByte* GetData() const { return static_cast<UByte*>(pData); }
+		DrawSceneData() : pData(reinterpret_cast<Byte*>(&m4Proj[0][0])), szData(sizeof(Mat4f) * 2) {}
+		inline const Byte* GetData() const { return pData; }
 		inline Size GetDataSize() const { return szData; }
 	private:
-		void* pData;
+		Byte* pData;
 		Size szData;
 	};
 	/// RenderAttributes struct

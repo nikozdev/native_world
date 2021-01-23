@@ -1,6 +1,6 @@
 #ifndef GLIB_AFRAME_BUFFER_H
 #define GLIB_AFRAME_BUFFER_H
-#include <core/glib_res.h>
+
 #include <glib_decl.hpp>
 
 #if (defined GLIB_GAPI)
@@ -15,7 +15,7 @@ namespace GLIB
 		bool bSwapChainTarget = false;
 	};
 	/// Abstract FrameBuf class
-	class GLIB_API AFrameBuf : public AGRes
+	class GLIB_API AFrameBuf : public ADataRes
 	{
 	public:
 		AFrameBuf(const char* strName, const FrameBufInfo& rFbInfo);

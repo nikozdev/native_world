@@ -1,8 +1,6 @@
 #include <nw_pch.hpp>
 #include "glib_tools.h"
 
-#include <sys/nw_mem_sys.h>
-
 #pragma warning (disable: 4312)
 
 #if (NW_GRAPHICS & NW_GRAPHICS_OGL)
@@ -18,11 +16,9 @@ namespace NW
 	bool OglErrLog(const char* funcName, const char* file, int line)
 	{// Get error and match error message for it
 		UInt32 errorCode;
-		while ((errorCode = glGetError()) != GL_NO_ERROR)
-		{
+		while ((errorCode = glGetError()) != GL_NO_ERROR) {
 			std::string error;
-			switch (errorCode)
-			{
+			switch (errorCode) {
 			case NW_INVALID_ENUM:
 				error = "INVALID_ENUM";
 				break;
@@ -42,7 +38,7 @@ namespace NW
 				error = "OUT_OF_MEMORY";
 				break;
 			}
-			printf("NW_ERR_LOG::FILE_%s::LINE_%d:\n%s\n",
+			printf("NWL_ERR_LOG::FILE_%s::LINE_%d:\n%s\n",
 				funcName, line, error.c_str());
 			return false;
 		}
@@ -51,7 +47,7 @@ namespace NW
 
 	Int32 OglErrLogShader(ShaderTypes shaderType, UInt32 shaderID)
 	{
-		if (shaderID == 0) return NW_ERR_UNKNOWN_ID;
+		if (shaderID == 0) return NWL_ERR_UNKNOWN_ID;
 		Int32 success = 0;
 		Int32 errLogSize = 0;
 		String errLog;
@@ -67,8 +63,8 @@ namespace NW
 				errLog.resize(errLogSize);
 
 				glGetShaderInfoLog(shaderID, errLogSize, NULL, &errLog[0]);
-				NW_ERR(errLog);
-				return NW_ERR_SHADER_COMPILE;
+				NWL_ERR(errLog);
+				return NWL_ERR_SHADER_COMPILE;
 			}
 		}
 		else
@@ -80,8 +76,8 @@ namespace NW
 				errLog.resize(errLogSize);
 
 				glGetProgramInfoLog(shaderID, errLogSize, NULL, &errLog[0]);
-				NW_ERR(&errLog[0]);
-				return NW_ERR_SHADER_LINK;
+				NWL_ERR(&errLog[0]);
+				return NWL_ERR_SHADER_LINK;
 			}
 		}
 		return NW_OK;

@@ -34,7 +34,7 @@ namespace NWG
 
 	// --==<GuiOfGEngine>==--
 	GuiOfGEngine::GuiOfGEngine() {
-		pWindow = GEngine::Get().GetWindow();
+		pWindow = CoreEngine::Get().GetWindow();
 		float vtxData[] = {
 		-0.5f,	-0.5f,	0.0f,			1.0f,	1.0f,	1.0f,	1.0f,			0.0f,	1.0f,			0.0f,			1.0f,	0.0f,	0.0f,	0.0f,
 																														0.0f,	1.0f,	0.0f,	0.0f,
@@ -60,7 +60,7 @@ namespace NWG
 			2,	3,	0
 		};
 		DOData.unDrawOrder = 0;
-		DOData.pGMtl = DataSys::GetDataRes<GMaterial>("gmt_3d_batch");
+		DOData.pGMtl = ADataRes::GetDataRes<GMaterial>("gmt_3d_batch");
 	}
 	GuiOfGEngine::~GuiOfGEngine() {}
 
@@ -116,9 +116,9 @@ namespace NWG
 			if (ImGui::SliderFloat("opacity", &nWndOpacity, 0.0f, 1.0f)) { pWindow->SetOpacity(nWndOpacity); }
 
 			if (ImGui::BeginCombo("switch window", &pWindow->GetWindowInfo().strTitle[0])) {
-				auto itWindow = GEngine::Get().GetWindow();
+				auto itWindow = CoreEngine::Get().GetWindow();
 				if (ImGui::Selectable(&itWindow->GetWindowInfo().strTitle[0])) {
-					pWindow = GEngine::Get().GetWindow();
+					pWindow = CoreEngine::Get().GetWindow();
 					strcpy(&strWindowTitle[0], &pWindow->GetWindowInfo().strTitle[0]);
 				} ImGui::EndCombo();
 			}
@@ -160,7 +160,7 @@ namespace NWG
 		ImGui::End();
 
 		if (bFrameBufs) {
-			if (pFrameBuf == nullptr) { if ((pFrameBuf = DataSys::GetDataResources<AFrameBuf>().begin()->second) == nullptr) { bFrameBufs = false; return; } }
+			if (pFrameBuf == nullptr) { if ((pFrameBuf = ADataRes::GetDataResources<AFrameBuf>().begin()->second) == nullptr) { bFrameBufs = false; return; } }
 			ImGui::Begin("frame_buffers", &bFrameBufs);
 			const FrameBufInfo& rfbInfo = pFrameBuf->GetInfo();
 			V2f whSize = { (ImGui::GetContentRegionAvail().x), (ImGui::GetContentRegionAvail().y) };
@@ -168,7 +168,7 @@ namespace NWG
 			ImGui::Image(reinterpret_cast<void*>(pFrameBuf->GetColorAttachment()->GetRenderId()), { whSize.x, whSize.y });
 			GEngine::Get().GetLayer("gel_default")->SetViewport({ 0.0f, 0.0f, whSize.x, whSize.y });
 			if (ImGui::BeginCombo("change framebuf", &pFrameBuf->GetName()[0])) {
-				for (auto& itBuf : DataSys::GetDataResources<AFrameBuf>()) {
+				for (auto& itBuf : ADataRes::GetDataResources<AFrameBuf>()) {
 					if (ImGui::Selectable(&itBuf.second->GetName()[0])) { pFrameBuf = itBuf.second; }
 				}
 				ImGui::EndCombo();
@@ -252,7 +252,7 @@ namespace NWG
 			if (ImGui::TreeNodeEx("create", GUI_DEFAULT_TREE_FLAGS)) {
 				if (ImGui::MenuItem("shader")) { AShader::Create("shd_nameless"); }
 				else if (ImGui::MenuItem("texture2d")) { ATexture2d::Create("tex_2d_nameless"); }
-				else if (ImGui::MenuItem("gmaterial")) { MemSys::NewT<GMaterial>("gmt_3d_nameless"); }
+				else if (ImGui::MenuItem("gmaterial")) { new GMaterial("gmt_3d_nameless"); }
 				ImGui::TreePop();
 			}
 			ImGui::EndPopup();
@@ -263,14 +263,14 @@ namespace NWG
 		ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal | ImGuiSeparatorFlags_SpanAllColumns);
 
 		if (ImGui::TreeNodeEx("data resources")) {
-			DataSys::ADRs& rDrs = DataSys::GetADataResources();
+			DataSys::ADRs& rDrs = ADataRes::GetADataResources();
 			for (DataSys::ADRs::iterator itDrs = rDrs.begin(); itDrs != rDrs.end(); itDrs++) {
 				ImGui::TextColored({0.4f, 0.7f, 0.7f, 1.0f}, "name: %s; id: %d", itDrs->second->GetName(), itDrs->first);
 			}
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNodeEx("textures")) {
-			auto& Textures = DataSys::GetDataResources<ATexture2d>();
+			auto& Textures = ADataRes::GetDataResources<ATexture2d>();
 			for (auto& itTex : Textures) {
 				ImGui::Text(itTex.second->GetName());
 				const ImageInfo& rImgInfo = itTex.second->GetImgInfo();
@@ -280,14 +280,14 @@ namespace NWG
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNodeEx("shaders")) {
-			auto& Shaders = DataSys::GetDataResources<AShader>();
+			auto& Shaders = ADataRes::GetDataResources<AShader>();
 			for (auto& pShader : Shaders) {
 				if (ImGui::Button(pShader.second->GetName())) { GuiOfCodeEditor::Get().SetContext(pShader.second); }
 			} ImGui::Separator();
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNodeEx("gmaterials")) {
-			auto& GMaterials = DataSys::GetDataResources<GMaterial>();
+			auto& GMaterials = ADataRes::GetDataResources<GMaterial>();
 			for (auto& itGMtl : GMaterials) {
 				if (ImGui::Button(itGMtl.second->GetName())) { GuiOfGMaterialEditor::Get().SetContext(itGMtl.second); }
 			} ImGui::Separator();
@@ -299,18 +299,21 @@ namespace NWG
 
 	// --==<GuiOfMemSys>==--
 	void GuiOfMemSys::OnDraw() {
-		if (!bIsEnabled) return;
-		ImGui::Begin("memory_system", &bIsEnabled);
-		ImGui::Text("allocated_bytes: %d", MemSys::GetInfo().szAlloc);
-		ImGui::Text("allocated_blocks: %d", MemSys::GetInfo().unAlloc);
+		if (!bIsEnabled) { return; }
+
+		ImGui::Begin("memory_system");
+
+		ImGui::Text("global allocated memory:\n\t%d blocks | %d bytes", MemInfo::GetGlobal().unAlloc, MemInfo::GetGlobal().szAlloc);
+		ImGui::Text("core_engine memory:\n\t%d/%d blocks | %d/%d bytes", CoreEngine::Get().GetMemory().GetAllocCount(), CoreEngine::Get().GetMemory().GetAllocSize());
+		ImGui::Text("graphics_engine memory:\n\t%d/%d blocks | %d/%d bytes", GEngine::Get().GetMemory().GetAllocCount(), GEngine::Get().GetMemory().GetAllocSize());
+
 		ImGui::End();
 	}
 	// --==</GuiOfMemSys>==--
-	
 	// --==<GuiOfTimeSys>==--
 	void GuiOfTimeSys::OnDraw() {
 		if (!bIsEnabled) return;
-		ImGui::Begin("time system", &bIsEnabled);
+		ImGui::Begin("time_system", &bIsEnabled);
 		float nAppSpeed = TimeSys::GetAppSpeed();
 		ImGui::Text("time since start: %d", static_cast<int>(TimeSys::GetRealTime()));
 		ImGui::Text("application time: %d", static_cast<Int32>(TimeSys::GetAppTime()));
@@ -331,13 +334,8 @@ namespace NWG
 		strCodeBuf(DArray<char>(1024 * 4, 0)) { }
 	
 	// --setters
-	void GuiOfCodeEditor::SetContext(ACodeChunk* pContext) {
-		if (this->pContextScr = dynamic_cast<LuaScript*>(pContext)) {
-			bIsEnabled = true;
-			strcpy(&strCodeBuf[0], &pContextScr->GetCode()[0]);
-			pContextShd = nullptr;
-		}
-		else if (this->pContextShd = dynamic_cast<AShader*>(pContext)) {
+	void GuiOfCodeEditor::SetContext(ACodeRes* pContext) {
+		if (this->pContextShd = dynamic_cast<AShader*>(pContext)) {
 			bIsEnabled = true;
 			strcpy(&strCodeBuf[0], &pContextShd->GetCode()[0]);
 		}
@@ -375,7 +373,7 @@ namespace NWG
 			}
 			else if (ImGui::BeginMenu("context")) {
 				if (ImGui::BeginCombo("set shader", pContextShd == nullptr ? "no shader" : &pContextShd->GetName()[0])) {
-					auto& Shaders = DataSys::GetDataResources<AShader>();
+					auto& Shaders = ADataRes::GetDataResources<AShader>();
 					for (auto& pShd : Shaders) {
 						if (ImGui::Button(&pShd.second->GetName()[0])) {
 							this->SetContext(pShd.second);
@@ -389,18 +387,7 @@ namespace NWG
 			ImGui::EndMenuBar();
 		}
 
-		if (pContextScr != nullptr) {
-			ImGui::PushID(pContextScr->GetId());
-			ImGui::Text("lua script: %s;", &pContextScr->GetName()[0]);
-			if (ImGui::InputTextMultiline("", &strCodeBuf[0], strCodeBuf.size(),
-				{ ImGui::GetContentRegionAvail().x - 32.0f, ImGui::GetContentRegionAvail().y - 64.0f }, ImGuiInputTextFlags_Multiline)) {
-				if (strlen(&strCodeBuf[0]) > strCodeBuf.size() - 8) { strCodeBuf.resize(strCodeBuf.size() * 2); }
-			}
-			else if (ImGui::Button("edit")) { pContextScr->SetCode(&strCodeBuf[0]); }
-
-			ImGui::PopID();
-		}
-		else if (pContextShd != nullptr) {
+		if (pContextShd != nullptr) {
 			ImGui::PushID(pContextShd->GetId());
 			ImGui::Text("shader: %s;", &pContextShd->GetName()[0]);
 			if (ImGui::InputTextMultiline("", &strCodeBuf[0], strCodeBuf.size(),
@@ -447,7 +434,7 @@ namespace NWG
 	
 	// --==<GuiOfGMaterialEditor>==--
 	GuiOfGMaterialEditor::GuiOfGMaterialEditor() :
-		pContext(DataSys::GetDataRes<GMaterial>("gmt_batch_3d"))
+		pContext(ADataRes::GetDataRes<GMaterial>("gmt_batch_3d"))
 	{ }
 	// --setters
 	void GuiOfGMaterialEditor::SetContext(GMaterial* pContext) {
@@ -456,7 +443,7 @@ namespace NWG
 			bIsEnabled = false;
 		}
 		else {
-			if (pContext == nullptr) { pContext = DataSys::GetDataRes<GMaterial>("gmt_batch_3d"); }
+			if (pContext == nullptr) { pContext = ADataRes::GetDataRes<GMaterial>("gmt_batch_3d"); }
 			bIsEnabled = true;
 		}
 	}
@@ -480,7 +467,7 @@ namespace NWG
 			}
 			else if (ImGui::BeginMenu("context")) {
 				if (ImGui::BeginCombo("set gmaterial", pContext == nullptr ? "no material" : &pContext->GetName()[0])) {
-					auto& GMaterials = DataSys::GetDataResources<GMaterial>();
+					auto& GMaterials = ADataRes::GetDataResources<GMaterial>();
 					for (auto& itGMtl : GMaterials) {
 						if (ImGui::Button(&itGMtl.second->GetName()[0])) {
 							this->SetContext(itGMtl.second);
@@ -516,7 +503,7 @@ namespace NWG
 				ImGui::Image(reinterpret_cast<void*>(pTex->GetRenderId()),
 					ImVec2{ 64.0f * rImgInfo.nWidth / rImgInfo.nHeight, 64.0f });
 				if (ImGui::BeginCombo("change texture", &(pTex->GetName())[0])) {
-					auto& Textures = DataSys::GetDataResources<ATexture>();
+					auto& Textures = ADataRes::GetDataResources<ATexture>();
 					for (auto& itTex : Textures) {
 						const ImageInfo rImgInfoLoc = itTex.second->GetImgInfo();
 						if (ImGui::ImageButton(reinterpret_cast<void*>(itTex.second->GetRenderId()),
@@ -535,7 +522,7 @@ namespace NWG
 			ImGui::Text("id = %d;\nname: %s;", pShader->GetId(), pShader->GetName());
 			if (ImGui::Button("code editor")) { GuiOfCodeEditor::Get().SetContext(pShader); }
 			if (ImGui::BeginCombo("change shader", &pShader->GetName()[0])) {
-				auto& Shaders = DataSys::GetDataResources<AShader>();
+				auto& Shaders = ADataRes::GetDataResources<AShader>();
 				for (auto& pShd : Shaders) {
 					if (ImGui::Button(&pShd.second->GetName()[0])) { pContext->SetShader(pShd.second); }
 				}
@@ -572,7 +559,7 @@ namespace NWG
 		this->pContext = pContext;
 		if (pContext == nullptr) {
 			bIsEnabled = false;
-			pContext = DataSys::GetDataRes<ATexture2d>("tex_white_solid");
+			pContext = ADataRes::GetDataRes<ATexture2d>("tex_white_solid");
 		}
 		else {
 			bIsEnabled = true;
@@ -613,7 +600,7 @@ namespace NWG
 				if (ImGui::MenuItem("set texture")) {
 					ImGui::OpenPopup("set context");
 					if (ImGui::BeginPopup("set_context")) {
-						auto& Textures = DataSys::GetDataResources<ATexture2d>();
+						auto& Textures = ADataRes::GetDataResources<ATexture2d>();
 						for (auto& itTex : Textures) {
 							ImGui::Text(itTex.second->GetName());
 							const ImageInfo& rImgInfo = itTex.second->GetImgInfo();
@@ -791,7 +778,7 @@ namespace NWG
 				strcpy_s(cBuffer, pGMtl->GetName());
 				if (ImGui::InputText("name", &cBuffer[0], 128)) { pGMtl->SetName(cBuffer); }
 				if (ImGui::BeginCombo("change gmaterial", &pGMtl->GetName()[0])) {
-					auto& GMaterials = DataSys::GetDataResources<GMaterial>();
+					auto& GMaterials = ADataRes::GetDataResources<GMaterial>();
 					for (auto& itGMtl : GMaterials) {
 						if (ImGui::Button(&itGMtl.second->GetName()[0])) { pGCmp->GetDrawable()->pGMtl = itGMtl.second; }
 					}
@@ -812,7 +799,7 @@ namespace NWG
 					std::max(whMapSize.x, whMapSize.y))) { }
 				
 				else if (ImGui::BeginCombo("change texture", pTileMap->GetName())) {
-					auto& rTextures = DataSys::GetDataResources<ATexture2d>();
+					auto& rTextures = ADataRes::GetDataResources<ATexture2d>();
 					for (auto& itTex : rTextures) {
 						if (ImGui::MenuItem(itTex.second->GetName())) { ptmSprite->pGMtl->SetTexture(itTex.second); }
 					}
@@ -956,7 +943,7 @@ namespace NWG
 				}
 			}
 			else if (ImGui::MenuItem("destroy 50 entities")) {
-				auto& rEnts = DataSys::GetDataResources<AEntity>();
+				auto& rEnts = ADataRes::GetDataResources<AEntity>();
 				for (UInt8 ei = 0; ei < 50; ei++) {
 					if (rEnts.empty()) { return; };
 					MemSys::DelT<AEntity>(rEnts.begin()->second);
@@ -965,7 +952,7 @@ namespace NWG
 			}
 			ImGui::EndPopup();
 		}
-		OnDraw(DataSys::GetDataResources<AEntity>());
+		OnDraw(ADataRes::GetDataResources<AEntity>());
 		ImGui::End();
 
 		OnDraw(GCameraLad::Get().GetGCamera());
@@ -992,7 +979,7 @@ namespace NWG
 
 		if (pDestroyEnt != nullptr) {
 			GuiOfEntityEditor::Get().SetContext(nullptr);
-			MemSys::DelT<AEntity>(DataSys::GetDataRes<AEntity>(pDestroyEnt->GetId()));
+			MemSys::DelT<AEntity>(ADataRes::GetDataRes<AEntity>(pDestroyEnt->GetId()));
 			pDestroyEnt = nullptr;
 		}
 	}

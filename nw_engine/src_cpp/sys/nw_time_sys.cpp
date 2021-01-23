@@ -5,18 +5,11 @@ float NW::TimeSys::s_nRealTime(0.0f), NW::TimeSys::s_nRealDelta(0.0f), NW::TimeS
 float NW::TimeSys::s_nAppTime(0.0f), NW::TimeSys::s_nAppDelta(0.0f), NW::TimeSys::s_nAppLast(0.0f);
 float NW::TimeSys::s_nTimeSpeed(1.0f);
 
-NW::RealTimeCounter NW::TimeSys::s_RealTimeCounter = NW::RealTimeCounter();
-NW::AppTimeCounter NW::TimeSys::s_AppTimeCounter = NW::AppTimeCounter();
-
-NW::TimeInfo NW::TimeSys::s_TimeInfo;
+NWL::TimeInfo NW::TimeSys::s_TimeInfo;
 
 #if (NW_WINDOW & NW_WINDOW_GLFW)
 #include <GLFW/glfw3.h>
-#elif (defined NW_PLATFORM_WINDOWS)   // chrono library timing
-    static std::chrono::steady_clock::time_point s_tpCurrTime;
-    static std::chrono::steady_clock::time_point s_tpLastTime;
-    static std::chrono::duration<float> s_dfDeltaTime;
-#endif  // NW_WINDOW
+#endif
 
 namespace NW
 {
@@ -28,8 +21,11 @@ namespace NW
     // --==<core_methods>==--
     void TimeSys::Update()
     {
-    #if (NW_WINDOW & NW_WINDOW_GLFW)
+    #if (NW_WINDOW & NW_WINDOW_GLFW & false)
         s_nRealTime = static_cast<float>(glfwGetTime());
+    #else
+        s_nRealTime = clock();
+    #endif // NW_WINDOW_GLFW
         s_nRealDelta = s_nRealTime - s_nRealLast;
         s_nRealLast = s_nRealTime;
 
@@ -37,14 +33,8 @@ namespace NW
         s_nAppLast = s_nAppTime;
         s_nAppTime += s_nAppDelta;
 
-        s_RealTimeCounter.EndCount();
-        s_AppTimeCounter.EndCount();
-    #elif (defined NW_PLATFORM_WINDOWS)
-        s_tpCurrTime = std::chrono::steady_clock::now();
-        s_dfDeltaTime = s_tpCurrTime - s_tpLastTime;
-        s_tpLastTime = s_tpCurrTime;
-        s_fTimeDelta = s_dfDeltaTime.count();
-    #endif // NW_WINDOW_GLFW
+        GetRealTimeCounter().EndCount();
+        GetAppTimeCounter().EndCount();
     }
     // --==</core_methods>==--
 }

@@ -1,8 +1,6 @@
 #ifndef NW_AGUI_WIDGET_H
 #define NW_AGUI_WIDGET_H
 
-#include <nwlib/nw_io_lib.h>
-
 #include <glib/nw_gui_core.h>
 
 namespace NW

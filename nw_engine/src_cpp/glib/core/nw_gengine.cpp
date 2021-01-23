@@ -3,7 +3,6 @@
 
 #include <glib/core/nw_gapi.h>
 
-#include <glib/gcontext/nw_window.h>
 #include <glib/gcontext/nw_framebuf.h>
 
 #include <glib/vision/nw_gcamera.h>
@@ -11,18 +10,15 @@
 #include <glib/vision/nw_shader.h>
 #include <glib/vision/nw_gmaterial.h>
 
-#include <nwlib/nw_event.h>
-
 #include <sys/nw_data_sys.h>
-#include <sys/nw_mem_sys.h>
 
 namespace NW
 {
 	GEngine::GEngine() :
-		m_bIsRunning(false),
-		m_pGApi(nullptr), m_pWindow(nullptr),
+		m_thrRun(Thread()), m_Memory(MemArena(nullptr, 0)), m_bIsRunning(false),
+		m_pGApi(RefOwner<AGApi>()),
 		m_DInfo(GEngineInfo()) { }
-	GEngine::~GEngine() {}
+	GEngine::~GEngine() { }
 
 	// --setters
 	GLayer* GEngine::AddLayer(const char* strName) {
@@ -37,28 +33,20 @@ namespace NW
 		m_GLayers.erase(itDest);
 	}
 	// --==<core_methods>==--
-	bool GEngine::Init(WApiTypes WindowApiType, GApiTypes GraphicsApiType)
+	bool GEngine::Init(Size szMemory)
 	{
 		m_bIsRunning = true;
-
-		WindowInfo WindowInfo{ "graphics_engine", 1200, 1200 / 4 * 3, true, nullptr };
-		m_pWindow.reset(AWindow::Create(WindowInfo, WindowApiType));
-		if (!m_pWindow->Init()) { m_pWindow->OnQuit(); return false; }
-
-		m_pGApi.reset(AGApi::Create(GraphicsApiType));
+		m_Memory = MemArena(new Byte[szMemory], szMemory);
+	#if (defined NW_GRAPHICS)
+	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
+		m_pGApi.MakeRef<GApiOgl>(GetMemory());
 		m_pGApi->SetClearColor(0.1f, 0.3f, 0.3f);
+	#endif
+	#endif	// NW_GRAPHICS
 
-		if (true) {
-			ImageInfo imgInfo;
-			if (DataSys::LoadF_image("D:/dev/native_world/nw_engine/data/graphics/ico/nw_bat.png", &imgInfo)) {
-				m_pWindow->SetIcon(imgInfo.ClrData, imgInfo.nWidth, imgInfo.nHeight);
-				MemSys::DelTArr<UByte>(imgInfo.ClrData, imgInfo.nWidth * imgInfo.nHeight * imgInfo.nChannels);
-			}
-		}
 		AddLayer("gel_default");
 		m_GLayer = m_GLayers.begin();
 		
-		if (!m_bIsRunning) { Quit(); }
 		return true;
 	}
 	void GEngine::Quit()
@@ -67,15 +55,14 @@ namespace NW
 		m_bIsRunning = false;
 
 		m_GLayers.clear();
-		m_pWindow->OnQuit();
+
+		delete[] m_Memory.GetDataBeg();
 	}
 	void GEngine::Run() {
 		m_thrRun = std::thread([this]()->void { while (m_bIsRunning) { Update(); } });
 	}
 	void GEngine::Update()
 	{
-		m_pWindow->Update();
-
 		m_DInfo.Reset();
 
 		std::sort(m_GLayers.begin(), m_GLayers.end());

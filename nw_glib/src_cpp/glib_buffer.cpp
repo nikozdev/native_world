@@ -16,7 +16,7 @@ namespace GLIB
 	#if (GLIB_GAPI & GLIB_GAPI_OGL)
 		case GApiTypes::GAPI_OPENGL: pVB = new VertexBufOgl(); break;
 	#endif	// GLIB_GAPI
-		default: GLIB_ERR("There is no accessible API"); break;
+		default: NWL_ERR("There is no accessible API"); break;
 		}
 		pVB->SetData(szAlloc, pVtxData);
 		return pVB;
@@ -28,7 +28,7 @@ namespace GLIB
 	#if (GLIB_GAPI & GLIB_GAPI_OGL)
 		case GApiTypes::GAPI_OPENGL: pIB = new IndexBufOgl(); break;
 	#endif // GLIB_GAPI
-		default: GLIB_ERR("Graphics API is not defined"); break;
+		default: NWL_ERR("Graphics API is not defined"); break;
 		}
 		pIB->SetData(szAlloc, pIdxData);
 		return pIB;
@@ -39,7 +39,7 @@ namespace GLIB
 	#if (GLIB_GAPI & GLIB_GAPI_OGL)
 		case GApiTypes::GAPI_OPENGL: pSB = new ShaderBufOgl(); break;
 	#endif // GLIB_GAPI
-		default: GLIB_ERR("Graphics API is not defined"); break;
+		default: NWL_ERR("Graphics API is not defined"); break;
 		}
 		pSB->SetData(szAlloc, pIdxData);
 		return pSB;

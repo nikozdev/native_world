@@ -1,8 +1,7 @@
 #ifndef NW_IO_SYSTEM_H
 #define NW_IO_SYSTEM_H
-#include <nwlib/nw_io_lib.h>
 
-#include <nw_decl.hpp>
+#include <nw_core.hpp>
 
 namespace NW
 {

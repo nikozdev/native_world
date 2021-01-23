@@ -7,9 +7,6 @@
     <Filter Include="src_cpp\core">
       <UniqueIdentifier>{87DB3E97-733E-CE3B-1CC4-06F208069ABE}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src_cpp\ecs">
-      <UniqueIdentifier>{D9055F2B-45BB-D720-CEAF-D1F73A64CE24}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src_cpp\glib">
       <UniqueIdentifier>{1CFF4097-0862-D03B-B1E7-08F29D299CBE}</UniqueIdentifier>
     </Filter>
@@ -24,9 +21,6 @@
     </Filter>
     <Filter Include="src_cpp\lua">
       <UniqueIdentifier>{E0255F2B-4CDB-D720-D5CF-D1F74184CE24}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src_cpp\nwlib">
-      <UniqueIdentifier>{5AA4E57F-C664-61B6-8F9F-AA33FB1EA692}</UniqueIdentifier>
     </Filter>
     <Filter Include="src_cpp\phys">
       <UniqueIdentifier>{A2DF4597-8E42-D53B-37C8-0DF2230AA1BE}</UniqueIdentifier>
@@ -51,10 +45,19 @@
     <ClInclude Include="src_cpp\core\nw_core_state.h">
       <Filter>src_cpp\core</Filter>
     </ClInclude>
-    <ClInclude Include="src_cpp\core\nw_data_res.h">
+    <ClInclude Include="src_cpp\core\nw_scene.h">
+      <Filter>src_cpp\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\core\nw_window.h">
       <Filter>src_cpp\core</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\glib\core\nw_gapi.h">
+      <Filter>src_cpp\glib\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\core\nw_gengine.h">
+      <Filter>src_cpp\glib\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib\core\nw_glayer.h">
       <Filter>src_cpp\glib\core</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\glib\gcontext\nw_framebuf.h">
@@ -63,8 +66,8 @@
     <ClInclude Include="src_cpp\glib\gcontext\nw_gcontext.h">
       <Filter>src_cpp\glib\gcontext</Filter>
     </ClInclude>
-    <ClInclude Include="src_cpp\glib\gcontext\nw_window.h">
-      <Filter>src_cpp\glib\gcontext</Filter>
+    <ClInclude Include="src_cpp\glib\glib_tools.h">
+      <Filter>src_cpp\glib</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\glib\nw_drawable.h">
       <Filter>src_cpp\glib</Filter>
@@ -117,49 +120,19 @@
     <ClInclude Include="src_cpp\nw_def.hpp">
       <Filter>src_cpp</Filter>
     </ClInclude>
-    <ClInclude Include="src_cpp\nw_pch.hpp">
+    <ClInclude Include="src_cpp\nw_glib_decl.hpp">
       <Filter>src_cpp</Filter>
     </ClInclude>
-    <ClInclude Include="src_cpp\nwlib\math_matrix.h">
-      <Filter>src_cpp\nwlib</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\nwlib\math_transform.h">
-      <Filter>src_cpp\nwlib</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\nwlib\math_vector.h">
-      <Filter>src_cpp\nwlib</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\nwlib\nw_code_chunk.h">
-      <Filter>src_cpp\nwlib</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\nwlib\nw_container.h">
-      <Filter>src_cpp\nwlib</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\nwlib\nw_event.h">
-      <Filter>src_cpp\nwlib</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\nwlib\nw_io_lib.h">
-      <Filter>src_cpp\nwlib</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\nwlib\nw_math.h">
-      <Filter>src_cpp\nwlib</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\nwlib\nw_random.h">
-      <Filter>src_cpp\nwlib</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\nwlib\nw_singleton.h">
-      <Filter>src_cpp\nwlib</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\nwlib\nw_string.h">
-      <Filter>src_cpp\nwlib</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\nwlib\nw_time.h">
-      <Filter>src_cpp\nwlib</Filter>
+    <ClInclude Include="src_cpp\nw_pch.hpp">
+      <Filter>src_cpp</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\phys\nw_phys_engine.h">
       <Filter>src_cpp\phys</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\sys\nw_data_sys.h">
+      <Filter>src_cpp\sys</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\sys\nw_ent_sys.h">
       <Filter>src_cpp\sys</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\sys\nw_gui_sys.h">
@@ -174,40 +147,30 @@
     <ClInclude Include="src_cpp\sys\nw_time_sys.h">
       <Filter>src_cpp\sys</Filter>
     </ClInclude>
-    <ClInclude Include="src_cpp\nw_glib_decl.hpp">
-      <Filter>src_cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib\core\nw_gengine.h" />
-    <ClInclude Include="src_cpp\glib\core\nw_glayer.h" />
-    <ClInclude Include="src_cpp\glib\glib_tools.h">
-      <Filter>src_cpp\glib</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\sys\nw_ent_sys.h">
-      <Filter>src_cpp\ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\core\nw_scene.h">
-      <Filter>src_cpp\ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\sys\nw_mem_sys.h" />
-    <ClInclude Include="src_cpp\nwlib\nw_memory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src_cpp\core\nw_core_engine.cpp">
       <Filter>src_cpp\core</Filter>
     </ClCompile>
-    <ClCompile Include="src_cpp\core\nw_data_res.cpp">
+    <ClCompile Include="src_cpp\core\nw_scene.cpp">
+      <Filter>src_cpp\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\core\nw_window.cpp">
       <Filter>src_cpp\core</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\glib\core\nw_gapi.cpp">
+      <Filter>src_cpp\glib\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\core\nw_gengine.cpp">
+      <Filter>src_cpp\glib\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\core\nw_glayer.cpp">
       <Filter>src_cpp\glib\core</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\glib\gcontext\nw_framebuf.cpp">
       <Filter>src_cpp\glib\gcontext</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\glib\gcontext\nw_gcontext.cpp">
-      <Filter>src_cpp\glib\gcontext</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\glib\gcontext\nw_window.cpp">
       <Filter>src_cpp\glib\gcontext</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\glib\nw_drawable.cpp">
@@ -249,25 +212,13 @@
     <ClCompile Include="src_cpp\nw_pch.cpp">
       <Filter>src_cpp</Filter>
     </ClCompile>
-    <ClCompile Include="src_cpp\nwlib\nw_code_chunk.cpp">
-      <Filter>src_cpp\nwlib</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\nwlib\nw_imgui_build.cpp">
-      <Filter>src_cpp\nwlib</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\nwlib\nw_random.cpp">
-      <Filter>src_cpp\nwlib</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\nwlib\nw_string.cpp">
-      <Filter>src_cpp\nwlib</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\nwlib\nw_time.cpp">
-      <Filter>src_cpp\nwlib</Filter>
-    </ClCompile>
     <ClCompile Include="src_cpp\phys\nw_phys_engine.cpp">
       <Filter>src_cpp\phys</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\sys\nw_data_sys.cpp">
+      <Filter>src_cpp\sys</Filter>
+    </ClCompile>
+    <ClCompile Include="src_cpp\sys\nw_ent_sys.cpp">
       <Filter>src_cpp\sys</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\sys\nw_gui_sys.cpp">
@@ -282,16 +233,6 @@
     <ClCompile Include="src_cpp\sys\nw_time_sys.cpp">
       <Filter>src_cpp\sys</Filter>
     </ClCompile>
-    <ClCompile Include="src_cpp\glib\core\nw_gengine.cpp" />
-    <ClCompile Include="src_cpp\glib\core\nw_glayer.cpp" />
-    <ClCompile Include="src_cpp\sys\nw_ent_sys.cpp">
-      <Filter>src_cpp\ecs</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\core\nw_scene.cpp">
-      <Filter>src_cpp\ecs</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\sys\nw_mem_sys.cpp" />
-    <ClCompile Include="src_cpp\nwlib\nw_memory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src_glsl\shd_2d_batch.glsl">
@@ -314,9 +255,6 @@
     </None>
     <None Include="src_lua\estates\est_default.lua">
       <Filter>src_lua\estates</Filter>
-    </None>
-    <None Include="src_glsl\shd_batch_3d.glsl">
-      <Filter>src_glsl</Filter>
     </None>
   </ItemGroup>
 </Project>

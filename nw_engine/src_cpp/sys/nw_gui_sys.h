@@ -1,6 +1,8 @@
 #ifndef NW_GUI_SYSTEM_H
 #define NW_GUI_SYSTEM_H
 
+#include <nw_glib_decl.hpp>
+
 #if (NW_GUI & NW_GUI_NATIVE)
 #include <glib/nw_gui_widget.h>
 #endif	// NW_GUI

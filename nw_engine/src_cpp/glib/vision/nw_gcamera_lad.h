@@ -3,8 +3,6 @@
 
 #include <glib/vision/nw_gcamera.h>
 
-#include <nwlib/nw_singleton.h>
-
 #include <nw_decl.hpp>
 
 namespace NW

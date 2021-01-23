@@ -2,7 +2,6 @@
 #include "nw_texture.h"
 
 #include <sys/nw_data_sys.h>
-#include <sys/nw_mem_sys.h>
 
 #if (defined NW_GRAPHICS)
 #include <glib/core/nw_gengine.h>
@@ -10,20 +9,20 @@
 
 #include <sys/nw_log_sys.h>
 
-NW::UByte NW::ATexture::s_ClearColorData[4] = { 255, 255, 255, 255 };
+UByte NW::ATexture::s_ClearColorData[4] = { 255, 255, 255, 255 };
 
 namespace NW
 {
 	ATexture::ATexture(const char* strName) :
 		ADataRes(strName),
 		m_strName(strName), m_unRId(0), m_unTexSlot(0),
-		m_TexInfo(TextureInfo()), m_ImgInfo(ImageInfo()) { DataSys::AddDataRes<ATexture>(this); }
-	ATexture::~ATexture() { DataSys::RmvDataRes<ATexture>(GetId()); }
+		m_TexInfo(TextureInfo()), m_ImgInfo(ImageInfo()) { ADataRes::AddDataRes<ATexture>(this); }
+	ATexture::~ATexture() { ADataRes::RmvDataRes<ATexture>(GetId()); }
 
 	// --==<ATexture1d>==--
 	ATexture1d::ATexture1d(const char* strName) :
-	ATexture(strName) { DataSys::AddDataRes<ATexture1d>(this); }
-	ATexture1d::~ATexture1d() { DataSys::RmvDataRes<ATexture1d>(GetId()); }
+	ATexture(strName) { ADataRes::AddDataRes<ATexture1d>(this); }
+	ATexture1d::~ATexture1d() { ADataRes::RmvDataRes<ATexture1d>(GetId()); }
 
 	bool ATexture1d::SaveF(const char* strFPath) { return true; }
 	bool ATexture1d::LoadF(const char* strFPath)
@@ -58,8 +57,8 @@ namespace NW
 
 	// --==<ATexture2d>==--
 	ATexture2d::ATexture2d(const char* strName) :
-		ATexture(strName) { DataSys::AddDataRes<ATexture2d>(this); }
-	ATexture2d::~ATexture2d() { DataSys::RmvDataRes<ATexture2d>(GetId()); }
+		ATexture(strName) { ADataRes::AddDataRes<ATexture2d>(this); }
+	ATexture2d::~ATexture2d() { ADataRes::RmvDataRes<ATexture2d>(GetId()); }
 
 	void ATexture2d::SetSubTexs(const DArray<SubTexture2d>& rSubTexs) {
 		m_SubTexs = rSubTexs;
@@ -91,7 +90,7 @@ namespace NW
 		}
 		switch (ImgInfoTemp.nChannels) {
 		case 1: TexInfoTemp.Format = TC_FORMAT_RED; TexInfoTemp.InterFormat = TC_FORMAT_RED; break;
-		case 2: LogSys::WriteErrStr(NW_ERR_NO_SUPPORT, "Unsupported format!"); break;
+		case 2: LogSys::WriteErrStr(NWL_ERR_NO_SUPPORT, "Unsupported format!"); break;
 		case 3: TexInfoTemp.InterFormat = TC_FORMAT_RGB; TexInfoTemp.Format = TC_FORMAT_RGB; break;
 		case 4: TexInfoTemp.Format = TC_FORMAT_RGBA; TexInfoTemp.InterFormat = TC_FORMAT_RGBA8; break;
 		}
@@ -109,8 +108,8 @@ namespace NW
 
 	// --==<ATexture3d>==--
 	ATexture3d::ATexture3d(const char* strName) :
-		ATexture(strName) { DataSys::AddDataRes<ATexture3d>(this); }
-	ATexture3d::~ATexture3d() { DataSys::RmvDataRes<ATexture3d>(GetId()); }
+		ATexture(strName) { ADataRes::AddDataRes<ATexture3d>(this); }
+	ATexture3d::~ATexture3d() { ADataRes::RmvDataRes<ATexture3d>(GetId()); }
 
 	bool ATexture3d::SaveF(const char* strFPath) { return true; }
 	bool ATexture3d::LoadF(const char* strFPath)
@@ -147,7 +146,7 @@ namespace NW
 		ATexture1d* pTex = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GAPI_OPENGL: pTex = new Texture1dOgl(strName); break;
+		case GAPI_OPENGL: pTex = NewT<Texture1dOgl>(GEngine::Get().GetMemory(), strName); break;
 	#endif	// NW_GRAPHICS
 		default: break;
 		}
@@ -157,7 +156,7 @@ namespace NW
 		ATexture2d* pTex = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GAPI_OPENGL: pTex = new Texture2dOgl(strName); break;
+		case GAPI_OPENGL: pTex = NewT<Texture2dOgl>(GEngine::Get().GetMemory(), strName); break;
 	#endif	// NW_GRAPHICS
 		default: break;
 		}
@@ -167,7 +166,7 @@ namespace NW
 		ATexture3d* pTex = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GAPI_OPENGL: pTex = new Texture3dOgl(strName); break;
+		case GAPI_OPENGL: pTex = NewT<Texture3dOgl>(GEngine::Get().GetMemory(), strName); break;
 	#endif	// NW_GRAPHICS
 		default: break;
 		}
@@ -193,7 +192,7 @@ namespace NW
 	void Texture1dOgl::SetInfo(const ImageInfo& rImgInfo) {
 		if (rImgInfo.nWidth < 1 || rImgInfo.nHeight < 1 || rImgInfo.nChannels < 1) { return; }
 		if (m_ImgInfo.ClrData != &s_ClearColorData[0] && m_ImgInfo.ClrData != rImgInfo.ClrData && m_ImgInfo.ClrData != nullptr) {
-			MemSys::DelTArr<UByte>(m_ImgInfo.ClrData, m_ImgInfo.nWidth * m_ImgInfo.nHeight * m_ImgInfo.nChannels);
+			delete[] m_ImgInfo.ClrData;
 			m_ImgInfo.ClrData = nullptr;
 		}
 
@@ -220,7 +219,7 @@ namespace NW
 
 		switch (m_ImgInfo.nChannels) {
 		case 1: m_TexInfo.InterFormat = m_TexInfo.Format = TC_FORMAT_RED; break;
-		case 2: LogSys::WriteErrStr(NW_ERR_NO_SUPPORT, "Unknown format!"); break;
+		case 2: LogSys::WriteErrStr(NWL_ERR_NO_SUPPORT, "Unknown format!"); break;
 		case 3: m_TexInfo.InterFormat = m_TexInfo.Format = TC_FORMAT_RGB; break;
 		case 4: m_TexInfo.InterFormat = m_TexInfo.Format = TC_FORMAT_RGBA; break;
 		default: return;
@@ -255,7 +254,7 @@ namespace NW
 	void Texture2dOgl::SetInfo(const ImageInfo& rImgInfo) {
 		if (rImgInfo.nWidth < 1 || rImgInfo.nHeight < 1 || rImgInfo.nChannels < 1) { return; }
 		if (m_ImgInfo.ClrData != &s_ClearColorData[0] && m_ImgInfo.ClrData != rImgInfo.ClrData && m_ImgInfo.ClrData != nullptr) {
-			MemSys::DelTArr<UByte>(m_ImgInfo.ClrData, m_ImgInfo.nWidth * m_ImgInfo.nHeight * m_ImgInfo.nChannels);
+			delete[] m_ImgInfo.ClrData;
 			m_ImgInfo.ClrData = nullptr;
 		}
 		m_ImgInfo = rImgInfo;
@@ -311,7 +310,7 @@ namespace NW
 	void Texture3dOgl::SetInfo(const ImageInfo& rImgInfo) {
 		if (rImgInfo.nWidth < 1 || rImgInfo.nHeight < 1 || rImgInfo.nChannels < 1) { return; }
 		if (m_ImgInfo.ClrData != &s_ClearColorData[0] && m_ImgInfo.ClrData != rImgInfo.ClrData && m_ImgInfo.ClrData != nullptr) {
-			MemSys::DelTArr<UByte>(m_ImgInfo.ClrData, m_ImgInfo.nWidth * m_ImgInfo.nHeight * m_ImgInfo.nChannels);
+			delete[] m_ImgInfo.ClrData;
 		}
 		m_ImgInfo = rImgInfo;
 	}

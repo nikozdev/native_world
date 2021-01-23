@@ -1,8 +1,6 @@
 #ifndef NW_AFRAME_BUFFER_H
 #define NW_AFRAME_BUFFER_H
 
-#include <core/nw_data_res.h>
-
 #include <nw_glib_decl.hpp>
 
 #if (defined NW_GRAPHICS)

@@ -1,7 +1,6 @@
 #include <nw_pch.hpp>
 #include "nw_framebuf.h"
 
-#include <sys/nw_mem_sys.h>
 #include <sys/nw_data_sys.h>
 
 #if (defined NW_GRAPHICS)
@@ -17,9 +16,9 @@ namespace NW
 		String strClrName = strName;
 		strClrName += std::to_string(GetId());
 		m_ColorAttach = ATexture2d::Create(&strClrName[0]);
-		DataSys::AddDataRes<AFrameBuf>(this);
+		ADataRes::AddDataRes<AFrameBuf>(this);
 	}
-	AFrameBuf::~AFrameBuf() { DataSys::RmvDataRes<AFrameBuf>(GetId()); }
+	AFrameBuf::~AFrameBuf() { ADataRes::RmvDataRes<AFrameBuf>(GetId()); }
 
 	// --setters
 	void AFrameBuf::SetSizeWH(UInt32 unWidth, UInt32 unHeight) { m_Info.unWidth = unWidth; m_Info.unHeight = unHeight; Remake(); }
@@ -29,9 +28,9 @@ namespace NW
 		AFrameBuf* pFB = nullptr;
 		switch (GEngine::Get().GetGApi()->GetType()) {
 	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		case GApiTypes::GAPI_OPENGL: pFB = new FrameBufOgl(strName, rfbInfo); break;
+		case GApiTypes::GAPI_OPENGL: pFB = NewT<FrameBufOgl>(GEngine::Get().GetMemory(), strName, rfbInfo); break;
 	#endif // NW_GRAPHICS
-		default: NW_ERR("Graphics API is not defined"); break;
+		default: NWL_ERR("Graphics API is not defined"); break;
 		}
 		return pFB;
 	}
@@ -95,7 +94,7 @@ namespace NW
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_unRIdDepth);
 
 		bool bIsCompleted = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
-		NW_ASSERT(bIsCompleted, "FrameBufOgl is not created!");
+		NWL_ASSERT(bIsCompleted, "FrameBufOgl is not created!");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}

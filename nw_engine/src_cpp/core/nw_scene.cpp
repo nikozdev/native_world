@@ -6,7 +6,6 @@
 #include <core/nw_core_engine.h>
 #include <sys/nw_data_sys.h>
 #include <sys/nw_log_sys.h>
-#include <sys/nw_mem_sys.h>
 
 #include <lua.hpp>
 
@@ -18,8 +17,6 @@ namespace NW
     // --setters
 
     // --==<core_methods>==--
-    void Scene::Update()
-    {
-    }
+    void Scene::Update() { }
 	// --==</core_methods>==--
 }

@@ -6,18 +6,18 @@
 // Functions
 namespace GLIB
 {
-	inline Size SDTypeGetSize(ShaderDataTypes sDataType, UInt32 unCount = 1) {
+	inline Size SdTypeGetSize(ShaderDataTypes sDataType, UInt32 unCount = 1) {
 		Size szData = 0;
 		switch (sDataType) {
 		case SDT_BOOL:	case SDT_INT8:		case SDT_UINT8:		szData = 1;	break;
 		case SDT_INT16:	case SDT_UINT16:	case SDT_SAMPLER:	szData = 4;	break;
 		case SDT_INT32:	case SDT_UINT32:	case SDT_FLOAT32:	szData = 4;	break;
 		case SDT_FLOAT64:										szData = 8;	break;
-		default:	GLIB_ERR("Invalid shader data type");			szData = 0;	break;
+		default:	NWL_ERR("Invalid shader data type");			szData = 0;	break;
 		}
 		return szData * unCount;
 	}
-	inline Size SDTypeGetAllignedSize(ShaderDataTypes sDataType, UInt32 unCount = 1) {
+	inline Size SdTypeGetAllignedSize(ShaderDataTypes sDataType, UInt32 unCount = 1) {
 		Size szAll = 0;
 		switch (sDataType) {
 		case SDT_BOOL:	case SDT_INT8:	case SDT_UINT8:			szAll = 4;	break;
@@ -25,11 +25,11 @@ namespace GLIB
 		case SDT_INT32:	case SDT_UINT32:	case SDT_SAMPLER:	szAll = 4;	break;
 		case SDT_FLOAT32:										szAll = 4;	break;
 		case SDT_FLOAT64:										szAll = 8;	break;
-		default:	GLIB_ERR("Invalid shader data type");			szAll = 0;	break;
+		default:	NWL_ERR("Invalid shader data type");			szAll = 0;	break;
 		}
 		return szAll * ((unCount + (szAll - 1)) & ~(szAll - 1));
 	}
-	inline const char* SDTypeGetString(ShaderDataTypes sdType) {
+	inline const char* SdType_GetString(ShaderDataTypes sdType) {
 		return sdType == SDT_BOOL ? "boolean" :
 			sdType == SDT_INT8 ? "byte" : sdType == SDT_UINT8 ? "unsigned byte" :
 			sdType == SDT_INT16 ? "short" : sdType == SDT_UINT16 ? "unsigned short" :
@@ -174,6 +174,7 @@ namespace GLIB
 		UInt8 unTexCount = 0;
 		// --objects
 		AShader* pShader = nullptr;
+		GMaterial* pGMtl = nullptr;
 		AVertexBuf* pVtxBuf = nullptr;
 		AIndexBuf* pIdxBuf = nullptr;
 		AShaderBuf* pShdBuf = nullptr;
@@ -340,6 +341,7 @@ namespace GLIB
 #endif	// GLIB_GAPI
 #if (GLIB_GAPI & GLIB_GAPI_OGL)
 #define GL_DEBUG_ERR_LOG(errType, objectID) (OglErrLogShader(errType, objectID))
+#define GL_DEBUG_ERR_LOG(errType, objectID) (OGL_ErrLog_Shader(errType, objectID))
 // Functions
 namespace GLIB
 {
@@ -350,6 +352,7 @@ namespace GLIB
 	extern bool OGL_ErrLog(const char* funcName, const char* file, int line);
 	/// Get compile and linking status return true if there are errors
 	extern int OglErrLogShader(ShaderTypes ShaderType, UInt32 unShaderId);
+	extern int OGL_ErrLog_Shader(ShaderTypes ShaderType, UInt32 unShaderId);
 }
 #endif // GLIB_GAPI
 #endif // GLIB_TOOLS_H

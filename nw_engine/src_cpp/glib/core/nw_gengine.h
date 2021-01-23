@@ -6,10 +6,11 @@
 namespace NW
 {
 	/// GEngine singleton class
-	class NW_API GEngine
+	class NW_API GEngine : public ASingleton<GEngine>
 	{
 	public:
 		using Layers = DArray<GLayer>;
+		friend class ASingleton<GEngine>;
 	private:
 		GEngine();
 		GEngine(const GEngine& rCpy) = delete;
@@ -18,10 +19,10 @@ namespace NW
 		~GEngine();
 		
 		// --getters
-		static inline GEngine& Get() { static GEngine s_GEngine; return s_GEngine; }
-		inline std::thread& GetRunThread() { return m_thrRun; }
-		inline AWindow* GetWindow() { return m_pWindow.get(); }
-		inline AGApi* GetGApi() { return m_pGApi.get(); }
+		inline Thread& GetRunThread() { return m_thrRun; }
+		inline AMemAllocator& GetMemory() { return m_Memory; }
+		
+		inline AGApi* GetGApi() { return m_pGApi.GetRef(); }
 		const GEngineInfo& GetInfo() { return m_DInfo; }
 		inline Layers& GetLayers() { return m_GLayers; }
 		inline GLayer* GetLayer() { return &*m_GLayer; }
@@ -30,18 +31,18 @@ namespace NW
 		GLayer* AddLayer(const char* strName);
 		void RmvLayer(const char* strName);
 		// --predicates
-		bool IsRunning() { return m_bIsRunning; }
+		Bit IsRunning() { return m_bIsRunning; }
 
 		// --core_methods
-		bool Init(WApiTypes WindowApiType, GApiTypes GraphicsApiType);
+		bool Init(Size szMem);
 		void Quit();
 		void Run();
 		void Update();
 	private:
-		bool m_bIsRunning;
-		std::thread m_thrRun;
+		Thread m_thrRun;
+		MemArena m_Memory;
+		Bit m_bIsRunning;
 
-		RefOwner<AWindow> m_pWindow;
 		RefOwner<AGApi> m_pGApi;
 
 		Layers m_GLayers;

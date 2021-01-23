@@ -139,7 +139,7 @@ namespace NW
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		static AVertexBuf* Create(Size szAlloc, const void* pVtxData = nullptr);
+		static AVertexBuf* Create(Size szAlloc, const Ptr pVtxData = nullptr);
 	};
 	/// Abstract IndexBuffer Class
 	/// Interface:
@@ -162,7 +162,7 @@ namespace NW
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		static AIndexBuf* Create(Size szAlloc, const void* pIdxData = nullptr);
+		static AIndexBuf* Create(Size szAlloc, const Ptr pIdxData = nullptr);
 	};
 	/// Abstract ShaderBuffer class
 	/// Description:
@@ -185,7 +185,7 @@ namespace NW
 		virtual void Bind(UInt32 unPoint, Size szData, Size szOffset = 0) const = 0;
 		virtual void Unbind() const = 0;
 
-		static AShaderBuf* Create(Size szAlloc, const void* pShaderData = nullptr);
+		static AShaderBuf* Create(Size szAlloc, const Ptr pShaderData = nullptr);
 	};
 }
 #endif	// NW_GRAPHICS

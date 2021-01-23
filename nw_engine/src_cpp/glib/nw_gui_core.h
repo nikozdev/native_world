@@ -3,8 +3,6 @@
 
 #include <glib/nw_texture.h>
 
-#include <nwlib/nw_event.h>
-
 #include <nw_glib_decl.hpp>
 
 namespace NW
