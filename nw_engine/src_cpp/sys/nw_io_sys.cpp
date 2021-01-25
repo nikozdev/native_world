@@ -73,8 +73,8 @@ namespace NW
             if (rBs.bNew != rBs.bOld) {
                 if (rBs.bNew) {
                     rBs.bPressed = rBs.bHeld = true;
-                    s_Mouse.xHeld = s_Mouse.xMove;
-                    s_Mouse.yHeld = s_Mouse.yMove;
+                    s_Mouse.xHeld[mi] = s_Mouse.xMove;
+                    s_Mouse.yHeld[mi] = s_Mouse.yMove;
                 }
                 else {
                     rBs.bHeld = false;

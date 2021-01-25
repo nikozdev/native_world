@@ -1,13 +1,9 @@
 #include <nw_pch.hpp>
 #include "nw_data_sys.h"
 
-#include <core/nw_core_state.h>
-#include <lua/nw_lua_engine.h>
-
+#include <core/nw_core_engine.h>
 #include <core/nw_window.h>
-#include <glib/vision/nw_gmaterial.h>
-#include <glib/vision/nw_shader.h>
-#include <glib/nw_texture.h>
+#include <core/nw_core_state.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -57,11 +53,11 @@ namespace NW
     void DataSys::OnQuit()
     {
         if (true) {
-            delete (ADataRes::GetDataRes<AShader>("shd_2d_tile"));
-            delete (ADataRes::GetDataRes<AShader>("shd_3d_batch"));
+            DelT<ShaderOgl>(CoreEngine::Get().GetMemory(), static_cast<ShaderOgl*>(ADataRes::GetDataRes<AShader>("shd_2d_batch")));
+            DelT<ShaderOgl>(CoreEngine::Get().GetMemory(), static_cast<ShaderOgl*>(ADataRes::GetDataRes<AShader>("shd_3d_batch")));
         }
         if (true) {
-            delete (ADataRes::GetDataRes<ATexture2d>("tex_white_solid"));
+            DelT<Texture2dOgl>(CoreEngine::Get().GetMemory(), static_cast<Texture2dOgl*>(ADataRes::GetDataRes<ATexture2d>("tex_white_solid")));
         }
         if (true) {
             delete ADataRes::GetDataRes<GMaterial>("gmt_2d_tile");

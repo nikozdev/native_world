@@ -10,12 +10,10 @@
 #include <cmd_engine.h>
 #include <core/glib_engine.h>
 
-#if (NW_GUI & NW_GUI_IMGUI)
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <examples/imgui_impl_opengl3.h>
 #include <examples/imgui_impl_glfw.h>
 #define GUI_DEFAULT_TREE_FLAGS ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick
-#endif	// NW_GUI
 
 #endif	// NWG_PCH

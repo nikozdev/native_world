@@ -18,6 +18,11 @@ namespace NW
 	// --objects
 	
 	// --==<enums>==--
+		/// window_api_types
+	enum WApiTypes : UInt32 {
+		WAPI_NONE = 0,
+		WAPI_GLFW = NW_WINDOW_GLFW
+	};
 	enum KeyCodes : Char16 {
 		KC_NONE = 0,
 		KC_BELL = '\a', KC_BACKSPACE = NW_KEY_BACKSPACE_8, KC_HTAB = NW_KEY_HTAB_9, KC_ENTER = NW_KEY_ENTER_10, KC_VTAB = 11,

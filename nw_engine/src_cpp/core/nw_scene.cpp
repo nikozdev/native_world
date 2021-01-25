@@ -1,8 +1,6 @@
 #include <nw_pch.hpp>
 #include "nw_scene.h"
 
-#include <glib/core/nw_gengine.h>
-
 #include <core/nw_core_engine.h>
 #include <sys/nw_data_sys.h>
 #include <sys/nw_log_sys.h>

@@ -4,7 +4,6 @@
 #include <nw_pch.hpp>
 
 #include <nw_decl.hpp>
-#include <nw_glib_decl.hpp>
 #include <lua_decl.hpp>
 
 namespace NW

@@ -3,171 +3,89 @@
 
 #include <nwg_pch.hpp>
 
+// --==<RefKeeper>==--
 namespace NWG
 {
-	using Int8 = char;
-	using UInt8 = unsigned char;
-	using Byte = char;
-	using UByte = unsigned char;
-	using Int32 = int;
-	using UInt32 = unsigned int;
-	using UInt64 = unsigned long int;
-	using Size = size_t;
-	using Ptr = void*;
-	using OutStream = std::ostream;
-}
-namespace NWG
-{
-	/// MemInfo struct
-	struct MemInfo
-	{
-	public:
-		Size szMem = 0;
-		UInt64 unMem = 0;
-		Size szAlloc = 0;
-		UInt64 unAlloc = 0;
-		Ptr pLoc = this;
-	public:
-		// --getters
-		inline uintptr_t GetLocDec() const { return reinterpret_cast<uintptr_t>(pLoc); }
-		// --operators
-		OutStream& operator<<(OutStream& rStream) const;
-	};
-	inline OutStream& MemInfo::operator<<(OutStream& rStream) const {
-		return rStream << "MEMORY_INFO::" << std::endl <<
-			"address: " << std::hex << GetLocDec() << std::dec << std::endl <<
-			"total bytes: " << szMem << std::endl <<
-			"total blocks: " << unMem << std::endl <<
-			"allocated bytes: " << szAlloc << std::endl <<
-			"allocated blocks: " << unAlloc << std::endl;
-	}
-	inline OutStream& operator<<(OutStream& rStream, const MemInfo& rInfo) { return rInfo.operator<<(rStream); }
-	/// MemLink struct
-	struct MemLink
-	{
-	public:
-		MemLink* pNext = nullptr;
-		UInt32 szBlock = 0;
-	public:
-		// --getters
-		inline MemLink* GetBlock(UInt32 szMem) {
-			if (szBlock >= szMem) { this->szBlock -= szMem; return this; }
-			for (MemLink* pBlock = this, *pBlockNext = pBlock->pNext;
-				pBlockNext != nullptr;
-				pBlock = pBlockNext, pBlockNext = pBlockNext->pNext)
-			{
-				if (pBlockNext->szBlock >= szMem) {
-					pBlock->szBlock -= szMem;
-					if (pBlock->szBlock == 0) { pBlock->pNext = pBlockNext->pNext; }
-					return pBlockNext;
-				}
-			}
-			return nullptr;
-		}
-		template <typename MType>
-		inline MType* GetCasted() { return reinterpret_cast<MType*>(this); }
-	};
-}
-namespace NWG
-{
-	/// Abstract MemAllocator class
-	class AMemAllocator
-	{
-	public:
-		AMemAllocator(Ptr pBlock, Size szMem) :
-			m_pBeg(static_cast<Byte*>(pBlock)), m_Info(MemInfo())
-		{
-			m_Info.szMem = m_Info.unMem = szMem;
-			m_Info.szAlloc = 0; m_Info.unAlloc = 0;
-			m_Info.pLoc = pBlock;
-		}
-		virtual ~AMemAllocator() { NWL_ASSERT(GetAllocSize() == 0 && GetAllocCount() == 0, "memory leak"); }
-
-		// --getters
-		inline Ptr GetDataBeg() { return &m_pBeg[0]; }
-		inline Ptr GetDataCur() { return &m_pBeg[m_Info.unAlloc]; }
-		inline Ptr GetDataEnd() { return &m_pBeg[m_Info.szMem]; }
-		inline Size GetDataSize() const { return m_Info.szMem; }
-		inline Size GetAllocSize() const { return m_Info.szAlloc; }
-		inline UInt64 GetAllocCount() const { return m_Info.unAlloc; }
-		inline Size GetFreeSize() { return m_Info.szMem - m_Info.szAlloc; }
-		inline UInt64 GetFreeCount() { return m_Info.unMem - m_Info.unAlloc; }
-		inline const MemInfo& GetInfo() const { return m_Info; }
-		// --predicates
-		inline bool HasBlock(Ptr pBlock) { return (pBlock >= GetDataBeg()) && (pBlock <= GetDataEnd()); }
-		inline bool HasEnoughSize(Size szHowMuch) { return GetFreeSize() > szHowMuch; }
-		inline bool HasEnoughCount(Size szHowMuch) { return GetFreeCount() > szHowMuch; }
-		// --core_methods
-		virtual inline Ptr Alloc(Size szMem, UInt8 szAlign = 4) = 0;
-		virtual inline void Dealloc(Ptr pBlock, Size szDealloc) = 0;
-		virtual inline Ptr Realloc(Ptr pBlock, Size szOld, Size szNew) = 0;
-	protected:
-		Byte* m_pBeg;
-		MemInfo m_Info;
-	};
-}
-namespace NWG
-{
-	/// MemArena class
+	/// RefKeeper class
 	/// Description:
-	/// --just a chunk of bytes works with Ptr and char* pointers
-	class MemArena : public AMemAllocator
+	/// -- Smart "shared" pointer in nw implementation
+	/// -- Allocates object due to given allocator
+	/// -- The reference gets deleted if there is no any other RefKeepers for it
+	/// Interface:
+	/// -> Create RefKeeper -> MakeRef with particular allocator -> use as a pointer
+	template <typename MType>
+	class RefKeeper
 	{
 	public:
-		MemArena(Ptr pBlock, Size szMemory) :
-			AMemAllocator(pBlock, szMemory),
-			m_FreeList(nullptr) { }
-		~MemArena() { }
+		RefKeeper() :
+			m_pAllocator(nullptr), m_pRef(nullptr), m_pRefCounter(nullptr), m_szData(0){ }
+		RefKeeper(RefKeeper& rCpy) :
+			m_pAllocator(rCpy.m_pAllocator), * m_pRef(*rCpy.m_pRef), m_szData(rCpy.m_szData) { }
+		~RefKeeper() { Reset(); }
 
+		// --getters
+		inline AMemAllocator* GetAllocator() { return m_pAllocator; }
+		inline MType* GetRef() { return m_pRef; }
+		inline UInt16* GetRefCounter() { return m_pRefCounter; }
+		inline Size GetSize() const { return m_szData; }
+		// --setters
+		inline void SetRef(RefKeeper<MType>& rRefKeeper);
+		inline void Reset();
 		// --core_methods
-		virtual inline Ptr Alloc(Size szMemory, UInt8 szAlign = sizeof(MemLink)) override;
-		virtual inline void Dealloc(Ptr pBlock, Size szDealloc) override;
-		virtual inline Ptr Realloc(Ptr pBlock, Size szOld, Size szNew) override;
+		template <typename VType, typename...Args>
+		inline void MakeRef(AMemAllocator& rAllocator, Args...Arguments) {
+			Reset();
+			m_pAllocator = &rAllocator;
+			m_szData = GetAligned(sizeof(VType), __alignof(VType));
+			m_pRef = NewT<VType>(rAllocator, Arguments...);
+			m_pRefCounter = NewT<UInt16>(rAllocator);
+			*m_pRefCounter = 1;
+		}
+		template <typename VType>
+		inline void MakeRef(AMemAllocator& rAllocator, VType& rCpy) {
+			Reset();
+			m_pAllocator = &rAllocator;
+			m_szData = GetAligned(sizeof(VType), __alignof(VType));
+			m_pRef = NewT<VType>(rAllocator, rCpy);
+			m_pRefCounter = NewT<UInt16>(rAllocator);
+			*m_pRefCounter = 1;
+		}
+		// --operators
+		inline MType* operator->() { return m_pRef; }
+		inline MType& operator*() { return *m_pRef; }
+		inline void operator=(RefKeeper& rCpy) { SetRef(rCpy); }
 	private:
-		MemLink* m_FreeList;
+		AMemAllocator* m_pAllocator;
+		MType* m_pRef;
+		Size m_szData;
+		UInt16* m_pRefCounter;
 	};
-	// --==<core_methods>==--
-	inline Ptr MemArena::Alloc(Size szMemory, UInt8 szAlign) {
-		Ptr pBlock = nullptr;
-		if (szMemory == 0) { return nullptr; }
-		szMemory = (szMemory + szAlign - 1) & ~(szAlign - 1);
-		if (m_FreeList != nullptr) {
-			if (MemLink* pLink = m_FreeList->GetBlock(szMemory)) {
-				pBlock = pLink->GetCasted<Byte>();
-				if (pLink == m_FreeList && m_FreeList->szBlock == 0) { m_FreeList = m_FreeList->pNext; }
+	// --setters
+	template <typename MType>
+	inline void RefKeeper<MType>::SetRef(RefKeeper<MType>& rRefKeeper) {
+		Reset();
+		m_pAllocator = rRefKeeper.m_pAllocator;
+		m_pRef = rRefKeeper.m_pRef;
+		m_pRefCounter = rRefKeeper.m_pRefCounter;
+		if (m_pRefCounter != nullptr) { (*m_pRefCounter) += 1; }
+		m_szData = rRefKeeper.m_szData;
+	}
+	template <typename MType>
+	inline void RefKeeper<MType>::Reset() {
+		if (m_pRef != nullptr && m_pAllocator != nullptr && m_pRefCounter != nullptr) {
+			if (*m_pRefCounter == 1) {
+				m_pRef->~MType();
+				m_pAllocator->Dealloc(m_pRef, m_szData);
+				DelT<UInt16>(*m_pAllocator, m_pRefCounter);
 			}
-			else {
-				if (HasEnoughSize(szMemory)) { pBlock = &m_pBeg[szMemory]; }
-				else { NWL_ERR("the memory is exhausted!"); }
-			}
+			else { (*m_pRefCounter) -= 1; }
 		}
-		else {
-			if (HasEnoughSize(szMemory)) { pBlock = &m_pBeg[GetAllocSize()]; }
-			else { NWL_ERR("the memory is exhausted!"); }
-		}
-		m_Info.unAlloc++;
-		m_Info.szAlloc += szMemory;
-		return pBlock;
+		m_pAllocator = nullptr;
+		m_pRef = nullptr;
+		m_pRefCounter = nullptr;
+		m_szData = 0;
 	}
-	inline void MemArena::Dealloc(Ptr pBlock, Size szMemory) {
-		if (HasBlock(pBlock)) {
-			MemLink* pNextFreeList = reinterpret_cast<MemLink*>(pBlock);
-			pNextFreeList->pNext = m_FreeList;
-			pNextFreeList->szBlock = szMemory;
-			m_FreeList = pNextFreeList;
-		}
-		else { NWL_ERR("the memory is exhausted!"); }
-		memset(pBlock, 0, szMemory);
-		m_Info.unAlloc--;
-		m_Info.szAlloc -= szMemory;
-	}
-	inline Ptr MemArena::Realloc(Ptr pBlock, Size szOld, Size szNew) {
-		Size szCpy = szOld < szNew ? szOld : szNew;
-		Ptr pRealloc = Alloc(szNew);
-		memcpy(pRealloc, pBlock, szCpy);
-		Dealloc(pBlock, szOld);
-		return pRealloc;
-	}
-	// --==</core_methods>==--
 }
+// --==</RefKeeper>==--
+
 #endif // NWG_MEMORY_H

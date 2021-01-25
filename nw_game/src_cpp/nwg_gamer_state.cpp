@@ -38,15 +38,12 @@ namespace NWG
 	// --==<--on_event_methods>==--
 	void GamerState::OnEvent(MouseEvent& rmEvt)
 	{
-		GCameraLad::Get().OnEvent(rmEvt);
 	}
 	void GamerState::OnEvent(KeyboardEvent& rkEvt)
 	{
-		GCameraLad::Get().OnEvent(rkEvt);
 	}
 	void GamerState::OnEvent(WindowEvent& rwEvt)
 	{
-		GCameraLad::Get().OnEvent(rwEvt);
 	}
 	// --==</--on_event_methods>==--
 }

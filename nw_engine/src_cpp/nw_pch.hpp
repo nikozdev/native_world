@@ -82,7 +82,10 @@
 #endif
 // --</platform>--
 
+
 #include <native_world_library.hpp>
 using namespace NWL;
+#include <graphics_library.hpp>
+using namespace GLIB;
 
 #endif	// NW_PCH_HPP

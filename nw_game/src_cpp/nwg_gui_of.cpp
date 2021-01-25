@@ -71,7 +71,7 @@ namespace NWG
 		
 		ImGui::Text("gapi type: %s", GEngine::Get().GetGApi()->GetType() == GApiTypes::GAPI_OPENGL ? "opengl" : "none");
 		ImGui::Separator();
-		const GContextInfo& rGContextInfo = pWindow->GetGContext()->GetInfo();
+		const GApiInfo& rGContextInfo = GEngine::Get().GetGApi()->GetInfo();
 		ImGui::Text("\ncontext version: %s;\nrenderer: %s;"
 			"\nvendor: %s;\nshading language: %s"
 			"\nmax texture count: %d;\nmax vertex attributes: %d",
@@ -80,10 +80,10 @@ namespace NWG
 			rGContextInfo.nMaxTextures, rGContextInfo.nMaxVertexAttribs);
 		ImGui::Separator();
 		const GEngineInfo& rDInfo = GEngine::Get().GetInfo();
-		ImGui::Text("vertex data\nsize in bytes: %d/%d;\n", rDInfo.szVtx, rDInfo.szMaxVtx);
-		ImGui::Text("index data\nsize in bytes: %d/%d;\n", rDInfo.szIdx, rDInfo.szMaxIdx);
-		ImGui::Text("shader data\nsize in bytes: %d/%d;\n", rDInfo.szShd, rDInfo.szMaxShd);
-		ImGui::Text("textures\n::slots: %d/%d;", rDInfo.unTex, rDInfo.unMaxTex);
+		ImGui::Text("vertex data\nsize in bytes: %d;\n", rDInfo.szVtx);
+		ImGui::Text("index data\nsize in bytes: %d;\n", rDInfo.szIdx);
+		ImGui::Text("shader data\nsize in bytes: %d;\n", rDInfo.szShd);
+		ImGui::Text("textures\n::slots: %d;", rDInfo.unTex);
 		ImGui::Text("draw calls per frame: %d;", rDInfo.unDrawCalls);
 		ImGui::Separator();
 
@@ -282,7 +282,7 @@ namespace NWG
 		if (ImGui::TreeNodeEx("shaders")) {
 			auto& Shaders = ADataRes::GetDataResources<AShader>();
 			for (auto& pShader : Shaders) {
-				if (ImGui::Button(pShader.second->GetName())) { GuiOfCodeEditor::Get().SetContext(pShader.second); }
+				//if (ImGui::Button(pShader.second->GetName())) { GuiOfCodeEditor::Get().SetContext(pShader.second); }
 			} ImGui::Separator();
 			ImGui::TreePop();
 		}
@@ -376,7 +376,7 @@ namespace NWG
 					auto& Shaders = ADataRes::GetDataResources<AShader>();
 					for (auto& pShd : Shaders) {
 						if (ImGui::Button(&pShd.second->GetName()[0])) {
-							this->SetContext(pShd.second);
+							//this->SetContext(pShd.second);
 						}
 					}
 					ImGui::EndCombo();
@@ -520,7 +520,7 @@ namespace NWG
 		if (ImGui::TreeNodeEx("-- shader", GUI_DEFAULT_TREE_FLAGS)) {
 			AShader* pShader = pContext->GetShader();
 			ImGui::Text("id = %d;\nname: %s;", pShader->GetId(), pShader->GetName());
-			if (ImGui::Button("code editor")) { GuiOfCodeEditor::Get().SetContext(pShader); }
+			//if (ImGui::Button("code editor")) { GuiOfCodeEditor::Get().SetContext(pShader); }
 			if (ImGui::BeginCombo("change shader", &pShader->GetName()[0])) {
 				auto& Shaders = ADataRes::GetDataResources<AShader>();
 				for (auto& pShd : Shaders) {

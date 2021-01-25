@@ -1,7 +1,7 @@
 #ifndef ECS_SCENE_H
 #define ECS_SCENE_H
 
-#include <nw_glib_decl.hpp>
+#include <nw_decl.hpp>
 
 namespace NW
 {

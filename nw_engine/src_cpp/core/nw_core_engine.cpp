@@ -2,13 +2,11 @@
 #include <core/nw_core_engine.h>
 
 #include <core/nw_window.h>
-#include <glib/core/nw_gengine.h>
 
 #include <sys/nw_io_sys.h>
 #include <sys/nw_time_sys.h>
 #include <sys/nw_log_sys.h>
 #include <sys/nw_data_sys.h>
-#include <sys/nw_gui_sys.h>
 
 namespace NW
 {
@@ -55,7 +53,6 @@ namespace NW
 	bool CoreEngine::Init(Size szMem)
 	{
 		m_Memory = MemArena(new Byte[szMem], szMem);
-		m_bIsRunning = true;
 	#if (defined NW_WINDOW)
 		m_wapiType = WAPI_NONE;
 		WindowInfo WindowInfo{ "graphics_engine", 1200, 1200 / 4 * 3, true, nullptr };
@@ -65,13 +62,12 @@ namespace NW
 		if (!m_pWindow->Init()) { m_pWindow->OnQuit(); return false; }
 		#endif
 	#endif	// NW_WINDOW
-
-		if (!GEngine::Get().Init(szMem >> 2)) { LogSys::WriteErrStr(NWL_ERR_NO_INIT, "GEngine is not initialized!"); return false; }
 		m_pWindow->SetEventCallback([this](AEvent& rEvt)->void { return OnEvent(rEvt); });
-		DataSys::OnInit();
-		GuiSys::OnInit();
 
-		return true;
+		if (!GEngine::Get().Init(szMem >> 2)) { return false; }
+		DataSys::OnInit();
+
+		return (m_bIsRunning = true);
 	}
 	void CoreEngine::Quit()
 	{
@@ -80,40 +76,34 @@ namespace NW
 
 		while (!m_States.empty()) { (*m_States.begin())->OnDisable(); m_States.erase(m_States.begin()); }
 		DataSys::OnQuit();
-		GuiSys::OnQuit();
 		GEngine::Get().Quit();
 
 		m_pWindow->OnQuit();
+
 		delete[] m_Memory.GetDataBeg();
 		m_Memory = MemArena(nullptr, 0);
 	}
-
-	void CoreEngine::Run()
+	void CoreEngine::Run(Size szMemory)
 	{
-		m_bIsRunning = true;
-		if (m_pCurrState == nullptr) { Quit(); }
-		
-		// m_thrRun = std::thread([this]()->void { while (m_bIsRunning) { Update(); } });
-		while (m_bIsRunning) { Update(); };
-		Quit();
+		auto fnUpdate = [this](Size szMem)->void {
+			if (!Init(szMem)) { return; }
+			while (m_bIsRunning) { Update(); }
+			Quit();
+		};
+		//m_thrRun = Thread(fnUpdate, szMemory);
+		fnUpdate(szMemory);
 	}
-	inline void CoreEngine::Update()
+
+	void CoreEngine::Update()
 	{
-		GuiSys::BeginDraw();
-		GuiSys::Update();
-		
 		m_pCurrState->Update();
-		
-		GuiSys::EndDraw();
 	
 		IOSys::Update();
 		TimeSys::Update();
-
+		
+		m_pWindow->Update();
 		GEngine::Get().Update();
 	}
-	// --==</core_methods>==--
-
-	// --==<--on_event_methods>==--
 	void CoreEngine::OnEvent(AEvent& rEvt)
 	{
 		// Dispatch particular events
@@ -138,7 +128,8 @@ namespace NW
 			if (rEvt.bIsHandled) return;
 			m_pCurrState->OnEvent(*pmEvt);
 		}
-		else if (KeyboardEvent* pkEvt = dynamic_cast<KeyboardEvent*>(&rEvt)) {
+		else if (rEvt.EvtType == ET_KEY_CHAR || rEvt.EvtType == ET_KEY_RELEASE || rEvt.EvtType == ET_KEY_PRESS) {
+			KeyboardEvent* pkEvt = static_cast<KeyboardEvent*>(&rEvt);
 			switch (pkEvt->EvtType) {
 			case ET_KEY_RELEASE:
 				IOSys::s_Keyboard.bsKeys[pkEvt->unKeyCode].bNew = false;
@@ -163,5 +154,5 @@ namespace NW
 			m_pCurrState->OnEvent(*pwEvt);
 		}
 	}
-	// --==</--on_event_methods>==--
+	// --==</core_methods>==--
 }

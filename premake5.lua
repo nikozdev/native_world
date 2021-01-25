@@ -93,9 +93,8 @@ project "nw_glib"
 	{
 		"%{dir_cpp.nw_glib}",
 		"%{dir_cpp.nw_lib}",
+		"%{dir_cpp.glfw}",
 		"%{dir_cpp.glad}",
-		"%{dir_cpp.imgui}",
-		"%{dir_cpp.glm}",
 		"%{dir_cpp.stbi}"
 	}
 	libdirs
@@ -103,13 +102,12 @@ project "nw_glib"
 		"%{dir_lib.nw_glib}",
 		"%{dir_lib.nw_lib}",
 		"%{dir_lib.glfw}",
-		"%{dir_lib.glad}",
-		"%{dir_lib.imgui}"
+		"%{dir_lib.glad}"
 	}
 	links
 	{
+		"glfw",
 		"glad",
-		"imgui",
 		"opengl32.lib"
 	}
 	defines
@@ -120,10 +118,7 @@ project "nw_glib"
 	}
 	filter "system:windows"
 		systemversion "latest"
-		defines
-		{
-			"GLIB_PLATFORM_WINDOWS"
-		}
+		defines { "GLIB_PLATFORM_WINDOWS" }
 	filter "configurations:debug"
 		defines "GLIB_DEBUG"
 		symbols "on"
@@ -204,9 +199,8 @@ project "nw_engine"
 	{
 		"%{dir_cpp.nw_engine}",
 		"%{dir_cpp.nw_lib}",
+		"%{dir_cpp.nw_glib}",
 		"%{dir_cpp.glfw}",
-		"%{dir_cpp.glad}",
-		"%{dir_cpp.imgui}",
 		"%{dir_cpp.stbi}",
 		"%{dir_cpp.lualib}"
 	}
@@ -214,19 +208,16 @@ project "nw_engine"
 	{
 		"%{dir_lib.nw_engine}",
 		"%{dir_lib.nw_lib}",
+		"%{dir_lib.nw_glib}",
 		"%{dir_lib.glfw}",
-		"%{dir_lib.glad}",
-		"%{dir_lib.imgui}",
 		"%{dir_lib.lualib}"
 	}
 	links
 	{
 		"nw_lib",
+		"nw_glib",
 		"glfw",
-		"glad",
-		"imgui",
-		"lualib",
-		"opengl32.lib"
+		"lualib"
 	}
 	defines
 	{
@@ -274,6 +265,8 @@ project "nw_game"
 		"%{dir_cpp.nw_cmd}",
 		"%{dir_cpp.nw_engine}",
 		"%{dir_cpp.glm}",
+		"%{dir_cpp.glad}",
+		"%{dir_cpp.glfw}",
 		"%{dir_cpp.imgui}"
 	}
 	libdirs
@@ -284,14 +277,19 @@ project "nw_game"
 		"%{dir_lib.nw_cmd}",
 		"%{dir_lib.nw_engine}",
 		"%{dir_lib.lualib}",
-		"%{dir_lib.imgui}",	
+		"%{dir_lib.glad}",
+		"%{dir_lib.glfw}",
+		"%{dir_lib.imgui}"
 	}
 	links
 	{
 		"nw_lib",
 		"nw_glib",
 		"nw_cmd",
-		"nw_engine"
+		"nw_engine",
+		"glfw",
+		"glad",
+		"imgui"
 	}
 	defines
 	{

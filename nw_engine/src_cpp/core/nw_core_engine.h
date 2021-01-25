@@ -3,8 +3,6 @@
 
 #include <core/nw_core_state.h>
 
-#include <nw_glib_decl.hpp>
-
 namespace NW
 {
 	/// CoreEngine class
@@ -46,12 +44,20 @@ namespace NW
 		Bit IsRunning() const { return m_bIsRunning; }
 
 		// --core_methods
-		bool Init(Size szMem);
-		void Run();
+		bool Init(Size szMemory);
 		void Quit();
-	private:
-		inline void Update();
-		inline void OnEvent(AEvent& rEvt);
+		void Update();
+		void Run(Size szMemory);
+		void OnEvent(AEvent& rEvt);
+		// --memory_methods
+		template <typename MType, typename...Args>
+		inline MType* NewT(Args...Arguments) { return NWL::NewT<MType>(GetMemory(), Arguments...); }
+		template <typename MType>
+		inline MType* NewTArr(UInt64 unAlloc) { return NWL::NewTArr<MType>(GetMemory(), unAlloc); }
+		template <typename MType>
+		inline void DelT(MType* pBlock) { NWL::DelT<MType>(GetMemory(), pBlock); }
+		template <typename MType>
+		inline void DelTArr(MType* pBlock, UInt64 unDealloc) { NWL::DelTArr<MType>(GetMemory(), pBlock, unDealloc); }
 	private:
 		Bit m_bIsRunning;
 		Thread m_thrRun;

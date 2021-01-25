@@ -2,16 +2,15 @@
 #define NW_AWINDOW_H
 
 #include <nw_decl.hpp>
-#include <nw_glib_decl.hpp>
 
 #if (defined NW_WINDOW)
-#include <glib/gcontext/nw_gcontext.h>
 namespace NW
 {
 	using EventCallback = std::function<void(AEvent&)>;
 	struct NW_API WindowInfo
 	{
-		String strTitle = "window";
+		String strTitle = "none";
+		String strApiVer = "none";
 		UInt16 unWidth = 800, unHeight = 600;
 		Float32 nAspectRatio = 800.0f / 600.0f;
 		bool bVSync = false;
@@ -20,7 +19,7 @@ namespace NW
 		WApiTypes WApiType = WAPI_NONE;
 
 		EventCallback fnEvCallback = nullptr;
-
+	public:
 		WindowInfo(const char* cstTitle = "native_window",
 			UInt16 unWidth = 800, UInt16 unHeight = 600,
 			bool bVerticalSync = false,
@@ -28,7 +27,15 @@ namespace NW
 			strTitle(cstTitle), unWidth(unWidth), unHeight(unHeight),
 			bVSync(bVerticalSync), fnEvCallback(fnEventCallback),
 		nAspectRatio((Float32)unWidth / (Float32)unHeight) { }
+		inline OutStream& operator<<(OutStream& rStream) {
+			rStream << "WINDOW_INFO" << std::endl <<
+				"title: " << &strTitle[0] << std::endl <<
+				"width x height: " << unWidth << " x " << unHeight << std::endl <<
+				"api_version: " << &strApiVer[0] << std::endl;
+			return rStream;
+		}
 	};
+	inline OutStream& operator<<(OutStream& rStream, WindowInfo& rwInfo) { return rwInfo.operator<<(rStream); }
 	/// Abstract Window Class
 	/// Interface:
 	/// -> Make Create method for a particular implementation
@@ -37,14 +44,15 @@ namespace NW
 	class NW_API AWindow
 	{
 	public:
+		AWindow(const WindowInfo& rwInfo);
 		virtual ~AWindow() = default;
 
 		// --getters
-		virtual UInt16 GetWidth() const = 0;
-		virtual UInt16 GetHeight() const = 0;
-		virtual void* GetNative() = 0;
-		virtual const WindowInfo& GetWindowInfo() = 0;
-		virtual AGContext* GetGContext() = 0;
+		inline UInt16 GetWidth() const { return m_Info.unWidth; }
+		inline UInt16 GetHeight() const { return m_Info.unHeight; }
+		inline const WindowInfo& GetWindowInfo() const { return m_Info; }
+		
+		virtual Ptr GetNative() = 0;
 		// --setters
 		virtual void SetTitle(const char* strTitle) = 0;
 		virtual void SetEventCallback(const EventCallback& fnEvCallback) = 0;
@@ -52,7 +60,7 @@ namespace NW
 		virtual void SetIcon(UByte* pData, UInt16 unWidth, UInt16 unHeight) = 0;
 		virtual void SetOpacity(float nOpacity) = 0;
 		// --predicates
-		virtual bool IsVSync() const = 0;
+		inline bool IsVSync() const { return m_Info.bVSync; }
 
 		// --core_methods
 		virtual bool Init() = 0;
@@ -61,11 +69,13 @@ namespace NW
 
 		static AWindow* Create(const WindowInfo& rWindowInfo);
 	protected:
-		AWindow() = default;
+		WindowInfo m_Info;
 	};
 }
 #endif // NW_WINDOW
 #if (NW_WINDOW & NW_WINDOW_GLFW)
+struct GLFWwindow;
+struct GLFWimage;
 namespace NW
 {
 	/// WindowOgl class
@@ -74,24 +84,18 @@ namespace NW
 	class NW_API WindowOgl : public AWindow
 	{
 	public:
-		WindowOgl(const WindowInfo& rWindowInfo);
+		WindowOgl(const WindowInfo& rwInfo);
 		virtual ~WindowOgl();
 
 		// --getters
-		virtual inline UInt16 GetWidth() const override { return m_WindowInfo.unWidth; }
-		virtual inline UInt16 GetHeight() const override { return m_WindowInfo.unHeight; }
-		virtual inline const WindowInfo& GetWindowInfo() override { return m_WindowInfo; }
-		virtual inline void* GetNative() override { return m_pNative; }
-		virtual inline AGContext* GetGContext() override { return m_pGContext; }
+		virtual inline Ptr GetNative() override { return m_pNative; }
 		// --setters
 		virtual void SetTitle(const char* strTitle) override;
 		virtual void SetEventCallback(const EventCallback& fnEvCallback) override;
 		virtual void SetVSync(bool enabled) override;
 		virtual void SetIcon(UByte* pData, UInt16 unWidth, UInt16 unHeight) override;
 		virtual void SetOpacity(float nOpacity) override;
-		// --predicates
-		virtual inline bool IsVSync() const override { return m_WindowInfo.bVSync; }
-
+		
 		// --core_methods
 		virtual bool Init() override;
 		virtual void OnQuit() override;
@@ -111,8 +115,6 @@ namespace NW
 		// --other_callbacks: window
 		static void CbError(Int32 nErrCode, const char* strErrMsg);
 	private:
-		GContextOgl* m_pGContext;
-		WindowInfo m_WindowInfo;
 		GLFWwindow* m_pNative;
 		GLFWimage* m_pIcon;
 	};

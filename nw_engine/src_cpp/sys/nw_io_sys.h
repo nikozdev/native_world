@@ -19,14 +19,14 @@ namespace NW
 		static inline bool GetMousePressed(UInt16 unButtonId)	{ return s_Mouse.bsButtons[unButtonId].bPressed; }
 		static inline bool GetMousReleased(UInt16 unButtonId)	{ return s_Mouse.bsButtons[unButtonId].bReleased; }
 		static inline bool GetMouseHeld(UInt16 unButtonId)		{ return s_Mouse.bsButtons[unButtonId].bHeld; }
-		static inline double GetMouseScrollX()			{ return s_Mouse.xScroll; }
-		static inline double GetMouseScrollY()			{ return s_Mouse.yScroll; }
-		static inline double GetMouseMoveX()			{ return s_Mouse.xMove; }
-		static inline double GetMouseMoveY()			{ return s_Mouse.yMove; }
-		static inline double GetMouseHeldX()			{ return s_Mouse.xHeld; }
-		static inline double GetMouseHeldY()			{ return s_Mouse.yHeld; }
-		static inline InputModes GetMouseIMode()		{ return s_Mouse.iMode; }
-		static inline InputModes GetKeyboardIMode()		{ return s_Keyboard.iMode; }
+		static inline double GetMouseScrollX()					{ return s_Mouse.xScroll; }
+		static inline double GetMouseScrollY()					{ return s_Mouse.yScroll; }
+		static inline double GetMouseMoveX()					{ return s_Mouse.xMove; }
+		static inline double GetMouseMoveY()					{ return s_Mouse.yMove; }
+		static inline double GetMouseHeldX(MouseButtons msCode)	{ return s_Mouse.xHeld[msCode]; }
+		static inline double GetMouseHeldY(MouseButtons msCode)	{ return s_Mouse.yHeld[msCode]; }
+		static inline InputModes GetMouseIMode()				{ return s_Mouse.iMode; }
+		static inline InputModes GetKeyboardIMode()				{ return s_Keyboard.iMode; }
 		// --setters
 		static void SetCursorIMode(InputModes iMode);
 		static void SetKeyboardIMode(InputModes iMode);

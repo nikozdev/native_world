@@ -2,6 +2,7 @@
 #include "nwg_creator_state.h"
 
 #include <nwg_gui_of.h>
+#include <guilib/nwg_gui_sys.h>
 
 #pragma warning(disable : 4312)
 
@@ -9,7 +10,9 @@ namespace NWG
 {
 	using namespace NW;
 
-	CreatorState::CreatorState() { }
+	CreatorState::CreatorState()
+	{
+	}
 	CreatorState::~CreatorState(){
 		if (true) {	// materials
 		}
@@ -18,10 +21,13 @@ namespace NWG
 		}
 		if (true) {	// shaders
 		}
+		GuiSys::OnQuit();
 	}
 
 	// --==<core_methods>==--
 	bool CreatorState::Init() {
+		GuiSys::OnInit();
+
 		if (true) {	// shaders
 			GEngine::Get().GetLayer()->SetShader(ADataRes::GetDataRes<AShader>("shd_3d_batch"));
 		}
@@ -40,7 +46,10 @@ namespace NWG
 		return true;
 	}
 	void CreatorState::Update() {
-		GCameraLad::Get().UpdateCamera(&GEngine::Get().GetLayer()->Camera);
+		GuiSys::BeginDraw();
+		GuiSys::Update();
+
+		//GCameraLad::Get().UpdateCamera(&GEngine::Get().GetLayer()->Camera);
 
 		if (true) {
 			if (ImGui::BeginMenuBar()) {
@@ -52,10 +61,6 @@ namespace NWG
 					ImGui::Checkbox("memory_mystem", &GuiOfMemSys::Get().bIsEnabled);
 					ImGui::Checkbox("time_system", &GuiOfTimeSys::Get().bIsEnabled);
 					ImGui::Checkbox("code_Editor", &GuiOfCodeEditor::Get().bIsEnabled);
-#if false
-					ImGui::Checkbox("scene_editor", &GuiOfSceneEditor::Get().bIsEnabled);
-					ImGui::Checkbox("entity_editor", &GuiOfEntityEditor::Get().bIsEnabled);
-#endif
 					ImGui::Checkbox("sprite_editor", &GuiOfSpriteEditor::Get().bIsEnabled);
 					ImGui::Checkbox("gmaterial_editor", &GuiOfGMaterialEditor::Get().bIsEnabled);
 
@@ -70,13 +75,10 @@ namespace NWG
 			GuiOfMemSys::Get().OnDraw();
 			GuiOfTimeSys::Get().OnDraw();
 			GuiOfCodeEditor::Get().OnDraw();
-#if false
-			GuiOfSceneEditor::Get().OnDraw();
-			GuiOfEntityEditor::Get().OnDraw();
-#endif
 			GuiOfSpriteEditor::Get().OnDraw();
 			GuiOfGMaterialEditor::Get().OnDraw();
 		}
+		GuiSys::EndDraw();
 	}
 	void CreatorState::OnEnable() { }
 	void CreatorState::OnDisable() { }
@@ -86,15 +88,15 @@ namespace NWG
 	// --==<--on_event_methods>==--
 	void CreatorState::OnEvent(MouseEvent& rmEvt)
 	{
-		GCameraLad::Get().OnEvent(rmEvt, &GEngine::Get().GetLayer()->Camera);
+		//GCameraLad::Get().OnEvent(rmEvt, &GEngine::Get().GetLayer()->Camera);
 	}
 	void CreatorState::OnEvent(KeyboardEvent& rkEvt)
 	{
-		GCameraLad::Get().OnEvent(rkEvt, &GEngine::Get().GetLayer()->Camera);
+		//GCameraLad::Get().OnEvent(rkEvt, &GEngine::Get().GetLayer()->Camera);
 	}
 	void CreatorState::OnEvent(WindowEvent& rwEvt)
 	{
-		GCameraLad::Get().OnEvent(rwEvt, &GEngine::Get().GetLayer()->Camera);
+		//GCameraLad::Get().OnEvent(rwEvt, &GEngine::Get().GetLayer()->Camera);
 	}
 	// --==</--on_event_methods>==--
 }

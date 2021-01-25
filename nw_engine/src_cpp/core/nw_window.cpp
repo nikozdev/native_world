@@ -7,6 +7,8 @@
 #include <core/nw_core_engine.h>
 namespace NW
 {
+	AWindow::AWindow(const WindowInfo& rwInfo) : m_Info(rwInfo) { }
+	// --==<core_methods>==--
 	AWindow* AWindow::Create(const WindowInfo& rWindowInfo)
 	{
 		AWindow* pWindow = nullptr;
@@ -18,6 +20,7 @@ namespace NW
 		}
 		return pWindow;
 	}
+	// --==</core_methods>==--
 }
 
 #endif // NW_WINDOW
@@ -27,30 +30,29 @@ namespace NW
 {
 	static bool s_GLFWinit = false;
 
-	WindowOgl::WindowOgl(const WindowInfo& rWindowInfo) :
-		AWindow(),
-		m_pNative(nullptr),
-		m_pGContext(nullptr)
+	WindowOgl::WindowOgl(const WindowInfo& rwInfo) :
+		AWindow(rwInfo),
+		m_pNative(nullptr)
 	{
-		m_WindowInfo.strTitle = rWindowInfo.strTitle;
-		m_WindowInfo.unWidth = rWindowInfo.unWidth;
-		m_WindowInfo.unHeight = rWindowInfo.unHeight;
-		m_WindowInfo.nOpacity = rWindowInfo.nOpacity;
-		m_WindowInfo.WApiType = WAPI_GLFW;
+		m_Info.strTitle = rwInfo.strTitle;
+		m_Info.unWidth = rwInfo.unWidth;
+		m_Info.unHeight = rwInfo.unHeight;
+		m_Info.nOpacity = rwInfo.nOpacity;
+		m_Info.WApiType = WAPI_GLFW;
 	}
 	WindowOgl::~WindowOgl() { }
 
 	// --setters
 	void WindowOgl::SetTitle(const char* strTitle) {
-		m_WindowInfo.strTitle = strTitle;
+		m_Info.strTitle = strTitle;
 		glfwSetWindowTitle(m_pNative, strTitle);
 	}
 	void WindowOgl::SetVSync(bool enabled) {
 		if (enabled) glfwSwapInterval(1);
 		else glfwSwapInterval(0);
-		m_WindowInfo.bVSync = enabled;
+		m_Info.bVSync = enabled;
 	}
-	void WindowOgl::SetEventCallback(const EventCallback& fnEvCallback) { m_WindowInfo.fnEvCallback = fnEvCallback; }
+	void WindowOgl::SetEventCallback(const EventCallback& fnEvCallback) { m_Info.fnEvCallback = fnEvCallback; }
 	void WindowOgl::SetIcon(UByte* pData, UInt16 unWidth, UInt16 unHeight) {
 		m_pIcon->pixels = pData;
 		m_pIcon->width = static_cast<Int32>(unWidth);
@@ -59,7 +61,7 @@ namespace NW
 	}
 	void WindowOgl::SetOpacity(float nOpacity) {
 		nOpacity = nOpacity > 1.0f ? 1.0f : nOpacity < 0.1f ? 0.1f : nOpacity;
-		m_WindowInfo.nOpacity = nOpacity;
+		m_Info.nOpacity = nOpacity;
 		glfwSetWindowOpacity(m_pNative, nOpacity);
 	}
 
@@ -72,18 +74,17 @@ namespace NW
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		// Set window pointer
-		m_pNative = glfwCreateWindow(static_cast<Int32>(m_WindowInfo.unWidth), static_cast<Int32>(m_WindowInfo.unHeight),
-			&m_WindowInfo.strTitle[0], nullptr, nullptr);
-		m_pIcon = new GLFWimage();
+		m_pNative = glfwCreateWindow(static_cast<Int32>(m_Info.unWidth), static_cast<Int32>(m_Info.unHeight),
+			&m_Info.strTitle[0], nullptr, nullptr);
+		m_pIcon = CoreEngine::Get().NewT<GLFWimage>();
 		
-		m_pGContext = new GContextOgl(m_pNative);
-		m_pGContext->OnInit();
-
 		UByte WhiteIcon[] = { 255, 255, 255, 255 };
 		SetIcon(&WhiteIcon[0], 1, 1);
-		SetVSync(m_WindowInfo.bVSync);
+		SetVSync(m_Info.bVSync);
 
-		glfwSetWindowUserPointer(m_pNative, &m_WindowInfo);
+		glfwMakeContextCurrent(m_pNative);
+
+		glfwSetWindowUserPointer(m_pNative, &m_Info);
 		glfwSetCursorPosCallback(m_pNative, CbMouseCoord);
 		glfwSetScrollCallback(m_pNative, CbMouseScroll);
 		glfwSetMouseButtonCallback(m_pNative, CbMouseButton);
@@ -94,9 +95,8 @@ namespace NW
 		glfwSetWindowFocusCallback(m_pNative, CbWindowFocus);
 		glfwSetErrorCallback(CbError);
 
-		printf("WINDOW_OGL::INIT: %s::%dx%d\nglfw_version: %s\n",
-			&m_WindowInfo.strTitle[0], m_WindowInfo.unWidth, m_WindowInfo.unHeight,
-			glfwGetVersionString());
+		m_Info.strApiVer = glfwGetVersionString();
+		std::cout << m_Info;
 
 		return true;
 	}
@@ -104,14 +104,12 @@ namespace NW
 	{
 		glfwSetWindowShouldClose(m_pNative, GL_TRUE);
 		glfwDestroyWindow(m_pNative);
-		delete m_pIcon;
-		m_pGContext->OnQuit();
-		delete m_pGContext;
+		CoreEngine::Get().DelT<GLFWimage>(m_pIcon);
 	}
 
 	void WindowOgl::Update()
 	{
-		m_pGContext->SwapBuffers();
+		glfwSwapBuffers(m_pNative);
 		glfwPollEvents();
 	}
 	// --==</core_methods>==--
@@ -146,7 +144,7 @@ namespace NW
     void WindowOgl::CbKeyboardChar(GLFWwindow* pWindow, UInt32 unChar)
     {
         WindowInfo& rWindowInfo = *(WindowInfo*)(glfwGetWindowUserPointer(pWindow));
-        KeyboardEvent kEvt(ET_KEY_TYPE, unChar);
+        KeyboardEvent kEvt(ET_KEY_CHAR, unChar);
 
         rWindowInfo.fnEvCallback(kEvt);
     }

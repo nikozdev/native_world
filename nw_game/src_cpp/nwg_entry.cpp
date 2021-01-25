@@ -13,6 +13,7 @@
 #include <glib_texture.h>
 #include <glib_shader.h>
 #include <glib_material.h>
+#include <glfw/glfw3.h>
 #endif	// NWG_LAUNCH
 #if (NWG_LAUNCH & NWG_LAUNCH_CMD)
 #endif	// NWG_LAUNCH
@@ -20,17 +21,19 @@
 #include <nwg_mem_sys.h>
 #include <sys/nw_ent_sys.h>
 #endif	// NWG_LAUNCH
+#if (NWG_LAUNCH & NWG_LAUNCH_TEST)
+#include <nwg_mem_sys.h>
+#endif	// NWG_LAUNCH
 
 int main(int nArgs, char* strArgs[])
 {
 	try {
 #if (NWG_LAUNCH & NWG_LAUNCH_ENGINE)
 		NW::CoreEngine* pGameEngine = &NW::CoreEngine::Get();
-		if (!pGameEngine->Init(NW_GLOBAL_MEMORY)) { return -1; }
+		if (!pGameEngine->Init(1 << 24)) { return -1; }
 		NWG::CreatorState crtState;
 		pGameEngine->AddState(&crtState);
-		pGameEngine->Run();
-		// pGameEngine->GetRunThread().join();
+		while (pGameEngine->IsRunning()) { pGameEngine->Update(); }
 #endif
 #if (NWG_LAUNCH & NWG_LAUNCH_CMD)
 		CMD::CmdEngine* pCmdEngine = &CMD::CmdEngine::Get();
@@ -108,6 +111,24 @@ int main(int nArgs, char* strArgs[])
 		pCmdEngine->GetRunThread().join();
 #endif
 #if (NWG_LAUNCH & NWG_LAUNCH_GLIB)
+		GLIB::GEngine* pGEngine = &GLIB::GEngine::Get();
+
+		if (glfwInit() != GLFW_TRUE) { return -1; }
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		GLFWwindow* pWindow = glfwCreateWindow(1200, 800, "graphics_library", nullptr, nullptr);
+		glfwMakeContextCurrent(pWindow);
+		glfwSetWindowCloseCallback(pWindow,
+			[](GLFWwindow* pWindow)->void {glfwSetWindowShouldClose(glfwGetCurrentContext(), GLFW_TRUE); GLIB::GEngine::Get().Quit(); });
+		
+ 		if (!pGEngine->Init(1 << 24)) { return -1; }
+		while (pGEngine->IsRunning()) {
+			if (_kbhit()) { if (getchar() == KC_P) { pGEngine->Quit(); } }
+			pGEngine->Update();
+			glfwSwapBuffers(pWindow);
+			glfwPollEvents();
+		}
 #endif
 #if (NWG_LAUNCH & NWG_LAUNCH_TEST)
 #if false
