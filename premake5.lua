@@ -33,7 +33,7 @@ dir_lib["lualib"] = "ext/lualib/"
 
 --==<library project>==--
 project "nw_lib"
-	location "nw_lib"
+	location "nw_library"
 	kind "staticlib"
 	staticruntime "on"
 	language "c++"
@@ -106,6 +106,7 @@ project "nw_glib"
 	}
 	links
 	{
+		"nw_lib",
 		"glfw",
 		"glad",
 		"opengl32.lib"
@@ -129,7 +130,7 @@ project "nw_glib"
 
 --==<console_project>==--
 project "nw_cmd"
-	location "nw_cmd"
+	location "nw_console"
 	kind "staticlib" --.lib
 	staticruntime "on"
 	language "c++"

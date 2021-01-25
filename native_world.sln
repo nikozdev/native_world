@@ -9,7 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "imgui", "ext\imgui\imgui.vc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lualib", "ext\lualib\lualib.vcxproj", "{BE65480C-AA07-73E2-93C2-86367F03FA32}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_cmd", "nw_cmd\nw_cmd.vcxproj", "{7DA91511-694B-40E7-5206-543B3E47C737}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_cmd", "nw_console\nw_cmd.vcxproj", "{7DA91511-694B-40E7-5206-543B3E47C737}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_engine", "nw_engine\nw_engine.vcxproj", "{7F70A556-EBDA-59CD-3419-0B73A0C23722}"
 EndProject
@@ -17,7 +17,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_game", "nw_game\nw_game.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_glib", "nw_glib\nw_glib.vcxproj", "{6707CD33-D3E6-4BCF-DCFE-D6A5485DB230}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_lib", "nw_lib\nw_lib.vcxproj", "{40CF1511-2C71-40E7-152C-543B016DC737}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_lib", "nw_library\nw_lib.vcxproj", "{40CF1511-2C71-40E7-152C-543B016DC737}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -116,13 +116,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\nw_lib\nw_lib.vcxproj">
+    <ProjectReference Include="..\nw_library\nw_lib.vcxproj">
       <Project>{40CF1511-2C71-40E7-152C-543B016DC737}</Project>
     </ProjectReference>
     <ProjectReference Include="..\nw_glib\nw_glib.vcxproj">
       <Project>{6707CD33-D3E6-4BCF-DCFE-D6A5485DB230}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\nw_cmd\nw_cmd.vcxproj">
+    <ProjectReference Include="..\nw_console\nw_cmd.vcxproj">
       <Project>{7DA91511-694B-40E7-5206-543B3E47C737}</Project>
     </ProjectReference>
     <ProjectReference Include="..\nw_engine\nw_engine.vcxproj">
