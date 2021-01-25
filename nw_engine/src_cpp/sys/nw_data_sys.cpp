@@ -30,21 +30,26 @@ namespace NW
         FStream fStream;
         fStream.exceptions(std::ios::badbit | std::ios::failbit);
 
-        if (true) {
+        if (false) {
             AShader::Create("shd_2d_batch")->LoadF("D:/dev/native_world/nw_engine/src_glsl/shd_2d_batch.glsl");
             AShader::Create("shd_2d_tile")->LoadF("D:/dev/native_world/nw_engine/src_glsl/shd_2d_tile.glsl");
             AShader::Create("shd_3d_batch")->LoadF("D:/dev/native_world/nw_engine/src_glsl/shd_3d_batch.glsl");
         }
         if (true) {
             ATexture2d::Create("tex_white_solid")->LoadF("");
+            ATexture2d* pTex = ATexture2d::Create("ico_bat");
+            ImageInfo imgInfo;
+            GEngine::Get().LoadFImage(R"(D:\dev\native_world\nw_engine\data\graphics\ico\ico_bat.png)", &imgInfo);
+            CoreEngine::Get().GetWindow()->SetIcon(imgInfo.ClrData, imgInfo.nWidth, imgInfo.nHeight);
+            delete[] imgInfo.ClrData;
         }
-        if (true) {
+        if (false) {
             GMaterial* pGMtl = nullptr;
-            pGMtl = new GMaterial("gmt_2d_batch");
+            pGMtl = CoreEngine::Get().NewT<GMaterial>("gmt_2d_batch");
             pGMtl->SetShader(ADataRes::GetDataRes<AShader>("shd_2d_batch"));
-            pGMtl = new GMaterial("shd_2d_tile");
+            pGMtl = CoreEngine::Get().NewT<GMaterial>("shd_2d_tile");
             pGMtl->SetShader(ADataRes::GetDataRes<AShader>("shd_2d_tile"));
-            pGMtl = new GMaterial("gmt_3d_batch");
+            pGMtl = CoreEngine::Get().NewT<GMaterial>("gmt_3d_batch");
             pGMtl->SetShader(ADataRes::GetDataRes<AShader>("shd_3d_batch"));
         }
         return true;

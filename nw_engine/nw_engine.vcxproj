@@ -58,7 +58,7 @@
       <PrecompiledHeaderFile>nw_pch.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NW_LINK_STATIC;NW_BUILD_LIB;NW_PLATFORM_WINDOWS;NW_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src_cpp;..\nw_lib\src_cpp;..\nw_glib\src_cpp;..\ext\glfw\include;..\ext\stbi;..\ext\lualib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src_cpp;..\nw_library\src_cpp;..\nw_glib\src_cpp;..\ext\glfw\include;..\ext\stbi;..\ext\lualib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -69,7 +69,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>.;..\nw_lib;..\nw_glib;..\ext\glfw;..\ext\lualib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.;..\nw_library;..\nw_glib;..\ext\glfw;..\ext\lualib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
@@ -78,7 +78,7 @@
       <PrecompiledHeaderFile>nw_pch.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NW_LINK_STATIC;NW_BUILD_LIB;NW_PLATFORM_WINDOWS;NW_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src_cpp;..\nw_lib\src_cpp;..\nw_glib\src_cpp;..\ext\glfw\include;..\ext\stbi;..\ext\lualib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src_cpp;..\nw_library\src_cpp;..\nw_glib\src_cpp;..\ext\glfw\include;..\ext\stbi;..\ext\lualib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -93,7 +93,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>.;..\nw_lib;..\nw_glib;..\ext\glfw;..\ext\lualib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.;..\nw_library;..\nw_glib;..\ext\glfw;..\ext\lualib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>

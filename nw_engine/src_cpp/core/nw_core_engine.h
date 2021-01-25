@@ -2,6 +2,7 @@
 #define NW_CORE_ENGINE_H
 
 #include <core/nw_core_state.h>
+#include <nw_decl.hpp>
 
 namespace NW
 {

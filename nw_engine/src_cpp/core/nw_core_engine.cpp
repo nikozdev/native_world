@@ -23,7 +23,6 @@ namespace NW
 		States::iterator itState = std::find(m_States.begin(), m_States.end(), pState);
 		if (itState != m_States.end()) { return; }
 		m_States.push_back(pState);
-		if (!pState->Init()) { Quit(); }
 		if (m_pCurrState == nullptr) { SwitchState(pState->GetName()); }
 	}
 	void CoreEngine::RmvState(const char* strName)
@@ -87,11 +86,13 @@ namespace NW
 	{
 		auto fnUpdate = [this](Size szMem)->void {
 			if (!Init(szMem)) { return; }
+			for (auto& itState = m_States.begin(); itState != m_States.end(); itState++) { if (!(*itState)->Init()) { Quit(); } }
+			if (m_pCurrState == nullptr) { Quit(); }
 			while (m_bIsRunning) { Update(); }
 			Quit();
 		};
-		//m_thrRun = Thread(fnUpdate, szMemory);
 		fnUpdate(szMemory);
+		//m_thrRun = Thread(fnUpdate, szMemory);
 	}
 
 	void CoreEngine::Update()

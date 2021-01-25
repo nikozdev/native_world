@@ -29,10 +29,8 @@ namespace NWG
 		GuiSys::OnInit();
 
 		if (true) {	// shaders
-			GEngine::Get().GetLayer()->SetShader(ADataRes::GetDataRes<AShader>("shd_3d_batch"));
 		}
 		if (true) {	// textures
-			ATexture2d::Create("spt_nw_hero")->LoadF("data/tex/spt_nw_hero.png");
 		}
 		if (true) {	// materials
 		}

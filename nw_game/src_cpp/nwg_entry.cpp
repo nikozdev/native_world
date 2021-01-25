@@ -30,10 +30,9 @@ int main(int nArgs, char* strArgs[])
 	try {
 #if (NWG_LAUNCH & NWG_LAUNCH_ENGINE)
 		NW::CoreEngine* pGameEngine = &NW::CoreEngine::Get();
-		if (!pGameEngine->Init(1 << 24)) { return -1; }
 		NWG::CreatorState crtState;
 		pGameEngine->AddState(&crtState);
-		while (pGameEngine->IsRunning()) { pGameEngine->Update(); }
+		pGameEngine->Run(1 << 24);
 #endif
 #if (NWG_LAUNCH & NWG_LAUNCH_CMD)
 		CMD::CmdEngine* pCmdEngine = &CMD::CmdEngine::Get();
