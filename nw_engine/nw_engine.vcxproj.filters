@@ -7,6 +7,9 @@
     <Filter Include="src_cpp\core">
       <UniqueIdentifier>{87DB3E97-733E-CE3B-1CC4-06F208069ABE}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src_cpp\glib">
+      <UniqueIdentifier>{1CFF4097-0862-D03B-B1E7-08F29D299CBE}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src_cpp\lua">
       <UniqueIdentifier>{E0255F2B-4CDB-D720-D5CF-D1F74184CE24}</UniqueIdentifier>
     </Filter>
@@ -38,6 +41,9 @@
     </ClInclude>
     <ClInclude Include="src_cpp\core\nw_window.h">
       <Filter>src_cpp\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src_cpp\glib_decl.hpp">
+      <Filter>src_cpp</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\lua\nw_lua_core.h">
       <Filter>src_cpp\lua</Filter>
@@ -84,6 +90,15 @@
     <ClInclude Include="src_cpp\sys\nw_time_sys.h">
       <Filter>src_cpp\sys</Filter>
     </ClInclude>
+    <ClInclude Include="src_cpp\glib\nw_framebuf.h" />
+    <ClInclude Include="src_cpp\glib\nw_gapi.h" />
+    <ClInclude Include="src_cpp\glib\nw_gbuffer.h" />
+    <ClInclude Include="src_cpp\glib\nw_gcamera.h" />
+    <ClInclude Include="src_cpp\glib\nw_gcamera_lad.h" />
+    <ClInclude Include="src_cpp\glib\nw_gmaterial.h" />
+    <ClInclude Include="src_cpp\glib\nw_gtools.h" />
+    <ClInclude Include="src_cpp\glib\nw_shader.h" />
+    <ClInclude Include="src_cpp\glib\nw_texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src_cpp\core\nw_core_engine.cpp">
@@ -122,6 +137,15 @@
     <ClCompile Include="src_cpp\sys\nw_time_sys.cpp">
       <Filter>src_cpp\sys</Filter>
     </ClCompile>
+    <ClCompile Include="src_cpp\glib\nw_framebuf.cpp" />
+    <ClCompile Include="src_cpp\glib\nw_gapi.cpp" />
+    <ClCompile Include="src_cpp\glib\nw_gbuffer.cpp" />
+    <ClCompile Include="src_cpp\glib\nw_gcamera.cpp" />
+    <ClCompile Include="src_cpp\glib\nw_gcamera_lad.cpp" />
+    <ClCompile Include="src_cpp\glib\nw_gmaterial.cpp" />
+    <ClCompile Include="src_cpp\glib\nw_gtools.cpp" />
+    <ClCompile Include="src_cpp\glib\nw_shader.cpp" />
+    <ClCompile Include="src_cpp\glib\nw_texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src_glsl\shd_2d_batch.glsl">

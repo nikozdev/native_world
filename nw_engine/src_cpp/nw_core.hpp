@@ -37,22 +37,6 @@
 #define NW_GLOBAL_MEMORY	1 << 24
 // --==</configurations>==--
 
-// --debug_macro
-#if (defined NW_DEBUG)
-	#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-	// --opengl_debug
-namespace NW
-{
-	extern inline void OglClearErr();
-	extern inline bool OglErrLog(const char* funcName, const char* file, int line);
-}
-	#define GL_CALL(function) OGL_ClearErr();\
-		function;\
-		NWL_ASSERT(OglErrLog(#function, NW_FNAME_APATH((std::string)__FILE__), __LINE__), "GL_ERROR: ")
-	#endif // NW_GRAPHICS
-	#else
-	#define GL_CALL(function);
-#endif // NW_DEBUG
 // --==</support_macroses>==--
 
 // --==<pragmas>==--

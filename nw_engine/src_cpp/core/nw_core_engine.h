@@ -2,7 +2,11 @@
 #define NW_CORE_ENGINE_H
 
 #include <core/nw_core_state.h>
+#include <core/nw_window.h>
+#include <glib/nw_gapi.h>
+
 #include <nw_decl.hpp>
+#include <glib_decl.hpp>
 
 namespace NW
 {
@@ -16,7 +20,7 @@ namespace NW
 	class NW_API CoreEngine : public ASingleton<CoreEngine>
 	{
 	public:
-		using States = DArray<CoreState*>;
+		using States = HashMap<String, CoreState*>;
 		friend class ASingleton<CoreEngine>;
 	private:
 		CoreEngine();
@@ -26,23 +30,25 @@ namespace NW
 		~CoreEngine();
 
 		// --getters
-		inline AMemAllocator& GetMemory() { return m_Memory; }
-		inline Thread& GetRunThread() { return m_thrRun; }
+		inline AMemAllocator& GetMemory()		{ return m_Memory; }
+		inline Thread& GetRunThread()			{ return m_thrRun; }
 
-		inline const char* GetName() { return &m_strName[0]; }
-		inline WApiTypes GetWApiType() { return m_wapiType; }
+		inline const char* GetName() const		{ return &m_strName[0]; }
+		inline GApiTypes GetGApiType() const	{ return m_gapiType; }
 
-		inline AWindow* GetWindow() { return m_pWindow.GetRef(); }
-		inline States& GetStates() { return m_States; }
-		inline CoreState* GetState() { return m_pCurrState; }
+		inline AWindow* GetWindow()				{ return m_pWindow.GetRef(); }
+		inline AGApi* GetGApi()					{ return m_pGApi.GetRef(); }
+		inline States& GetStates()				{ return m_States; }
+		inline CoreState* GetState()			{ return m_itState; }
 		inline CoreState* GetState(const char* strName);
 		// --setters
 		void SetName(const char* strName) { m_strName = strName; }
-		void AddState(CoreState* pState);
-		void RmvState(const char* strName);
-		void SwitchState(const char* strName);
+		
+		inline void AddState(CoreState& rState);
+		inline void RmvState(const char* strName);
+		inline void SwitchState(const char* strName);
 		// --predicates
-		Bit IsRunning() const { return m_bIsRunning; }
+		inline Bit IsRunning() const	{ return m_bIsRunning; }
 
 		// --core_methods
 		bool Init(Size szMemory);
@@ -65,16 +71,43 @@ namespace NW
 		MemArena m_Memory;
 
 		String m_strName;
-		WApiTypes m_wapiType;
-		RefOwner<AWindow> m_pWindow;
+		GApiTypes m_gapiType;
 
+		RefKeeper<AWindow> m_pWindow;
+		RefKeeper<AGApi> m_pGApi;
 		States m_States;
-		CoreState* m_pCurrState;
+		CoreState* m_itState;
 	};
+	// --getters
 	inline CoreState* CoreEngine::GetState(const char* strName) {
-		States::iterator itState = std::find_if(m_States.begin(), m_States.end(),
-			[=](CoreState* pState)->bool {return strcmp(pState->GetName(), strName) == 0; });
-		return itState == m_States.end() ? nullptr : *itState;
+		States::iterator itState = m_States.find(strName);
+		return itState == m_States.end() ? nullptr : itState->second;
+	}
+	// --setters
+	inline void CoreEngine::AddState(CoreState& rState) {
+		auto& itState = m_States.find(rState.GetName());
+		if (itState != m_States.end()) { RmvState(rState.GetName()); }
+		m_States[rState.GetName()] = &rState;
+	}
+	inline void CoreEngine::RmvState(const char* strName)
+	{
+		States::iterator itState = m_States.find(strName);
+		if (itState == m_States.end()) return;
+		CoreState* pState = itState->second;
+		m_States.erase(itState);
+		if (m_itState == pState) {
+			m_itState = nullptr;
+			if (m_States.size() > 0) { SwitchState(m_States.begin()->second->GetName()); }
+			else { m_itState = nullptr; Quit(); }
+		}
+	}
+	inline void CoreEngine::SwitchState(const char* strName)
+	{
+		States::iterator itState = m_States.find(strName);
+		if (itState == m_States.end()) { return; }
+		if (m_itState != nullptr) { m_itState->OnDisable(); }
+		m_itState = itState->second;
+		m_itState->OnEnable();
 	}
 }
 

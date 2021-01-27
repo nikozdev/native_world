@@ -200,8 +200,8 @@ project "nw_engine"
 	{
 		"%{dir_cpp.nw_engine}",
 		"%{dir_cpp.nw_lib}",
-		"%{dir_cpp.nw_glib}",
 		"%{dir_cpp.glfw}",
+		"%{dir_cpp.glad}",
 		"%{dir_cpp.stbi}",
 		"%{dir_cpp.lualib}"
 	}
@@ -209,15 +209,15 @@ project "nw_engine"
 	{
 		"%{dir_lib.nw_engine}",
 		"%{dir_lib.nw_lib}",
-		"%{dir_lib.nw_glib}",
 		"%{dir_lib.glfw}",
+		"%{dir_lib.glad}",
 		"%{dir_lib.lualib}"
 	}
 	links
 	{
 		"nw_lib",
-		"nw_glib",
 		"glfw",
+		"glad",
 		"lualib"
 	}
 	defines
@@ -233,10 +233,17 @@ project "nw_engine"
 			"NW_PLATFORM_WINDOWS"
 		}
 	filter "configurations:debug"
-		defines {"NW_DEBUG"}
+		defines
+		{
+			"NW_DEBUG",
+			"NWL_DEBUG"
+		}
 		symbols "on"
 	filter "configurations:release"
-		defines {"NW_RELEASE"}
+		defines {
+			"NW_RELEASE",
+			"NWL_RELEASE"
+		}
 		optimize "on"
 --==</engine_project>==--
 
@@ -262,7 +269,7 @@ project "nw_game"
 	{
 		"%{dir_cpp.nw_game}",
 		"%{dir_cpp.nw_lib}",
-		"%{dir_cpp.nw_glib}",
+		--"%{dir_cpp.nw_glib}",
 		"%{dir_cpp.nw_cmd}",
 		"%{dir_cpp.nw_engine}",
 		"%{dir_cpp.glm}",
@@ -274,7 +281,7 @@ project "nw_game"
 	{
 		"%{dir_lib.nw_game}",
 		"%{dir_lib.nw_lib}",
-		"%{dir_lib.nw_glib}",
+		--"%{dir_lib.nw_glib}",
 		"%{dir_lib.nw_cmd}",
 		"%{dir_lib.nw_engine}",
 		"%{dir_lib.lualib}",
@@ -285,7 +292,7 @@ project "nw_game"
 	links
 	{
 		"nw_lib",
-		"nw_glib",
+		--"nw_glib",
 		"nw_cmd",
 		"nw_engine",
 		"glfw",
@@ -320,10 +327,22 @@ project "nw_game"
 			"CMD_PLATFORM_WINDOWS"
 		}
 	filter "configurations:debug"
-		defines "NWG_DEBUG"
+		defines
+		{
+			"NW_DEBUG",
+			"NWL_DEBUG",
+			"GLIB_DEBUG",
+			"NWG_DEBUG",
+		}
 		symbols "on"
 	filter "configurations:release"
-		defines "NWG_RELEASE"
+		defines
+		{
+			"NW_RELEASE",
+			"NWL_RELEASE",
+			"GLIB_RELEASE",
+			"NWG_RELEASE"
+		}
 		optimize "on"
 --==</editor_project>==--
 

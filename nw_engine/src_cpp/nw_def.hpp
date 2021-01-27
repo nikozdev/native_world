@@ -1,5 +1,5 @@
-#ifndef NW_DEFINES_H
-#define NW_DEFINES_H
+#ifndef NW_DEF_HPP
+#define NW_DEF_HPP
 /// Here are described macroses and codes depending on window specification
 /// Firstly: specification codes
 /// Secondly: Engine codes equaled to previous
@@ -706,23 +706,7 @@ typedef double GLclampd;
 #define NW_INVALID_OPERATION			GL_INVALID_OPERATION
 #define NW_STACK_OVERFLOW				GL_STACK_OVERFLOW   
 #define NW_STACK_UNDERFLOW				GL_STACK_UNDERFLOW  
-#define NW_OUT_OF_MEMORY				GL_OUT_OF_MEMORY  
-
-#define NWL_ERR_DATA_LOSS				0b1110'0000'0000
-
-#define NWL_ERR_NO_SUPPORT				0b1110'0000'0001
-#define NWL_ERR_NO_DATA					0b1110'0000'0001
-#define NWL_ERR_NO_INIT					0b1110'0000'0010
-#define NWL_ERR_NO_QUIT					0b1110'0000'0011
-#define NWL_ERR_NO_STATE					0b1110'0000'0100
-
-#define NWL_ERR_UNKNOWN_ID				0b1111'0000'0000
-
-#define NWL_ERR_SHADER_INVALID_FORMAT	0b0011'0000'0000
-#define NWL_ERR_SHADER_LOAD_PATH			0b1000'0000'0000
-#define NWL_ERR_SHADER_LOAD_FAIL			0b1001'0000'0000
-#define NWL_ERR_SHADER_LINK				0b1011'0000'0000
-#define NWL_ERR_SHADER_COMPILE			0b1100'0000'0000
+#define NW_OUT_OF_MEMORY				GL_OUT_OF_MEMORY
 // --==</error_codes_nw>==--
 
 // --==<info_ogl>==--
@@ -734,4 +718,4 @@ typedef double GLclampd;
 // Nothing for now... 08.11.20
 #endif // NW_GRAPHICS
 
-#endif // NATIVE_WORLD_DEFINES
+#endif // NW_DEF_HPP

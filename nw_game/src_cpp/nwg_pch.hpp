@@ -8,12 +8,13 @@
 
 #include <native_world.hpp>
 #include <cmd_engine.h>
-#include <core/glib_engine.h>
+//#include <graphics_library.hpp>
 
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <examples/imgui_impl_opengl3.h>
 #include <examples/imgui_impl_glfw.h>
+#include <glfw/glfw3.h>
 #define GUI_DEFAULT_TREE_FLAGS ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick
 
 #endif	// NWG_PCH

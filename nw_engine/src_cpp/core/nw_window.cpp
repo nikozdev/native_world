@@ -1,10 +1,10 @@
 #include <nw_pch.hpp>
 #include "nw_window.h"
 
-#include <sys/nw_log_sys.h>
 
 #if (defined NW_WINDOW)
 #include <core/nw_core_engine.h>
+#include <sys/nw_log_sys.h>
 namespace NW
 {
 	AWindow::AWindow(const WindowInfo& rwInfo) : m_Info(rwInfo) { }
@@ -12,13 +12,22 @@ namespace NW
 	AWindow* AWindow::Create(const WindowInfo& rWindowInfo)
 	{
 		AWindow* pWindow = nullptr;
-		switch (CoreEngine::Get().GetWApiType()) {
+		switch (rWindowInfo.wapiType) {
 	#if (NW_WINDOW & NW_WINDOW_GLFW)
 		case WApiTypes::WAPI_GLFW: pWindow = NewT<WindowOgl>(CoreEngine::Get().GetMemory(), rWindowInfo); break;
 	#endif	// NW_WINDOW
 		default: NWL_ERR("Window type is undefined"); break;
 		}
 		return pWindow;
+	}
+	void AWindow::Create(const WindowInfo& rWindowInfo, RefKeeper<AWindow>& rWindow)
+	{
+		switch (rWindowInfo.wapiType) {
+	#if (NW_WINDOW & NW_WINDOW_GLFW)
+		case WApiTypes::WAPI_GLFW: rWindow.MakeRef<WindowOgl>(rWindowInfo); break;
+	#endif	// NW_WINDOW
+		default: NWL_ERR("Window type is undefined"); break;
+		}
 	}
 	// --==</core_methods>==--
 }
@@ -38,7 +47,7 @@ namespace NW
 		m_Info.unWidth = rwInfo.unWidth;
 		m_Info.unHeight = rwInfo.unHeight;
 		m_Info.nOpacity = rwInfo.nOpacity;
-		m_Info.WApiType = WAPI_GLFW;
+		m_Info.wapiType = WAPI_GLFW;
 	}
 	WindowOgl::~WindowOgl() { }
 
@@ -105,6 +114,7 @@ namespace NW
 		glfwSetWindowShouldClose(m_pNative, GL_TRUE);
 		glfwDestroyWindow(m_pNative);
 		CoreEngine::Get().DelT<GLFWimage>(m_pIcon);
+		glfwTerminate();
 	}
 
 	void WindowOgl::Update()

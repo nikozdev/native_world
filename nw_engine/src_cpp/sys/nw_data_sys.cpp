@@ -5,6 +5,10 @@
 #include <core/nw_window.h>
 #include <core/nw_core_state.h>
 
+#include <glib/nw_shader.h>
+#include <glib/nw_texture.h>
+#include <glib/nw_gmaterial.h>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
@@ -30,45 +34,17 @@ namespace NW
         FStream fStream;
         fStream.exceptions(std::ios::badbit | std::ios::failbit);
 
-        if (false) {
-            AShader::Create("shd_2d_batch")->LoadF("D:/dev/native_world/nw_engine/src_glsl/shd_2d_batch.glsl");
-            AShader::Create("shd_2d_tile")->LoadF("D:/dev/native_world/nw_engine/src_glsl/shd_2d_tile.glsl");
-            AShader::Create("shd_3d_batch")->LoadF("D:/dev/native_world/nw_engine/src_glsl/shd_3d_batch.glsl");
-        }
-        if (true) {
-            ATexture2d::Create("tex_white_solid")->LoadF("");
-            ATexture2d* pTex = ATexture2d::Create("ico_bat");
-            ImageInfo imgInfo;
-            GEngine::Get().LoadFImage(R"(D:\dev\native_world\nw_engine\data\graphics\ico\ico_bat.png)", &imgInfo);
+        ImageInfo imgInfo;
+        if (LoadFImage(R"(D:\dev\native_world\nw_engine\data\graphics\ico\ico_bat.png)", &imgInfo)) {
             CoreEngine::Get().GetWindow()->SetIcon(imgInfo.ClrData, imgInfo.nWidth, imgInfo.nHeight);
             delete[] imgInfo.ClrData;
         }
-        if (false) {
-            GMaterial* pGMtl = nullptr;
-            pGMtl = CoreEngine::Get().NewT<GMaterial>("gmt_2d_batch");
-            pGMtl->SetShader(ADataRes::GetDataRes<AShader>("shd_2d_batch"));
-            pGMtl = CoreEngine::Get().NewT<GMaterial>("shd_2d_tile");
-            pGMtl->SetShader(ADataRes::GetDataRes<AShader>("shd_2d_tile"));
-            pGMtl = CoreEngine::Get().NewT<GMaterial>("gmt_3d_batch");
-            pGMtl->SetShader(ADataRes::GetDataRes<AShader>("shd_3d_batch"));
-        }
+
         return true;
     }
 
     void DataSys::OnQuit()
     {
-        if (true) {
-            DelT<ShaderOgl>(CoreEngine::Get().GetMemory(), static_cast<ShaderOgl*>(ADataRes::GetDataRes<AShader>("shd_2d_batch")));
-            DelT<ShaderOgl>(CoreEngine::Get().GetMemory(), static_cast<ShaderOgl*>(ADataRes::GetDataRes<AShader>("shd_3d_batch")));
-        }
-        if (true) {
-            DelT<Texture2dOgl>(CoreEngine::Get().GetMemory(), static_cast<Texture2dOgl*>(ADataRes::GetDataRes<ATexture2d>("tex_white_solid")));
-        }
-        if (true) {
-            delete ADataRes::GetDataRes<GMaterial>("gmt_2d_tile");
-            delete ADataRes::GetDataRes<GMaterial>("gmt_2d_batch");
-            delete ADataRes::GetDataRes<GMaterial>("gmt_3d_batch");
-        }
     }
     // -- File Dialogs
     String DataSys::FDialog_save(const char* strFilter)
@@ -107,7 +83,7 @@ namespace NW
     }
 
     // -- BinaryData
-    bool DataSys::SaveF_data(const char* filePath,
+    bool DataSys::SaveFData(const char* filePath,
         void* pData, UInt64 unBytes)
     {
         FStream fStream;
@@ -119,7 +95,7 @@ namespace NW
             return true;
         } catch (std::ios_base::failure ex) { return false; }
     }
-    bool DataSys::SaveF_data(const char* directory, const char* name, const char* format,
+    bool DataSys::SaveFData(const char* directory, const char* name, const char* format,
         void* pData, UInt64 unBytes)
     {
         try {
@@ -134,7 +110,7 @@ namespace NW
             return false;
         }
     }
-    bool DataSys::LoadF_data(const char* filePath,
+    bool DataSys::LoadFData(const char* filePath,
         void* pData, UInt64 unBytes)
     {
         FStream fStream;
@@ -149,7 +125,7 @@ namespace NW
             return false;
         }
     }
-    bool DataSys::LoadF_data(const char* directory, const char* name, const char* format,
+    bool DataSys::LoadFData(const char* directory, const char* name, const char* format,
         void* pData, UInt64 unBytes)
     {
         FStream fStream;
@@ -167,7 +143,7 @@ namespace NW
     }
 
     // --Strings
-    bool DataSys::SaveF_string(const char *strFPath, const char* strSrc, UInt64 unBytes)
+    bool DataSys::SaveFString(const char *strFPath, const char* strSrc, UInt64 unBytes)
     {
         FStream fStream;
         fStream.exceptions(std::ios::badbit | std::ios::failbit);
@@ -181,7 +157,7 @@ namespace NW
             return false;
         }
     }
-    bool DataSys::LoadF_string(const char* strFPath, String& strDest)
+    bool DataSys::LoadFString(const char* strFPath, String& strDest)
     {
         FStream fStream;
         fStream.exceptions(std::ios::badbit | std::ios::failbit);
@@ -201,12 +177,12 @@ namespace NW
     }
 
     // -- Objects
-    UByte* DataSys::LoadF_image(const char* strFPath,
+    UByte* DataSys::LoadFImage(const char* strFPath,
         Int32* pnW, Int32* pnH, Int32* pnChannels)
     {
         return stbi_load(strFPath, pnW, pnH, pnChannels, 0);
     }
-    bool DataSys::LoadF_image(const char* strFPath,
+    bool DataSys::LoadFImage(const char* strFPath,
         UByte* pClrDataBuf, Int32* pnW, Int32* pnH, Int32* pnChannels)
     {
         if (pClrDataBuf != nullptr) return false;
@@ -214,18 +190,18 @@ namespace NW
         if (pClrDataBuf == nullptr) return false;
         return true;
     }
-    bool DataSys::LoadF_image(const char* strFPath, ImageInfo* pImage)
+    bool DataSys::LoadFImage(const char* strFPath, ImageInfo* pImage)
     {
         if (pImage == nullptr) return false;
 
-        pImage->ClrData = LoadF_image(strFPath, &pImage->nWidth, &pImage->nHeight, &pImage->nChannels);
+        pImage->ClrData = LoadFImage(strFPath, &pImage->nWidth, &pImage->nHeight, &pImage->nChannels);
         if (pImage->ClrData == nullptr) return false;
 
         return true;
     }
 
     // -- Mesh data
-    bool DataSys::LoadF_mesh(const String& strFilePath, DArray<VertexShape3d>* pVtxData, DArray<UInt32>* punIndData)
+    bool DataSys::LoadFMesh(const String& strFilePath, DArray<VertexShape3d>* pVtxData, DArray<UInt32>* punIndData)
     {
         UInt16 dotPos = strFilePath.rfind('.') + 1;
         String format = strFilePath.substr(dotPos, strFilePath.size() - dotPos);
@@ -235,7 +211,7 @@ namespace NW
         try {
             fStream.open(strFilePath, std::ios::in, std::ios::binary);
             strStream << fStream.rdbuf();
-            if (format == "obj") { LoadF_mesh_obj(strStream.str(), *pVtxData, *punIndData); }
+            if (format == "obj") { LoadFMeshObj(strStream.str(), *pVtxData, *punIndData); }
             else if (format == "dae") {}
             else { throw std::exception("Unknown format"); }
             fStream.close();
@@ -251,7 +227,7 @@ namespace NW
     // --==</core_methods>==--=
 
     // --==<Implementation Methods>==--=
-    bool DataSys::LoadF_mesh_obj(const String& strFileData, DArray<UInt32>& arrIndicesDest,
+    bool DataSys::LoadFMeshObj(const String& strFileData, DArray<UInt32>& arrIndicesDest,
         DArray<float>& vtxCoordsDest, DArray<float>& texCoordsDest, DArray<float>& normCoordsDest)
     {
         String
@@ -349,7 +325,7 @@ namespace NW
         }
         return true;
     }
-    bool DataSys::LoadF_mesh_obj(const String& strFileData, DArray<VertexShape3d>& rVtxData, DArray<UInt32>& runIndData)
+    bool DataSys::LoadFMeshObj(const String& strFileData, DArray<VertexShape3d>& rVtxData, DArray<UInt32>& runIndData)
     {
         String
             nameToken = "g ",

@@ -57,8 +57,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>nw_pch.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>NW_LINK_STATIC;NW_BUILD_LIB;NW_PLATFORM_WINDOWS;NW_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src_cpp;..\nw_library\src_cpp;..\nw_glib\src_cpp;..\ext\glfw\include;..\ext\stbi;..\ext\lualib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NW_LINK_STATIC;NW_BUILD_LIB;NW_PLATFORM_WINDOWS;NW_DEBUG;NWL_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src_cpp;..\nw_library\src_cpp;..\ext\glfw\include;..\ext\glad\include;..\ext\stbi;..\ext\lualib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -69,7 +69,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>.;..\nw_library;..\nw_glib;..\ext\glfw;..\ext\lualib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.;..\nw_library;..\ext\glfw;..\ext\glad;..\ext\lualib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
@@ -77,8 +77,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>nw_pch.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>NW_LINK_STATIC;NW_BUILD_LIB;NW_PLATFORM_WINDOWS;NW_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src_cpp;..\nw_library\src_cpp;..\nw_glib\src_cpp;..\ext\glfw\include;..\ext\stbi;..\ext\lualib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NW_LINK_STATIC;NW_BUILD_LIB;NW_PLATFORM_WINDOWS;NW_RELEASE;NWL_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src_cpp;..\nw_library\src_cpp;..\ext\glfw\include;..\ext\glad\include;..\ext\stbi;..\ext\lualib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -93,7 +93,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>.;..\nw_library;..\nw_glib;..\ext\glfw;..\ext\lualib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.;..\nw_library;..\ext\glfw;..\ext\glad;..\ext\lualib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -101,6 +101,16 @@
     <ClInclude Include="src_cpp\core\nw_core_state.h" />
     <ClInclude Include="src_cpp\core\nw_scene.h" />
     <ClInclude Include="src_cpp\core\nw_window.h" />
+    <ClInclude Include="src_cpp\glib\nw_framebuf.h" />
+    <ClInclude Include="src_cpp\glib\nw_gapi.h" />
+    <ClInclude Include="src_cpp\glib\nw_gbuffer.h" />
+    <ClInclude Include="src_cpp\glib\nw_gcamera.h" />
+    <ClInclude Include="src_cpp\glib\nw_gcamera_lad.h" />
+    <ClInclude Include="src_cpp\glib\nw_gmaterial.h" />
+    <ClInclude Include="src_cpp\glib\nw_gtools.h" />
+    <ClInclude Include="src_cpp\glib\nw_shader.h" />
+    <ClInclude Include="src_cpp\glib\nw_texture.h" />
+    <ClInclude Include="src_cpp\glib_decl.hpp" />
     <ClInclude Include="src_cpp\lua\nw_lua_core.h" />
     <ClInclude Include="src_cpp\lua\nw_lua_engine.h" />
     <ClInclude Include="src_cpp\lua\nw_lua_wraps.h" />
@@ -121,6 +131,15 @@
     <ClCompile Include="src_cpp\core\nw_core_engine.cpp" />
     <ClCompile Include="src_cpp\core\nw_scene.cpp" />
     <ClCompile Include="src_cpp\core\nw_window.cpp" />
+    <ClCompile Include="src_cpp\glib\nw_framebuf.cpp" />
+    <ClCompile Include="src_cpp\glib\nw_gapi.cpp" />
+    <ClCompile Include="src_cpp\glib\nw_gbuffer.cpp" />
+    <ClCompile Include="src_cpp\glib\nw_gcamera.cpp" />
+    <ClCompile Include="src_cpp\glib\nw_gcamera_lad.cpp" />
+    <ClCompile Include="src_cpp\glib\nw_gmaterial.cpp" />
+    <ClCompile Include="src_cpp\glib\nw_gtools.cpp" />
+    <ClCompile Include="src_cpp\glib\nw_shader.cpp" />
+    <ClCompile Include="src_cpp\glib\nw_texture.cpp" />
     <ClCompile Include="src_cpp\lua\nw_lua_core.cpp" />
     <ClCompile Include="src_cpp\lua\nw_lua_engine.cpp" />
     <ClCompile Include="src_cpp\nw_pch.cpp">
@@ -146,11 +165,11 @@
     <ProjectReference Include="..\nw_library\nw_lib.vcxproj">
       <Project>{40CF1511-2C71-40E7-152C-543B016DC737}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\nw_glib\nw_glib.vcxproj">
-      <Project>{6707CD33-D3E6-4BCF-DCFE-D6A5485DB230}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\ext\glfw\glfw.vcxproj">
       <Project>{9563977C-819A-980D-2A87-7E10169D140F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ext\glad\glad.vcxproj">
+      <Project>{DD62977C-C999-980D-7286-7E105E9C140F}</Project>
     </ProjectReference>
     <ProjectReference Include="..\ext\lualib\lualib.vcxproj">
       <Project>{BE65480C-AA07-73E2-93C2-86367F03FA32}</Project>

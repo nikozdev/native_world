@@ -59,8 +59,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>nwg_pch.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>NW_BUILD_EXE;NW_LINK_STATIC;GLIB_BUILD_EXE;GLIB_LINK_STATIC;CMD_BUILD_EXE;CMD_LINK_STATIC;NWL_BUILD_EXE;NWL_LINK_STATIC;NW_PLATFORM_WINDOWS;NWG_PLATFORM_WINDOWS;GLIB_PLATFORM_WINDOWS;CMD_PLATFORM_WINDOWS;NWG_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src_cpp;..\nw_library\src_cpp;..\nw_glib\src_cpp;..\nw_console\src_cpp;..\nw_engine\src_cpp;..;..\ext\glad\include;..\ext\glfw\include;..\ext\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NW_BUILD_EXE;NW_LINK_STATIC;GLIB_BUILD_EXE;GLIB_LINK_STATIC;CMD_BUILD_EXE;CMD_LINK_STATIC;NWL_BUILD_EXE;NWL_LINK_STATIC;NW_PLATFORM_WINDOWS;NWG_PLATFORM_WINDOWS;GLIB_PLATFORM_WINDOWS;CMD_PLATFORM_WINDOWS;NW_DEBUG;NWL_DEBUG;GLIB_DEBUG;NWG_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src_cpp;..\nw_library\src_cpp;..\nw_console\src_cpp;..\nw_engine\src_cpp;..;..\ext\glad\include;..\ext\glfw\include;..\ext\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -69,7 +69,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>.;..\nw_library;..\nw_glib;..\nw_console;..\nw_engine;..\ext\lualib;..\ext\glad;..\ext\glfw;..\ext\imgui;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.;..\nw_library;..\nw_console;..\nw_engine;..\ext\lualib;..\ext\glad;..\ext\glfw;..\ext\imgui;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
@@ -77,8 +77,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>nwg_pch.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>NW_BUILD_EXE;NW_LINK_STATIC;GLIB_BUILD_EXE;GLIB_LINK_STATIC;CMD_BUILD_EXE;CMD_LINK_STATIC;NWL_BUILD_EXE;NWL_LINK_STATIC;NW_PLATFORM_WINDOWS;NWG_PLATFORM_WINDOWS;GLIB_PLATFORM_WINDOWS;CMD_PLATFORM_WINDOWS;NWG_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src_cpp;..\nw_library\src_cpp;..\nw_glib\src_cpp;..\nw_console\src_cpp;..\nw_engine\src_cpp;..;..\ext\glad\include;..\ext\glfw\include;..\ext\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NW_BUILD_EXE;NW_LINK_STATIC;GLIB_BUILD_EXE;GLIB_LINK_STATIC;CMD_BUILD_EXE;CMD_LINK_STATIC;NWL_BUILD_EXE;NWL_LINK_STATIC;NW_PLATFORM_WINDOWS;NWG_PLATFORM_WINDOWS;GLIB_PLATFORM_WINDOWS;CMD_PLATFORM_WINDOWS;NW_RELEASE;NWL_RELEASE;GLIB_RELEASE;NWG_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src_cpp;..\nw_library\src_cpp;..\nw_console\src_cpp;..\nw_engine\src_cpp;..;..\ext\glad\include;..\ext\glfw\include;..\ext\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -91,26 +91,18 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>.;..\nw_library;..\nw_glib;..\nw_console;..\nw_engine;..\ext\lualib;..\ext\glad;..\ext\glfw;..\ext\imgui;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.;..\nw_library;..\nw_console;..\nw_engine;..\ext\lualib;..\ext\glad;..\ext\glfw;..\ext\imgui;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src_cpp\guilib\nwg_gui_sys.h" />
-    <ClInclude Include="src_cpp\nwg_creator_state.h" />
-    <ClInclude Include="src_cpp\nwg_gamer_state.h" />
+    <ClInclude Include="src_cpp\nwg_core_states.h" />
     <ClInclude Include="src_cpp\nwg_gui_of.h" />
-    <ClInclude Include="src_cpp\nwg_mem_sys.h" />
-    <ClInclude Include="src_cpp\nwg_memory.h" />
     <ClInclude Include="src_cpp\nwg_pch.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src_cpp\guilib\nwg_gui_sys.cpp" />
-    <ClCompile Include="src_cpp\nwg_creator_state.cpp" />
+    <ClCompile Include="src_cpp\nwg_core_states.cpp" />
     <ClCompile Include="src_cpp\nwg_entry.cpp" />
-    <ClCompile Include="src_cpp\nwg_gamer_state.cpp" />
     <ClCompile Include="src_cpp\nwg_gui_of.cpp" />
-    <ClCompile Include="src_cpp\nwg_mem_sys.cpp" />
-    <ClCompile Include="src_cpp\nwg_memory.cpp" />
     <ClCompile Include="src_cpp\nwg_pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -118,9 +110,6 @@
   <ItemGroup>
     <ProjectReference Include="..\nw_library\nw_lib.vcxproj">
       <Project>{40CF1511-2C71-40E7-152C-543B016DC737}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\nw_glib\nw_glib.vcxproj">
-      <Project>{6707CD33-D3E6-4BCF-DCFE-D6A5485DB230}</Project>
     </ProjectReference>
     <ProjectReference Include="..\nw_console\nw_cmd.vcxproj">
       <Project>{7DA91511-694B-40E7-5206-543B3E47C737}</Project>

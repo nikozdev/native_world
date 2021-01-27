@@ -23,6 +23,8 @@ namespace NW
 		static inline double GetMouseScrollY()					{ return s_Mouse.yScroll; }
 		static inline double GetMouseMoveX()					{ return s_Mouse.xMove; }
 		static inline double GetMouseMoveY()					{ return s_Mouse.yMove; }
+		static inline double GetMouseMoveDeltaX()				{ return s_Mouse.xMoveDelta; }
+		static inline double GetMouseMoveDeltaY()				{ return s_Mouse.yMoveDelta; }
 		static inline double GetMouseHeldX(MouseButtons msCode)	{ return s_Mouse.xHeld[msCode]; }
 		static inline double GetMouseHeldY(MouseButtons msCode)	{ return s_Mouse.yHeld[msCode]; }
 		static inline InputModes GetMouseIMode()				{ return s_Mouse.iMode; }

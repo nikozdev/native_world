@@ -13,10 +13,10 @@ namespace NW
 		String strApiVer = "none";
 		UInt16 unWidth = 800, unHeight = 600;
 		Float32 nAspectRatio = 800.0f / 600.0f;
-		bool bVSync = false;
-		float nOpacity = 0.0f;
+		Float32 nOpacity = 0.0f;
+		Bit bVSync = false;
 
-		WApiTypes WApiType = WAPI_NONE;
+		WApiTypes wapiType = WAPI_NONE;
 
 		EventCallback fnEvCallback = nullptr;
 	public:
@@ -68,6 +68,7 @@ namespace NW
 		virtual void Update() = 0;
 
 		static AWindow* Create(const WindowInfo& rWindowInfo);
+		static void Create(const WindowInfo& rWindowInfo, RefKeeper<AWindow>& rWindow);
 	protected:
 		WindowInfo m_Info;
 	};

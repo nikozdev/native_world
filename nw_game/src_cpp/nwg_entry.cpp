@@ -7,22 +7,14 @@
 #define NWG_LAUNCH			NWG_LAUNCH_ENGINE
 
 #if (NWG_LAUNCH & NWG_LAUNCH_ENGINE)
-#include <nwg_creator_state.h>
+#include <nwg_core_states.h>
 #endif	// NWG_LAUNCH
 #if (NWG_LAUNCH & NWG_LAUNCH_GLIB)
-#include <glib_texture.h>
-#include <glib_shader.h>
-#include <glib_material.h>
 #include <glfw/glfw3.h>
 #endif	// NWG_LAUNCH
 #if (NWG_LAUNCH & NWG_LAUNCH_CMD)
 #endif	// NWG_LAUNCH
-#if (NWG_LAUNCH & NWG_LAUNCH_ENGINE)
-#include <nwg_mem_sys.h>
-#include <sys/nw_ent_sys.h>
-#endif	// NWG_LAUNCH
 #if (NWG_LAUNCH & NWG_LAUNCH_TEST)
-#include <nwg_mem_sys.h>
 #endif	// NWG_LAUNCH
 
 int main(int nArgs, char* strArgs[])
@@ -31,8 +23,13 @@ int main(int nArgs, char* strArgs[])
 #if (NWG_LAUNCH & NWG_LAUNCH_ENGINE)
 		NW::CoreEngine* pGameEngine = &NW::CoreEngine::Get();
 		NWG::CreatorState crtState;
-		pGameEngine->AddState(&crtState);
-		pGameEngine->Run(1 << 24);
+
+		pGameEngine->AddState(crtState);
+		if (!pGameEngine->Init(1 << 24)) { return -1; }
+		pGameEngine->SwitchState("creator_state");
+		while (pGameEngine->IsRunning()) { pGameEngine->Update(); }
+		pGameEngine->Quit();
+		//pGameEngine->Run(1 << 24);
 #endif
 #if (NWG_LAUNCH & NWG_LAUNCH_CMD)
 		CMD::CmdEngine* pCmdEngine = &CMD::CmdEngine::Get();

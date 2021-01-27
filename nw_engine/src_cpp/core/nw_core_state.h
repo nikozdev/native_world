@@ -19,10 +19,10 @@ namespace NW
 		// --setters
 		// --core_methods
 		virtual bool Init() = 0;
+		virtual void OnQuit() = 0;
 		virtual void Update() = 0;
 		virtual void OnEnable() = 0;
 		virtual void OnDisable() = 0;
-		// --on_event_methods
 		virtual void OnEvent(MouseEvent& rmEvt) = 0;
 		virtual void OnEvent(KeyboardEvent& rkEvt) = 0;
 		virtual void OnEvent(WindowEvent& rwEvt) = 0;

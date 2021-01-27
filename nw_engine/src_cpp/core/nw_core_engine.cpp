@@ -12,59 +12,36 @@ namespace NW
 {
 	CoreEngine::CoreEngine() :
 		m_bIsRunning(false), m_thrRun(Thread()), m_Memory(nullptr, 0),
-		m_strName("nw_engine"), m_wapiType(WApiTypes::WAPI_NONE),
-		m_pCurrState(nullptr) { }
+		m_strName("nw_engine"), m_gapiType(GAPI_NONE),
+		m_itState(nullptr),
+		m_pGApi(RefKeeper<AGApi>(GetMemory())), m_pWindow(RefKeeper<AWindow>(GetMemory())) { }
 	CoreEngine::~CoreEngine() { }
-
-	// --setters
-	void CoreEngine::AddState(CoreState* pState)
-	{
-		if (pState == nullptr) { return; }
-		States::iterator itState = std::find(m_States.begin(), m_States.end(), pState);
-		if (itState != m_States.end()) { return; }
-		m_States.push_back(pState);
-		if (m_pCurrState == nullptr) { SwitchState(pState->GetName()); }
-	}
-	void CoreEngine::RmvState(const char* strName)
-	{
-		States::iterator itState = find_if(m_States.begin(), m_States.end(),
-			[=](CoreState* pState)->bool { return strcmp(strName, &pState->GetName()[0]) == 0; });
-		if (itState == m_States.end()) return;
-		CoreState* pState = *itState;
-		pState->OnDisable();
-		m_States.erase(itState);
-		if (m_pCurrState == pState) {
-			m_pCurrState = nullptr;
-			if (m_States.size() > 0) { SwitchState((*m_States.begin())->GetName()); }
-			else { m_pCurrState = nullptr; Quit(); }
-		}
-	}
-	void CoreEngine::SwitchState(const char* strName)
-	{
-		States::iterator itState = find_if(m_States.begin(), m_States.end(),
-			[=](CoreState* pState)->bool { return strcmp(strName, &pState->GetName()[0]) == 0; }); if (itState == m_States.end()) { return; }
-		if (m_pCurrState != nullptr) { m_pCurrState->OnDisable(); }
-		m_pCurrState = *itState;
-		m_pCurrState->OnEnable();
-	}
 
 	// --==<core_methods>==--
 	bool CoreEngine::Init(Size szMem)
 	{
+		if (m_bIsRunning) { return false; }
 		m_Memory = MemArena(new Byte[szMem], szMem);
 	#if (defined NW_WINDOW)
-		m_wapiType = WAPI_NONE;
-		WindowInfo WindowInfo{ "graphics_engine", 1200, 1200 / 4 * 3, true, nullptr };
+		WindowInfo wInfo{ "graphics_engine", 1200, 1200 / 4 * 3, true, nullptr };
 		#if (NW_WINDOW_GLFW & NW_WINDOW_GLFW)
-		m_wapiType = WAPI_GLFW;
-		m_pWindow.MakeRef<WindowOgl>(GetMemory(), WindowInfo);
-		if (!m_pWindow->Init()) { m_pWindow->OnQuit(); return false; }
+		wInfo.wapiType = WAPI_GLFW;
 		#endif
+		AWindow::Create(wInfo, m_pWindow);
+		if (!m_pWindow->Init()) { m_pWindow->OnQuit(); return false; }
 	#endif	// NW_WINDOW
+	#if (defined NW_GRAPHICS)
+		#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
+		m_gapiType = GAPI_OPENGL;
+		#endif
+		AGApi::Create(m_gapiType, m_pGApi);
+		if (!m_pGApi->Init()) { m_pGApi->OnQuit(); return false; }
+	#endif	// NW_GRAPHICS
 		m_pWindow->SetEventCallback([this](AEvent& rEvt)->void { return OnEvent(rEvt); });
 
-		if (!GEngine::Get().Init(szMem >> 2)) { return false; }
 		DataSys::OnInit();
+
+		for (auto& itState : m_States) { itState.second->Init(); }
 
 		return (m_bIsRunning = true);
 	}
@@ -73,42 +50,42 @@ namespace NW
 		if (!m_bIsRunning) { return; }
 		m_bIsRunning = false;
 
-		while (!m_States.empty()) { (*m_States.begin())->OnDisable(); m_States.erase(m_States.begin()); }
+		while (!m_States.empty()) { m_States.begin()->second->OnQuit(); m_States.erase(m_States.begin()); }
 		DataSys::OnQuit();
-		GEngine::Get().Quit();
 
 		m_pWindow->OnQuit();
+		m_pWindow.Reset();
+		m_pGApi->OnQuit();
+		m_pGApi.Reset();
 
 		delete[] m_Memory.GetDataBeg();
 		m_Memory = MemArena(nullptr, 0);
 	}
 	void CoreEngine::Run(Size szMemory)
 	{
-		auto fnUpdate = [this](Size szMem)->void {
-			if (!Init(szMem)) { return; }
-			for (auto& itState = m_States.begin(); itState != m_States.end(); itState++) { if (!(*itState)->Init()) { Quit(); } }
-			if (m_pCurrState == nullptr) { Quit(); }
+		Init(szMemory);
+		if (!m_bIsRunning) { return; }
+		if (m_itState == nullptr) { Quit(); }
+		auto fnRunning = [this]()->void {
 			while (m_bIsRunning) { Update(); }
 			Quit();
 		};
-		fnUpdate(szMemory);
-		//m_thrRun = Thread(fnUpdate, szMemory);
+		m_thrRun = Thread(fnRunning);
 	}
 
 	void CoreEngine::Update()
 	{
-		m_pCurrState->Update();
+		m_itState->Update();
 	
 		IOSys::Update();
 		TimeSys::Update();
 		
 		m_pWindow->Update();
-		GEngine::Get().Update();
 	}
 	void CoreEngine::OnEvent(AEvent& rEvt)
 	{
 		// Dispatch particular events
-		if (rEvt.EvtType == ET_MOUSE_MOVE || rEvt.EvtType == ET_MOUSE_SCROLL || rEvt.EvtType == ET_MOUSE_RELEASE || rEvt.EvtType == ET_MOUSE_PRESS) {
+		if (rEvt.IsInCategory(EC_MOUSE)) {
 			MouseEvent* pmEvt = static_cast<MouseEvent*>(&rEvt);
 			switch (pmEvt->EvtType) {
 			case ET_MOUSE_MOVE:
@@ -127,15 +104,18 @@ namespace NW
 				IOSys::s_Mouse.bsButtons[pmEvt->nButton].bNew = true;
 			}
 			if (rEvt.bIsHandled) return;
-			m_pCurrState->OnEvent(*pmEvt);
+			m_itState->OnEvent(*pmEvt);
 		}
-		else if (rEvt.EvtType == ET_KEY_CHAR || rEvt.EvtType == ET_KEY_RELEASE || rEvt.EvtType == ET_KEY_PRESS) {
+		else if (rEvt.IsInCategory(EC_KEYBOARD)) {
 			KeyboardEvent* pkEvt = static_cast<KeyboardEvent*>(&rEvt);
 			switch (pkEvt->EvtType) {
 			case ET_KEY_RELEASE:
 				IOSys::s_Keyboard.bsKeys[pkEvt->unKeyCode].bNew = false;
 				switch (pkEvt->unKeyCode) {
-				case NW_KEY_ESCAPE_27: Quit(); break;
+				case NW_KEY_ESCAPE_27:
+					m_bIsRunning = false;
+					rEvt.bIsHandled = true;
+					break;
 				case NW_KEY_M_77:
 					IOSys::SetCursorIMode(IOSys::s_Mouse.iMode == IM_CURSOR_NORMAL ? IM_CURSOR_DISABLED : IM_CURSOR_NORMAL);
 					break;
@@ -143,16 +123,28 @@ namespace NW
 			case ET_KEY_PRESS:
 				IOSys::s_Keyboard.bsKeys[pkEvt->unKeyCode].bNew = true;
 				break;
+			case ET_KEY_CHAR:
+				break;
 			}
-			if (rEvt.bIsHandled) return;
-			m_pCurrState->OnEvent(*pkEvt);
+			if (rEvt.bIsHandled) { return; }
+			m_itState->OnEvent(*pkEvt);
 		}
-		else if (WindowEvent* pwEvt = dynamic_cast<WindowEvent*>(&rEvt)) {
+		else if (rEvt.IsInCategory(EC_WINDOW)) {
+			WindowEvent* pwEvt = static_cast<WindowEvent*>(&rEvt);
 			switch (pwEvt->EvtType) {
-			case ET_WINDOW_CLOSE: Quit(); break;
+			case ET_WINDOW_RESIZE:
+				break;
+			case ET_WINDOW_MOVE:
+				break;
+			case ET_WINDOW_FOCUS:
+				break;
+			case ET_WINDOW_CLOSE:
+				m_bIsRunning = false;
+				rEvt.bIsHandled = true;
+				break;
 			}
-			if (rEvt.bIsHandled) return;
-			m_pCurrState->OnEvent(*pwEvt);
+			if (rEvt.bIsHandled) { return; }
+			m_itState->OnEvent(*pwEvt);
 		}
 	}
 	// --==</core_methods>==--
