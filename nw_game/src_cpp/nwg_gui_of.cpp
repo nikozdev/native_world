@@ -42,9 +42,9 @@ namespace NWG
 
 		ImGui::Begin("graphics_engine", &bIsEnabled);
 		
-		ImGui::Text("gapi type: %s", CoreEngine::Get().GetGApiType() == GApiTypes::GAPI_OPENGL ? "opengl" : "none");
+		ImGui::Text("gapi type: %s", GEngine::Get().GetGApiType() == GApiTypes::GAPI_OPENGL ? "opengl" : "none");
 		ImGui::Separator();
-		const GApiInfo& rGContextInfo = CoreEngine::Get().GetGApi()->GetInfo();
+		const GApiInfo& rGContextInfo = GEngine::Get().GetGApi()->GetInfo();
 		ImGui::Text("\ncontext version: %s;\nrenderer: %s;"
 			"\nvendor: %s;\nshading language: %s"
 			"\nmax texture count: %d;\nmax vertex attributes: %d",
@@ -447,9 +447,9 @@ namespace NWG
 		pIndBuf(nullptr),
 		pShader(AShader::Create("shd_sprite_editor"))
 	{
-		pVtxBuf = (AVertexBuf::Create(sizeof(float) * (2 + 2), nullptr));
+		pVtxBuf = AVertexBuf::Create();
 		UInt32 IndData[] = { 0, 1, 2,	2, 3, 0 };
-		pIndBuf = (AIndexBuf::Create(sizeof(IndData), &IndData[0]));
+		pIndBuf = AIndexBuf::Create();
 		
 		pShader->LoadF("D:/dev/native_world/nw_engine/src_glsl/shd_2d_display.glsl");
 		pVtxBuf->SetLayout(pShader->GetVtxLayout());
@@ -598,7 +598,7 @@ namespace NWG
 
 			pVtxBuf->Bind();
 			pIndBuf->Bind();
-			CoreEngine::Get().GetGApi()->DrawIndexed(pIndBuf->GetDataSize() / sizeof(UInt32));
+			GEngine::Get().GetGApi()->DrawIndexed(pIndBuf->GetDataSize() / sizeof(UInt32));
 			pIndBuf->Unbind();
 			pVtxBuf->Unbind();
 
@@ -817,10 +817,8 @@ namespace NWG
 // --==<GuiOfSceneEditor>==--
 namespace NWG
 {
-	GuiOfSceneEditor::GuiOfSceneEditor() :
-		pIcoCamera(ATexture2d::Create("ico_editor_camera"))
+	GuiOfSceneEditor::GuiOfSceneEditor()
 	{
-		pIcoCamera->LoadF("data/tex/ico_eye.png");
 	}
 	// --core_methods
 	void GuiOfSceneEditor::OnDraw() {
@@ -920,49 +918,6 @@ namespace NWG
 	}
 	inline void GuiOfSceneEditor::OnDraw(Ents& rEnts) { for (auto& itEnt : rEnts) { OnDraw(&itEnt.second); } }
 	inline void GuiOfSceneEditor::OnDraw(RefEnts& rRefEnts) { for (auto& itEnt : rRefEnts) { OnDraw(itEnt.second); } }
-	inline void GuiOfSceneEditor::OnDraw(GCamera* pGCamera) {
-		if (!bIsEnabledCamera || pGCamera == nullptr) return;
-		ImGui::Begin("editor_camera", &bIsEnabledCamera);
-		if (ImGui::BeginCombo("camera type", pGCamera->GetType() == GCamera::GCT_ORTHO ? "orthographic" : "perspective")) {
-			if (ImGui::Selectable("orthographic", pGCamera->GetType() == GCamera::GCT_ORTHO)) {
-				pGCamera->SetType(GCamera::GCT_ORTHO);
-			}
-			else if (ImGui::Selectable("perspective", pGCamera->GetType() == GCamera::GCT_PERSPECT)) {
-				pGCamera->SetType(GCamera::GCT_PERSPECT);
-			}
-			ImGui::EndCombo();
-		}
-		if (ImGui::BeginCombo("camera mode", pGCamera->GetMode() == GCamera::GCM_2D ? "2 dimentional" : "3 dimentional")) {
-			if (ImGui::Selectable("2 dimentional", pGCamera->GetMode() == GCamera::GCM_2D)) {
-				pGCamera->SetMode(GCamera::GCM_2D);
-			}
-			else if (ImGui::Selectable("3 dimentional", pGCamera->GetMode() == GCamera::GCM_3D)) {
-				pGCamera->SetMode(GCamera::GCM_3D);
-			}
-			ImGui::EndCombo();
-		}
-		switch (pGCamera->GetMode()) {
-		case GCamera::GCM_2D:
-			ImGui::DragFloat2("coordinates", &pGCamera->xCrd, 0.1f);
-			ImGui::DragFloat("rotations", &pGCamera->zRtn, 0.1f);
-			break;
-		case GCamera::GCM_3D:
-			ImGui::DragFloat3("coordinates", &pGCamera->xCrd, 0.1f);
-			ImGui::DragFloat3("rotations", &pGCamera->xRtn, 0.1f);
-			break;
-		}
-		ImGui::DragFloat2("near and far clips", &pGCamera->nNearClip, 0.1f);
-		ImGui::Text("aspect ratio: %f", pGCamera->nAspectRatio);
-		switch (pGCamera->GetType()) {
-		case GCamera::GCT_PERSPECT:
-			ImGui::DragFloat("field of view degree", &pGCamera->nViewField, 1.0f);
-			break;
-		case GCamera::GCT_ORTHO:
-			ImGui::DragFloat("viewScale", &pGCamera->nViewScale, 0.1f);
-			break;
-		}
-		ImGui::End();
-	}
 #endif
 }
 // --==</GuiOfSceneEditor>==--

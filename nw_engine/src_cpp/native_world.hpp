@@ -13,15 +13,14 @@
 // --==</global>==--
 
 // --==</graphics_library>==--
-#include <glib/nw_gapi.h>
-#include <glib/nw_gtools.h>
-#include <glib/nw_gbuffer.h>
-#include <glib/nw_framebuf.h>
-#include <glib/nw_shader.h>
-#include <glib/nw_texture.h>
-#include <glib/nw_gmaterial.h>
-#include <glib/nw_gcamera.h>
-#include <glib/nw_gcamera_lad.h>
+#include <glib_api.h>
+#include <glib_tools.h>
+#include <glib_buffer.h>
+#include <glib_framebuf.h>
+#include <glib_shader.h>
+#include <glib_texture.h>
+#include <glib_material.h>
+#include <glib_camera.h>
 // --==</graphics_library>==--
 
 // --==<lua_library>==--

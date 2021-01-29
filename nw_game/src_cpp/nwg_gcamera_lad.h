@@ -1,17 +1,15 @@
-#ifndef NW_GCAMERA_LAD_H
-#define NW_GCAMERA_LAD_H
+#ifndef NWG_GCAMERA_LAD_H
+#define NWG_GCAMERA_LAD_H
 
-#include <glib/nw_gcamera.h>
+#include <nwg_pch.hpp>
 
-#include <glib_decl.hpp>
-
-namespace NW
+namespace NWG
 {
 	/// GraphicsCameraLad Singleton class
 	/// Interface:
 	/// -> Get static instance -> set current camera -> configure if it's required
 	/// -> Update every frame with the set camera -> Dispatch events to GCameraLad
-	class NW_API GCameraLad
+	class GCameraLad
 	{
 	public: // Configurable Attributes
 		float nRtnSpeed, nMoveSpeed, nZoomSpeed;
@@ -47,4 +45,4 @@ namespace NW
 	};
 }
 
-#endif	// NW_GCAMERA_LAD_H
+#endif	// NWG_GCAMERA_LAD_H

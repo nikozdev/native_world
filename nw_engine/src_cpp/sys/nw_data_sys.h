@@ -2,7 +2,7 @@
 #define NW_DATA_SYSTEM_H
 
 #include <nw_decl.hpp>
-#include <glib_decl.hpp>
+#include <glib_core.hpp>
 
 namespace NW
 {
@@ -43,10 +43,10 @@ namespace NW
 		// --images
 		static UInt8* LoadFImage(const char* strFPath, Int32* pnW, Int32* pnH, Int32* pnChannels);
 		static bool LoadFImage(const char* strFPath, UByte* pClrDataBuf, Int32* pnW, Int32* pnH, Int32* pnChannels);
-		static bool LoadFImage(const char* strFilePath, ImageInfo* pImage);
+		static bool LoadFImage(const char* strFilePath, GLIB::ImageInfo* pImage);
 		// --meshes
-		static bool SaveFMesh(const String& strFilePath, DArray<VertexShape3d>* pVtxData, DArray<UInt32>* punIndData);
-		static bool LoadFMesh(const String& strFilePath, DArray<VertexShape3d>* pVtxData, DArray<UInt32>* punIndData);
+		static bool SaveFMesh(const String& strFilePath, DArray<GLIB::VertexShape3d>* pVtxData, DArray<UInt32>* punIndData);
+		static bool LoadFMesh(const String& strFilePath, DArray<GLIB::VertexShape3d>* pVtxData, DArray<UInt32>* punIndData);
 		// --shaders
 	private:
 		static ADRs s_ADRs;
@@ -60,7 +60,7 @@ namespace NW
 			DArray<V3f>& vtxCoords, DArray<V2f>& texCoords, DArray<V3f>& normalCoords);
 		static bool LoadFMeshObj(const String& strFileData, DArray<UInt32>& arrIndices,
 			DArray<float>& vtxCoords, DArray<float>& texCoords, DArray<float>& normalCoords);
-		static bool LoadFMeshObj(const String& strFileData, DArray<VertexShape3d>& rVtxData, DArray<UInt32>& runIndData);
+		static bool LoadFMeshObj(const String& strFileData, DArray<GLIB::VertexShape3d>& rVtxData, DArray<UInt32>& runIndData);
 	};
 }
 

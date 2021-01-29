@@ -7,8 +7,11 @@
 /// .pch header includes in every cpp file of project
 
 #include <native_world.hpp>
+using namespace NW;
 #include <cmd_engine.h>
-//#include <graphics_library.hpp>
+using namespace CMD;
+#include <graphics_library.hpp>
+using namespace GLIB;
 
 #include <imgui.h>
 #include <imgui_internal.h>

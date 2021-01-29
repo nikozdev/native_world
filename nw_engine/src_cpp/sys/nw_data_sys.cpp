@@ -5,9 +5,7 @@
 #include <core/nw_window.h>
 #include <core/nw_core_state.h>
 
-#include <glib/nw_shader.h>
-#include <glib/nw_texture.h>
-#include <glib/nw_gmaterial.h>
+#include <glib_texture.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -34,7 +32,7 @@ namespace NW
         FStream fStream;
         fStream.exceptions(std::ios::badbit | std::ios::failbit);
 
-        ImageInfo imgInfo;
+        GLIB::ImageInfo imgInfo;
         if (LoadFImage(R"(D:\dev\native_world\nw_engine\data\graphics\ico\ico_bat.png)", &imgInfo)) {
             CoreEngine::Get().GetWindow()->SetIcon(imgInfo.ClrData, imgInfo.nWidth, imgInfo.nHeight);
             delete[] imgInfo.ClrData;
@@ -190,7 +188,7 @@ namespace NW
         if (pClrDataBuf == nullptr) return false;
         return true;
     }
-    bool DataSys::LoadFImage(const char* strFPath, ImageInfo* pImage)
+    bool DataSys::LoadFImage(const char* strFPath, GLIB::ImageInfo* pImage)
     {
         if (pImage == nullptr) return false;
 
@@ -201,7 +199,7 @@ namespace NW
     }
 
     // -- Mesh data
-    bool DataSys::LoadFMesh(const String& strFilePath, DArray<VertexShape3d>* pVtxData, DArray<UInt32>* punIndData)
+    bool DataSys::LoadFMesh(const String& strFilePath, DArray<GLIB::VertexShape3d>* pVtxData, DArray<UInt32>* punIndData)
     {
         UInt16 dotPos = strFilePath.rfind('.') + 1;
         String format = strFilePath.substr(dotPos, strFilePath.size() - dotPos);
@@ -325,7 +323,7 @@ namespace NW
         }
         return true;
     }
-    bool DataSys::LoadFMeshObj(const String& strFileData, DArray<VertexShape3d>& rVtxData, DArray<UInt32>& runIndData)
+    bool DataSys::LoadFMeshObj(const String& strFileData, DArray<GLIB::VertexShape3d>& rVtxData, DArray<UInt32>& runIndData)
     {
         String
             nameToken = "g ",
@@ -365,8 +363,7 @@ namespace NW
         Int32 currMesh = 0, nextMesh = 0;
         currMesh = strFileData.find(nameToken, currPos);
         nextMesh = strFileData.find(nameToken, currPos + nameToken.size());
-        while (currMesh != -1)   // Find the line position where the mesh name is
-        {
+        while (currMesh != -1) {
             currPos = nextPos = 0;
             String strData = strFileData.substr(currMesh, nextMesh - currMesh);
             // mesh name is found
@@ -435,13 +432,11 @@ namespace NW
         for (auto itCount = name_counter.begin(); itCount != name_counter.end(); advance(itCount, 1))
             unMaxVtx = itCount->second > unMaxVtx ? itCount->second : unMaxVtx;
         rVtxData.reserve(unMaxVtx);
-        for (UInt32 vti = 0; vti < unMaxVtx; vti++)
-        {
-            rVtxData.emplace_back(VertexShape3d{VtxCoords[vti], TexCoords[vti], NormCoords[vti]});
+        for (UInt32 vti = 0; vti < unMaxVtx; vti++) {
+            rVtxData.emplace_back(GLIB::VertexShape3d{VtxCoords[vti], TexCoords[vti], NormCoords[vti]});
         }
         unIndices.reserve(name_counter["indexCount"]);
-        for (UInt32 idi = 0; idi < name_counter["indexCount"]; idi++)
-        {
+        for (UInt32 idi = 0; idi < name_counter["indexCount"]; idi++) {
             runIndData.emplace_back(unIndices[idi]);
         }
         return true;

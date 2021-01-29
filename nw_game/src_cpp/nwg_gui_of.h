@@ -3,9 +3,11 @@
 
 #include <nwg_pch.hpp>
 
+using namespace NW;
+using namespace GLIB;
+
 namespace NWG
 {
-	using namespace NW;
 	/// Abstract GuiOf struct
 	template <typename GuiOfType> struct NW_API AGuiOf
 	{
@@ -206,7 +208,6 @@ namespace NWG
 		friend class AGuiOf<GuiOfSceneEditor>;
 	public:
 		bool bIsEnabled = false;
-		bool bIsEnabledCamera = false;
 	private:
 		GuiOfSceneEditor();
 	public:

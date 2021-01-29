@@ -2,6 +2,7 @@
 #include "nwg_core_states.h"
 
 #include <nwg_gui_of.h>
+#include <nwg_gcamera_lad.h>
 
 #pragma warning(disable : 4312)
 
@@ -17,19 +18,19 @@ namespace NWG
 
 	// --==<core_methods>==--
 	bool DrawerState::Init() {
-		NW::FrameBufInfo fbInfo;
+		FrameBufInfo fbInfo;
 		fbInfo.unHeight = 800;
 		fbInfo.unWidth = 1200;
 		fbInfo.unSamples = 1;
-		NW::AFrameBuf::Create("fmb_draw", fbInfo, m_pFmBuf);
+		AFrameBuf::Create("fmb_draw", fbInfo, m_pFmBuf);
 		
-		NW::AVertexBuf::Create(1 << 12, nullptr, m_pVtxBuf);
-		NW::AIndexBuf::Create(1 << 12, nullptr, m_pIdxBuf);
-		NW::AShaderBuf::Create(1 << 12, nullptr, m_pShdBuf);
+		AVertexBuf::Create(1 << 12, nullptr, m_pVtxBuf);
+		AIndexBuf::Create(1 << 12, nullptr, m_pIdxBuf);
+		AShaderBuf::Create(1 << 12, nullptr, m_pShdBuf);
 
-		m_pVtxData = NWL::LinearAllocator(CoreEngine::Get().GetMemory().Alloc(m_pVtxBuf->GetDataSize()), m_pVtxBuf->GetDataSize());
-		m_pIdxData = NWL::LinearAllocator(CoreEngine::Get().GetMemory().Alloc(m_pIdxBuf->GetDataSize()), m_pIdxBuf->GetDataSize());
-		m_pShdData = NWL::LinearAllocator(CoreEngine::Get().GetMemory().Alloc(m_pShdBuf->GetDataSize()), m_pShdBuf->GetDataSize());
+		m_pVtxData = LinearAllocator(CoreEngine::Get().GetMemory().Alloc(m_pVtxBuf->GetDataSize()), m_pVtxBuf->GetDataSize());
+		m_pIdxData = LinearAllocator(CoreEngine::Get().GetMemory().Alloc(m_pIdxBuf->GetDataSize()), m_pIdxBuf->GetDataSize());
+		m_pShdData = LinearAllocator(CoreEngine::Get().GetMemory().Alloc(m_pShdBuf->GetDataSize()), m_pShdBuf->GetDataSize());
 
 		{	// shaders
 			AShader* pShader = nullptr;
@@ -44,7 +45,7 @@ namespace NWG
 		{	// materials
 			GMaterial* pGMtl = nullptr;
 			pGMtl= CoreEngine::Get().NewT<GMaterial>("gmt_3d_batch");
-			pGMtl->SetShader(NWL::ADataRes::GetDataRes<AShader>("shd_3d_batch"));
+			pGMtl->SetShader(ADataRes::GetDataRes<AShader>("shd_3d_batch"));
 		}
 
 		return true;
@@ -61,8 +62,8 @@ namespace NWG
 	}
 	void DrawerState::Update()
 	{
-		NW::AGApi* pGApi = NW::CoreEngine::Get().GetGApi();
-		NW::GMaterial* pGMtl = NWL::ADataRes::GetDataRes<GMaterial>("gmt_3d_batch");
+		AGApi* pGApi = GEngine::Get().GetGApi();
+		GMaterial* pGMtl = ADataRes::GetDataRes<GMaterial>("gmt_3d_batch");
 
 		float vtxData[] = {
 			-0.5f,	-0.5f,	0.0f,		0.0f,	0.0f,	1.0f,	1.0f,		0.0f,	0.0f,		0.0f,
@@ -95,57 +96,59 @@ namespace NWG
 		memcpy(m_pShdData.Alloc(sizeof(Mat4f)), &m_GCamera.GetProjMatrix()[0], sizeof(Mat4f));
 		memcpy(m_pShdData.Alloc(sizeof(Mat4f)), &m_GCamera.GetViewMatrix()[0], sizeof(Mat4f));
 
-		m_pFmBuf->Bind();
-		m_pFmBuf->Clear(FB_COLOR | FB_DEPTH | FB_STENCIL);
-		NW::FrameBufInfo fbInfo = m_pFmBuf->GetInfo();
-		pGApi->SetViewport(0, 0, static_cast<Int32>(fbInfo.unWidth), static_cast<Int32>(fbInfo.unHeight));
+		{
+			m_pFmBuf->Bind();
+			m_pFmBuf->SetClearColor(m_pFmBuf->GetClearColor());
+			m_pFmBuf->Clear(FB_COLOR | FB_DEPTH | FB_STENCIL);
 
-		pGApi->SetModes(true, PM_BLEND);
-		pGApi->SetBlendFunc(BC_SRC_ALPHA, BC_ONE_MINUS_SRC_ALPHA);
-		pGApi->SetModes(false, PM_DEPTH_TEST);
-		pGApi->SetPrimitiveType(PT_TRIANGLES);
+			pGApi->SetViewport(0, 0, m_pFmBuf->GetWidth(), m_pFmBuf->GetWidth());
+			pGApi->SetModes(true, PM_BLEND);
+			pGApi->SetBlendFunc(BC_SRC_ALPHA, BC_ONE_MINUS_SRC_ALPHA);
+			pGApi->SetModes(false, PM_DEPTH_TEST);
+			pGApi->SetModes(false, PM_STENCIL_TEST);
+			pGApi->SetPrimitiveType(PT_TRIANGLES);
 
-		pGMtl->Enable();
-		m_pVtxBuf->SetLayout(pGMtl->GetShader()->GetVtxLayout());
-		m_pShdBuf->SetLayout(pGMtl->GetShader()->GetShdLayout());
+			pGMtl->Enable();
+			m_pVtxBuf->SetLayout(pGMtl->GetShader()->GetVtxLayout());
+			m_pShdBuf->SetLayout(pGMtl->GetShader()->GetShdLayout());
+
+			m_pVtxBuf->SetSubData(m_pVtxData.GetAllocSize(), m_pVtxData.GetDataBeg(), 0);
+			m_pIdxBuf->SetSubData(m_pIdxData.GetAllocSize(), m_pIdxData.GetDataBeg(), 0);
+			m_pShdBuf->SetSubData(m_pShdData.GetAllocSize(), m_pShdData.GetDataBeg(), 0);
+
+			m_pShdBuf->Bind();
+			m_pVtxBuf->Bind();
+			m_pIdxBuf->Bind();
+			//pGApi->DrawIndexed(m_pIdxBuf->GetDataSize() / sizeof(UInt32));
+			m_pIdxBuf->Unbind();
+			m_pVtxBuf->Unbind();
+			m_pShdBuf->Unbind();
+
+			pGMtl->Disable();
+
+			m_pShdData.Clear();
+			m_pVtxData.Clear();
+			m_pIdxData.Clear();
+
+			m_pFmBuf->Unbind();
+		}
 		
-		m_pVtxBuf->SetSubData(m_pVtxData.GetAllocSize(), m_pVtxData.GetDataBeg(), 0);
-		m_pIdxBuf->SetSubData(m_pIdxData.GetAllocSize(), m_pIdxData.GetDataBeg(), 0);
-		m_pShdBuf->SetSubData(m_pShdData.GetAllocSize(), m_pShdData.GetDataBeg(), 0);
-
-		m_pShdBuf->Bind();
-		m_pVtxBuf->Bind();
-		m_pIdxBuf->Bind();
-		pGApi->DrawIndexed(m_pIdxBuf->GetDataSize() / sizeof(UInt32));
-		m_pIdxBuf->Unbind();
-		m_pVtxBuf->Unbind();
-		m_pShdBuf->Unbind();
-
-		pGMtl->Disable();
-
-		m_pShdData.Clear();
-		m_pVtxData.Clear();
-		m_pIdxData.Clear();
-
-		m_pFmBuf->Unbind();
-
-
-		NW::GCameraLad::Get().UpdateCamera(&m_GCamera);
+		GCameraLad::Get().UpdateCamera(&m_GCamera);
 	}
 	void DrawerState::OnEnable() { }
 	void DrawerState::OnDisable() { }
 
 	void DrawerState::OnEvent(MouseEvent& rmEvt)
 	{
-		NW::GCameraLad::Get().OnEvent(rmEvt, &m_GCamera);
+		GCameraLad::Get().OnEvent(rmEvt, &m_GCamera);
 	}
 	void DrawerState::OnEvent(KeyboardEvent& rkEvt)
 	{
-		NW::GCameraLad::Get().OnEvent(rkEvt, &m_GCamera);
+		GCameraLad::Get().OnEvent(rkEvt, &m_GCamera);
 	}
 	void DrawerState::OnEvent(WindowEvent& rwEvt)
 	{
-		NW::GCameraLad::Get().OnEvent(rwEvt, &m_GCamera);
+		GCameraLad::Get().OnEvent(rwEvt, &m_GCamera);
 	}
 	// --==</core_methods>==--
 }
@@ -264,25 +267,26 @@ namespace NWG
 			GuiOfGMaterialEditor::Get().OnDraw();
 
 			ImGui::Begin("framebufs");
-			AFrameBuf* pFmBuf = NWL::ADataRes::GetDataRes<AFrameBuf>("fmb_draw");
-			NW::FrameBufInfo fbInfo = pFmBuf->GetInfo();
-			NWL::V2f whSize = { ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y };
-			if (fbInfo.unWidth != static_cast<UInt16>(whSize.x) || fbInfo.unHeight != static_cast<UInt16>(whSize.y)) {
-				pFmBuf->SetSizeWH(whSize.x, whSize.y);
+			{
+				AFrameBuf* pFmBuf = ADataRes::GetDataRes<AFrameBuf>("fmb_draw");
+				pFmBuf->Clear();
+
+				FrameBufInfo fbInfo = pFmBuf->GetInfo();
+				V2f whSize = { ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y };
+				if (fbInfo.unWidth != static_cast<UInt16>(whSize.x) || fbInfo.unHeight != static_cast<UInt16>(whSize.y)) { pFmBuf->SetSizeWH(whSize.x, whSize.y); }
+				ImGui::Image(reinterpret_cast<Ptr>(pFmBuf->GetAttachment(FBAT_COLOR)->GetId()), { whSize.x, whSize.y });
+				
+				V4f rgbaClear = pFmBuf->GetClearColor();
+				if (ImGui::ColorEdit4("clear color", &rgbaClear[0])) { pFmBuf->SetClearColor(rgbaClear); }
 			}
-			ImGui::Image(reinterpret_cast<Ptr>(pFmBuf->GetAttachment(FBAT_COLOR)->GetId()), { whSize.x, whSize.y });
-			static NWL::V3f rgbClear;
-			if (ImGui::ColorEdit3("clear_color", &rgbClear[0])) { CoreEngine::Get().GetGApi()->SetClearColor(rgbClear.r, rgbClear.g, rgbClear.b, 1.0f); }
 			ImGui::End();
 		}
 
 		{	// end drawing
 			ImGui::End();
-
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 			ImGui::EndFrame();
-
 			if (m_pGuiIO->ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
 				ImGui::UpdatePlatformWindows();
 				ImGui::RenderPlatformWindowsDefault();
@@ -324,7 +328,9 @@ namespace NWG
 	{		
 		return true;
 	}
-	void CreatorState::OnQuit() { }
+	void CreatorState::OnQuit()
+	{
+	}
 	void CreatorState::Update()
 	{
 		m_drwState.Update();

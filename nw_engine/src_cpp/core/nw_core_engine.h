@@ -3,10 +3,10 @@
 
 #include <core/nw_core_state.h>
 #include <core/nw_window.h>
-#include <glib/nw_gapi.h>
+#include <glib_api.h>
 
 #include <nw_decl.hpp>
-#include <glib_decl.hpp>
+#include <glib_core.hpp>
 
 namespace NW
 {
@@ -24,8 +24,6 @@ namespace NW
 		friend class ASingleton<CoreEngine>;
 	private:
 		CoreEngine();
-		CoreEngine(CoreEngine& rCpy) = delete;
-		void operator=(CoreEngine& rCpy) = delete;
 	public:
 		~CoreEngine();
 
@@ -34,10 +32,8 @@ namespace NW
 		inline Thread& GetRunThread()			{ return m_thrRun; }
 
 		inline const char* GetName() const		{ return &m_strName[0]; }
-		inline GApiTypes GetGApiType() const	{ return m_gapiType; }
 
 		inline AWindow* GetWindow()				{ return m_pWindow.GetRef(); }
-		inline AGApi* GetGApi()					{ return m_pGApi.GetRef(); }
 		inline States& GetStates()				{ return m_States; }
 		inline CoreState* GetState()			{ return m_itState; }
 		inline CoreState* GetState(const char* strName);
@@ -62,19 +58,17 @@ namespace NW
 		template <typename MType>
 		inline MType* NewTArr(UInt64 unAlloc) { return NWL::NewTArr<MType>(GetMemory(), unAlloc); }
 		template <typename MType>
-		inline void DelT(MType* pBlock) { NWL::DelT<MType>(GetMemory(), pBlock); }
+		inline void DelT(MType* pBlock) { NWL::DelT<MType>(pBlock, GetMemory()); }
 		template <typename MType>
-		inline void DelTArr(MType* pBlock, UInt64 unDealloc) { NWL::DelTArr<MType>(GetMemory(), pBlock, unDealloc); }
+		inline void DelTArr(MType* pBlock, UInt64 unDealloc) { NWL::DelTArr<MType>(pBlock, unDealloc, GetMemory()); }
 	private:
 		Bit m_bIsRunning;
 		Thread m_thrRun;
 		MemArena m_Memory;
 
 		String m_strName;
-		GApiTypes m_gapiType;
 
 		RefKeeper<AWindow> m_pWindow;
-		RefKeeper<AGApi> m_pGApi;
 		States m_States;
 		CoreState* m_itState;
 	};

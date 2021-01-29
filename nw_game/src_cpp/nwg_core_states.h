@@ -8,7 +8,7 @@ namespace NWG
 {
 	/// DrawerState class
 	/// Description:
-	class NW_API DrawerState : public NW::CoreState
+	class DrawerState : public NW::CoreState
 	{
 	public:
 		DrawerState();
@@ -28,11 +28,11 @@ namespace NWG
 		virtual void OnEvent(KeyboardEvent& rkEvt) override;
 		virtual void OnEvent(WindowEvent& rwEvt) override;
 	private:
-		NW::GCamera m_GCamera;
-		NWL::RefOwner<NW::AFrameBuf> m_pFmBuf;
-		NWL::RefOwner<NW::AVertexBuf> m_pVtxBuf;
-		NWL::RefOwner<NW::AIndexBuf> m_pIdxBuf;
-		NWL::RefOwner<NW::AShaderBuf> m_pShdBuf;
+		GLIB::GCamera m_GCamera;
+		NWL::RefOwner<GLIB::AFrameBuf> m_pFmBuf;
+		NWL::RefOwner<GLIB::AVertexBuf> m_pVtxBuf;
+		NWL::RefOwner<GLIB::AIndexBuf> m_pIdxBuf;
+		NWL::RefOwner<GLIB::AShaderBuf> m_pShdBuf;
 		NWL::LinearAllocator m_pVtxData;
 		NWL::LinearAllocator m_pShdData;
 		NWL::LinearAllocator m_pIdxData;
@@ -42,7 +42,7 @@ namespace NWG
 {
 	/// GuiState class
 	/// Description:
-	class NW_API GuiState : public NW::CoreState
+	class GuiState : public NW::CoreState
 	{
 	public:
 		GuiState();

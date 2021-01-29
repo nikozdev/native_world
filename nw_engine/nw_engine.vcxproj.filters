@@ -1,173 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="src_cpp">
-      <UniqueIdentifier>{AF454AA9-1B25-C944-243D-541B909B2FA6}</UniqueIdentifier>
+    <Filter Include="core">
+      <UniqueIdentifier>{4E40957C-3A77-960D-E363-7C10CF79120F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src_cpp\core">
-      <UniqueIdentifier>{87DB3E97-733E-CE3B-1CC4-06F208069ABE}</UniqueIdentifier>
+    <Filter Include="lua">
+      <UniqueIdentifier>{C78D880B-3397-887C-BC12-9F7C281B947C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src_cpp\glib">
-      <UniqueIdentifier>{1CFF4097-0862-D03B-B1E7-08F29D299CBE}</UniqueIdentifier>
+    <Filter Include="phys">
+      <UniqueIdentifier>{69449C7C-557B-9D0D-FE67-8310EA7D190F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src_cpp\lua">
-      <UniqueIdentifier>{E0255F2B-4CDB-D720-D5CF-D1F74184CE24}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src_cpp\phys">
-      <UniqueIdentifier>{A2DF4597-8E42-D53B-37C8-0DF2230AA1BE}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src_cpp\sys">
-      <UniqueIdentifier>{3D445F2B-A9F9-D720-32EE-D1F79EA2CE24}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src_glsl">
-      <UniqueIdentifier>{DE1C95D2-CAE9-EFDD-F302-DE85DF2E256C}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src_lua">
-      <UniqueIdentifier>{8E6C4AA9-FA4B-C944-0364-541B6FC22FA6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src_lua\estates">
-      <UniqueIdentifier>{76AE7843-E239-E607-EB4A-69FC57554208}</UniqueIdentifier>
+    <Filter Include="sys">
+      <UniqueIdentifier>{24AC880B-90B5-887C-1931-9F7C8539947C}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src_cpp\core\nw_core_engine.h">
-      <Filter>src_cpp\core</Filter>
+      <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\core\nw_core_state.h">
-      <Filter>src_cpp\core</Filter>
+      <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\core\nw_scene.h">
-      <Filter>src_cpp\core</Filter>
+      <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\core\nw_window.h">
-      <Filter>src_cpp\core</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\glib_decl.hpp">
-      <Filter>src_cpp</Filter>
+      <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\lua\nw_lua_core.h">
-      <Filter>src_cpp\lua</Filter>
+      <Filter>lua</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\lua\nw_lua_engine.h">
-      <Filter>src_cpp\lua</Filter>
+      <Filter>lua</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\lua\nw_lua_wraps.h">
-      <Filter>src_cpp\lua</Filter>
+      <Filter>lua</Filter>
     </ClInclude>
-    <ClInclude Include="src_cpp\lua_decl.hpp">
-      <Filter>src_cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\native_world.hpp">
-      <Filter>src_cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\nw_core.hpp">
-      <Filter>src_cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\nw_decl.hpp">
-      <Filter>src_cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\nw_def.hpp">
-      <Filter>src_cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\nw_pch.hpp">
-      <Filter>src_cpp</Filter>
-    </ClInclude>
+    <ClInclude Include="src_cpp\lua_decl.hpp" />
+    <ClInclude Include="src_cpp\native_world.hpp" />
+    <ClInclude Include="src_cpp\nw_core.hpp" />
+    <ClInclude Include="src_cpp\nw_decl.hpp" />
+    <ClInclude Include="src_cpp\nw_def.hpp" />
+    <ClInclude Include="src_cpp\nw_pch.hpp" />
     <ClInclude Include="src_cpp\phys\nw_phys_engine.h">
-      <Filter>src_cpp\phys</Filter>
+      <Filter>phys</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\sys\nw_data_sys.h">
-      <Filter>src_cpp\sys</Filter>
+      <Filter>sys</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\sys\nw_ent_sys.h">
-      <Filter>src_cpp\sys</Filter>
+      <Filter>sys</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\sys\nw_io_sys.h">
-      <Filter>src_cpp\sys</Filter>
+      <Filter>sys</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\sys\nw_log_sys.h">
-      <Filter>src_cpp\sys</Filter>
+      <Filter>sys</Filter>
     </ClInclude>
     <ClInclude Include="src_cpp\sys\nw_time_sys.h">
-      <Filter>src_cpp\sys</Filter>
+      <Filter>sys</Filter>
     </ClInclude>
-    <ClInclude Include="src_cpp\glib\nw_framebuf.h" />
-    <ClInclude Include="src_cpp\glib\nw_gapi.h" />
-    <ClInclude Include="src_cpp\glib\nw_gbuffer.h" />
-    <ClInclude Include="src_cpp\glib\nw_gcamera.h" />
-    <ClInclude Include="src_cpp\glib\nw_gcamera_lad.h" />
-    <ClInclude Include="src_cpp\glib\nw_gmaterial.h" />
-    <ClInclude Include="src_cpp\glib\nw_gtools.h" />
-    <ClInclude Include="src_cpp\glib\nw_shader.h" />
-    <ClInclude Include="src_cpp\glib\nw_texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src_cpp\core\nw_core_engine.cpp">
-      <Filter>src_cpp\core</Filter>
+      <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\core\nw_scene.cpp">
-      <Filter>src_cpp\core</Filter>
+      <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\core\nw_window.cpp">
-      <Filter>src_cpp\core</Filter>
+      <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\lua\nw_lua_core.cpp">
-      <Filter>src_cpp\lua</Filter>
+      <Filter>lua</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\lua\nw_lua_engine.cpp">
-      <Filter>src_cpp\lua</Filter>
+      <Filter>lua</Filter>
     </ClCompile>
-    <ClCompile Include="src_cpp\nw_pch.cpp">
-      <Filter>src_cpp</Filter>
-    </ClCompile>
+    <ClCompile Include="src_cpp\nw_pch.cpp" />
     <ClCompile Include="src_cpp\phys\nw_phys_engine.cpp">
-      <Filter>src_cpp\phys</Filter>
+      <Filter>phys</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\sys\nw_data_sys.cpp">
-      <Filter>src_cpp\sys</Filter>
+      <Filter>sys</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\sys\nw_ent_sys.cpp">
-      <Filter>src_cpp\sys</Filter>
+      <Filter>sys</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\sys\nw_io_sys.cpp">
-      <Filter>src_cpp\sys</Filter>
+      <Filter>sys</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\sys\nw_log_sys.cpp">
-      <Filter>src_cpp\sys</Filter>
+      <Filter>sys</Filter>
     </ClCompile>
     <ClCompile Include="src_cpp\sys\nw_time_sys.cpp">
-      <Filter>src_cpp\sys</Filter>
+      <Filter>sys</Filter>
     </ClCompile>
-    <ClCompile Include="src_cpp\glib\nw_framebuf.cpp" />
-    <ClCompile Include="src_cpp\glib\nw_gapi.cpp" />
-    <ClCompile Include="src_cpp\glib\nw_gbuffer.cpp" />
-    <ClCompile Include="src_cpp\glib\nw_gcamera.cpp" />
-    <ClCompile Include="src_cpp\glib\nw_gcamera_lad.cpp" />
-    <ClCompile Include="src_cpp\glib\nw_gmaterial.cpp" />
-    <ClCompile Include="src_cpp\glib\nw_gtools.cpp" />
-    <ClCompile Include="src_cpp\glib\nw_shader.cpp" />
-    <ClCompile Include="src_cpp\glib\nw_texture.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="src_glsl\shd_2d_batch.glsl">
-      <Filter>src_glsl</Filter>
-    </None>
-    <None Include="src_glsl\shd_2d_display.glsl">
-      <Filter>src_glsl</Filter>
-    </None>
-    <None Include="src_glsl\shd_2d_tile.glsl">
-      <Filter>src_glsl</Filter>
-    </None>
-    <None Include="src_glsl\shd_3d_batch.glsl">
-      <Filter>src_glsl</Filter>
-    </None>
-    <None Include="src_glsl\shd_3d_mesh.glsl">
-      <Filter>src_glsl</Filter>
-    </None>
-    <None Include="src_glsl\shd_void.glsl">
-      <Filter>src_glsl</Filter>
-    </None>
-    <None Include="src_lua\estates\est_default.lua">
-      <Filter>src_lua\estates</Filter>
-    </None>
   </ItemGroup>
 </Project>

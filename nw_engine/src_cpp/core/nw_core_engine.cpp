@@ -8,20 +8,22 @@
 #include <sys/nw_log_sys.h>
 #include <sys/nw_data_sys.h>
 
+#include <glib_engine.h>
+
 namespace NW
 {
 	CoreEngine::CoreEngine() :
 		m_bIsRunning(false), m_thrRun(Thread()), m_Memory(nullptr, 0),
-		m_strName("nw_engine"), m_gapiType(GAPI_NONE),
+		m_strName("nw_engine"),
 		m_itState(nullptr),
-		m_pGApi(RefKeeper<AGApi>(GetMemory())), m_pWindow(RefKeeper<AWindow>(GetMemory())) { }
+		m_pWindow(RefKeeper<AWindow>(GetMemory())) { }
 	CoreEngine::~CoreEngine() { }
 
 	// --==<core_methods>==--
 	bool CoreEngine::Init(Size szMem)
 	{
 		if (m_bIsRunning) { return false; }
-		m_Memory = MemArena(new Byte[szMem], szMem);
+		m_Memory = MemArena(new Byte[szMem / 2], szMem / 2);
 	#if (defined NW_WINDOW)
 		WindowInfo wInfo{ "graphics_engine", 1200, 1200 / 4 * 3, true, nullptr };
 		#if (NW_WINDOW_GLFW & NW_WINDOW_GLFW)
@@ -30,16 +32,10 @@ namespace NW
 		AWindow::Create(wInfo, m_pWindow);
 		if (!m_pWindow->Init()) { m_pWindow->OnQuit(); return false; }
 	#endif	// NW_WINDOW
-	#if (defined NW_GRAPHICS)
-		#if (NW_GRAPHICS & NW_GRAPHICS_OGL)
-		m_gapiType = GAPI_OPENGL;
-		#endif
-		AGApi::Create(m_gapiType, m_pGApi);
-		if (!m_pGApi->Init()) { m_pGApi->OnQuit(); return false; }
-	#endif	// NW_GRAPHICS
 		m_pWindow->SetEventCallback([this](AEvent& rEvt)->void { return OnEvent(rEvt); });
-
 		DataSys::OnInit();
+
+		if (!GLIB::GEngine::Get().Init(szMem / 2)) { return false; }
 
 		for (auto& itState : m_States) { itState.second->Init(); }
 
@@ -55,8 +51,7 @@ namespace NW
 
 		m_pWindow->OnQuit();
 		m_pWindow.Reset();
-		m_pGApi->OnQuit();
-		m_pGApi.Reset();
+		GLIB::GEngine::Get().Quit();
 
 		delete[] m_Memory.GetDataBeg();
 		m_Memory = MemArena(nullptr, 0);

@@ -1,10 +1,10 @@
-#include <nw_pch.hpp>
-#include "nw_gcamera_lad.h"
+#include <nwg_pch.hpp>
+#include "nwg_gcamera_lad.h"
 
 #include <sys/nw_io_sys.h>
 #include <sys/nw_time_sys.h>
 
-namespace NW
+namespace NWG
 {
 	GCameraLad::GCameraLad() :
 		nZoomSpeed(1000.0f),
@@ -19,7 +19,7 @@ namespace NW
 		float MoveSpeed = this->nMoveSpeed * TimeSys::GetRealDelta();
 		if (!(IOSys::GetMouseIMode() & IM_CURSOR_DISABLED)) { return; }
 		pGCamera->nAspectRatio = whBounds.x / whBounds.y;
-		if (pGCamera->GetMode() == GCamera::GCM_2D)
+		if (pGCamera->GetMode() == GCM_2D)
 		{
 			if (IOSys::GetKeyHeld(NW_KEY_W_87))
 				pGCamera->yCrd += MoveSpeed;
@@ -30,7 +30,7 @@ namespace NW
 			if (IOSys::GetKeyHeld(NW_KEY_A_65))
 				pGCamera->xCrd -= MoveSpeed;
 		}
-		else if (pGCamera->GetMode() == GCamera::GCM_3D) {
+		else if (pGCamera->GetMode() == GCM_3D) {
 			MoveSpeed = -MoveSpeed;
 			if (IOSys::GetKeyHeld(NW_KEY_W_87)) {	// Move Forward
 				pGCamera->xCrd += pGCamera->dirFront.x * MoveSpeed;
@@ -63,7 +63,7 @@ namespace NW
 		if (!(IOSys::GetMouseIMode() & IM_CURSOR_DISABLED)) { return; }
 		switch (rmEvt.EvtType) {
 		case ET_MOUSE_MOVE:
-			if (pGCamera->GetMode() == GCamera::GCM_2D) {
+			if (pGCamera->GetMode() == GCM_2D) {
 				if (IOSys::GetMouseHeld(NW_MS_BTN_2)) {
 					pGCamera->xyzCrd.x += -IOSys::GetMouseMoveDeltaX() * TimeSys::GetRealDelta() * nMoveSpeed;
 					pGCamera->xyzCrd.y += IOSys::GetMouseMoveDeltaY() * TimeSys::GetRealDelta() * nMoveSpeed;
@@ -76,7 +76,7 @@ namespace NW
 				else
 					pGCamera->nRoll = nRoll_deg;
 			}
-			else if (pGCamera->GetMode() == GCamera::GCM_3D) {
+			else if (pGCamera->GetMode() == GCM_3D) {
 				float nYaw_deg = pGCamera->nYaw - IOSys::GetMouseMoveX() * nRtnSpeed * TimeSys::GetRealDelta();
 				float nPitch_deg = pGCamera->nPitch - IOSys::GetMouseMoveDeltaY() * nRtnSpeed * TimeSys::GetRealDelta();
 
@@ -98,11 +98,11 @@ namespace NW
 		case ET_MOUSE_SCROLL:
 			if (!(IOSys::GetMouseIMode() & IM_CURSOR_DISABLED)) return;
 			float nZoom = -rmEvt.nY * TimeSys::GetRealDelta() * nZoomSpeed;
-			if (pGCamera->GetType() == GCamera::GCT_ORTHO) {
+			if (pGCamera->GetType() == GCT_ORTHO) {
 				float nScale = pGCamera->nViewScale + nZoom * pGCamera->nViewScale / 40.0f + 0.01f;
 				if (nScale > 0.0f) pGCamera->nViewScale = nScale;
 			}
-			else if (pGCamera->GetType() == GCamera::GCT_PERSPECT) {
+			else if (pGCamera->GetType() == GCT_PERSPECT) {
 				float nViewField = pGCamera->nViewField + nZoom;
 				if (nViewField >= 0.01f && nViewField <= 180.0f) pGCamera->nViewField = nViewField;
 			}
