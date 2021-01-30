@@ -20,7 +20,7 @@ namespace NW
 	class NW_API CoreEngine : public ASingleton<CoreEngine>
 	{
 	public:
-		using States = HashMap<String, CoreState*>;
+		using States = DArray<CoreState*>;
 		friend class ASingleton<CoreEngine>;
 	private:
 		CoreEngine();
@@ -35,22 +35,20 @@ namespace NW
 
 		inline AWindow* GetWindow()				{ return m_pWindow.GetRef(); }
 		inline States& GetStates()				{ return m_States; }
-		inline CoreState* GetState()			{ return m_itState; }
-		inline CoreState* GetState(const char* strName);
+		inline CoreState* GetState(UInt32 unIdx) { return m_States[unIdx]; }
 		// --setters
 		void SetName(const char* strName) { m_strName = strName; }
 		
 		inline void AddState(CoreState& rState);
-		inline void RmvState(const char* strName);
-		inline void SwitchState(const char* strName);
+		inline void RmvState(UInt32 unIdx);
 		// --predicates
 		inline Bit IsRunning() const	{ return m_bIsRunning; }
 
 		// --core_methods
-		bool Init(Size szMemory);
+		void Run();
+		bool Init();
 		void Quit();
 		void Update();
-		void Run(Size szMemory);
 		void OnEvent(AEvent& rEvt);
 		// --memory_methods
 		template <typename MType, typename...Args>
@@ -58,9 +56,9 @@ namespace NW
 		template <typename MType>
 		inline MType* NewTArr(UInt64 unAlloc) { return NWL::NewTArr<MType>(GetMemory(), unAlloc); }
 		template <typename MType>
-		inline void DelT(MType* pBlock) { NWL::DelT<MType>(pBlock, GetMemory()); }
+		inline void DelT(MType* pBlock) { NWL::DelT<MType>(GetMemory(), pBlock); }
 		template <typename MType>
-		inline void DelTArr(MType* pBlock, UInt64 unDealloc) { NWL::DelTArr<MType>(pBlock, unDealloc, GetMemory()); }
+		inline void DelTArr(MType* pBlock, UInt64 unDealloc) { NWL::DelTArr<MType>(GetMemory(), pBlock, unDealloc); }
 	private:
 		Bit m_bIsRunning;
 		Thread m_thrRun;
@@ -70,38 +68,14 @@ namespace NW
 
 		RefKeeper<AWindow> m_pWindow;
 		States m_States;
-		CoreState* m_itState;
 	};
-	// --getters
-	inline CoreState* CoreEngine::GetState(const char* strName) {
-		States::iterator itState = m_States.find(strName);
-		return itState == m_States.end() ? nullptr : itState->second;
-	}
 	// --setters
-	inline void CoreEngine::AddState(CoreState& rState) {
-		auto& itState = m_States.find(rState.GetName());
-		if (itState != m_States.end()) { RmvState(rState.GetName()); }
-		m_States[rState.GetName()] = &rState;
-	}
-	inline void CoreEngine::RmvState(const char* strName)
+	inline void CoreEngine::AddState(CoreState& rState) { m_States.push_back(&rState); }
+	inline void CoreEngine::RmvState(UInt32 unIdx)
 	{
-		States::iterator itState = m_States.find(strName);
-		if (itState == m_States.end()) return;
-		CoreState* pState = itState->second;
-		m_States.erase(itState);
-		if (m_itState == pState) {
-			m_itState = nullptr;
-			if (m_States.size() > 0) { SwitchState(m_States.begin()->second->GetName()); }
-			else { m_itState = nullptr; Quit(); }
-		}
-	}
-	inline void CoreEngine::SwitchState(const char* strName)
-	{
-		States::iterator itState = m_States.find(strName);
+		States::iterator& itState = m_States.begin() + unIdx;
 		if (itState == m_States.end()) { return; }
-		if (m_itState != nullptr) { m_itState->OnDisable(); }
-		m_itState = itState->second;
-		m_itState->OnEnable();
+		m_States.erase(itState);
 	}
 }
 

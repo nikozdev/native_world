@@ -25,14 +25,14 @@ namespace NW
 		inline Int8 GetLastType() { return unLevel == 0 ? LT_NIL : StackTypes[unLevel - 1]; }
 		inline UInt8 GetLevel() { return unLevel; }
 		// --setters
-		inline void AddType(Int8 nType) { if (unLevel > StackTypes.size()) RemoveType(1); StackTypes[unLevel++] = nType; }
+		inline void AddType(Int8 nType) { if (unLevel > StackTypes.GetSize()) RemoveType(1); StackTypes[unLevel++] = nType; }
 		inline void RemoveType(UInt8 unCount) { while (unCount > 0 && unLevel > 0) { unCount--; unLevel--; StackTypes[unLevel] = LT_NON; } }
 		inline void Reset() { RemoveType(unLevel); }
 		// -- Operators
 		inline OutStream& operator<<(OutStream& rOStream) const {
 			rOStream << std::endl << "LuaEngineInfo::" << std::endl <<
 				"The top of the stack:" << std::endl;
-			for (UInt8 ti = 0; ti < StackTypes.size(); ti++) {
+			for (UInt8 ti = 0; ti < StackTypes.GetSize(); ti++) {
 				rOStream << static_cast<Int16>(ti + 1) << "th type: ";
 				switch (StackTypes[ti]) {
 				case LT_NON:			rOStream << ("none");				break;

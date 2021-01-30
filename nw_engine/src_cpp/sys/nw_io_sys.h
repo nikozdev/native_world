@@ -9,8 +9,8 @@ namespace NW
 	class NW_API IOSys
 	{
 	public:
-		static KeyboardState s_Keyboard;
-		static MouseState s_Mouse;
+		static KeyboardState<NW_KEY_LAST> s_Keyboard;
+		static MouseState<NW_MS_BTN_COUNT> s_Mouse;
 	public:
 		// --getters
 		static inline bool GetKeyPressed(UInt16 unKeyId)		{ return s_Keyboard.bsKeys[unKeyId].bPressed; }

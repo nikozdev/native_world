@@ -67,7 +67,7 @@ namespace NW
 	inline void EntSys::RmvEnt(EntId eId) {
 		AEntity* pEnt = GetEnt(eId);
 		if (pEnt == nullptr) { return; }
-		DelT<AEntity>(pEnt, GetMemory());
+		DelT<AEntity>(GetMemory(), pEnt);
 	}
 }
 

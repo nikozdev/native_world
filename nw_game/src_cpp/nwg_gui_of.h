@@ -108,14 +108,6 @@ namespace NWG
 	private:
 		Size szOffset = 0;
 	};
-	/// GuiOfTimeSys struct
-	struct NW_API GuiOfTimeSys : public AGuiOf<GuiOfTimeSys>
-	{
-	public:
-		virtual void OnDraw() override;
-	private:
-		Char strDate[256] = "11/01/2021";
-	};
 }
 namespace NWG
 {
@@ -169,20 +161,10 @@ namespace NWG
 		ATexture2d* pContext = nullptr;
 		Char strContextName[128];
 
-		DArray<SubTexture2d> Sprites;
-
-		AFrameBuf* pFrameBuf = nullptr;
-		ATexture2d* pBGTex = nullptr;
 		float nAspectRatio = 1.0f;
-		
-		AVertexBuf* pVtxBuf;
-		AIndexBuf* pIndBuf;
-		AShader* pShader = nullptr;
 
 		ImageInfo ImgInfo;
 		TextureInfo TexInfo;
-
-		bool bIsSelection = false;
 	};
 #if false
 	/// GuiOfEntityEditor struct

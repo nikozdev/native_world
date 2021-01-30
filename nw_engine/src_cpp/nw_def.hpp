@@ -169,6 +169,7 @@ typedef double GLclampd;
 
 // --==<keyboard_nw>==--
 // --keys_to_print
+#define NW_KEY_FIRST	             32
 #define NW_KEY_SPACE_32              GLFW_KEY_SPACE             
 #define NW_KEY_APOSTROPHE_39         GLFW_KEY_APOSTROPHE        
 #define NW_KEY_COMMA_44              GLFW_KEY_COMMA             
@@ -220,16 +221,16 @@ typedef double GLclampd;
 #define NW_KEY_WORLD_1_161           GLFW_KEY_WORLD_1           
 #define NW_KEY_WORLD_2_162           GLFW_KEY_WORLD_2           
 // keys_to_control
-#define NW_KEY_ESCAPE_27             GLFW_KEY_ESCAPE             
-#define NW_KEY_BACKSPACE_8          GLFW_KEY_BACKSPACE          
-#define NW_KEY_HTAB_9                GLFW_KEY_TAB                
-#define NW_KEY_ENTER_10              GLFW_KEY_ENTER              
+#define NW_KEY_ESCAPE_27          GLFW_KEY_ESCAPE             
+#define NW_KEY_BACKSPACE_8        GLFW_KEY_BACKSPACE          
+#define NW_KEY_HTAB_9             GLFW_KEY_TAB                
+#define NW_KEY_ENTER_10           GLFW_KEY_ENTER              
 #define NW_KEY_INS_45             GLFW_KEY_INSERT             
 #define NW_KEY_DEL_46             GLFW_KEY_DELETE             
-#define NW_KEY_LEFT_37               GLFW_KEY_LEFT               
-#define NW_KEY_RIGHT_39              GLFW_KEY_RIGHT              
-#define NW_KEY_DOWN_40               GLFW_KEY_DOWN               
-#define NW_KEY_UP_38                 GLFW_KEY_UP                 
+#define NW_KEY_LEFT_37            GLFW_KEY_LEFT               
+#define NW_KEY_RIGHT_39           GLFW_KEY_RIGHT              
+#define NW_KEY_DOWN_40            GLFW_KEY_DOWN               
+#define NW_KEY_UP_38              GLFW_KEY_UP                 
 #define NW_KEY_PAGE_UP            GLFW_KEY_PAGE_UP            
 #define NW_KEY_PAGE_DOWN          GLFW_KEY_PAGE_DOWN          
 #define NW_KEY_HOME               GLFW_KEY_HOME               
@@ -291,7 +292,8 @@ typedef double GLclampd;
 #define NW_KEY_RIGHT_SUPER        GLFW_KEY_RIGHT_SUPER
 #define NW_KEY_MENU               GLFW_KEY_MENU
 
-#define NW_KEY_LAST GLFW_KEY_LAST
+#define NW_KEY_LAST					GLFW_KEY_LAST
+#define NW_KEY_COUNT				NW_KEY_LAST
 // --==</keyboard_nw>==--
 
 // --==<mouse_glfw>==--
@@ -322,6 +324,7 @@ typedef double GLclampd;
 #define NW_MS_BTN_LEFT      GLFW_MOUSE_BUTTON_1
 #define NW_MS_BTN_RIGHT     GLFW_MOUSE_BUTTON_2
 #define NW_MS_BTN_MIDDLE    GLFW_MOUSE_BUTTON_3
+#define NW_MS_BTN_COUNT     GLFW_MOUSE_BUTTON_7
 // --==</mouse_nw>==--
 
 // --==<events_nw>==--

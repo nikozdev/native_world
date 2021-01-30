@@ -2,7 +2,6 @@
 #include "nwg_gcamera_lad.h"
 
 #include <sys/nw_io_sys.h>
-#include <sys/nw_time_sys.h>
 
 namespace NWG
 {
@@ -16,7 +15,7 @@ namespace NWG
 	// --==<core_methods>==--
 	void GCameraLad::UpdateCamera(GCamera* pGCamera)
 	{
-		float MoveSpeed = this->nMoveSpeed * TimeSys::GetRealDelta();
+		float MoveSpeed = this->nMoveSpeed * TimeSys::GetDeltaS();
 		if (!(IOSys::GetMouseIMode() & IM_CURSOR_DISABLED)) { return; }
 		pGCamera->nAspectRatio = whBounds.x / whBounds.y;
 		if (pGCamera->GetMode() == GCM_2D)
@@ -54,6 +53,14 @@ namespace NWG
 				pGCamera->yCrd += MoveSpeed;
 			}
 		}
+		if (IOSys::GetKeyHeld(NW_KEY_CONTROL_LEFT)) {
+			if (IOSys::GetKeyHeld(NW_KEY_C_67)) {
+				if (IOSys::GetKeyHeld(NW_KEY_2_50)) { pGCamera->SetMode(GCM_2D); }
+				else if (IOSys::GetKeyHeld(NW_KEY_3_51)) { pGCamera->SetMode(GCM_3D); }
+				if (IOSys::GetKeyHeld(NW_KEY_P_80)) { pGCamera->SetType(GCT_PERSPECT); }
+				else if (IOSys::GetKeyHeld(NW_KEY_O_79)) { pGCamera->SetType(GCT_ORTHO); }
+			}
+		}
 	}
 	// --==</core_methods>==--
 
@@ -65,39 +72,30 @@ namespace NWG
 		case ET_MOUSE_MOVE:
 			if (pGCamera->GetMode() == GCM_2D) {
 				if (IOSys::GetMouseHeld(NW_MS_BTN_2)) {
-					pGCamera->xyzCrd.x += -IOSys::GetMouseMoveDeltaX() * TimeSys::GetRealDelta() * nMoveSpeed;
-					pGCamera->xyzCrd.y += IOSys::GetMouseMoveDeltaY() * TimeSys::GetRealDelta() * nMoveSpeed;
+					pGCamera->xyzCrd.x += -IOSys::GetMouseMoveDeltaX() * TimeSys::GetDeltaS() * nMoveSpeed;
+					pGCamera->xyzCrd.y += IOSys::GetMouseMoveDeltaY() * TimeSys::GetDeltaS() * nMoveSpeed;
 				}
-				float nRoll_deg = pGCamera->nRoll + IOSys::GetMouseMoveDeltaX() * nRtnSpeed * TimeSys::GetRealDelta();
-				if (nRoll_deg < -nMaxRoll)
-					pGCamera->nRoll = nMaxRoll;
-				else if (nRoll_deg > nMaxRoll)
-					pGCamera->nRoll = -nMaxRoll;
-				else
-					pGCamera->nRoll = nRoll_deg;
+				float nRoll_deg = pGCamera->nRoll + IOSys::GetMouseMoveDeltaX() * nRtnSpeed * TimeSys::GetDeltaS();
+				if (nRoll_deg < -nMaxRoll) { pGCamera->nRoll = nMaxRoll; }
+				else if (nRoll_deg > nMaxRoll) { pGCamera->nRoll = -nMaxRoll; }
+				else { pGCamera->nRoll = nRoll_deg; }
 			}
 			else if (pGCamera->GetMode() == GCM_3D) {
-				float nYaw_deg = pGCamera->nYaw - IOSys::GetMouseMoveX() * nRtnSpeed * TimeSys::GetRealDelta();
-				float nPitch_deg = pGCamera->nPitch - IOSys::GetMouseMoveDeltaY() * nRtnSpeed * TimeSys::GetRealDelta();
+				float nYaw_deg = pGCamera->nYaw - IOSys::GetMouseMoveDeltaX() * nRtnSpeed * TimeSys::GetDeltaS();
+				float nPitch_deg = pGCamera->nPitch - IOSys::GetMouseMoveDeltaY() * nRtnSpeed * TimeSys::GetDeltaS();
 
-				if (nYaw_deg < -nMaxYaw)
-					pGCamera->nYaw = nMaxYaw;
-				else if (nYaw_deg > nMaxYaw)
-					pGCamera->nYaw = -nMaxYaw;
-				else
-					pGCamera->nYaw = nYaw_deg;
+				if (nYaw_deg < -nMaxYaw) { pGCamera->nYaw = nMaxYaw; }
+				else if (nYaw_deg > nMaxYaw) { pGCamera->nYaw = -nMaxYaw; }
+				else { pGCamera->nYaw = nYaw_deg; }
 
-				if (nPitch_deg > nMaxPitch)
-					pGCamera->nPitch = nMaxPitch;
-				else if (nPitch_deg < -nMaxPitch)
-					pGCamera->nPitch = -nMaxPitch;
-				else
-					pGCamera->nPitch = nPitch_deg;
+				if (nPitch_deg > nMaxPitch) { pGCamera->nPitch = nMaxPitch; }
+				else if (nPitch_deg < -nMaxPitch) { pGCamera->nPitch = -nMaxPitch; }
+				else { pGCamera->nPitch = nPitch_deg; }
 			}
 			break;
 		case ET_MOUSE_SCROLL:
 			if (!(IOSys::GetMouseIMode() & IM_CURSOR_DISABLED)) return;
-			float nZoom = -rmEvt.nY * TimeSys::GetRealDelta() * nZoomSpeed;
+			float nZoom = -rmEvt.nY * nZoomSpeed * TimeSys::GetDeltaS();
 			if (pGCamera->GetType() == GCT_ORTHO) {
 				float nScale = pGCamera->nViewScale + nZoom * pGCamera->nViewScale / 40.0f + 0.01f;
 				if (nScale > 0.0f) pGCamera->nViewScale = nScale;
@@ -113,7 +111,7 @@ namespace NWG
 	{
 		if (!(IOSys::GetMouseIMode() & IM_CURSOR_DISABLED)) { return; }
 		switch (rkEvt.EvtType) {
-		case ET_KEY_PRESS:
+		case ET_KEY_RELEASE:
 			switch (rkEvt.unKeyCode) {
 			case NW_KEY_0_48:
 				if (IOSys::GetKeyHeld(NW_KEY_C_67)) {

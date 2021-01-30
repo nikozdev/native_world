@@ -6,6 +6,8 @@
 
 #pragma warning(disable : 4312)
 
+#include <glad/glad.h>
+
 namespace NWG
 {
 	DrawerState::DrawerState() :
@@ -19,14 +21,18 @@ namespace NWG
 	// --==<core_methods>==--
 	bool DrawerState::Init() {
 		FrameBufInfo fbInfo;
+
 		fbInfo.unHeight = 800;
 		fbInfo.unWidth = 1200;
 		fbInfo.unSamples = 1;
 		AFrameBuf::Create("fmb_draw", fbInfo, m_pFmBuf);
 		
-		AVertexBuf::Create(1 << 12, nullptr, m_pVtxBuf);
-		AIndexBuf::Create(1 << 12, nullptr, m_pIdxBuf);
-		AShaderBuf::Create(1 << 12, nullptr, m_pShdBuf);
+		AVertexBuf::Create(m_pVtxBuf);
+		m_pVtxBuf->SetData(1 << 12, nullptr);
+		AIndexBuf::Create(m_pIdxBuf);
+		m_pIdxBuf->SetData(1 << 12, nullptr);
+		AShaderBuf::Create(m_pShdBuf);
+		m_pShdBuf->SetData(1 << 12, nullptr);
 
 		m_pVtxData = LinearAllocator(CoreEngine::Get().GetMemory().Alloc(m_pVtxBuf->GetDataSize()), m_pVtxBuf->GetDataSize());
 		m_pIdxData = LinearAllocator(CoreEngine::Get().GetMemory().Alloc(m_pIdxBuf->GetDataSize()), m_pIdxBuf->GetDataSize());
@@ -35,7 +41,7 @@ namespace NWG
 		{	// shaders
 			AShader* pShader = nullptr;
 			pShader = AShader::Create("shd_3d_batch");
-			if (!pShader->LoadF("D:/dev/native_world/nw_engine/src_glsl/shd_3d_batch.glsl")) { return false; }
+			if (!pShader->LoadF("D:/dev/native_world/nw_glib/src_glsl/shd_3d_batch.glsl")) { return false; }
 		}
 		{	// textures
 			ATexture2d* pTex = nullptr;
@@ -71,17 +77,17 @@ namespace NWG
 			0.0f,	1.0f,	0.0f,	0.0f,
 			0.0f,	0.0f,	1.0f,	0.0f,
 			0.0f,	0.0f,	0.0f,	1.0f,
-			-0.5f,	0.5f,	0.0f,		0.0f,	1.0f,	1.0f,	1.0f,		0.0f,	1.0f,		0.0f,
+			-0.5f,	0.5f,	0.0f,		0.0f,	1.0f,	0.0f,	1.0f,		0.0f,	1.0f,		0.0f,
 			1.0f,	0.0f,	0.0f,	0.0f,
 			0.0f,	1.0f,	0.0f,	0.0f,
 			0.0f,	0.0f,	1.0f,	0.0f,
 			0.0f,	0.0f,	0.0f,	1.0f,
-			0.5f,	0.5f,	0.0f,		1.0f,	1.0f,	1.0f,	1.0f,		1.0f,	1.0f,		0.0f,
+			0.5f,	0.5f,	0.0f,		0.0f,	1.0f,	1.0f,	1.0f,		1.0f,	1.0f,		0.0f,
 			1.0f,	0.0f,	0.0f,	0.0f,
 			0.0f,	1.0f,	0.0f,	0.0f,
 			0.0f,	0.0f,	1.0f,	0.0f,
 			0.0f,	0.0f,	0.0f,	1.0f,
-			0.5f,	-0.5f,	0.0f,		1.0f,	0.0f,	1.0f,	1.0f,		1.0f,	0.0f,		0.0f,
+			0.5f,	-0.5f,	0.0f,		1.0f,	0.0f,	0.0f,	1.0f,		1.0f,	0.0f,		0.0f,
 			1.0f,	0.0f,	0.0f,	0.0f,
 			0.0f,	1.0f,	0.0f,	0.0f,
 			0.0f,	0.0f,	1.0f,	0.0f,
@@ -98,14 +104,10 @@ namespace NWG
 
 		{
 			m_pFmBuf->Bind();
-			m_pFmBuf->SetClearColor(m_pFmBuf->GetClearColor());
-			m_pFmBuf->Clear(FB_COLOR | FB_DEPTH | FB_STENCIL);
+			m_pFmBuf->Clear();
 
-			pGApi->SetViewport(0, 0, m_pFmBuf->GetWidth(), m_pFmBuf->GetWidth());
 			pGApi->SetModes(true, PM_BLEND);
 			pGApi->SetBlendFunc(BC_SRC_ALPHA, BC_ONE_MINUS_SRC_ALPHA);
-			pGApi->SetModes(false, PM_DEPTH_TEST);
-			pGApi->SetModes(false, PM_STENCIL_TEST);
 			pGApi->SetPrimitiveType(PT_TRIANGLES);
 
 			pGMtl->Enable();
@@ -119,7 +121,7 @@ namespace NWG
 			m_pShdBuf->Bind();
 			m_pVtxBuf->Bind();
 			m_pIdxBuf->Bind();
-			//pGApi->DrawIndexed(m_pIdxBuf->GetDataSize() / sizeof(UInt32));
+			pGApi->DrawIndexed(m_pIdxData.GetAllocSize() / sizeof(UInt32));
 			m_pIdxBuf->Unbind();
 			m_pVtxBuf->Unbind();
 			m_pShdBuf->Unbind();
@@ -135,8 +137,6 @@ namespace NWG
 		
 		GCameraLad::Get().UpdateCamera(&m_GCamera);
 	}
-	void DrawerState::OnEnable() { }
-	void DrawerState::OnDisable() { }
 
 	void DrawerState::OnEvent(MouseEvent& rmEvt)
 	{
@@ -186,7 +186,6 @@ namespace NWG
 			GuiOfCoreEngine::Get().bIsEnabled = true;
 			GuiOfGEngine::Get().bIsEnabled = true;
 			GuiOfDataSys::Get().bIsEnabled = true;
-			GuiOfTimeSys::Get().bIsEnabled = true;
 			GuiOfMemSys::Get().bIsEnabled = true;
 		}
 
@@ -247,7 +246,6 @@ namespace NWG
 					ImGui::Checkbox("console_engine", &GuiOfCmdEngine::Get().bIsEnabled);
 					ImGui::Checkbox("data_system", &GuiOfDataSys::Get().bIsEnabled);
 					ImGui::Checkbox("memory_mystem", &GuiOfMemSys::Get().bIsEnabled);
-					ImGui::Checkbox("time_system", &GuiOfTimeSys::Get().bIsEnabled);
 					ImGui::Checkbox("code_editor", &GuiOfCodeEditor::Get().bIsEnabled);
 					ImGui::Checkbox("sprite_editor", &GuiOfSpriteEditor::Get().bIsEnabled);
 					ImGui::Checkbox("gmaterial_editor", &GuiOfGMaterialEditor::Get().bIsEnabled);
@@ -256,12 +254,12 @@ namespace NWG
 				}
 				ImGui::EndMenuBar();
 			}
+
 			GuiOfCoreEngine::Get().OnDraw();
 			GuiOfGEngine::Get().OnDraw();
 			GuiOfCmdEngine::Get().OnDraw();
 			GuiOfDataSys::Get().OnDraw();
 			GuiOfMemSys::Get().OnDraw();
-			GuiOfTimeSys::Get().OnDraw();
 			GuiOfCodeEditor::Get().OnDraw();
 			GuiOfSpriteEditor::Get().OnDraw();
 			GuiOfGMaterialEditor::Get().OnDraw();
@@ -269,15 +267,17 @@ namespace NWG
 			ImGui::Begin("framebufs");
 			{
 				AFrameBuf* pFmBuf = ADataRes::GetDataRes<AFrameBuf>("fmb_draw");
-				pFmBuf->Clear();
+				
+				if (IOSys::GetMousePressed(NW_MS_BTN_RIGHT)) {
+					UByte clrData[1 << 10]{ 0 };
+					pFmBuf->ReadPixels(&clrData[0], 0, (pFmBuf->GetWidth() / 2), (pFmBuf->GetHeight() / 2), 1, 1);
+					std::cout << clrData;
+				}
 
 				FrameBufInfo fbInfo = pFmBuf->GetInfo();
 				V2f whSize = { ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y };
-				if (fbInfo.unWidth != static_cast<UInt16>(whSize.x) || fbInfo.unHeight != static_cast<UInt16>(whSize.y)) { pFmBuf->SetSizeWH(whSize.x, whSize.y); }
-				ImGui::Image(reinterpret_cast<Ptr>(pFmBuf->GetAttachment(FBAT_COLOR)->GetId()), { whSize.x, whSize.y });
-				
-				V4f rgbaClear = pFmBuf->GetClearColor();
-				if (ImGui::ColorEdit4("clear color", &rgbaClear[0])) { pFmBuf->SetClearColor(rgbaClear); }
+				if (pFmBuf->GetWidth() != whSize.x || pFmBuf->GetHeight() != whSize.y) { pFmBuf->SetSizeWH(whSize.x, whSize.y); }
+				ImGui::Image(reinterpret_cast<Ptr>(pFmBuf->GetColorAttach()->GetRenderId()), { whSize.x, whSize.y }, { 0.0f, 1.0f }, { 1.0f, 0.0f });
 			}
 			ImGui::End();
 		}
@@ -294,75 +294,15 @@ namespace NWG
 			}
 		}
 	}
-	void GuiState::OnEnable() { }
-	void GuiState::OnDisable() { }
 
 	void GuiState::OnEvent(MouseEvent& rmEvt)
 	{
-		rmEvt.bIsHandled = true;
 	}
 	void GuiState::OnEvent(KeyboardEvent& rkEvt)
 	{
-		rkEvt.bIsHandled = true;
 	}
 	void GuiState::OnEvent(WindowEvent& rwEvt)
 	{
-		rwEvt.bIsHandled = true;
-	}
-	// --==</core_methods>==--
-}
-
-namespace NWG
-{
-	CreatorState::CreatorState() :
-		m_guiState(GuiState()),
-		m_drwState(DrawerState())
-	{
-		CoreEngine::Get().AddState(m_guiState);
-		CoreEngine::Get().AddState(m_drwState);
-	}
-	CreatorState::~CreatorState() { }
-
-	// --==<core_methods>==--
-	bool CreatorState::Init()
-	{		
-		return true;
-	}
-	void CreatorState::OnQuit()
-	{
-	}
-	void CreatorState::Update()
-	{
-		m_drwState.Update();
-		m_guiState.Update();
-	}
-	void CreatorState::OnEnable()
-	{
-		m_drwState.OnEnable();
-		m_guiState.OnEnable();
-	}
-	void CreatorState::OnDisable() {
-		m_drwState.OnDisable();
-		m_guiState.OnDisable();
-	}
-
-	void CreatorState::OnEvent(MouseEvent& rmEvt)
-	{
-		//m_guiState.OnEvent(rmEvt);
-		if (rmEvt.bIsHandled) { return; }
-		m_drwState.OnEvent(rmEvt);
-	}
-	void CreatorState::OnEvent(KeyboardEvent& rkEvt)
-	{
-		//m_guiState.OnEvent(rkEvt);
-		if (rkEvt.bIsHandled) { return; }
-		m_drwState.OnEvent(rkEvt);
-	}
-	void CreatorState::OnEvent(WindowEvent& rwEvt)
-	{
-		//m_guiState.OnEvent(rwEvt);
-		if (rwEvt.bIsHandled) { return; }
-		m_drwState.OnEvent(rwEvt);
 	}
 	// --==</core_methods>==--
 }

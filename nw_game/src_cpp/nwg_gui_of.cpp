@@ -8,7 +8,6 @@ namespace NWG
 {
 	// --==<GuiOfCoreEngine>==--
 	GuiOfCoreEngine::GuiOfCoreEngine() {
-		pCoreState = CoreEngine::Get().GetState();
 	}
 	GuiOfCoreEngine::~GuiOfCoreEngine() { }
 
@@ -16,14 +15,16 @@ namespace NWG
 	void GuiOfCoreEngine::OnDraw() {
 		if (!bIsEnabled) return;
 		ImGui::Begin("core_engine", &bIsEnabled);
+		{
+			ImGui::Text("time since start: %d", static_cast<int>(TimeSys::GetCurrS()));
+			ImGui::Text("updates/second: %d", static_cast<Int32>(1.0f / TimeSys::GetDeltaS()));
+		}
+
 		bAppState = ImGui::TreeNodeEx("--==<core_state>==--", GUI_DEFAULT_TREE_FLAGS);
 		if (bAppState) {
 			if (ImGui::BeginCombo("switch state", &pCoreState->GetName()[0])) {
 				auto pStates = CoreEngine::Get().GetStates();
 				for (auto& itState : pStates) {
-					if (ImGui::Selectable(&itState.second->GetName()[0])) {
-						CoreEngine::Get().SwitchState(&itState.second->GetName()[0]);
-					} ImGui::EndCombo();
 				}
 			}
 			ImGui::TreePop();
@@ -216,20 +217,6 @@ namespace NWG
 		ImGui::End();
 	}
 	// --==</GuiOfMemSys>==--
-	// --==<GuiOfTimeSys>==--
-	void GuiOfTimeSys::OnDraw() {
-		if (!bIsEnabled) return;
-		ImGui::Begin("time_system", &bIsEnabled);
-		float nAppSpeed = TimeSys::GetAppSpeed();
-		ImGui::Text("time since start: %d", static_cast<int>(TimeSys::GetRealTime()));
-		ImGui::Text("application time: %d", static_cast<Int32>(TimeSys::GetAppTime()));
-		if (ImGui::DragFloat("application speed", &nAppSpeed, 0.05f, 0.001f)) { TimeSys::SetAppSpeed(nAppSpeed); }
-		ImGui::Text("updates/second: %d", static_cast<Int32>(1.0f / TimeSys::GetRealDelta()));
-		ImGui::Text("date: %s", strDate);
-		if (ImGui::Button("update date")) { strcpy(strDate, &TimeSys::GetTimeString()[0]); }
-		ImGui::End();
-	}
-	// --==</GuiOfTimeSys>==--
 }
 
 // --==<GuiOfEditors>==--
@@ -442,24 +429,7 @@ namespace NWG
 	// --==</GuiOfGMaterialEditor>==--
 
 	// --==<GuiOfSpriteEditor>==--
-	GuiOfSpriteEditor::GuiOfSpriteEditor() :
-		pVtxBuf(nullptr),
-		pIndBuf(nullptr),
-		pShader(AShader::Create("shd_sprite_editor"))
-	{
-		pVtxBuf = AVertexBuf::Create();
-		UInt32 IndData[] = { 0, 1, 2,	2, 3, 0 };
-		pIndBuf = AIndexBuf::Create();
-		
-		pShader->LoadF("D:/dev/native_world/nw_engine/src_glsl/shd_2d_display.glsl");
-		pVtxBuf->SetLayout(pShader->GetVtxLayout());
-
-		FrameBufInfo fbInfo;
-		fbInfo.unWidth = 64;
-		fbInfo.unHeight = 64;
-		fbInfo.unSamples = 1;
-		pFrameBuf = AFrameBuf::Create("fmb_sprite_editor", fbInfo);
-	}
+	GuiOfSpriteEditor::GuiOfSpriteEditor() { }
 	// --setters
 	void GuiOfSpriteEditor::SetContext(ATexture2d* pContext) {
 		this->pContext = pContext;
@@ -469,16 +439,6 @@ namespace NWG
 		}
 		else {
 			bIsEnabled = true;
-			/*
-			V2i xyTexCrd = pContext->GetTexCoord_0_1();
-			V2i whTexSize = pContext->GetTexSize_0_1();
-			float vtxData[] = {
-				-1.0f,	-1.0f,		xyTexCrd.x + 0.0f,	xyTexCrd.y + 0.0f,
-				-1.0f,	1.0f,		xyTexCrd.x + 0.0f,	xyTexCrd.y + whTexSize.y,
-				1.0f,	1.0f,		xyTexCrd.x + whTexSize.x,	xyTexCrd.y + whTexSize.y,
-				1.0f,	-1.0f,		xyTexCrd.x + whTexSize.x,	xyTexCrd.x + 0.0f
-			};
-			pVtxBuf->SetSubData(sizeof(vtxData), &vtxData[0]);*/
 		}
 		strcpy(strContextName, pContext->GetName());
 		ImgInfo = pContext->GetImgInfo();
@@ -532,34 +492,34 @@ namespace NWG
 
 		if (ImGui::TreeNodeEx("texture_info", GUI_DEFAULT_TREE_FLAGS)) {
 			
-			if (ImGui::BeginCombo("filter_min", TexInfo.FilterMin == TC_FILTER_LINEAR ? "linear" :
-				TexInfo.FilterMin == TC_FILTER_NEAREST ? "nearest" : "none")) {
-				if (ImGui::MenuItem("linear")) { TexInfo.FilterMin = TC_FILTER_LINEAR; }
-				else if (ImGui::MenuItem("nearest")) { TexInfo.FilterMin = TC_FILTER_NEAREST; }
+			if (ImGui::BeginCombo("filter_min", TexInfo.FilterMin == TXF_LINEAR ? "linear" :
+				TexInfo.FilterMin == TXF_NEAREST ? "nearest" : "none")) {
+				if (ImGui::MenuItem("linear")) { TexInfo.FilterMin = TXF_LINEAR; }
+				else if (ImGui::MenuItem("nearest")) { TexInfo.FilterMin = TXF_NEAREST; }
 				ImGui::EndCombo();
 			}
-			else if (ImGui::BeginCombo("filter_mag", TexInfo.FilterMag == TC_FILTER_LINEAR ? "linear" :
-				TexInfo.FilterMag == TC_FILTER_NEAREST ? "nearest" : "none")) {
-				if (ImGui::MenuItem("linear")) { TexInfo.FilterMag = TC_FILTER_LINEAR; }
-				else if (ImGui::MenuItem("nearest")) { TexInfo.FilterMag = TC_FILTER_NEAREST; }
-				ImGui::EndCombo();
-			}
-
-			else if (ImGui::BeginCombo("wrap_s", TexInfo.WrapTypeS == TC_WRAP_REPEAT ? "repeat" : TexInfo.WrapTypeS == TC_WRAP_CLAMP ? "clamp" : "none")) {
-				if (ImGui::MenuItem("clamp")) { TexInfo.WrapTypeS = TC_WRAP_CLAMP; }
-				else if (ImGui::MenuItem("repeat")) { TexInfo.WrapTypeS = TC_WRAP_REPEAT; }
-				ImGui::EndCombo();
-			}
-			else if (ImGui::BeginCombo("wrap_t", TexInfo.WrapTypeT == TC_WRAP_REPEAT ? "repeat" : TexInfo.WrapTypeT == TC_WRAP_CLAMP ? "clamp" : "none")) {
-				if (ImGui::MenuItem("clamp")) { TexInfo.WrapTypeT = TC_WRAP_CLAMP; }
-				else if (ImGui::MenuItem("repeat")) { TexInfo.WrapTypeT = TC_WRAP_REPEAT; }
+			else if (ImGui::BeginCombo("filter_mag", TexInfo.FilterMag == TXF_LINEAR ? "linear" :
+				TexInfo.FilterMag == TXF_LINEAR ? "nearest" : "none")) {
+				if (ImGui::MenuItem("linear")) { TexInfo.FilterMag = TXF_LINEAR; }
+				else if (ImGui::MenuItem("nearest")) { TexInfo.FilterMag = TXF_NEAREST; }
 				ImGui::EndCombo();
 			}
 
-			else if (ImGui::BeginCombo("format", TexInfo.Format == TC_FORMAT_RGB ? "rgb" : TexInfo.Format == TC_FORMAT_RGBA ? "rgba" :
-				TexInfo.Format == TC_FORMAT_RED ? "grayscale" : "none")) {
-				if (ImGui::MenuItem("rgb")) { TexInfo.Format = TC_FORMAT_RGB; TexInfo.InterFormat = TC_FORMAT_RGB; }
-				else if (ImGui::MenuItem("rgba")) { TexInfo.Format = TC_FORMAT_RGBA; TexInfo.InterFormat = TC_FORMAT_RGBA; }
+			else if (ImGui::BeginCombo("wrap_s", TexInfo.WrapTypeS == TXW_REPEAT ? "repeat" : TexInfo.WrapTypeS == TXW_CLAMP ? "clamp" : "none")) {
+				if (ImGui::MenuItem("clamp")) { TexInfo.WrapTypeS = TXW_CLAMP; }
+				else if (ImGui::MenuItem("repeat")) { TexInfo.WrapTypeS = TXW_REPEAT; }
+				ImGui::EndCombo();
+			}
+			else if (ImGui::BeginCombo("wrap_t", TexInfo.WrapTypeT == TXW_REPEAT ? "repeat" : TexInfo.WrapTypeT == TXW_CLAMP ? "clamp" : "none")) {
+				if (ImGui::MenuItem("clamp")) { TexInfo.WrapTypeT = TXW_CLAMP; }
+				else if (ImGui::MenuItem("repeat")) { TexInfo.WrapTypeT = TXW_REPEAT; }
+				ImGui::EndCombo();
+			}
+
+			else if (ImGui::BeginCombo("format", TexInfo.texFormat == TXF_RGB ? "rgb" : TexInfo.texFormat == TXF_RGBA ? "rgba" :
+				TexInfo.texFormat == TXF_RED ? "grayscale" : "none")) {
+				if (ImGui::MenuItem("rgb")) { TexInfo.texFormat = TXF_RGB; TexInfo.texInterFormat = TXF_RGB; }
+				else if (ImGui::MenuItem("rgba")) { TexInfo.texFormat = TXF_RGBA; TexInfo.texInterFormat = TXF_RGBA8; }
 				ImGui::EndCombo();
 			}
 
@@ -567,50 +527,7 @@ namespace NWG
 		}
 		ImGui::Image(reinterpret_cast<void*>(pContext->GetRenderId()),
 			ImVec2{ static_cast<float>(64.0f * nAspectRatio), static_cast<float>(64.0f) });
-		if (ImGui::TreeNodeEx("sprites", GUI_DEFAULT_TREE_FLAGS)) {
-
-			/*if (ImGui::DragInt2("Top left", &pContext->xyTexCrd[0], 0.1f, 0.0, pContext->GetOverTexSize().y) ||
-				ImGui::DragInt2("Bottom right", &pContext->whTexSize[0], 0.1f, pContext->GetOverTexSize().y, pContext->pOverTex->GetWidth())) {
-				V2i xyTexCrd = pContext->GetTexCoord_0_1();
-				V2i whTexSize = pContext->GetTexSize_0_1();
-				float vtxData[] = {
-					-1.0f,	-1.0f,		xyTexCrd.x + 0.0f,	xyTexCrd.y + 0.0f,
-					-1.0f,	1.0f,		xyTexCrd.x + 0.0f,	xyTexCrd.y + whTexSize.y,
-					1.0f,	1.0f,		xyTexCrd.x + whTexSize.x,	xyTexCrd.y + whTexSize.y,
-					1.0f,	-1.0f,		xyTexCrd.x + whTexSize.x,	xyTexCrd.x + 0.0f
-				};
-				pVtxBuf->SetSubData(sizeof(vtxData), &vtxData[0]);
-			}*/
-
-			V2i whDisplaySize = { ImGui::GetContentRegionAvail().x * nAspectRatio, ImGui::GetContentRegionAvail().y - 32.0f };
-
-			const FrameBufInfo& rFBInfo = pFrameBuf->GetInfo();
-			if (rFBInfo.unHeight != whDisplaySize.x || rFBInfo.unWidth != whDisplaySize.x) {
-				pFrameBuf->SetSizeWH(whDisplaySize.x, whDisplaySize.y);
-			}
-
-			pFrameBuf->Bind();
-			pFrameBuf->Clear();
-
-			pShader->Enable();
-			pContext->Bind(0);
-			pShader->SetInt("unf_tex", 0);
-
-			pVtxBuf->Bind();
-			pIndBuf->Bind();
-			GEngine::Get().GetGApi()->DrawIndexed(pIndBuf->GetDataSize() / sizeof(UInt32));
-			pIndBuf->Unbind();
-			pVtxBuf->Unbind();
-
-			pContext->Unbind();
-			pShader->Disable();
-			pFrameBuf->Unbind();
-
-			ImGui::Image(reinterpret_cast<void*>(pFrameBuf->GetAttachment(FBAT_COLOR)->GetRenderId()),
-				ImVec2{ static_cast<float>(whDisplaySize.x), static_cast<float>(whDisplaySize.y) });
-			ImGui::TreePop();
-		}
-
+		
 		ImGui::End();
 	}
 	// --==</GuiOfSpriteEditor>==--

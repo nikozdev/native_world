@@ -8,8 +8,8 @@
 #include <GLFW/glfw3.h>
 #endif  // NW_WINDOW
 
-MouseState NW::IOSys::s_Mouse{ 0 };
-KeyboardState NW::IOSys::s_Keyboard { 0 };
+MouseState<NW_MS_BTN_COUNT> NW::IOSys::s_Mouse{ 0 };
+KeyboardState<NW_KEY_COUNT> NW::IOSys::s_Keyboard { 0 };
 
 namespace NW
 {
@@ -45,13 +45,14 @@ namespace NW
     void IOSys::Update()
     {
         s_Mouse.xMoveDelta = s_Mouse.yMoveDelta = 0.0f;
+        s_Mouse.xScroll = s_Mouse.yScroll = 0.0f;
         UpdateKeyboard();
         UpdateMouseButtons();
     }
     // --==</core_methods>==--
     inline void IOSys::UpdateKeyboard()
     {
-        for (UInt16 ki = 0; ki < NW_KEY_LAST; ki++) {
+        for (UInt16 ki = NW_KEY_FIRST; ki < NW_KEY_LAST; ki++) {
             ButtonState& rBs = s_Keyboard.bsKeys[ki];
             rBs.bPressed = rBs.bReleased = false;
             if (rBs.bNew != rBs.bOld) {

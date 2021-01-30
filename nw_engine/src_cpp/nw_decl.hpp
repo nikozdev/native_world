@@ -11,7 +11,6 @@ namespace NW
 	class NW_API AWindow;
 	// --systems
 	class NW_API IOSys;
-	class NW_API TimeSys;
 	class NW_API MemSys;
 	class NW_API DataSys;
 	class NW_API GuiSys;

@@ -22,8 +22,6 @@ namespace NWG
 		virtual bool Init() override;
 		virtual void OnQuit() override;
 		virtual void Update() override;
-		virtual void OnEnable() override;
-		virtual void OnDisable() override;
 		virtual void OnEvent(MouseEvent& rmEvt) override;
 		virtual void OnEvent(KeyboardEvent& rkEvt) override;
 		virtual void OnEvent(WindowEvent& rwEvt) override;
@@ -56,8 +54,6 @@ namespace NWG
 		virtual bool Init() override;
 		virtual void OnQuit() override;
 		virtual void Update() override;
-		virtual void OnEnable() override;
-		virtual void OnDisable() override;
 		virtual void OnEvent(MouseEvent& rmEvt) override;
 		virtual void OnEvent(KeyboardEvent& rkEvt) override;
 		virtual void OnEvent(WindowEvent& rwEvt) override;
@@ -65,34 +61,6 @@ namespace NWG
 		ImGuiContext* m_pGuiContext;
 		ImGuiIO* m_pGuiIO;
 		ImGuiStyle* m_pGuiStyle;
-	};
-}
-namespace NWG
-{
-	/// CreatorState class
-	/// Description:
-	class NW_API CreatorState : public NW::CoreState
-	{
-	public:
-		CreatorState();
-		~CreatorState();
-
-		// --getters
-		virtual inline const char* GetName() override { return "creator_state"; }
-		// --setters
-
-		// --core_methods
-		virtual bool Init() override;
-		virtual void OnQuit() override;
-		virtual void Update() override;
-		virtual void OnEnable() override;
-		virtual void OnDisable() override;
-		virtual void OnEvent(MouseEvent& rmEvt) override;
-		virtual void OnEvent(KeyboardEvent& rkEvt) override;
-		virtual void OnEvent(WindowEvent& rwEvt) override;
-	private:
-		GuiState m_guiState;
-		DrawerState m_drwState;
 	};
 }
 

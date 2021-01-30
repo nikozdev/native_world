@@ -4,7 +4,6 @@
 #include <core/nw_window.h>
 
 #include <sys/nw_io_sys.h>
-#include <sys/nw_time_sys.h>
 #include <sys/nw_log_sys.h>
 #include <sys/nw_data_sys.h>
 
@@ -15,15 +14,26 @@ namespace NW
 	CoreEngine::CoreEngine() :
 		m_bIsRunning(false), m_thrRun(Thread()), m_Memory(nullptr, 0),
 		m_strName("nw_engine"),
-		m_itState(nullptr),
 		m_pWindow(RefKeeper<AWindow>(GetMemory())) { }
 	CoreEngine::~CoreEngine() { }
 
 	// --==<core_methods>==--
-	bool CoreEngine::Init(Size szMem)
+	void CoreEngine::Run()
+	{
+		Init();
+		if (!m_bIsRunning) { return; }
+		if (m_States.empty()) { Quit(); }
+
+		auto fnRunning = [this]()->void {
+			while (m_bIsRunning) { Update(); }
+			Quit();
+		};
+		m_thrRun = Thread(fnRunning);
+	}
+	bool CoreEngine::Init()
 	{
 		if (m_bIsRunning) { return false; }
-		m_Memory = MemArena(new Byte[szMem / 2], szMem / 2);
+		m_Memory = MemArena(new Byte[1 << 23], 1 << 23);
 	#if (defined NW_WINDOW)
 		WindowInfo wInfo{ "graphics_engine", 1200, 1200 / 4 * 3, true, nullptr };
 		#if (NW_WINDOW_GLFW & NW_WINDOW_GLFW)
@@ -35,9 +45,9 @@ namespace NW
 		m_pWindow->SetEventCallback([this](AEvent& rEvt)->void { return OnEvent(rEvt); });
 		DataSys::OnInit();
 
-		if (!GLIB::GEngine::Get().Init(szMem / 2)) { return false; }
+		if (!GLIB::GEngine::Get().Init()) { return false; }
 
-		for (auto& itState : m_States) { itState.second->Init(); }
+		for (auto& itState : m_States) { itState->Init(); }
 
 		return (m_bIsRunning = true);
 	}
@@ -46,7 +56,7 @@ namespace NW
 		if (!m_bIsRunning) { return; }
 		m_bIsRunning = false;
 
-		while (!m_States.empty()) { m_States.begin()->second->OnQuit(); m_States.erase(m_States.begin()); }
+		while (!m_States.empty()) { m_States[0]->OnQuit(); m_States.erase(m_States.begin()); }
 		DataSys::OnQuit();
 
 		m_pWindow->OnQuit();
@@ -56,21 +66,10 @@ namespace NW
 		delete[] m_Memory.GetDataBeg();
 		m_Memory = MemArena(nullptr, 0);
 	}
-	void CoreEngine::Run(Size szMemory)
-	{
-		Init(szMemory);
-		if (!m_bIsRunning) { return; }
-		if (m_itState == nullptr) { Quit(); }
-		auto fnRunning = [this]()->void {
-			while (m_bIsRunning) { Update(); }
-			Quit();
-		};
-		m_thrRun = Thread(fnRunning);
-	}
 
 	void CoreEngine::Update()
 	{
-		m_itState->Update();
+		for (auto& itState : m_States) { itState->Update(); }
 	
 		IOSys::Update();
 		TimeSys::Update();
@@ -95,11 +94,13 @@ namespace NW
 				break;
 			case ET_MOUSE_RELEASE:
 				IOSys::s_Mouse.bsButtons[pmEvt->nButton].bNew = false;
+			break;
 			case ET_MOUSE_PRESS:
 				IOSys::s_Mouse.bsButtons[pmEvt->nButton].bNew = true;
+			break;
 			}
 			if (rEvt.bIsHandled) return;
-			m_itState->OnEvent(*pmEvt);
+			for (auto& itState : m_States) { itState->OnEvent(*pmEvt); }
 		}
 		else if (rEvt.IsInCategory(EC_KEYBOARD)) {
 			KeyboardEvent* pkEvt = static_cast<KeyboardEvent*>(&rEvt);
@@ -115,6 +116,7 @@ namespace NW
 					IOSys::SetCursorIMode(IOSys::s_Mouse.iMode == IM_CURSOR_NORMAL ? IM_CURSOR_DISABLED : IM_CURSOR_NORMAL);
 					break;
 				}
+				break;
 			case ET_KEY_PRESS:
 				IOSys::s_Keyboard.bsKeys[pkEvt->unKeyCode].bNew = true;
 				break;
@@ -122,7 +124,7 @@ namespace NW
 				break;
 			}
 			if (rEvt.bIsHandled) { return; }
-			m_itState->OnEvent(*pkEvt);
+			for (auto& itState : m_States) { itState->OnEvent(*pkEvt); }
 		}
 		else if (rEvt.IsInCategory(EC_WINDOW)) {
 			WindowEvent* pwEvt = static_cast<WindowEvent*>(&rEvt);
@@ -139,7 +141,7 @@ namespace NW
 				break;
 			}
 			if (rEvt.bIsHandled) { return; }
-			m_itState->OnEvent(*pwEvt);
+			for (auto& itState : m_States) { itState->OnEvent(*pwEvt); }
 		}
 	}
 	// --==</core_methods>==--
