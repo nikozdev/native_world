@@ -26,7 +26,7 @@ namespace NW
     // --setters
     void DataSys::SetDirectory(const char* strDir) { s_strRscDir = strDir; }
 
-    // --==<core_methods>==--=
+    // --==<core_methods>==--
     bool DataSys::OnInit()
     {
         FStream fStream;
@@ -44,8 +44,8 @@ namespace NW
     void DataSys::OnQuit()
     {
     }
-    // -- File Dialogs
-    String DataSys::FDialog_save(const char* strFilter)
+    // -- file_dialogs
+    String DataSys::FDialogSave(const char* strFilter)
     {
     #if (defined NW_PLATFORM_WINDOWS)
         constexpr Int32 nMaxChars = 256;
@@ -62,7 +62,7 @@ namespace NW
         } else { return String(); }
     #endif  // NW_PLATFORM
     }
-    String DataSys::FDialog_load(const char* strFilter)
+    String DataSys::FDialogLoad(const char* strFilter)
     {
     #if (defined NW_PLATFORM_WINDOWS)
         constexpr Int32 nMaxChars = 256;
@@ -80,7 +80,7 @@ namespace NW
     #endif  // NW_PLATFORM
     }
 
-    // -- BinaryData
+    // -- binary_data
     bool DataSys::SaveFData(const char* filePath,
         void* pData, UInt64 unBytes)
     {
@@ -140,7 +140,7 @@ namespace NW
         }
     }
 
-    // --Strings
+    // --strings
     bool DataSys::SaveFString(const char *strFPath, const char* strSrc, UInt64 unBytes)
     {
         FStream fStream;
@@ -174,7 +174,7 @@ namespace NW
         }
     }
 
-    // -- Objects
+    // --objects
     UByte* DataSys::LoadFImage(const char* strFPath,
         Int32* pnW, Int32* pnH, Int32* pnChannels)
     {
@@ -198,249 +198,8 @@ namespace NW
         return true;
     }
 
-    // -- Mesh data
-    bool DataSys::LoadFMesh(const String& strFilePath, DArray<GLIB::VertexShape3d>* pVtxData, DArray<UInt32>* punIndData)
-    {
-        UInt16 dotPos = strFilePath.rfind('.') + 1;
-        String format = strFilePath.substr(dotPos, strFilePath.size() - dotPos);
-        FStream fStream;
-        fStream.exceptions(std::ios::badbit | std::ios::failbit);
-        StrStream strStream;
-        try {
-            fStream.open(strFilePath, std::ios::in, std::ios::binary);
-            strStream << fStream.rdbuf();
-            if (format == "obj") { LoadFMeshObj(strStream.str(), *pVtxData, *punIndData); }
-            else if (format == "dae") {}
-            else { throw std::exception("Unknown format"); }
-            fStream.close();
-            fStream.clear();
-            return true;
-        } catch (std::exception ex) {
-            NWL_ERR("Failed to load a file by path " + strFilePath + "\n" + ex.what());
-            fStream.clear();
-            fStream.close();
-            return false;
-        }
-    }
-    // --==</core_methods>==--=
+    // --==</core_methods>==--
 
-    // --==<Implementation Methods>==--=
-    bool DataSys::LoadFMeshObj(const String& strFileData, DArray<UInt32>& arrIndicesDest,
-        DArray<float>& vtxCoordsDest, DArray<float>& texCoordsDest, DArray<float>& normCoordsDest)
-    {
-        String
-            nameToken = "g ",
-            vtxToken = "v ",
-            uvToken = "vt ",
-            normToken = "vn ",
-            elemsToken = "f ",
-            mtlSrcToken = "mtllib ",
-            mtlUseToken = "usemtl ";
-        String
-            nameFormat = nameToken + "%s",
-            vtxFormat = vtxToken + "%f %f %f",
-            uvFormat = uvToken + "%f %f",
-            normFormat = normToken + "%f %f %f",
-            elemsFormat = elemsToken + "%d/%d/%d %d/%d/%d %d/%d/%d";
-        // Count |objects_amount|, |vertices|, |uvs|, |normals| and |indices|
-        std::unordered_map<const char*, UInt32> name_counter
-        { std::make_pair("nameCount", 0),
-            std::make_pair("vtxCount", 0),
-            std::make_pair("uvCount", 0),
-            std::make_pair("normCount", 0),
-            std::make_pair("indexCount", 0)
-        };
-        float fTemp[3]{ 0.0f, 0.0f, 0.0f };
-        UInt32 uiTemp[3]{ 0, 0, 0 };
-        
-        Int32 currPos = 0, nextPos = 0;
-        Int32 currMesh = 0, nextMesh = 0;
-        currMesh = strFileData.find(nameToken, currPos);
-        nextMesh = strFileData.find(nameToken, currPos + nameToken.size());
-        while (currMesh != -1)   // Find the line position where the mesh name is
-        {
-            currPos = nextPos = 0;
-            String strData = strFileData.substr(currMesh, nextMesh - currMesh);
-            // mesh name is found
-            char cMeshName[128];
-            name_counter["nameCount"]++;
-            // Copy the mesh name : |currPos|_meshName|lineEnd|
-            sscanf(&strFileData.c_str()[currMesh], nameFormat.c_str(), cMeshName);
-            printf("NW::LOAD_MASTER::LOAD_MESH_DATA_OBJ: loading the \"%s\" mesh\n", cMeshName);
-            
-            do { nextPos = strData.find(vtxToken, currPos);  // Find from the end of the last line
-                if (nextPos == -1) break;
-                if (sscanf(&strData.c_str()[nextPos], vtxFormat.c_str(), &fTemp[0], &fTemp[1], &fTemp[2]))
-                {
-                    vtxCoordsDest.push_back(fTemp[0]);
-                    vtxCoordsDest.push_back(fTemp[1]);
-                    vtxCoordsDest.push_back(fTemp[2]);
-                    name_counter["vtxCount"]++;
-                    currPos = nextPos + vtxToken.size();    // Curr = end of token; next = beginning
-                }
-            } while (true);
-            
-            do { nextPos = strData.find(uvToken, currPos);
-                if (nextPos == -1) break;
-                if (sscanf(&strData.c_str()[nextPos], uvFormat.c_str(), &fTemp[0], &fTemp[1]))
-                {
-                    texCoordsDest.push_back(fTemp[0]);
-                    texCoordsDest.push_back(fTemp[1]);
-                    name_counter["uvCount"]++;
-                    currPos = nextPos + uvToken.size();
-                }
-            } while (true);
-            
-            do { nextPos = strData.find(normToken, currPos);
-                if (nextPos == -1) break;
-                if (sscanf(&strData.c_str()[nextPos], normFormat.c_str(), &fTemp[0], &fTemp[1], &fTemp[2]))
-                {
-                    normCoordsDest.push_back(fTemp[0]);
-                    normCoordsDest.push_back(fTemp[1]);
-                    normCoordsDest.push_back(fTemp[2]);
-                    name_counter["normCount"]++;
-                    currPos = nextPos + normToken.size();
-                }
-            } while (true);
-            
-            do { nextPos = strData.find(elemsToken, currPos);
-                if (nextPos == -1) break;
-                if (sscanf(&strData.c_str()[nextPos], elemsFormat.c_str(),
-                    &uiTemp[0], &uiTemp[0], &uiTemp[0],
-                    &uiTemp[1], &uiTemp[1], &uiTemp[1],
-                    &uiTemp[2], &uiTemp[2], &uiTemp[2]))
-                {
-                    arrIndicesDest.push_back(uiTemp[0]);
-                    arrIndicesDest.push_back(uiTemp[1]);
-                    arrIndicesDest.push_back(uiTemp[2]);
-                    name_counter["indexCount"]+=3;
-                    currPos = nextPos + elemsToken.size();
-                }
-            } while (true);
-            if (nextMesh == -1) break;
-             (currMesh = (strFileData.find(nameToken, nextMesh)));
-             nextMesh = strFileData.find(nameToken, currMesh + nameToken.size());
-        }
-        return true;
-    }
-    bool DataSys::LoadFMeshObj(const String& strFileData, DArray<GLIB::VertexShape3d>& rVtxData, DArray<UInt32>& runIndData)
-    {
-        String
-            nameToken = "g ",
-            vtxToken = "v ",
-            uvToken = "vt ",
-            normToken = "vn ",
-            elemsToken = "f ",
-            mtlSrcToken = "mtllib ",
-            mtlUseToken = "usemtl ";
-        String
-            nameFormat = nameToken + "%s",
-            vtxFormat = vtxToken + "%f %f %f",
-            uvFormat = uvToken + "%f %f",
-            normFormat = normToken + "%f %f %f",
-            elemsFormat = elemsToken + "%d/%d/%d %d/%d/%d %d/%d/%d";
-        // Count |objects_amount|, |vertices|, |uvs|, |normals| and |indices|
-        std::unordered_map<const char*, UInt32> name_counter
-        { std::make_pair("nameCount", 0),
-            std::make_pair("vtxCount", 0),
-            std::make_pair("uvCount", 0),
-            std::make_pair("normCount", 0),
-            std::make_pair("indexCount", 0)
-        };
-        float fTemp[3]{ 0.0f, 0.0f, 0.0f };
-        UInt32 uiTemp[3]{ 0, 0, 0 };
-
-        DArray<V3f> VtxCoords;
-        DArray<V2f> TexCoords;
-        DArray<V3f> NormCoords;
-        DArray<UInt32> unIndices;
-        VtxCoords.resize(strFileData.size() / 150);
-        TexCoords.resize(strFileData.size() / 150);
-        NormCoords.resize(strFileData.size() / 150);
-        unIndices.resize(strFileData.size() / 50);
-
-        Int32 currPos = 0, nextPos = 0;
-        Int32 currMesh = 0, nextMesh = 0;
-        currMesh = strFileData.find(nameToken, currPos);
-        nextMesh = strFileData.find(nameToken, currPos + nameToken.size());
-        while (currMesh != -1) {
-            currPos = nextPos = 0;
-            String strData = strFileData.substr(currMesh, nextMesh - currMesh);
-            // mesh name is found
-            char cMeshName[128];
-            name_counter["nameCount"]++;
-            // Copy the mesh name : |currPos|_meshName|lineEnd|
-            sscanf(&strFileData.c_str()[currMesh], nameFormat.c_str(), cMeshName);
-            printf("NW::LOAD_MASTER::LOAD_MESH_DATA_OBJ: loading the \"%s\" mesh\n", cMeshName);
-
-            do {
-                nextPos = strData.find(vtxToken, currPos);  // Find from the end of the last line
-                if (nextPos == -1) break;
-                if (sscanf(&strData.c_str()[nextPos], vtxFormat.c_str(), &fTemp[0], &fTemp[1], &fTemp[2]))
-                {
-                    VtxCoords[name_counter["vtxCount"]] = (V3f{fTemp[0], fTemp[1], fTemp[2] });
-                    name_counter["vtxCount"]++;
-                    currPos = nextPos + vtxToken.size();    // Curr = end of token; next = beginning
-                }
-            } while (true);
-
-            do {
-                nextPos = strData.find(uvToken, currPos);
-                if (nextPos == -1) break;
-                if (sscanf(&strData.c_str()[nextPos], uvFormat.c_str(), &fTemp[0], &fTemp[1]))
-                {
-                    TexCoords[name_counter["uvCount"]] = (V2f{fTemp[0], fTemp[1]});
-                    name_counter["uvCount"]++;
-                    currPos = nextPos + uvToken.size();
-                }
-            } while (true);
-
-            do {
-                nextPos = strData.find(normToken, currPos);
-                if (nextPos == -1) break;
-                if (sscanf(&strData.c_str()[nextPos], normFormat.c_str(), &fTemp[0], &fTemp[1], &fTemp[2]))
-                {
-                    NormCoords[name_counter["normCount"]] = (V3f{fTemp[0], fTemp[1], fTemp[2] });
-                    name_counter["normCount"]++;
-                    currPos = nextPos + normToken.size();
-                }
-            } while (true);
-
-            do {
-                nextPos = strData.find(elemsToken, currPos);
-                if (nextPos == -1) break;
-                if (sscanf(&strData.c_str()[nextPos], elemsFormat.c_str(),
-                    &uiTemp[0], &uiTemp[0], &uiTemp[0],
-                    &uiTemp[1], &uiTemp[1], &uiTemp[1],
-                    &uiTemp[2], &uiTemp[2], &uiTemp[2]))
-                {
-                    unIndices[name_counter["indexCount"]] = (uiTemp[0]);
-                    name_counter["indexCount"] ++;
-                    unIndices[name_counter["indexCount"]] = (uiTemp[1]);
-                    name_counter["indexCount"] ++;
-                    unIndices[name_counter["indexCount"]] = (uiTemp[2]);
-                    name_counter["indexCount"] ++;
-                    currPos = nextPos + elemsToken.size();
-                }
-            } while (true);
-            if (nextMesh == -1) break;
-            (currMesh = (strFileData.find(nameToken, nextMesh)));
-            nextMesh = strFileData.find(nameToken, currMesh + nameToken.size());
-        }
-
-        UInt32 unMaxVtx = 0;
-        for (auto itCount = name_counter.begin(); itCount != name_counter.end(); advance(itCount, 1))
-            unMaxVtx = itCount->second > unMaxVtx ? itCount->second : unMaxVtx;
-        rVtxData.reserve(unMaxVtx);
-        for (UInt32 vti = 0; vti < unMaxVtx; vti++) {
-            rVtxData.emplace_back(GLIB::VertexShape3d{VtxCoords[vti], TexCoords[vti], NormCoords[vti]});
-        }
-        unIndices.reserve(name_counter["indexCount"]);
-        for (UInt32 idi = 0; idi < name_counter["indexCount"]; idi++) {
-            runIndData.emplace_back(unIndices[idi]);
-        }
-        return true;
-
-    }
-    // --==</Implementation Methods>==--=
+    // --==<implementation_methods>==--
+    // --==</implementation_methods>==--
 }

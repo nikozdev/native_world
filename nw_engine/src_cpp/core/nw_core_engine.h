@@ -3,7 +3,6 @@
 
 #include <core/nw_core_state.h>
 #include <core/nw_window.h>
-#include <glib_api.h>
 
 #include <nw_decl.hpp>
 #include <glib_core.hpp>

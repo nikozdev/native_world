@@ -43,15 +43,14 @@ namespace NWG
 
 		ImGui::Begin("graphics_engine", &bIsEnabled);
 		
-		ImGui::Text("gapi type: %s", GEngine::Get().GetGApiType() == GApiTypes::GAPI_OPENGL ? "opengl" : "none");
 		ImGui::Separator();
-		const GApiInfo& rGContextInfo = GEngine::Get().GetGApi()->GetInfo();
+		const GEngineInfo& rGInfo = GEngine::Get().GetInfo();
 		ImGui::Text("\ncontext version: %s;\nrenderer: %s;"
 			"\nvendor: %s;\nshading language: %s"
 			"\nmax texture count: %d;\nmax vertex attributes: %d",
-			rGContextInfo.strRenderer, rGContextInfo.strVersion,
-			rGContextInfo.strVendor, rGContextInfo.strShadingLanguage,
-			rGContextInfo.nMaxTextures, rGContextInfo.nMaxVertexAttribs);
+			rGInfo.strRenderer, rGInfo.strVersion,
+			rGInfo.strVendor, rGInfo.strShdLang,
+			rGInfo.nMaxTextures, rGInfo.nMaxVertexAttribs);
 		ImGui::Separator();
 
 		bWindow = ImGui::TreeNodeEx("--==<window>==--", GUI_DEFAULT_TREE_FLAGS);
@@ -155,16 +154,6 @@ namespace NWG
 			ImGui::EndMenuBar();
 		}
 
-		if (ImGui::BeginPopupContextWindow("data_props", 1, false)) {
-			if (ImGui::TreeNodeEx("create", GUI_DEFAULT_TREE_FLAGS)) {
-				if (ImGui::MenuItem("shader")) { AShader::Create("shd_nameless"); }
-				else if (ImGui::MenuItem("texture2d")) { ATexture2d::Create("tex_2d_nameless"); }
-				else if (ImGui::MenuItem("gmaterial")) { CoreEngine::Get().NewT<GMaterial>("gmt_3d_nameless"); }
-				ImGui::TreePop();
-			}
-			ImGui::EndPopup();
-		}
-		
 		if (ImGui::Button("file system tree")) { system("tree"); }
 		else if (ImGui::Button("files list")) { system("dir"); }
 		ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal | ImGuiSeparatorFlags_SpanAllColumns);
@@ -177,7 +166,7 @@ namespace NWG
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNodeEx("textures")) {
-			auto& Textures = ADataRes::GetDataResources<ATexture2d>();
+			auto& Textures = ADataRes::GetDataResources<Texture>();
 			for (auto& itTex : Textures) {
 				ImGui::Text(itTex.second->GetName());
 				const ImageInfo& rImgInfo = itTex.second->GetImgInfo();
@@ -187,7 +176,7 @@ namespace NWG
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNodeEx("shaders")) {
-			auto& Shaders = ADataRes::GetDataResources<AShader>();
+			auto& Shaders = ADataRes::GetDataResources<Shader>();
 			for (auto& pShader : Shaders) {
 				//if (ImGui::Button(pShader.second->GetName())) { GuiOfCodeEditor::Get().SetContext(pShader.second); }
 			} ImGui::Separator();
@@ -228,7 +217,7 @@ namespace NWG
 	
 	// --setters
 	void GuiOfCodeEditor::SetContext(ACodeRes* pContext) {
-		if (this->pContextShd = dynamic_cast<AShader*>(pContext)) {
+		if (this->pContextShd = dynamic_cast<Shader*>(pContext)) {
 			bIsEnabled = true;
 			strcpy(&strCodeBuf[0], &pContextShd->GetCode()[0]);
 		}
@@ -245,7 +234,7 @@ namespace NWG
 		if (ImGui::BeginMenuBar()) {
 			if (ImGui::BeginMenu("file")) {
 				if (ImGui::MenuItem("save...")) {
-					String strFPath = DataSys::FDialog_save("all_files(*.*)\0*.*\0lua_scripts(*.lua)\0*.lua\0opengl_shader(*.glsl)\0(*.glsl)\0\0");
+					String strFPath = DataSys::FDialogSave("all_files(*.*)\0*.*\0lua_scripts(*.lua)\0*.lua\0opengl_shader(*.glsl)\0(*.glsl)\0\0");
 					if (!strFPath.empty()) {
 						String strTemp;
 						DataSys::SaveFString(&strFPath[0], &strCodeBuf[0], strCodeBuf.size());
@@ -254,7 +243,7 @@ namespace NWG
 					}
 				}
 				else if (ImGui::MenuItem("load...")) {
-					String strFPath = DataSys::FDialog_load("all_files(*.*)\0*.*\0lua_scripts(*.lua)\0*.lua\0opengl_shader(*.glsl)\0(*.glsl)\0\0");
+					String strFPath = DataSys::FDialogLoad("all_files(*.*)\0*.*\0lua_scripts(*.lua)\0*.lua\0opengl_shader(*.glsl)\0(*.glsl)\0\0");
 					if (!strFPath.empty()) {
 						String strTemp;
 						DataSys::LoadFString(&strFPath[0], strTemp);
@@ -266,7 +255,7 @@ namespace NWG
 			}
 			else if (ImGui::BeginMenu("context")) {
 				if (ImGui::BeginCombo("set shader", pContextShd == nullptr ? "no shader" : &pContextShd->GetName()[0])) {
-					auto& Shaders = ADataRes::GetDataResources<AShader>();
+					auto& Shaders = ADataRes::GetDataResources<Shader>();
 					for (auto& pShd : Shaders) {
 						if (ImGui::Button(&pShd.second->GetName()[0])) {
 							//this->SetContext(pShd.second);
@@ -349,11 +338,11 @@ namespace NWG
 		if (ImGui::BeginMenuBar()) {
 			if (ImGui::BeginMenu("file")) {
 				if (ImGui::MenuItem("save...")) {
-					String strFPath = DataSys::FDialog_save("all_files(*.*)\0*.*\0graphics_material(*.gmt)\0(*.gmt)\0\0");
+					String strFPath = DataSys::FDialogSave("all_files(*.*)\0*.*\0graphics_material(*.gmt)\0(*.gmt)\0\0");
 					if (!strFPath.empty()) { }
 				}
 				else if (ImGui::MenuItem("load...")) {
-					String strFPath = DataSys::FDialog_load("all_files(*.*)\0*.*\0graphics_material(*.gmt)\0(*.gmt)\0\0");
+					String strFPath = DataSys::FDialogLoad("all_files(*.*)\0*.*\0graphics_material(*.gmt)\0(*.gmt)\0\0");
 					if (!strFPath.empty()) { }
 				}
 				ImGui::EndMenu();
@@ -396,7 +385,7 @@ namespace NWG
 				ImGui::Image(reinterpret_cast<void*>(pTex->GetRenderId()),
 					ImVec2{ 64.0f * rImgInfo.nWidth / rImgInfo.nHeight, 64.0f });
 				if (ImGui::BeginCombo("change texture", &(pTex->GetName())[0])) {
-					auto& Textures = ADataRes::GetDataResources<ATexture>();
+					auto& Textures = ADataRes::GetDataResources<Texture>();
 					for (auto& itTex : Textures) {
 						const ImageInfo rImgInfoLoc = itTex.second->GetImgInfo();
 						if (ImGui::ImageButton(reinterpret_cast<void*>(itTex.second->GetRenderId()),
@@ -411,11 +400,11 @@ namespace NWG
 		}
 
 		if (ImGui::TreeNodeEx("-- shader", GUI_DEFAULT_TREE_FLAGS)) {
-			AShader* pShader = pContext->GetShader();
+			Shader* pShader = pContext->GetShader();
 			ImGui::Text("id = %d;\nname: %s;", pShader->GetId(), pShader->GetName());
 			//if (ImGui::Button("code editor")) { GuiOfCodeEditor::Get().SetContext(pShader); }
 			if (ImGui::BeginCombo("change shader", &pShader->GetName()[0])) {
-				auto& Shaders = ADataRes::GetDataResources<AShader>();
+				auto& Shaders = ADataRes::GetDataResources<Shader>();
 				for (auto& pShd : Shaders) {
 					if (ImGui::Button(&pShd.second->GetName()[0])) { pContext->SetShader(pShd.second); }
 				}
@@ -431,11 +420,11 @@ namespace NWG
 	// --==<GuiOfSpriteEditor>==--
 	GuiOfSpriteEditor::GuiOfSpriteEditor() { }
 	// --setters
-	void GuiOfSpriteEditor::SetContext(ATexture2d* pContext) {
+	void GuiOfSpriteEditor::SetContext(Texture* pContext) {
 		this->pContext = pContext;
 		if (pContext == nullptr) {
 			bIsEnabled = false;
-			pContext = ADataRes::GetDataRes<ATexture2d>("tex_white_solid");
+			pContext = ADataRes::GetDataRes<Texture>("tex_white_solid");
 		}
 		else {
 			bIsEnabled = true;
@@ -453,11 +442,11 @@ namespace NWG
 		if (ImGui::BeginMenuBar()) {
 			if (ImGui::BeginMenu("file")) {
 				if (ImGui::MenuItem("save...")) {
-					String strFPath = DataSys::FDialog_save("all_files\0*.*\0images\0*.png");
+					String strFPath = DataSys::FDialogSave("all_files\0*.*\0images\0*.png");
 					if (!strFPath.empty()) { pContext->SaveF(&strFPath[0]); }
 				}
 				else if (ImGui::MenuItem("load...")) {
-					String strFPath = DataSys::FDialog_load("all_files\0*.*\0images\0*.png");
+					String strFPath = DataSys::FDialogLoad("all_files\0*.*\0images\0*.png");
 					if (!strFPath.empty()) { pContext->LoadF(&strFPath[0]); }
 				}
 				ImGui::EndMenu();
@@ -466,7 +455,7 @@ namespace NWG
 				if (ImGui::MenuItem("set texture")) {
 					ImGui::OpenPopup("set context");
 					if (ImGui::BeginPopup("set_context")) {
-						auto& Textures = ADataRes::GetDataResources<ATexture2d>();
+						auto& Textures = ADataRes::GetDataResources<Texture>();
 						for (auto& itTex : Textures) {
 							ImGui::Text(itTex.second->GetName());
 							const ImageInfo& rImgInfo = itTex.second->GetImgInfo();
@@ -486,7 +475,7 @@ namespace NWG
 
 		if (ImGui::InputText("name", strContextName, 128)) { pContext->SetName(strContextName); }
 		ImGui::Text("context id: %d; render id: %d", pContext->GetId(), pContext->GetRenderId());
-		ImGui::Text("current: width = %d; height = %d", pContext->GetWidth(), pContext->GetHeight());
+		ImGui::Text("current: width = %d; height = %d", pContext->GetImgInfo().nWidth, pContext->GetImgInfo().nHeight);
 
 		if (ImGui::Button("apply")) { pContext->SetInfo(ImgInfo); pContext->SetInfo(TexInfo); pContext->Remake(); }
 
@@ -518,8 +507,8 @@ namespace NWG
 
 			else if (ImGui::BeginCombo("format", TexInfo.texFormat == TXF_RGB ? "rgb" : TexInfo.texFormat == TXF_RGBA ? "rgba" :
 				TexInfo.texFormat == TXF_RED ? "grayscale" : "none")) {
-				if (ImGui::MenuItem("rgb")) { TexInfo.texFormat = TXF_RGB; TexInfo.texInterFormat = TXF_RGB; }
-				else if (ImGui::MenuItem("rgba")) { TexInfo.texFormat = TXF_RGBA; TexInfo.texInterFormat = TXF_RGBA8; }
+				if (ImGui::MenuItem("rgb")) { TexInfo.texFormat = TXF_RGB; TexInfo.texInterFormat = TXFI_RGB; }
+				else if (ImGui::MenuItem("rgba")) { TexInfo.texFormat = TXF_RGBA; TexInfo.texInterFormat = TXFI_RGBA8; }
 				ImGui::EndCombo();
 			}
 

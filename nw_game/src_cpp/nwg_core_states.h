@@ -27,10 +27,11 @@ namespace NWG
 		virtual void OnEvent(WindowEvent& rwEvt) override;
 	private:
 		GLIB::GCamera m_GCamera;
-		NWL::RefOwner<GLIB::AFrameBuf> m_pFmBuf;
-		NWL::RefOwner<GLIB::AVertexBuf> m_pVtxBuf;
-		NWL::RefOwner<GLIB::AIndexBuf> m_pIdxBuf;
-		NWL::RefOwner<GLIB::AShaderBuf> m_pShdBuf;
+		NWL::RefKeeper<GLIB::FrameBuf> m_pFmBuf;
+		NWL::RefKeeper<GLIB::VertexBuf> m_pVtxBuf;
+		NWL::RefKeeper<GLIB::IndexBuf> m_pIdxBuf;
+		NWL::RefKeeper<GLIB::ShaderBuf> m_pShdBuf;
+		NWL::RefKeeper<GLIB::VertexArr> m_pVtxArr;
 		NWL::LinearAllocator m_pVtxData;
 		NWL::LinearAllocator m_pShdData;
 		NWL::LinearAllocator m_pIdxData;

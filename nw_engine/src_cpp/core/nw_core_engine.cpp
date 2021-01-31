@@ -33,7 +33,7 @@ namespace NW
 	bool CoreEngine::Init()
 	{
 		if (m_bIsRunning) { return false; }
-		m_Memory = MemArena(new Byte[1 << 23], 1 << 23);
+		m_Memory = MemArena(new Byte[1 << 18], 1 << 18);
 	#if (defined NW_WINDOW)
 		WindowInfo wInfo{ "graphics_engine", 1200, 1200 / 4 * 3, true, nullptr };
 		#if (NW_WINDOW_GLFW & NW_WINDOW_GLFW)
@@ -53,15 +53,18 @@ namespace NW
 	}
 	void CoreEngine::Quit()
 	{
-		if (!m_bIsRunning) { return; }
+		if (!m_bIsRunning && m_pWindow.GetRef() == nullptr) { return; }
 		m_bIsRunning = false;
 
-		while (!m_States.empty()) { m_States[0]->OnQuit(); m_States.erase(m_States.begin()); }
+		for (auto& itState : m_States) { itState->OnQuit(); }
+		m_States.clear();
+
 		DataSys::OnQuit();
 
+		GLIB::GEngine::Get().Quit();
+		
 		m_pWindow->OnQuit();
 		m_pWindow.Reset();
-		GLIB::GEngine::Get().Quit();
 
 		delete[] m_Memory.GetDataBeg();
 		m_Memory = MemArena(nullptr, 0);

@@ -12,7 +12,6 @@
 // --==</global>==--
 
 // --==</graphics_library>==--
-#include <glib_api.h>
 #include <glib_tools.h>
 #include <glib_buffer.h>
 #include <glib_framebuf.h>

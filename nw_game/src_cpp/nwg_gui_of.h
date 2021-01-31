@@ -55,11 +55,10 @@ namespace NWG
 	private:
 		bool bWindow = false, bLayers = false, bFrameBufs = false;
 		AWindow* pWindow = nullptr;
-		AFrameBuf* pFrameBuf = nullptr;
+		FrameBuf* pFrameBuf = nullptr;
 		float nLineW = 0.01f, nPixelSz = 0.01f, nWndOpacity = 1.0f;
 		Char strLayerName[256] = "del_default";
 		Char strWindowTitle[256] = "nw_engine";
-		DrawObjectData DOData;
 	public:
 		virtual void OnDraw() override;
 	};
@@ -116,7 +115,7 @@ namespace NWG
 	{
 		friend class AGuiOf<GuiOfCodeEditor>;
 	private:
-		AShader* pContextShd = nullptr;
+		Shader* pContextShd = nullptr;
 		DArray<char> strCodeBuf;
 	private:
 		GuiOfCodeEditor();
@@ -153,12 +152,12 @@ namespace NWG
 	public:
 		// --getters
 		// --setters
-		void SetContext(ATexture2d* pContext);
+		void SetContext(Texture* pContext);
 
 		// --core_methods
 		virtual void OnDraw() override;
 	private:
-		ATexture2d* pContext = nullptr;
+		Texture* pContext = nullptr;
 		Char strContextName[128];
 
 		float nAspectRatio = 1.0f;

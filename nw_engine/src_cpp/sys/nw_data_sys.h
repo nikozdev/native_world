@@ -26,17 +26,17 @@ namespace NW
 		static bool OnInit();
 		static void OnQuit();
 		// --file_dialogs
-		static String FDialog_save(const char* strFilter);
-		static String FDialog_load(const char* strFilter);
+		static String FDialogSave(const char* strFilter);
+		static String FDialogLoad(const char* strFilter);
 		// --binary_data
 		static bool SaveFData(const char *strFPath, void* pData, UInt64 unBytes);
 		static bool SaveFData(const char *directory, const char *name, const char *noPointformat,
 			void* pData, UInt64 unBytes);
-		static inline bool SaveFData(void* pData, UInt64 unBytes) { return SaveFData(&FDialog_save("all_files(*.*)\0*.*\0")[0], pData, unBytes); }
+		static inline bool SaveFData(void* pData, UInt64 unBytes) { return SaveFData(&FDialogSave("all_files(*.*)\0*.*\0")[0], pData, unBytes); }
 		static bool LoadFData(const char *strFPath, void* pData, UInt64 unBytes);
 		static bool LoadFData(const char *directory, const char *name, const char *noPointformat,
 			void *pData, UInt64 unBytes);
-		static inline bool LoadFData(void* pData, UInt64 unBytes) { return LoadFData(&FDialog_load("all_files(*.*)\0*.*\0")[0], pData, unBytes); }
+		static inline bool LoadFData(void* pData, UInt64 unBytes) { return LoadFData(&FDialogLoad("all_files(*.*)\0*.*\0")[0], pData, unBytes); }
 		// --strings
 		static bool SaveFString(const char* strFPath, const char* strSrc, UInt64 unBytes);
 		static bool LoadFString(const char* strFPath, String& strDest);
@@ -44,23 +44,9 @@ namespace NW
 		static UInt8* LoadFImage(const char* strFPath, Int32* pnW, Int32* pnH, Int32* pnChannels);
 		static bool LoadFImage(const char* strFPath, UByte* pClrDataBuf, Int32* pnW, Int32* pnH, Int32* pnChannels);
 		static bool LoadFImage(const char* strFilePath, GLIB::ImageInfo* pImage);
-		// --meshes
-		static bool SaveFMesh(const String& strFilePath, DArray<GLIB::VertexShape3d>* pVtxData, DArray<UInt32>* punIndData);
-		static bool LoadFMesh(const String& strFilePath, DArray<GLIB::VertexShape3d>* pVtxData, DArray<UInt32>* punIndData);
-		// --shaders
 	private:
 		static ADRs s_ADRs;
 		static String s_strRscDir;
-	private:
-		static bool LoadFMeshDae(const String& strFileData, DArray<UInt32>& arrIndices,
-			DArray<V3f>& vtxCoords, DArray<V2f>& texCoords, DArray<V3f>& normalCoords);
-		static bool LoadFMeshDae(const String& strFileData, DArray<UInt32>& arrIndices,
-			DArray<float>& vtxCoords, DArray<float>& texCoords, DArray<float>& normalCoords);
-		static bool LoadFMeshObj(const String& strFileData, DArray<UInt32>& arrIndices,
-			DArray<V3f>& vtxCoords, DArray<V2f>& texCoords, DArray<V3f>& normalCoords);
-		static bool LoadFMeshObj(const String& strFileData, DArray<UInt32>& arrIndices,
-			DArray<float>& vtxCoords, DArray<float>& texCoords, DArray<float>& normalCoords);
-		static bool LoadFMeshObj(const String& strFileData, DArray<GLIB::VertexShape3d>& rVtxData, DArray<UInt32>& runIndData);
 	};
 }
 
