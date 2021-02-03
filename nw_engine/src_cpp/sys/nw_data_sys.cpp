@@ -3,7 +3,6 @@
 
 #include <core/nw_core_engine.h>
 #include <core/nw_window.h>
-#include <core/nw_core_state.h>
 
 #include <glib_texture.h>
 

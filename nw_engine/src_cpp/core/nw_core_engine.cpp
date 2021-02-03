@@ -8,13 +8,14 @@
 #include <sys/nw_data_sys.h>
 
 #include <glib_engine.h>
+//#include <cmd_engine.h>
 
 namespace NW
 {
 	CoreEngine::CoreEngine() :
-		m_bIsRunning(false), m_thrRun(Thread()), m_Memory(nullptr, 0),
+		AEngine(),
 		m_strName("nw_engine"),
-		m_pWindow(RefKeeper<AWindow>(GetMemory())) { }
+		m_pWindow(RefKeeper<AWindow>()) { }
 	CoreEngine::~CoreEngine() { }
 
 	// --==<core_methods>==--
@@ -25,7 +26,13 @@ namespace NW
 		if (m_States.empty()) { Quit(); }
 
 		auto fnRunning = [this]()->void {
+			//CMD::CmdEngine::Get().Run();
+			GLIB::GraphEngine::Get().Run();
 			while (m_bIsRunning) { Update(); }
+			GLIB::GraphEngine::Get().Quit();
+			GLIB::GraphEngine::Get().GetRunThread().join();
+			//CMD::CmdEngine::Get().Quit();
+			//CMD::CmdEngine::Get().GetRunThread().join();
 			Quit();
 		};
 		m_thrRun = Thread(fnRunning);
@@ -35,7 +42,7 @@ namespace NW
 		if (m_bIsRunning) { return false; }
 		m_Memory = MemArena(new Byte[1 << 18], 1 << 18);
 	#if (defined NW_WINDOW)
-		WindowInfo wInfo{ "graphics_engine", 1200, 1200 / 4 * 3, true, nullptr };
+		WindowInfo wInfo{ &m_strName[0], 1200, 1200 / 4 * 3, true, nullptr };
 		#if (NW_WINDOW_GLFW & NW_WINDOW_GLFW)
 		wInfo.wapiType = WAPI_GLFW;
 		#endif
@@ -45,8 +52,9 @@ namespace NW
 		m_pWindow->SetEventCallback([this](AEvent& rEvt)->void { return OnEvent(rEvt); });
 		DataSys::OnInit();
 
-		if (!GLIB::GEngine::Get().Init()) { return false; }
-
+		if (!GLIB::GraphEngine::Get().Init()) { return false; }
+		//if (!CMD::CmdEngine::Get().Init()) { return false; }
+		
 		for (auto& itState : m_States) { itState->Init(); }
 
 		return (m_bIsRunning = true);
@@ -61,8 +69,9 @@ namespace NW
 
 		DataSys::OnQuit();
 
-		GLIB::GEngine::Get().Quit();
-		
+		GLIB::GraphEngine::Get().Quit();
+		//CMD::CmdEngine::Get().Quit();
+
 		m_pWindow->OnQuit();
 		m_pWindow.Reset();
 
@@ -77,14 +86,16 @@ namespace NW
 		IOSys::Update();
 		TimeSys::Update();
 		
+		GLIB::GraphEngine::Get().Update();
+		//CMD::CmdEngine::Get().Update();
+
 		m_pWindow->Update();
 	}
 	void CoreEngine::OnEvent(AEvent& rEvt)
 	{
-		// Dispatch particular events
 		if (rEvt.IsInCategory(EC_MOUSE)) {
 			MouseEvent* pmEvt = static_cast<MouseEvent*>(&rEvt);
-			switch (pmEvt->EvtType) {
+			switch (pmEvt->evType) {
 			case ET_MOUSE_MOVE:
 				IOSys::s_Mouse.xMoveDelta = pmEvt->nX - IOSys::s_Mouse.xMove;
 				IOSys::s_Mouse.yMoveDelta = pmEvt->nY - IOSys::s_Mouse.yMove;
@@ -107,31 +118,34 @@ namespace NW
 		}
 		else if (rEvt.IsInCategory(EC_KEYBOARD)) {
 			KeyboardEvent* pkEvt = static_cast<KeyboardEvent*>(&rEvt);
-			switch (pkEvt->EvtType) {
+			switch (pkEvt->evType) {
 			case ET_KEY_RELEASE:
 				IOSys::s_Keyboard.bsKeys[pkEvt->unKeyCode].bNew = false;
 				switch (pkEvt->unKeyCode) {
 				case NW_KEY_ESCAPE_27:
-					m_bIsRunning = false;
+					StopRunning();
 					rEvt.bIsHandled = true;
-					break;
 				case NW_KEY_M_77:
 					IOSys::SetCursorIMode(IOSys::s_Mouse.iMode == IM_CURSOR_NORMAL ? IM_CURSOR_DISABLED : IM_CURSOR_NORMAL);
 					break;
+				default: break;
 				}
 				break;
 			case ET_KEY_PRESS:
 				IOSys::s_Keyboard.bsKeys[pkEvt->unKeyCode].bNew = true;
+				switch (pkEvt->unKeyCode) {
+				default: break;
+				}
 				break;
 			case ET_KEY_CHAR:
 				break;
+				if (rEvt.bIsHandled) { return; }
+				for (auto& itState : m_States) { itState->OnEvent(*pkEvt); }
 			}
-			if (rEvt.bIsHandled) { return; }
-			for (auto& itState : m_States) { itState->OnEvent(*pkEvt); }
 		}
 		else if (rEvt.IsInCategory(EC_WINDOW)) {
 			WindowEvent* pwEvt = static_cast<WindowEvent*>(&rEvt);
-			switch (pwEvt->EvtType) {
+			switch (pwEvt->evType) {
 			case ET_WINDOW_RESIZE:
 				break;
 			case ET_WINDOW_MOVE:
@@ -139,13 +153,14 @@ namespace NW
 			case ET_WINDOW_FOCUS:
 				break;
 			case ET_WINDOW_CLOSE:
-				m_bIsRunning = false;
+				StopRunning();
 				rEvt.bIsHandled = true;
 				break;
 			}
 			if (rEvt.bIsHandled) { return; }
 			for (auto& itState : m_States) { itState->OnEvent(*pwEvt); }
 		}
+		GLIB::GraphEngine::Get().OnEvent(rEvt);
 	}
 	// --==</core_methods>==--
 }

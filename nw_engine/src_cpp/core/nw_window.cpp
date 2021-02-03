@@ -8,6 +8,7 @@
 namespace NW
 {
 	AWindow::AWindow(const WindowInfo& rwInfo) : m_Info(rwInfo) { }
+	AWindow::~AWindow() {}
 	// --==<core_methods>==--
 	AWindow* AWindow::Create(const WindowInfo& rWindowInfo)
 	{
@@ -24,7 +25,7 @@ namespace NW
 	{
 		switch (rWindowInfo.wapiType) {
 	#if (NW_WINDOW & NW_WINDOW_GLFW)
-		case WApiTypes::WAPI_GLFW: rWindow.MakeRef<WindowOgl>(rWindowInfo); break;
+		case WApiTypes::WAPI_GLFW: rWindow.MakeRef<WindowOgl>(CoreEngine::Get().GetMemory(), rWindowInfo); break;
 	#endif	// NW_WINDOW
 		default: NWL_ERR("Window type is undefined"); break;
 		}
@@ -81,6 +82,7 @@ namespace NW
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_SAMPLES, 4);
 
 		// Set window pointer
 		m_pNative = glfwCreateWindow(static_cast<Int32>(m_Info.unWidth), static_cast<Int32>(m_Info.unHeight),

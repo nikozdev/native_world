@@ -29,7 +29,7 @@ namespace NW
 	class NW_API LogSys
 	{
 	public:
-		using ErrStack = std::stack<Int32>;
+		using ErrStack = std::stack<UInt32>;
 		using LogIn = std::istream;
 		using LogOut = std::ostream;
 		using LogErr = std::ostream;

@@ -45,7 +45,7 @@ namespace NW
 	{
 	public:
 		AWindow(const WindowInfo& rwInfo);
-		virtual ~AWindow() = default;
+		virtual ~AWindow();
 
 		// --getters
 		inline UInt16 GetWidth() const { return m_Info.unWidth; }

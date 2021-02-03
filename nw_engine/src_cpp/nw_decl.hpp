@@ -7,13 +7,10 @@ namespace NW
 {
 	// --==<global>==--
 	class NW_API CoreEngine;
-	class NW_API CoreState;
 	class NW_API AWindow;
 	// --systems
 	class NW_API IOSys;
-	class NW_API MemSys;
 	class NW_API DataSys;
-	class NW_API GuiSys;
 	// --objects
 	
 	// --==<enums>==--

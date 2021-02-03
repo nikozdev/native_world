@@ -20,6 +20,7 @@ project "nw_engine"
 		"src_cpp/",
 		"%{dir_cpp.nw_lib}",
 		"%{dir_cpp.nw_glib}",
+		"%{dir_cpp.nw_cmd}",
 		"%{dir_cpp.glfw}",
 		"%{dir_cpp.stbi}",
 		"%{dir_cpp.lualib}"
@@ -28,6 +29,7 @@ project "nw_engine"
 	{
 		"%{dir_lib.nw_lib}",
 		"%{dir_lib.nw_glib}",
+		"%{dir_lib.nw_cmd}",
 		"%{dir_lib.glfw}",
 		"%{dir_lib.lualib}"
 	}
@@ -35,6 +37,7 @@ project "nw_engine"
 	{
 		"nw_lib",
 		"nw_glib",
+		"nw_cmd",
 		"glfw",
 		"lualib"
 	}
@@ -55,14 +58,16 @@ project "nw_engine"
 		{
 			"NW_DEBUG",
 			"NWL_DEBUG",
-			"GLIB_DEBUG"
+			"GLIB_DEBUG",
+			"CMD_DEBUG",
 		}
 		symbols "on"
 	filter "configurations:release"
 		defines {
 			"NW_RELEASE",
 			"NWL_RELEASE",
-			"GLIB_RELEASE"
+			"GLIB_RELEASE",
+			"CMD_RELEASE",
 		}
 		optimize "on"
 --==</engine_project>==--
