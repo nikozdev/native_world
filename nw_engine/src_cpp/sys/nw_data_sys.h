@@ -12,10 +12,6 @@ namespace NW
 	class NW_API DataSys
 	{
 	public:
-		using FStream = std::fstream;
-		using ADRs = HashMap<UInt32, ADataRes*>;
-		template <class DRType> using DRs = HashMap<UInt32, DRType*>;
-	public:
 		// --getters
 		static inline const char* GetDirectory() { return &s_strRscDir[0]; }
 		
@@ -41,12 +37,18 @@ namespace NW
 		static bool SaveFString(const char* strFPath, const char* strSrc, UInt64 unBytes);
 		static bool LoadFString(const char* strFPath, String& strDest);
 		// --images
-		static UInt8* LoadFImage(const char* strFPath, Int32* pnW, Int32* pnH, Int32* pnChannels);
-		static bool LoadFImage(const char* strFPath, UByte* pClrDataBuf, Int32* pnW, Int32* pnH, Int32* pnChannels);
-		static bool LoadFImage(const char* strFilePath, GLIB::ImageInfo* pImage);
+		static bool SaveFImage(const char* strFPath, ImageInfo& rImage);
+		static bool LoadFImage(const char* strFPath, ImageInfo& rImage);
+		// --meshes
+		static bool SaveFMesh(const char* strFPath, GMeshInfo& rMesh);
+		static bool LoadFMesh(const char* strFPath, GMeshInfo& rMesh);
+		static bool SaveFModel(const char* strFPath, GModelInfo& rModel);
+		static bool LoadFModel(const char* strFPath, GModelInfo& rModel);
 	private:
-		static ADRs s_ADRs;
 		static String s_strRscDir;
+	private:
+		static inline bool LoadFMeshObj(const char* strFile, GMeshInfo& rMesh);
+		static inline bool LoadFModelObj(const char* strFile, GModelInfo& rModel);
 	};
 }
 

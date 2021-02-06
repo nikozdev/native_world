@@ -8,7 +8,7 @@
 
 #include <native_world.hpp>
 using namespace NW;
-#include <cmd_engine.h>
+#include <native_console.hpp>
 using namespace CMD;
 #include <graphics_library.hpp>
 using namespace GLIB;

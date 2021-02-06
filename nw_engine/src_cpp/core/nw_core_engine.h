@@ -17,7 +17,7 @@ namespace NW
 	/// -> Get the static instance and Init() that
 	/// -> If initialization is successed - add own states
 	/// -> Run() command to start the main update loop
-	class NW_API CoreEngine : public AEngine<CoreEngine>
+	class NW_API CoreEngine : public AEngine<CoreEngine, AEngineState>
 	{
 	public:
 		CoreEngine();
@@ -25,7 +25,7 @@ namespace NW
 
 		// --getters
 		inline const char* GetName()	const		{ return &m_strName[0]; }
-		inline AWindow* GetWindow()					{ return m_pWindow.GetRef(); }
+		inline AppWindow* GetWindow()					{ return m_pWindow.GetRef(); }
 		// --setters
 		void SetName(const char* strName)			{ strcpy(&m_strName[0], &strName[0]); }
 
@@ -37,7 +37,7 @@ namespace NW
 		virtual void OnEvent(AEvent& rEvt) override;
 	private:
 		Char m_strName[256];
-		RefKeeper<AWindow> m_pWindow;
+		RefKeeper<AppWindow> m_pWindow;
 	};
 }
 

@@ -26,81 +26,51 @@ namespace NW
 			std::function<void(AEvent&)> fnEventCallback = nullptr) :
 			strTitle(cstTitle), unWidth(unWidth), unHeight(unHeight),
 			bVSync(bVerticalSync), fnEvCallback(fnEventCallback),
-		nAspectRatio((Float32)unWidth / (Float32)unHeight) { }
-		inline OutStream& operator<<(OutStream& rStream) {
-			rStream << "WINDOW_INFO" << std::endl <<
+			nAspectRatio((Float32)unWidth / (Float32)unHeight) { }
+		inline OStream& operator<<(OStream& rStream) {
+			rStream << "--==<window_info>==--" << std::endl <<
 				"title: " << &strTitle[0] << std::endl <<
 				"width x height: " << unWidth << " x " << unHeight << std::endl <<
-				"api_version: " << &strApiVer[0] << std::endl;
+				"api_version: " << &strApiVer[0] << std::endl <<
+				"--==</window_info>==--" << std::endl;
 			return rStream;
 		}
 	};
-	inline OutStream& operator<<(OutStream& rStream, WindowInfo& rwInfo) { return rwInfo.operator<<(rStream); }
-	/// Abstract Window Class
-	/// Interface:
-	/// -> Make Create method for a particular implementation
-	/// -> Create the window by that function
-	/// -> Call OnUpdate() and OnRender every frame
-	class NW_API AWindow
-	{
-	public:
-		AWindow(const WindowInfo& rwInfo);
-		virtual ~AWindow();
-
-		// --getters
-		inline UInt16 GetWidth() const { return m_Info.unWidth; }
-		inline UInt16 GetHeight() const { return m_Info.unHeight; }
-		inline const WindowInfo& GetWindowInfo() const { return m_Info; }
-		
-		virtual Ptr GetNative() = 0;
-		// --setters
-		virtual void SetTitle(const char* strTitle) = 0;
-		virtual void SetEventCallback(const EventCallback& fnEvCallback) = 0;
-		virtual void SetVSync(bool enabled) = 0;
-		virtual void SetIcon(UByte* pData, UInt16 unWidth, UInt16 unHeight) = 0;
-		virtual void SetOpacity(float nOpacity) = 0;
-		// --predicates
-		inline bool IsVSync() const { return m_Info.bVSync; }
-
-		// --core_methods
-		virtual bool Init() = 0;
-		virtual void OnQuit() = 0;
-		virtual void Update() = 0;
-
-		static AWindow* Create(const WindowInfo& rWindowInfo);
-		static void Create(const WindowInfo& rWindowInfo, RefKeeper<AWindow>& rWindow);
-	protected:
-		WindowInfo m_Info;
-	};
+	inline OStream& operator<<(OStream& rStream, WindowInfo& rwInfo) { return rwInfo.operator<<(rStream); }
 }
-#endif // NW_WINDOW
 #if (NW_WINDOW & NW_WINDOW_GLFW)
 struct GLFWwindow;
 struct GLFWimage;
 namespace NW
 {
-	/// WindowOgl class
-	/// --Works with GLFW
-	/// --Can interact mostly by events but not with the application directly
-	class NW_API WindowOgl : public AWindow
+	/// Window Class
+	class NW_API AppWindow
 	{
 	public:
-		WindowOgl(const WindowInfo& rwInfo);
-		virtual ~WindowOgl();
+		AppWindow(const WindowInfo& rwInfo);
+		~AppWindow();
 
 		// --getters
-		virtual inline Ptr GetNative() override { return m_pNative; }
+		inline UInt16 GetWidth() const { return m_Info.unWidth; }
+		inline UInt16 GetHeight() const { return m_Info.unHeight; }
+		inline Ptr GetNative() { return m_pNative; }
+		inline const WindowInfo& GetWindowInfo() const { return m_Info; }
 		// --setters
-		virtual void SetTitle(const char* strTitle) override;
-		virtual void SetEventCallback(const EventCallback& fnEvCallback) override;
-		virtual void SetVSync(bool enabled) override;
-		virtual void SetIcon(UByte* pData, UInt16 unWidth, UInt16 unHeight) override;
-		virtual void SetOpacity(float nOpacity) override;
-		
+		void SetTitle(const char* strTitle);
+		void SetEventCallback(const EventCallback& fnEvCallback);
+		void SetVSync(bool bEnable);
+		void SetIcon(const ImageInfo& rImgInfo);
+		void SetOpacity(float nOpacity);
+		// --predicates
+		inline bool IsVSync() const { return m_Info.bVSync; }
+
 		// --core_methods
-		virtual bool Init() override;
-		virtual void OnQuit() override;
-		virtual void Update() override;
+		bool Init();
+		void OnQuit();
+		void Update();
+
+		static AppWindow* Create(const WindowInfo& rWindowInfo);
+		static void Create(const WindowInfo& rWindowInfo, RefKeeper<AppWindow>& rWindow);
 	private:
 		// --input_callbacks: mouse
 		static void CbMouseCoord(GLFWwindow* pWindow, double xCrd, double yCrd);
@@ -118,8 +88,10 @@ namespace NW
 	private:
 		GLFWwindow* m_pNative;
 		GLFWimage* m_pIcon;
+		WindowInfo m_Info;
 	};
 }
+#endif
 #endif // NW_WINDOW
 #endif	// NW_AWINDOW_H
 /*

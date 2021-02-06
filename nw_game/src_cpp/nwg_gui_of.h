@@ -34,33 +34,22 @@ namespace NWG
 	struct NW_API GuiOfCoreEngine : public AGuiOf<GuiOfCoreEngine>
 	{
 		friend class AGuiOf<GuiOfCoreEngine>;
-	public:
-		bool bAppState = false;
 	private:
 		GuiOfCoreEngine();
 		~GuiOfCoreEngine();
 	public:
 		virtual void OnDraw() override;
-	private:
-		// --core_engine
-		CoreState* pCoreState = nullptr;
 	};
-	/// GuiOfGEngine struct
-	struct NW_API GuiOfGEngine : public AGuiOf<GuiOfGEngine>
+	/// GuiOfGraphEngine struct
+	struct NW_API GuiOfGraphEngine : public AGuiOf<GuiOfGraphEngine>
 	{
-		friend class AGuiOf<GuiOfGEngine>;
+		friend class AGuiOf<GuiOfGraphEngine>;
 	private:
-		GuiOfGEngine();
-		~GuiOfGEngine();
-	private:
-		bool bWindow = false, bLayers = false, bFrameBufs = false;
-		AWindow* pWindow = nullptr;
-		FrameBuf* pFrameBuf = nullptr;
-		float nLineW = 0.01f, nPixelSz = 0.01f, nWndOpacity = 1.0f;
-		Char strLayerName[256] = "del_default";
-		Char strWindowTitle[256] = "nw_engine";
+		GuiOfGraphEngine();
+		~GuiOfGraphEngine();
 	public:
 		virtual void OnDraw() override;
+	private:
 	};
 	/// GuiOfCmdEngine struct
 	struct NW_API GuiOfCmdEngine : public AGuiOf<GuiOfCmdEngine>
@@ -69,16 +58,6 @@ namespace NWG
 	private:
 		GuiOfCmdEngine();
 		~GuiOfCmdEngine();
-	private:
-		enum CmdModes : UInt8 {
-			CMD_NONE = 0,
-			CMD_NATIVE = 1,
-			CMD_LUA = 2,
-		};
-	private:
-		CmdModes CmdMode = CMD_NONE;
-		DArray<String> strCmdBuf;
-		DArray<Char> chrCmdBuf;
 	public:
 		virtual void OnDraw() override;
 	};
@@ -95,17 +74,10 @@ namespace NWG
 	public:
 		virtual void OnDraw() override;
 	private:
-	// --data_system
+		// --data_system
 		Char strDir[256]{ 0 };
 		Char strCurrDir[256]{ 0 };
-	// --time system
-	};
-	struct NW_API GuiOfMemSys : public AGuiOf<GuiOfMemSys>
-	{
-	public:
-		virtual void OnDraw() override;
-	private:
-		Size szOffset = 0;
+		// --time system
 	};
 }
 namespace NWG
@@ -122,7 +94,7 @@ namespace NWG
 	public:
 		// --setters
 		void SetContext(ACodeRes* pContext);
-		
+
 		// --core_methods
 		virtual void OnDraw() override;
 	};
@@ -165,45 +137,5 @@ namespace NWG
 		ImageInfo ImgInfo;
 		TextureInfo TexInfo;
 	};
-#if false
-	/// GuiOfEntityEditor struct
-	struct NW_API GuiOfEntityEditor : public AGuiOf<GuiOfEntityEditor>
-	{
-		using CmpCallback = std::function<void(AEntityCmp*)>;
-	private:
-		template <typename CBType> inline void OnDraw(AEntityCmp* pACmp, CBType& fnCallback);
-		template <class CmpType> inline void OnDraw(CmpType* pCmp);
-	public:
-		// --setters
-		void SetContext(AEntity* pContext);
-		// --core_methods
-		virtual void OnDraw() override;
-	private:
-		AEntity* pContext = nullptr;
-	};
-	/// GuiOfSceneEditor struct
-	struct NW_API GuiOfSceneEditor : public AGuiOf<GuiOfSceneEditor>
-	{
-		using Ents = HashMap<UInt32, AEntity>;
-		using RefEnts = HashMap<UInt32, AEntity*>;
-		friend class AGuiOf<GuiOfSceneEditor>;
-	public:
-		bool bIsEnabled = false;
-	private:
-		GuiOfSceneEditor();
-	public:
-		// --core_methods
-		virtual void OnDraw() override;
-	private:
-		inline void OnDraw(AEntity* pEnt);
-		inline void OnDraw(Ents& rEnts);
-		inline void OnDraw(RefEnts& rRefEnts);
-		inline void OnDraw(GCamera* pGCamera);
-	private:
-		ATexture2d* pIcoCamera = nullptr;
-		AEntity* pDestroyEnt = nullptr;
-	};
-#endif
 }
-
-#endif	// NW_GUI_OF_H
+#endif	// NWG_GUI_OF_H

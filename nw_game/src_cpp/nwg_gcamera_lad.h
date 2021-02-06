@@ -29,19 +29,19 @@ namespace NWG
 		~GCameraLad();
 		// --getters
 		static inline GCameraLad& Get() { static GCameraLad s_Lad; return s_Lad; }
-		inline GCamera* GetGCamera() { return &m_GCamera; }
+		inline GCamera* GetGCamera() { return &m_gCamera; }
 		// --setters
 		// --core_methods
-		inline void UpdateCamera() { UpdateCamera(&m_GCamera); }
-		void UpdateCamera(GCamera* pGCamera);
-		void OnEvent(MouseEvent& rmEvt, GCamera* pGCamera);
-		void OnEvent(KeyboardEvent& rkEvt, GCamera* pGCamera);
-		void OnEvent(WindowEvent& rwEvt, GCamera* pGCamera);
-		inline void OnEvent(MouseEvent& rmEvt) { OnEvent(rmEvt, &m_GCamera); }
-		inline void OnEvent(KeyboardEvent& rkEvt) { OnEvent(rkEvt, &m_GCamera); }
-		inline void OnEvent(WindowEvent& rwEvt) { OnEvent(rwEvt, &m_GCamera); }
+		inline void UpdateCamera() { UpdateCamera(&m_gCamera); }
+		void UpdateCamera(GCamera* pCamera);
+		void OnEvent(MouseEvent& rmEvt, GCamera* pCamera);
+		void OnEvent(KeyboardEvent& rkEvt, GCamera* pCamera);
+		void OnEvent(WindowEvent& rwEvt, GCamera* pCamera);
+		inline void OnEvent(MouseEvent& rmEvt) { OnEvent(rmEvt, &m_gCamera); }
+		inline void OnEvent(KeyboardEvent& rkEvt) { OnEvent(rkEvt, &m_gCamera); }
+		inline void OnEvent(WindowEvent& rwEvt) { OnEvent(rwEvt, &m_gCamera); }
 	private:
-		GCamera m_GCamera;
+		GCamera m_gCamera;
 	};
 }
 
