@@ -29,30 +29,32 @@ namespace NW
 		inline void RemoveType(UInt8 unCount) { while (unCount > 0 && unLevel > 0) { unCount--; unLevel--; StackTypes[unLevel] = LT_NON; } }
 		inline void Reset() { RemoveType(unLevel); }
 		// -- Operators
-		inline OutStream& operator<<(OutStream& rOStream) const {
-			rOStream << std::endl << "LuaEngineInfo::" << std::endl <<
+		inline OStream& operator<<(OStream& rStream) const {
+			rStream << "--==LuaEngineInfo==--" << std::endl <<
 				"The top of the stack:" << std::endl;
 			for (UInt8 ti = 0; ti < StackTypes.GetSize(); ti++) {
-				rOStream << static_cast<Int16>(ti + 1) << "th type: ";
+				rStream << static_cast<Int16>(ti + 1) << "th type: ";
 				switch (StackTypes[ti]) {
-				case LT_NON:			rOStream << ("none");				break;
-				case LT_NIL:			rOStream << ("nil");				break;
-				case LT_LUD:			rOStream << ("light user data");	break;
-				case LT_BOL:			rOStream << ("boolean");			break;
-				case LT_NUM:			rOStream << ("number");				break;
-				case LT_STR:			rOStream << ("string");				break;
-				case LT_FNC:			rOStream << ("function");			break;
-				case LT_TAB:			rOStream << ("table");				break;
-				case LT_USD:				rOStream << ("user data");			break;
-				case LT_THR:			rOStream << ("thread");				break;
-				case LT_UPV:			rOStream << ("up value");			break;
+				case LT_NON:			rStream << ("none");				break;
+				case LT_NIL:			rStream << ("nil");					break;
+				case LT_LUD:			rStream << ("light user data");		break;
+				case LT_BOL:			rStream << ("boolean");				break;
+				case LT_NUM:			rStream << ("number");				break;
+				case LT_STR:			rStream << ("string");				break;
+				case LT_FNC:			rStream << ("function");			break;
+				case LT_TAB:			rStream << ("table");				break;
+				case LT_USD:			rStream << ("user data");			break;
+				case LT_THR:			rStream << ("thread");				break;
+				case LT_UPV:			rStream << ("up value");			break;
 				}
-			rOStream << std::endl;
+				std::cout << std::endl;
 			}
-			rOStream << "The bottom of the stack" << std::endl;
-			return rOStream;
+			rStream << "The bottom of the stack" << std::endl;
+			rStream << "--==/LuaEngineInfo==--" << std::endl;
+			return rStream;
 		}
 	};
+	inline OStream& operator<<(OStream& rStream, LuaEngineInfo& rInfo) { return rInfo.operator<<(rStream); }
 	/// LuaRegistrableFunction struct
 	/// Description:
 	/// -- This is a handler of lua for a function

@@ -4,7 +4,6 @@
 #include <core/nw_window.h>
 
 #include <sys/nw_io_sys.h>
-#include <sys/nw_log_sys.h>
 #include <sys/nw_data_sys.h>
 
 #include <glib_engine.h>
@@ -15,7 +14,7 @@ namespace NW
 	CoreEngine::CoreEngine() :
 		AEngine(),
 		m_strName("nw_engine"),
-		m_pWindow(RefKeeper<AWindow>()) { }
+		m_pWindow(RefKeeper<AppWindow>()) { }
 	CoreEngine::~CoreEngine() { }
 
 	// --==<core_methods>==--
@@ -42,11 +41,11 @@ namespace NW
 		if (m_bIsRunning) { return false; }
 		m_Memory = MemArena(new Byte[1 << 18], 1 << 18);
 	#if (defined NW_WINDOW)
-		WindowInfo wInfo{ &m_strName[0], 1200, 1200 / 4 * 3, true, nullptr };
+		WindowInfo wInfo{ &m_strName[0], 1200, 800, true, nullptr };
 		#if (NW_WINDOW_GLFW & NW_WINDOW_GLFW)
 		wInfo.wapiType = WAPI_GLFW;
 		#endif
-		AWindow::Create(wInfo, m_pWindow);
+		AppWindow::Create(wInfo, m_pWindow);
 		if (!m_pWindow->Init()) { m_pWindow->OnQuit(); return false; }
 	#endif	// NW_WINDOW
 		m_pWindow->SetEventCallback([this](AEvent& rEvt)->void { return OnEvent(rEvt); });
@@ -113,8 +112,7 @@ namespace NW
 				IOSys::s_Mouse.bsButtons[pmEvt->nButton].bNew = true;
 			break;
 			}
-			if (rEvt.bIsHandled) return;
-			for (auto& itState : m_States) { itState->OnEvent(*pmEvt); }
+			for (auto& itState : m_States) { if (rEvt.bIsHandled) return; itState->OnEvent(*pmEvt); }
 		}
 		else if (rEvt.IsInCategory(EC_KEYBOARD)) {
 			KeyboardEvent* pkEvt = static_cast<KeyboardEvent*>(&rEvt);
@@ -134,14 +132,14 @@ namespace NW
 			case ET_KEY_PRESS:
 				IOSys::s_Keyboard.bsKeys[pkEvt->unKeyCode].bNew = true;
 				switch (pkEvt->unKeyCode) {
+				case NW_KEY_ESCAPE_27:
 				default: break;
 				}
 				break;
 			case ET_KEY_CHAR:
 				break;
-				if (rEvt.bIsHandled) { return; }
-				for (auto& itState : m_States) { itState->OnEvent(*pkEvt); }
 			}
+			for (auto& itState : m_States) { if (rEvt.bIsHandled) { return; } itState->OnEvent(*pkEvt); }
 		}
 		else if (rEvt.IsInCategory(EC_WINDOW)) {
 			WindowEvent* pwEvt = static_cast<WindowEvent*>(&rEvt);
@@ -157,8 +155,7 @@ namespace NW
 				rEvt.bIsHandled = true;
 				break;
 			}
-			if (rEvt.bIsHandled) { return; }
-			for (auto& itState : m_States) { itState->OnEvent(*pwEvt); }
+			for (auto& itState : m_States) { if (rEvt.bIsHandled) { return; } itState->OnEvent(*pwEvt); }
 		}
 		GLIB::GraphEngine::Get().OnEvent(rEvt);
 	}

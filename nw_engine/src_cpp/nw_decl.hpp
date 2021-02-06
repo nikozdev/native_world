@@ -7,14 +7,14 @@ namespace NW
 {
 	// --==<global>==--
 	class NW_API CoreEngine;
-	class NW_API AWindow;
+	class NW_API AppWindow;
 	// --systems
 	class NW_API IOSys;
 	class NW_API DataSys;
-	// --objects
-	
+	// --==</global>==--
+
 	// --==<enums>==--
-		/// window_api_types
+	/// window_api_types
 	enum WApiTypes : UInt32 {
 		WAPI_NONE = 0,
 		WAPI_GLFW = NW_WINDOW_GLFW

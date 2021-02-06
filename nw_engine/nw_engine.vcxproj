@@ -110,9 +110,7 @@
     <ClInclude Include="src_cpp\nw_def.hpp" />
     <ClInclude Include="src_cpp\nw_pch.hpp" />
     <ClInclude Include="src_cpp\sys\nw_data_sys.h" />
-    <ClInclude Include="src_cpp\sys\nw_ent_sys.h" />
     <ClInclude Include="src_cpp\sys\nw_io_sys.h" />
-    <ClInclude Include="src_cpp\sys\nw_log_sys.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src_cpp\core\nw_core_engine.cpp" />
@@ -124,9 +122,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src_cpp\sys\nw_data_sys.cpp" />
-    <ClCompile Include="src_cpp\sys\nw_ent_sys.cpp" />
     <ClCompile Include="src_cpp\sys\nw_io_sys.cpp" />
-    <ClCompile Include="src_cpp\sys\nw_log_sys.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\nw_library\nw_lib.vcxproj">

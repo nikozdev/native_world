@@ -95,13 +95,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src_cpp\nwg_core_states.h" />
+    <ClInclude Include="src_cpp\nwg_engine_states.h" />
     <ClInclude Include="src_cpp\nwg_gcamera_lad.h" />
     <ClInclude Include="src_cpp\nwg_gui_of.h" />
     <ClInclude Include="src_cpp\nwg_pch.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src_cpp\nwg_core_states.cpp" />
+    <ClCompile Include="src_cpp\nwg_engine_states.cpp" />
     <ClCompile Include="src_cpp\nwg_entry.cpp" />
     <ClCompile Include="src_cpp\nwg_gcamera_lad.cpp" />
     <ClCompile Include="src_cpp\nwg_gui_of.cpp" />

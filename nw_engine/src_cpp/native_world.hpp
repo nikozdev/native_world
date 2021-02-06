@@ -6,7 +6,6 @@
 #include <core/nw_core_engine.h>
 #include <core/nw_window.h>
 #include <sys/nw_io_sys.h>
-#include <sys/nw_log_sys.h>
 #include <sys/nw_data_sys.h>
 // --==</global>==--
 

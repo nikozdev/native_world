@@ -42,13 +42,7 @@
     <ClInclude Include="src_cpp\sys\nw_data_sys.h">
       <Filter>sys</Filter>
     </ClInclude>
-    <ClInclude Include="src_cpp\sys\nw_ent_sys.h">
-      <Filter>sys</Filter>
-    </ClInclude>
     <ClInclude Include="src_cpp\sys\nw_io_sys.h">
-      <Filter>sys</Filter>
-    </ClInclude>
-    <ClInclude Include="src_cpp\sys\nw_log_sys.h">
       <Filter>sys</Filter>
     </ClInclude>
   </ItemGroup>
@@ -72,13 +66,7 @@
     <ClCompile Include="src_cpp\sys\nw_data_sys.cpp">
       <Filter>sys</Filter>
     </ClCompile>
-    <ClCompile Include="src_cpp\sys\nw_ent_sys.cpp">
-      <Filter>sys</Filter>
-    </ClCompile>
     <ClCompile Include="src_cpp\sys\nw_io_sys.cpp">
-      <Filter>sys</Filter>
-    </ClCompile>
-    <ClCompile Include="src_cpp\sys\nw_log_sys.cpp">
       <Filter>sys</Filter>
     </ClCompile>
   </ItemGroup>

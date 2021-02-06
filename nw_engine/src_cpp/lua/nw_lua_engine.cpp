@@ -2,7 +2,8 @@
 #include "nw_lua_engine.h"
 
 #include <sys/nw_data_sys.h>
-#include <sys/nw_log_sys.h>
+
+#include <nwlib/nwl_log.h>
 
 #include <lua.hpp>
 #include <lstate.h>
