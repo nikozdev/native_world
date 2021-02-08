@@ -1,0 +1,3 @@
+[submodule "nw_lib"]
+	path = nw_lib
+	url = https://github.com/Natlys/nw_lib
