@@ -1,9 +1,9 @@
-#ifndef GFX_TOOLS_H
-#define GFX_TOOLS_H
+#ifndef NW_GFX_TOOLS_H
+#define NW_GFX_TOOLS_H
 
 #include <gfx_core.hpp>
 
-#if (defined GFX_GAPI)
+#if (defined NW_GAPI)
 // Functions
 namespace NW
 {
@@ -14,7 +14,7 @@ namespace NW
 		case SDT_INT16:	case SDT_UINT16:	case SDT_SAMPLER:	szData = 4;	break;
 		case SDT_INT32:	case SDT_UINT32:	case SDT_FLOAT32:	szData = 4;	break;
 		case SDT_FLOAT64:										szData = 8;	break;
-		default:	NW_ERR("Invalid shader data type");		szData = 0;	break;
+		default:	NWL_ERR("Invalid shader data type");		szData = 0;	break;
 		}
 		return szData * unCount;
 	}
@@ -26,7 +26,7 @@ namespace NW
 		case SDT_INT32:	case SDT_UINT32:	case SDT_SAMPLER:	szAll = 4;	break;
 		case SDT_FLOAT32:										szAll = 4;	break;
 		case SDT_FLOAT64:										szAll = 8;	break;
-		default:	NW_ERR("Invalid shader data type");		szAll = 0;	break;
+		default:	NWL_ERR("Invalid shader data type");		szAll = 0;	break;
 		}
 		return szAll * ((unCount + (szAll - 1)) & ~(szAll - 1));
 	}
@@ -44,7 +44,7 @@ namespace NW
 	/// DrawTools struct
 	/// Description:
 	/// -- Check and change renderer attributes for more or less performance/resource usage
-	struct GFX_API DrawTools {
+	struct NW_API DrawTools {
 	public:
 		// --vertex_data
 		UByte* pVtxData = nullptr;
@@ -63,7 +63,7 @@ namespace NW
 		UInt8 unTexCount = 0;
 		// --objects
 		Shader* pShader = nullptr;
-		GMaterial* pgMtl = nullptr;
+		GfxMaterial* pgMtl = nullptr;
 		VertexBuf* pVtxBuf = nullptr;
 		IndexBuf* pIdxBuf = nullptr;
 		ShaderBuf* pShdBuf = nullptr;
@@ -80,21 +80,9 @@ namespace NW
 		}
 	};
 }
-#endif	// GFX_GAPI
-#if (GFX_GAPI & GFX_GAPI_OGL)
-#if (defined GFX_DEBUG)
-#if (GFX_GAPI & GFX_GAPI_OGL)
-// --opengl_debug
-	#define OGL_CALL(function) OglClearErr();\
-		function;\
-		NW_ASSERT(OglErrLog(#function, NW_FNAME_APATH((std::string)__FILE__), __LINE__), "GL_ERROR: ")
-	#define OGL_SHADER_ERR_LOG(errType, objectID) (OglErrLogShader(errType, objectID))
-	#define OGL_SHADER_ERR_LOG(errType, objectID) (OglErrLogShader(errType, objectID))
-#endif // GFX_GAPI
-#else
-#define OGL_CALL(function);
-#endif // GFX_DEBUG
-// Functions
+#endif	// NW_GAPI
+#if (NW_GAPI & NW_GAPI_OGL)
+// --functions
 namespace NW
 {
 	// Debug
@@ -105,5 +93,16 @@ namespace NW
 	/// Get compile and linking status return true if there are errors
 	extern int OglErrLogShader(ShaderTypes ShaderType, UInt32 unShaderId);
 }
-#endif // GFX_GAPI
-#endif // GFX_TOOLS_H
+	#if (defined NW_DEBUG)
+		#if (NW_GAPI & NW_GAPI_OGL)
+			#define OGL_CALL(function) OglClearErr();\
+				function;\
+				NWL_ASSERT(OglErrLog(#function, NWL_FNAME_APATH((std::string)__FILE__), __LINE__), "GL_ERROR: ")
+			#define NWL_OGL_SHADER_ERR_LOG(errType, objectID) (OglErrLogShader(errType, objectID))
+			#define NWL_OGL_SHADER_ERR_LOG(errType, objectID) (OglErrLogShader(errType, objectID))
+		#endif // NW_GAPI
+	#else
+		#define OGL_CALL(function);
+#endif
+#endif	// NW_GAPI
+#endif	// NW_GFX_TOOLS_H

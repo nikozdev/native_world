@@ -1,23 +1,17 @@
-#ifndef NWG_PCH_H
-#define NWG_PCH_H
-/// PreCompiledHeader
-/// This file contains the most usable include files
-/// cn_pch.cpp file gets it and generates .pch file in the intermediate files
-/// .pch header isn't essentially compiles every time we want to run the app
-/// .pch header includes in every cpp file of project
+#ifndef NWG_PCH_HPP
+#define NWG_PCH_HPP
 
-#include <native_world.hpp>
+#include <native_engine.hpp>
 using namespace NW;
 #include <native_console.hpp>
-using namespace CMD;
-#include <graphics_library.hpp>
-using namespace GLIB;
+using namespace NWC;
 
+#include <../ext/glad/glad.h>
+#include <glfw/glfw3.h>
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <examples/imgui_impl_opengl3.h>
 #include <examples/imgui_impl_glfw.h>
-#include <glfw/glfw3.h>
 #define GUI_DEFAULT_TREE_FLAGS ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick
 
-#endif	// NWG_PCH
+#endif	// NWG_PCH_HPP

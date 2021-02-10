@@ -1,26 +1,26 @@
-#ifndef GFX_GMATERIAL_H
-#define GFX_GMATERIAL_H
+#ifndef NW_GFX_MATERIAL_H
+#define NW_GFX_MATERIAL_H
 
-#include <gfx_tools.h>
+#include <gfx/gfx_tools.h>
 #include <gfx_core.hpp>
 
 namespace NW
 {
-#if (defined GFX_GAPI)
+#if (defined NW_GAPI)
 	/// GraphicsMaterial Class
 	/// Description:
 	/// -- This is a wrapper for shader which sets up uniforms
 	/// -- Graphics material is responsible for colors and maps settings
 	/// -- There are also few attributes it needs to set,
 	/// but generally this is concerned about drawable object properties
-	class GFX_API GMaterial : public TDataRes<GMaterial>
+	class NW_API GfxMaterial : public TDataRes<GfxMaterial>
 	{
 	public:
 		using Textures = HashMap<String, Texture*>;
 		using Colors = HashMap<String, V4f>;
 	public:
-		GMaterial(const char* strName);
-		virtual ~GMaterial();
+		GfxMaterial(const char* strName);
+		virtual ~GfxMaterial();
 
 		// --getters
 		inline Shader* GetShader() { return m_pShader; }
@@ -44,9 +44,6 @@ namespace NW
 		// --core_methods
 		void Enable();
 		void Disable();
-
-		static GMaterial* Create(const char* strName);
-		static void Create(const char* strName, RefKeeper<GMaterial>& rgMtl);
 		// --data_methods
 		virtual bool SaveF(const char* strFPath) override;
 		virtual bool LoadF(const char* strFPath) override;
@@ -59,4 +56,4 @@ namespace NW
 #endif
 }
 
-#endif // GFX_AGMATERIAL_H
+#endif // NW_GFX_MATERIAL_H

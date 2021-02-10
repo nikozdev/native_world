@@ -1,33 +1,8 @@
 #ifndef NWG_ENGINE_STATES_H
 #define NWG_ENGINE_STATES_H
 
-#include <nwlib/nwl_engine.h>
 #include <nwg_pch.hpp>
 
-namespace NWG
-{
-	/// GraphState class
-	class GraphState : public NWL::AEngineState
-	{
-	public:
-		GraphState();
-		~GraphState();
-		// --core_methods
-		virtual bool Init() override;
-		virtual void OnQuit() override;
-		virtual void Update() override;
-		virtual void OnEvent(MouseEvent& rmEvt) override;
-		virtual void OnEvent(KeyboardEvent& rkEvt) override;
-		virtual void OnEvent(WindowEvent& rwEvt) override;
-	private:
-		inline void DrawScene();
-	private:
-		GraphEngine& m_rGraph;
-
-		GCamera m_gCamera;
-		RefKeeper<ShaderBuf> m_pShdBuf;
-	};
-}
 namespace NWG
 {
 	/// GamerState class

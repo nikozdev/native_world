@@ -1,7 +1,8 @@
-#ifndef LUA_ENGINE_H
-#define LUA_ENGINE_H
+#ifndef NW_LUA_ENGINE_H
+#define NW_LUA_ENGINE_H
 
-#include <lua/nw_lua_core.h>
+#include <lua_core.hpp>
+#include <lua/lua_tools.h>
 
 namespace NW
 {
@@ -76,4 +77,4 @@ namespace NW
 	};
 }
 
-#endif	//LUA_ENGINE_H
+#endif	// NW_LUA_ENGINE_H

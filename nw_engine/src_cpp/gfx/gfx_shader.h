@@ -1,15 +1,16 @@
-#ifndef GFX_SHADER_H
-#define GFX_SHADER_H
+#ifndef NW_GFX_SHADER_H
+#define NW_GFX_SHADER_H
 
-#include <gfx_tools.h>
-#include <gfx_buffer.h>
+#include <gfx/gfx_tools.h>
+#include <gfx/gfx_buffer.h>
 #include <gfx_core.hpp>
 
-#if (defined GFX_GAPI)
+#if (defined NW_GAPI)
+#if (NW_GAPI & NW_GAPI_OGL)
 namespace NW
 {
 	/// SubShader Class
-	class GFX_API SubShader : public TDataRes<SubShader>, public ACodeRes
+	class NW_API SubShader : public ACodeRes
 	{
 	public:
 		friend class Shader;
@@ -29,9 +30,6 @@ namespace NW
 		// --data_methods
 		virtual bool SaveF(const char* strFPath) override;
 		virtual bool LoadF(const char* strFPath) override;
-		
-		static SubShader* Create(const char* strName, ShaderTypes sdType);
-		static void Create(const char* strName, ShaderTypes sdType, RefKeeper<SubShader>& rsubShader);
 	private:
 		inline bool CodeProc();
 	private:
@@ -40,7 +38,7 @@ namespace NW
 		Shader* m_pOverShader;
 	};
 	/// Shader Class
-	class GFX_API Shader : public TDataRes<Shader>, public ACodeRes
+	class NW_API Shader : public ACodeRes
 	{
 	public:
 		using Globals = HashMap<String, Int32>;
@@ -68,9 +66,6 @@ namespace NW
 		// --data_methods
 		virtual bool SaveF(const char* strFPath) override;
 		virtual bool LoadF(const char* strFPath) override;
-
-		static Shader* Create(const char* strName);
-		static void Create(const char* strName, RefKeeper<Shader>& rShader);
 		// --code_setters
 		void SetBool(const char* strName, bool value) const;
 		void SetInt(const char* strName, int value) const;
@@ -96,9 +91,10 @@ namespace NW
 		DArray<RefKeeper<SubShader>> m_SubShaders;
 	};
 	inline const SubShader* Shader::GetSubShader(ShaderTypes sdType) {
-		auto itSub = NW_FIND_BY_FUNC(m_SubShaders, RefKeeper<SubShader>&, sdType, ->GetType);
+		auto itSub = NWL_FIND_BY_FUNC(m_SubShaders, RefKeeper<SubShader>&, sdType, ->GetType);
 		return itSub == m_SubShaders.end() ? nullptr : itSub->GetRef();
 	}
 }
-#endif	// GFX_GAPI
-#endif // GFX_SHADER_H
+#endif
+#endif	// NW_GAPI
+#endif // NW_GFX_SHADER_H

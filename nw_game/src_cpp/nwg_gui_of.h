@@ -4,7 +4,6 @@
 #include <nwg_pch.hpp>
 
 using namespace NW;
-using namespace GLIB;
 
 namespace NWG
 {
@@ -87,32 +86,32 @@ namespace NWG
 	{
 		friend class AGuiOf<GuiOfCodeEditor>;
 	private:
-		Shader* pContextShd = nullptr;
+		RefKeeper<ACodeRes> pContext;
 		DArray<char> strCodeBuf;
 	private:
 		GuiOfCodeEditor();
 	public:
 		// --setters
-		void SetContext(ACodeRes* pContext);
+		void SetContext(RefKeeper<ACodeRes>& rContext);
 
 		// --core_methods
 		virtual void OnDraw() override;
 	};
 	/// GuiOfSpriteEditor struct
-	struct NW_API GuiOfGMaterialEditor : public AGuiOf<GuiOfGMaterialEditor>
+	struct NW_API GuiOfGfxMaterialEditor : public AGuiOf<GuiOfGfxMaterialEditor>
 	{
-		friend class AGuiOf<GuiOfGMaterialEditor>;
+		friend class AGuiOf<GuiOfGfxMaterialEditor>;
 	private:
-		GuiOfGMaterialEditor();
+		GuiOfGfxMaterialEditor();
 	public:
 		// --getters
 		// --setters
-		void SetContext(GMaterial* pContext);
+		void SetContext(GfxMaterial& rContext);
 
 		// --core_methods
 		virtual void OnDraw() override;
 	private:
-		GMaterial* pContext = nullptr;
+		GfxMaterial* pContext;
 		Char strContextName[128];
 	};
 	/// GuiOfSpriteEditor struct
@@ -124,12 +123,12 @@ namespace NWG
 	public:
 		// --getters
 		// --setters
-		void SetContext(Texture* pContext);
+		void SetContext(Texture& rContext);
 
 		// --core_methods
 		virtual void OnDraw() override;
 	private:
-		Texture* pContext = nullptr;
+		Texture* pContext;
 		Char strContextName[128];
 
 		float nAspectRatio = 1.0f;

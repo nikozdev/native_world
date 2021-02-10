@@ -1,7 +1,7 @@
 rem generate the project
 @echo off
 
-set premake_exe="ext\bin\premake\premake5.exe"
+set premake_exe="ext\premake\premake5.exe"
 set config_file="premake5.lua"
 set environment="vs2019"
 

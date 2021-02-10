@@ -1,16 +1,16 @@
-#include <gfx_pch.hpp>
-#include "gfx_shader.h"
+#include <nw_pch.hpp>
+#include "gfx/gfx_shader.h"
 
-#if (defined GFX_GAPI)
-#include <gfx_engine.h>
-#include <gfx_buffer.h>
-#include <gfx_loader.h>
-#endif	// GFX_GAPI
-#if (GFX_GAPI & GFX_GAPI_OGL)
+#if (defined NW_GAPI)
+#include <gfx/gfx_api.h>
+#include <gfx/gfx_buffer.h>
+#include <gfx/gfx_loader.h>
+#endif	// NW_GAPI
+#if (NW_GAPI & NW_GAPI_OGL)
 namespace NW
 {
 	SubShader::SubShader(const char* strName, ShaderTypes sdType) :
-		TDataRes(strName), ACodeRes(),
+		ACodeRes(strName),
 		m_shdType(sdType), m_unRId(0), m_pOverShader(nullptr) { Remake(); }
 	SubShader::~SubShader() { Remake(); }
 
@@ -41,11 +41,6 @@ namespace NW
 		if (m_unRId != 0) { glDeleteShader(m_unRId); m_unRId = 0; }
 		m_unRId = glCreateShader(m_shdType);
 		m_strCode = "";
-	}
-
-	SubShader* SubShader::Create(const char* strName, ShaderTypes sdType) { return GfxEngine::Get().NewT<SubShader>(strName, sdType); }
-	void SubShader::Create(const char* strName, ShaderTypes sdType, RefKeeper<SubShader>& rsubShader) {
-		rsubShader.MakeRef<SubShader>(GfxEngine::Get().GetMemory(), strName, sdType);
 	}
 	// --==</core_methods>==--
 
@@ -164,7 +159,7 @@ namespace NW
 namespace NW
 {
 	Shader::Shader(const char* strName) :
-		TDataRes(strName), ACodeRes(),
+		ACodeRes(strName),
 		m_unRId(0), m_bIsEnabled(false) { Remake(); }
 	Shader::~Shader() { Remake(); }
 
@@ -217,8 +212,6 @@ namespace NW
 		m_vtxLayout.Reset();
 		m_shdLayout.Reset();
 	}
-	Shader* Shader::Create(const char* strName) { return GfxEngine::Get().NewT<Shader>(strName); }
-	void Shader::Create(const char* strName, RefKeeper<Shader>& rShader) { rShader.MakeRef<Shader>(GfxEngine::Get().GetMemory(), strName); }
 	// --==</core_methods>==--
 
 	// --==<data_methods>==--
@@ -269,12 +262,11 @@ namespace NW
 				}
 			}
 
-			RefKeeper<SubShader> pSubShader;
-			if (strToken == "vertex") { SubShader::Create(&(m_strName + "_" + strToken)[0], ST_VERTEX, pSubShader); }
-			else if (strToken == "geometry") { SubShader::Create(&(m_strName + "_" + strToken)[0], ST_GEOMETRY, pSubShader); }
-			else if (strToken == "pixel") { SubShader::Create(&(m_strName + "_" + strToken)[0], ST_PIXEL, pSubShader); }
+			m_SubShaders.push_back(RefKeeper<SubShader>());
+			if (strToken == "vertex") { m_SubShaders.back().MakeRef<SubShader>(&(m_strName + "_" + strToken)[0], ST_VERTEX); }
+			else if (strToken == "geometry") { m_SubShaders.back().MakeRef<SubShader>(&(m_strName + "_" + strToken)[0], ST_GEOMETRY); }
+			else if (strToken == "pixel") { m_SubShaders.back().MakeRef<SubShader>(&(m_strName + "_" + strToken)[0], ST_PIXEL); }
 			else { continue; }
-			m_SubShaders.push_back(pSubShader);
 
 			auto& rSub = m_SubShaders.back();
 			rSub->SetCode(&strCodeStream.str()[0]);
@@ -299,9 +291,9 @@ namespace NW
 	}
 	// --==</implementation_methods>==--
 }
-#endif // GFX_GAPI
+#endif // NW_GAPI
 
-#if (GFX_GAPI & GFX_GAPI_DX)
+#if (NW_GAPI & NW_GAPI_DX)
 namespace NW
 {
 	SubShader::SubShader(const char* strName, ShaderTypes sdType) :
@@ -337,9 +329,9 @@ namespace NW
 		m_strCode = "";
 	}
 
-	SubShader* SubShader::Create(const char* strName, ShaderTypes sdType) { return GfxEngine::Get().NewT<SubShader>(strName, sdType); }
+	SubShader* SubShader::Create(const char* strName, ShaderTypes sdType) { return GfxApi::Get().NewT<SubShader>(strName, sdType); }
 	void SubShader::Create(const char* strName, ShaderTypes sdType, RefKeeper<SubShader>& rsubShader) {
-		rsubShader.MakeRef<SubShader>(GfxEngine::Get().GetMemory(), strName, sdType);
+		rsubShader.MakeRef<SubShader>(strName, sdType);
 	}
 	// --==</core_methods>==--
 
@@ -361,7 +353,7 @@ namespace NW
 namespace NW
 {
 	Shader::Shader(const char* strName) :
-		TDataRes(strName), ACodeRes(),
+		ACodeRes(strName), ACodeRes(),
 		m_unRId(0), m_bIsEnabled(false) {
 		Remake();
 	}
@@ -412,8 +404,8 @@ namespace NW
 		m_vtxLayout.Reset();
 		m_shdLayout.Reset();
 	}
-	Shader* Shader::Create(const char* strName) { return GfxEngine::Get().NewT<Shader>(strName); }
-	void Shader::Create(const char* strName, RefKeeper<Shader>& rShader) { rShader.MakeRef<Shader>(GfxEngine::Get().GetMemory(), strName); }
+	Shader* Shader::Create(const char* strName) { return GfxApi::Get().NewT<Shader>(strName); }
+	void Shader::Create(const char* strName, RefKeeper<Shader>& rShader) { rShader.MakeRef<Shader>(strName); }
 	// --==</core_methods>==--
 
 	// --==<data_methods>==--
@@ -494,4 +486,4 @@ namespace NW
 	}
 	// --==</implementation_methods>==--
 }
-#endif // GFX_GAPI
+#endif // NW_GAPI

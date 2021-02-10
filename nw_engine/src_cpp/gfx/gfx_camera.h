@@ -1,15 +1,15 @@
-#ifndef GFX_GCAMERA_H
-#define GFX_GCAMERA_H
+#ifndef NW_GFX_GCAMERA_H
+#define NW_GFX_GCAMERA_H
 
 #include <gfx_core.hpp>
 
 namespace NW
 {
-	enum GCameraTypes {
+	enum GfxCameraTypes {
 		GCT_ORTHO = 0,
 		GCT_PERSPECT = 1
 	};
-	enum GCameraModes {
+	enum GfxCameraModes {
 		GCM_2D = 2,
 		GCM_3D = 3
 	};
@@ -21,7 +21,7 @@ namespace NW
 	/// -> Config Frustrum, tarGet, 
 	/// -> Set coordinates and rotation
 	/// -> Get transform matricies: proj and view
-	struct GFX_API GCamera
+	struct NW_API GfxCamera
 	{
 	public:
 		union {
@@ -53,16 +53,16 @@ namespace NW
 			dirFront = V3f{ 0.0f, 0.0f, 1.0f },
 			dirWorldUp = V3f{ 0.0f, 1.0f, 0.0f };
 	public:
-		GCamera();
-		~GCamera() = default;
+		GfxCamera();
+		~GfxCamera() = default;
 
 		// --getters
 		const Mat4f& GetViewMatrix();
 		const Mat4f& GetProjMatrix();
-		inline const GCameraTypes& GetType() const { return m_gcType; }
-		inline const GCameraModes& GetMode() const { return m_gcMode; }
+		inline const GfxCameraTypes& GetType() const { return m_gcType; }
+		inline const GfxCameraModes& GetMode() const { return m_gcMode; }
 		// --setters
-		inline void SetType(GCameraTypes gcType) {
+		inline void SetType(GfxCameraTypes gcType) {
 			m_gcType = gcType;
 			if (m_gcType == GCT_ORTHO) {
 				nNearClip = -100.0f;
@@ -73,7 +73,7 @@ namespace NW
 				nFarClip = 1000.0f;
 			}
 		}
-		inline void SetMode(GCameraModes gcMode) {
+		inline void SetMode(GfxCameraModes gcMode) {
 			m_gcMode = gcMode;
 			if (m_gcMode == GCM_2D) {
 				zCrd = 1.0f;
@@ -84,8 +84,8 @@ namespace NW
 	private:
 		Mat4f m_m4View, m_m4Proj;
 
-		GCameraTypes m_gcType;
-		GCameraModes m_gcMode;
+		GfxCameraTypes m_gcType;
+		GfxCameraModes m_gcMode;
 	};
 }
-#endif // GFX_GCAMERA_H
+#endif // NW_GFX_GCAMERA_H

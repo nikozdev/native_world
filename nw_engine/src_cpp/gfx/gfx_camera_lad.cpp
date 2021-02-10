@@ -1,17 +1,17 @@
-#include <gfx_pch.hpp>
-#include "gfx_camera_lad.h"
+#include <nw_pch.hpp>
+#include "gfx/gfx_camera_lad.h"
 
 namespace NW
 {
-	GCameraLad::GCameraLad() :
+	GfxCameraLad::GfxCameraLad() :
 		nZoomSpeed(1000.0f),
 		nMoveSpeed(2.0f),
 		nRtnSpeed(200.0f),
 		whBounds{ 800.0f, 600.0f } { }
-	GCameraLad::~GCameraLad() = default;
+	GfxCameraLad::~GfxCameraLad() = default;
 
 	// --==<core_methods>==--
-	void GCameraLad::UpdateCamera(GCamera& rCamera)
+	void GfxCameraLad::UpdateCamera(GfxCamera& rCamera)
 	{
 		rCamera.nAspectRatio = whBounds.x / whBounds.y;
 		if (!(IOSys::GetMouseIMode() & IM_CURSOR_DISABLED)) { return; }
@@ -55,7 +55,7 @@ namespace NW
 	// --==</core_methods>==--
 
 	// --==<--on_event_methods>==--
-	void GCameraLad::OnEvent(MouseEvent& rmEvt, GCamera& rCamera)
+	void GfxCameraLad::OnEvent(MouseEvent& rmEvt, GfxCamera& rCamera)
 	{
 		if (!(IOSys::GetMouseIMode() & IM_CURSOR_DISABLED)) { return; }
 		switch (rmEvt.evType) {
@@ -97,12 +97,12 @@ namespace NW
 			break;
 		}
 	}
-	void GCameraLad::OnEvent(KeyboardEvent& rkEvt, GCamera& rCamera)
+	void GfxCameraLad::OnEvent(KeyboardEvent& rkEvt, GfxCamera& rCamera)
 	{
 		if (!(IOSys::GetMouseIMode() & IM_CURSOR_DISABLED)) { return; }
 		if (IOSys::GetKeyHeld(KC_LCTRL)) {
 			if (IOSys::GetKeyHeld(KC_C)) {
-				if (IOSys::GetKeyHeld(KC_K0)) { rCamera = GCamera(); }
+				if (IOSys::GetKeyHeld(KC_K0)) { rCamera = GfxCamera(); }
 				else if (IOSys::GetKeyHeld(KC_K2)) { rCamera.SetMode(GCM_2D); rCamera.SetType(GCT_ORTHO); }
 				else if (IOSys::GetKeyHeld(KC_K3)) { rCamera.SetMode(GCM_3D); rCamera.SetType(GCT_PERSPECT); }
 			}
@@ -117,7 +117,7 @@ namespace NW
 			break;
 		}
 	}
-	void GCameraLad::OnEvent(WindowEvent& rwEvt, GCamera& rCamera)
+	void GfxCameraLad::OnEvent(WindowEvent& rwEvt, GfxCamera& rCamera)
 	{
 		switch (rwEvt.evType) {
 		case ET_WINDOW_RESIZE:

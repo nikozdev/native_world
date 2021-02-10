@@ -2,128 +2,25 @@
 #include "nwg_engine_states.h"
 
 #include <nwg_gui_of.h>
-#include <nwg_gcamera_lad.h>
 
-#include <glib_component.h>
+#include <gfx/gfx_camera_lad.h>
+#include <gfx/gfx_component.h>
 
 using namespace NWL;
 #pragma warning(disable : 4312)
 
 namespace NWG
 {
-	GraphState::GraphState() :
-		AEngineState("graphics_state"),
-		m_rGraph(GraphEngine::Get()),
-		m_gCamera(GCamera()),
-		m_pShdBuf() {}
-	GraphState::~GraphState() { }
-
-	// --==<core_methods>==--
-	bool GraphState::Init() {
-		ShaderBuf::Create(m_pShdBuf);
-		m_pShdBuf->SetData(1 << 12, nullptr);
-
-		{	// shaders
-			Shader* pShader = nullptr;
-			
-			pShader = Shader::Create("shd_3d_default");
-			if (!pShader->LoadF("D:/dev/native_world/nw_glib/src_glsl/shd_3d_default.glsl")) { return false; }
-
-			pShader = Shader::Create("shd_3d_batch");
-			if (!pShader->LoadF("D:/dev/native_world/nw_glib/src_glsl/shd_3d_batch.glsl")) { return false; }
-			m_pShdBuf->Remake(pShader->GetShdLayout());
-		}
-		{	// textures
-			Texture* pTex = nullptr;
-			pTex = Texture::Create("tex_nw_bat", TXT_2D);
-			pTex->LoadF(R"(D:\dev\native_world\nw_glib\data\ico\nw_bat.png)");
-		}
-		{	// materials
-			GMaterial* pgMtl = GMaterial::Create("gmt_3d_default");
-			pgMtl->SetShader(TDataRes<Shader>::GetDataRes("shd_3d_default"));
-			pgMtl = GMaterial::Create("gmt_3d_batch");
-			pgMtl->SetShader(TDataRes<Shader>::GetDataRes("shd_3d_batch"));
-			pgMtl->SetTexture(TDataRes<Texture>::GetDataRes("tex_nw_bat"), "unf_tex[0]");
-		}
-		{	// framebuffers
-		}
-
-		return true;
-	}
-	void GraphState::OnQuit() {
-		m_pShdBuf.Reset();
-	}
-	void GraphState::Update()
-	{
-		GCameraLad::Get().whBounds.x = GraphEngine::Get().GetFrameBuf()->GetWidth();
-		GCameraLad::Get().whBounds.y = GraphEngine::Get().GetFrameBuf()->GetHeight();
-		GCameraLad::Get().UpdateCamera(&m_gCamera);
-		
-		DrawScene();
-	}
-
-	void GraphState::OnEvent(MouseEvent& rmEvt)
-	{
-		GCameraLad::Get().OnEvent(rmEvt, &m_gCamera);
-	}
-	void GraphState::OnEvent(KeyboardEvent& rkEvt)
-	{
-		GCameraLad::Get().OnEvent(rkEvt, &m_gCamera);
-	}
-	void GraphState::OnEvent(WindowEvent& rwEvt)
-	{
-		GCameraLad::Get().OnEvent(rwEvt, &m_gCamera);
-	}
-	// --==</core_methods>==--
-
-	// --==<implementation_methods>==--
-	inline void GraphState::DrawScene() {
-		{
-			FrameBuf* pfmBuf = GraphEngine::Get().GetFrameBuf();
-			pfmBuf->Bind();
-			pfmBuf->Clear();
-			m_pShdBuf->Bind();
-
-			m_rGraph.SetModes(true, PM_BLEND);
-			//m_rGraph.SetModes(true, PM_DEPTH_TEST);
-			m_rGraph.SetBlendFunc(BC_SRC_ALPHA, BC_ONE_MINUS_SRC_ALPHA);
-
-			Mat4f mat4Proj = m_gCamera.GetProjMatrix();
-			Mat4f mat4View = m_gCamera.GetViewMatrix();
-			m_pShdBuf->SetSubData(sizeof(Mat4f), &(mat4Proj[0][0]), 0 * sizeof(Mat4f));
-			m_pShdBuf->SetSubData(sizeof(Mat4f), &(mat4View[0][0]), 1 * sizeof(Mat4f));
-
-			auto& rg2dCmps = CmpSys::GetCmps<Graphics2dCmp>();
-			for (auto& itCmp : rg2dCmps) {
-				if (TransformCmp* tfCmp = CmpSys::GetCmp<TransformCmp>(itCmp->GetEntId())) {
-					auto vtxData = MakeVtxRect(tfCmp->GetMatrix());
-					BufferData vbData{ &vtxData[0], vtxData.size() * sizeof(Float32), 0 };
-					itCmp->m_drw.UploadVtxData(&vbData);
-				}
-				m_rGraph.OnDraw(itCmp->m_drw);
-			}
-			m_pShdBuf->Unbind();
-			pfmBuf->Unbind();
-		}
-	}
-	// --==</implementation_methods>==--
-}
-namespace NWG
-{
 	GamerState::GamerState() :
-		AEngineState("game_state"),
+		AEngineState("gamer_state"),
 		m_rCore(CoreEngine::Get()) { }
 	GamerState::~GamerState() { }
 
 	// --==<core_methods>==--
 	bool GamerState::Init() {
-		EntSys::OnInit();
-		CmpSys::OnInit();
 		return true;
 	}
 	void GamerState::OnQuit() {
-		EntSys::OnQuit();
-		CmpSys::OnQuit();
 	}
 	void GamerState::Update() {
 	}
@@ -136,8 +33,8 @@ namespace NWG
 			case NW_KEY_N_78:
 				for (UInt32 ei = 0; ei < 100; ei++) {
 					m_eIds.push_back(EntSys::AddEnt());
-					CmpSys::AddCmp<Graphics2dCmp>(m_eIds.back());
-					CmpSys::AddCmp<TransformCmp>(m_eIds.back());
+					CmpSys::AddCmp<Gfx2dCmp>(m_eIds.back());
+					CmpSys::AddCmp<TFormCmp>(m_eIds.back());
 				}
 				break;
 			case NW_KEY_R_82:
@@ -148,9 +45,9 @@ namespace NWG
 					}
 				}
 				default: break;
-			case NW_KEY_1_49:
+			case NWL::KC_K1:
 				break;
-			case NW_KEY_2_50:
+			case NWL::KC_K2:
 				break;
 			}
 			break;
@@ -189,7 +86,7 @@ namespace NWG
 				m_pGuiStyle->WindowRounding = 0.0f;
 				m_pGuiStyle->Colors[ImGuiCol_WindowBg].w = 1.0f;
 			}
-			ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(NW::CoreEngine::Get().GetWindow()->GetNative()), true);
+			ImGui_ImplGlfw_InitForOpenGL(reinterpret_cast<GLFWwindow*>(NW::CoreEngine::Get().GetWindow()->GetNative()), true);
 			ImGui_ImplOpenGL3_Init("#version 430");
 		}
 
@@ -215,7 +112,7 @@ namespace NWG
 					ImGui::Checkbox("data_system",			&GuiOfDataSys::Get().bIsEnabled);
 					ImGui::Checkbox("code_editor",			&GuiOfCodeEditor::Get().bIsEnabled);
 					ImGui::Checkbox("sprite_editor",		&GuiOfSpriteEditor::Get().bIsEnabled);
-					ImGui::Checkbox("gmaterial_editor",		&GuiOfGMaterialEditor::Get().bIsEnabled);
+					ImGui::Checkbox("gmaterial_editor",		&GuiOfGfxMaterialEditor::Get().bIsEnabled);
 
 					ImGui::EndMenu();
 				}
@@ -228,7 +125,7 @@ namespace NWG
 			GuiOfDataSys::Get().OnDraw();
 			GuiOfCodeEditor::Get().OnDraw();
 			GuiOfSpriteEditor::Get().OnDraw();
-			GuiOfGMaterialEditor::Get().OnDraw();
+			GuiOfGfxMaterialEditor::Get().OnDraw();
 		}
 		EndDraw();
 	}

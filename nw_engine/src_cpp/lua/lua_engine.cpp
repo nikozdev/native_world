@@ -1,15 +1,9 @@
 #include <nw_pch.hpp>
-#include "nw_lua_engine.h"
-
-#include <sys/nw_data_sys.h>
-
-#include <nwlib/nwl_log.h>
+#include "lua_engine.h"
 
 #include <lua.hpp>
 #include <lstate.h>
 #include <lobject.h>
-
-#include "nw_lua_wraps.h"
 
 namespace NW
 {

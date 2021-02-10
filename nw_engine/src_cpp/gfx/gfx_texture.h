@@ -1,14 +1,14 @@
-#ifndef GFX_TEXTURE_H
-#define GFX_TEXTURE_H
+#ifndef NW_GFX_TEXTURE_H
+#define NW_GFX_TEXTURE_H
 
 #include <gfx_core.hpp>
 
-#if (defined GFX_GAPI)
-#include <gfx_tools.h>
+#if (defined NW_GAPI)
+#include <gfx/gfx_tools.h>
 namespace NW
 {
 	/// SubTexture1d struct
-	struct GFX_API SubTexture1d
+	struct NW_API SubTexture1d
 	{
 	public:
 		Int32 nTexCrd = 0;
@@ -26,7 +26,7 @@ namespace NW
 		Int32 nOverTexSize = 0;
 	};
 	/// SubTexture2d struct
-	struct GFX_API SubTexture2d
+	struct NW_API SubTexture2d
 	{
 	public:
 		V2i xyTexCrd = { 0, 0 };
@@ -46,7 +46,7 @@ namespace NW
 	private:
 	};
 	/// SubTexture3d struct
-	struct GFX_API SubTexture3d
+	struct NW_API SubTexture3d
 	{
 	public:
 		V3i xyzTexCrd = { 0, 0, 0 };
@@ -71,7 +71,7 @@ namespace NW
 namespace NW
 {
 	/// TextureInfo struct
-	struct GFX_API TextureInfo
+	struct NW_API TextureInfo
 	{
 	public:
 		TextureWraps WrapTypeS = TXW_REPEAT, WrapTypeT = TXW_REPEAT, WrapTypeR = TXW_REPEAT;
@@ -84,6 +84,7 @@ namespace NW
 		UInt32 unSamples = 1;
 	};
 }
+#if (NW_GAPI & NW_GAPI_OGL)
 namespace NW
 {
 	/// Texture class
@@ -91,7 +92,7 @@ namespace NW
 	/// -> Set props and data -> LoadData -> MakeTexture -> Bind drawing stuff
 	/// -> Enable -> Draw -> Disable
 	/// --It's a wrapping image which has to wrap a mesh
-	class GFX_API Texture : public TDataRes<Texture>
+	class NW_API Texture : public TDataRes<Texture>
 	{
 	public:
 		Texture(const char* strName, TextureTypes texTypes);
@@ -114,9 +115,6 @@ namespace NW
 		void Unbind();
 		void Remake();
 		void Clear(Ptr pValue);
-
-		static Texture* Create(const char* strName, TextureTypes texType);
-		static void Create(const char* strName, TextureTypes texType, RefKeeper<Texture>& rTex);
 		// --data_methods
 		virtual bool SaveF(const char* strFPath) override;
 		virtual bool LoadF(const char* strFPath) override;
@@ -129,5 +127,6 @@ namespace NW
 		ImageInfo m_imgInfo;
 	};
 }
-#endif	// GFX_GAPI
+#endif
+#endif	// NW_GAPI
 #endif // GFX_TEXTURE_H

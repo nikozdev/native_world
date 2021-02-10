@@ -1,15 +1,15 @@
-#ifndef GFX_GBUFFER_H
-#define GFX_GBUFFER_H
+#ifndef NW_GFX_BUFFER_H
+#define NW_GFX_BUFFER_H
 
-#include <gfx_tools.h>
+#include <gfx/gfx_tools.h>
 
-#if (defined GFX_GAPI)
+#if (defined NW_GAPI)
 // VertexBufLayout
 namespace NW
 {
 	/// BufferElement structure
 	/// --Contains all relevant data for shader usage of vertex buffer data
-	struct GFX_API BufferElement
+	struct NW_API BufferElement
 	{
 	public:
 		Char strName[128];
@@ -25,7 +25,7 @@ namespace NW
 			strcpy(strName, sName);
 		}
 	};
-	struct GFX_API ShaderBlock
+	struct NW_API ShaderBlock
 	{
 	public:
 		Char strName[128];
@@ -42,7 +42,7 @@ namespace NW
 		}
 	};
 	/// VertexBufLayout class
-	class GFX_API VertexBufLayout
+	class NW_API VertexBufLayout
 	{
 	public:
 		VertexBufLayout() : m_unStride(1) { }
@@ -73,7 +73,7 @@ namespace NW
 		}
 	};
 	/// ShaderBufLayout class
-	class GFX_API ShaderBufLayout
+	class NW_API ShaderBufLayout
 	{
 	public:
 		ShaderBufLayout() : m_szData(0) { }
@@ -111,18 +111,19 @@ namespace NW
 		}
 	};
 }
-// Graphics Objetcs
+#if (NW_GAPI & NW_GAPI_OGL)
+// --graphics_pbjetcs
 namespace NW
 {
 	/// GraphicsBuffer class
 	/// Description:
 	/// -- Specifies the basic interface for graphics buffers
-	class GFX_API AGBuffer
+	class NW_API AGfxBuffer
 	{
 	public:
-		AGBuffer(GBufferTypes gbType);
-		AGBuffer(const AGBuffer& rCpy) = delete;
-		virtual ~AGBuffer();
+		AGfxBuffer(GfxBufferTypes gbType);
+		AGfxBuffer(const AGfxBuffer& rCpy) = delete;
+		virtual ~AGfxBuffer();
 		// --getters
 		inline Size GetRenderId() const { return m_unRId; }
 		inline Size GetDataSize() const { return m_szData; }
@@ -131,16 +132,16 @@ namespace NW
 		void SetSubData(Size szData, const Ptr pVtxData, Size szOffset = 0);
 		// --predicates
 		inline Bit IsBound() const { return m_bIsBound; }
+		// --operators
+		inline void operator=(const AGfxBuffer& rCpy) = delete;
+		inline void operator delete(Ptr pBlock) = delete;
+		inline void operator delete[](Ptr pBlock) = delete;
 		// --core_methods
 		void Bind() const;
 		void Unbind() const;
-		// --operators
-		Ptr operator new[](Size szMem) = delete;
-		void operator delete(Ptr pBlock) = delete;
-		void operator delete[](Ptr pBlock) = delete;
 	protected:
 		UInt32 m_unRId;
-		const GBufferTypes m_gbType;
+		const GfxBufferTypes m_gbType;
 		mutable Bit m_bIsBound;
 		Size m_szData;
 	};
@@ -148,42 +149,32 @@ namespace NW
 namespace NW
 {
 	/// VertexBuffer Class
-	class GFX_API VertexBuf : public AGBuffer
+	class NW_API VertexBuf : public AGfxBuffer
 	{
 	public:
 		VertexBuf();
 		virtual ~VertexBuf();
-
-		static VertexBuf* Create();
-		static void Create(RefKeeper<VertexBuf>& rvtxBuf);
 	};
 	/// Abstract IndexBuffer Class
-	class GFX_API IndexBuf : public AGBuffer
+	class NW_API IndexBuf : public AGfxBuffer
 	{
 	public:
 		IndexBuf();
 		virtual ~IndexBuf();
-		// --core_methods
-		static IndexBuf* Create();
-		static void Create(RefKeeper<IndexBuf>& ridxBuf);
 	};
 	/// Abstract ShaderBuffer class
 	/// Description:
 	/// -- Is used by shaders as opengl uniform setter, or as directx constant buffer
-	class GFX_API ShaderBuf : public AGBuffer
+	class NW_API ShaderBuf : public AGfxBuffer
 	{
 	public:
 		ShaderBuf();
 		virtual ~ShaderBuf();
-		// --getters
 		// --core_methods
 		void Bind() const;
 		void Bind(UInt32 unPoint) const;
 		void Bind(UInt32 unPoint, Size szData, Size szOffset = 0) const;
 		void Remake(const ShaderBufLayout& rShdLayout);
-
-		static ShaderBuf* Create();
-		static void Create(RefKeeper<ShaderBuf>& rsdhBuf);
 	};
 }
 namespace NW
@@ -193,37 +184,40 @@ namespace NW
 	{
 	public:
 		VertexArr();
+		VertexArr(const VertexArr& rCpy) = delete;
 		~VertexArr();
 		// --getters
 		inline DArray<RefKeeper<VertexBuf>>& GetVtxBuffers() { return m_vtxBufs; }
 		inline VertexBuf* GetVtxBuffer(UInt32 unIdx = 0) { return m_vtxBufs[unIdx].GetRef(); }
 		inline IndexBuf* GetIdxBuffer() { return m_idxBuf.GetRef(); }
 		inline VertexBufLayout& GetLayout() { return m_vtxLayout; }
-		inline GPrimitiveTypes GetDrawPrimitive() const { return m_gpType; }
+		inline GfxPrimitiveTypes GetDrawPrimitive() const { return m_gpType; }
 		// --setters
 		inline void AddVtxBuffer(RefKeeper<VertexBuf>& rvtxBuf) { m_vtxBufs.push_back(rvtxBuf); }
 		inline void RmvVtxBuffer(UInt32 unIdx) { m_vtxBufs.erase(m_vtxBufs.begin() + unIdx); }
 		inline void SetIdxBuffer(RefKeeper<IndexBuf>& ridxBuf) { m_idxBuf.SetRef(ridxBuf); }
-		inline void SetDrawPrimitive(GPrimitiveTypes gpType) { m_gpType = gpType; }
+		inline void SetDrawPrimitive(GfxPrimitiveTypes gpType) { m_gpType = gpType; }
 		// --predicates
 		inline Bit IsBound() { return m_bIsBound; }
+		// --operators
+		inline void operator=(const VertexArr& rCpy) = delete;
+		inline void operator delete(Ptr pBlock) = delete;
+		inline void operator delete[](Ptr pBlock) = delete;
 		// --core_methods
 		void Bind() const;
 		void Unbind() const;
 		void Remake(const VertexBufLayout& rvtxLayout);
 		void CreateVtxBuffer();
 		void CreateIdxBuffer();
-
-		static VertexArr* Create();
-		static void Create(RefKeeper<VertexArr>& rvtxArr);
 	private:
 		UInt32 m_unRId;
 		mutable Bit m_bIsBound;
 		DArray<RefKeeper<VertexBuf>> m_vtxBufs;
 		RefKeeper<IndexBuf> m_idxBuf;
 		VertexBufLayout m_vtxLayout;
-		GPrimitiveTypes m_gpType;
+		GfxPrimitiveTypes m_gpType;
 	};
 }
-#endif	// GFX_GAPI
-#endif	// GFX_GBUFFER_H
+#endif
+#endif	// NW_GAPI
+#endif	// NW_GFX_BUFFER_H

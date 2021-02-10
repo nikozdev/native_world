@@ -24,7 +24,7 @@ namespace NW
 	{
 	public:
 		RefKeeper<VertexArr> vtxArr;
-		GMaterial* gMtl;
+		GfxMaterial* gMtl;
 	public:
 		Drawable();
 		Drawable(Size szVtxData, Size szIdxData);

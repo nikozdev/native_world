@@ -1,9 +1,9 @@
-#include <gfx_pch.hpp>
-#include <gfx_drawable.h>
+#include <nw_pch.hpp>
+#include <gfx/gfx_drawable.h>
 
-#include <gfx_material.h>
-#include <gfx_buffer.h>
-#include <gfx_engine.h>
+#include <gfx/gfx_material.h>
+#include <gfx/gfx_buffer.h>
+#include <gfx/gfx_api.h>
 
 namespace NW
 {
@@ -14,22 +14,21 @@ namespace NW
 		vtxArr(RefKeeper<VertexArr>()),
 		gMtl(nullptr)
 	{
-		VertexArr::Create(vtxArr);
+		vtxArr.MakeRef<VertexArr>();
+		gMtl = *DataSys::GetDR("gmt_3d_batch");
 
 		RefKeeper<VertexBuf> vtxBuf;
-		VertexBuf::Create(vtxBuf);
+		vtxBuf.MakeRef<VertexBuf>();
 		vtxBuf->SetData(szVtxData, nullptr);
 		vtxArr->AddVtxBuffer(vtxBuf);
 
 		RefKeeper<IndexBuf> idxBuf;
-		IndexBuf::Create(idxBuf);
+		idxBuf.MakeRef<IndexBuf>();
 		idxBuf->SetData(szIdxData, nullptr);
 		vtxArr->SetIdxBuffer(idxBuf);
 	}
 
-	Drawable::~Drawable() {
-		vtxArr.Reset();
-	}
+	Drawable::~Drawable() { vtxArr.Reset(); }
 	// --core_methods
 	void Drawable::UploadVtxData(const BufferData* pData, UInt32 unCount, UInt32 unFirstBuf)
 	{

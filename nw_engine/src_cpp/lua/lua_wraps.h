@@ -1,6 +1,6 @@
 #if false
-//#ifndef LUA_WRAPS_H
-#define LUA_WRAPS_H
+//#ifndef NW_LUA_WRAPS_H
+#define NW_LUA_WRAPS_H
 
 #include <lua/nw_lua_core.h>
 
@@ -37,17 +37,17 @@ namespace NW
 			return pEnt->AddCmp<Transform3dCmp>();
 		}
 		else if (strcmp(strCmpName, "cmp_graphics_2d") == 0) {
-			return pEnt->AddCmp<Graphics2dCmp>();
+			return pEnt->AddCmp<Gfx2dCmp>();
 		}
 		else if (strcmp(strCmpName, "cmp_graphics_3d") == 0) {
-			return pEnt->AddCmp<Graphics2dCmp>();
+			return pEnt->AddCmp<Gfx2dCmp>();
 		}
 		return nullptr;
 	}
 	AEntityCmp* GetCmpOfEnt(AEntity* pEnt, const char* strCmpName) {
 		if (pEnt == nullptr) return nullptr;
 		if (strcmp(strCmpName, "cmp_transform_2d") == 0 || strcmp(strCmpName, "cmp_transform_3d") == 0) {
-			return pEnt->GetCmp<ATransformCmp>();
+			return pEnt->GetCmp<ATFormCmp>();
 		}
 		else if (strcmp(strCmpName, "cmp_graphics_2d") == 0 || strcmp(strCmpName, "cmp_graphics_3d") == 0) {
 			return pEnt->GetCmp<AGraphicsCmp>();
@@ -374,4 +374,4 @@ namespace NW
 	};
 }
 
-#endif	// LUA_WRAPS_H
+#endif	// NW_LUA_WRAPS_H

@@ -10,64 +10,41 @@ project "nw_engine"
 	pchsource "src_cpp/nw_pch.cpp"
 	files
 	{
+		"../data/**.**",
 		"src_cpp/**.c**",
 		"src_cpp/**.h**",
 		"%{prj.name}/src_glsl/**.glsl",
+		"%{prj.name}/src_hlsl/**.hlsl",
 		"%{prj.name}/src_lua/**.lua",
 	}
 	includedirs
 	{
+		"../data/",
 		"src_cpp/",
 		"%{dir_cpp.nw_lib}",
-		"%{dir_cpp.nw_glib}",
-		"%{dir_cpp.nw_cmd}",
 		"%{dir_cpp.glfw}",
-		"%{dir_cpp.stbi}",
 		"%{dir_cpp.lualib}"
 	}
 	libdirs
 	{
 		"%{dir_lib.nw_lib}",
-		"%{dir_lib.nw_glib}",
-		"%{dir_lib.nw_cmd}",
 		"%{dir_lib.glfw}",
 		"%{dir_lib.lualib}"
 	}
 	links
 	{
 		"nw_lib",
-		"nw_glib",
-		"nw_cmd",
 		"glfw",
-		"lualib"
-	}
-	defines
-	{
-		--"NW_LINK_DYNAMIC",
-		"NW_LINK_STATIC",
-		"NW_BUILD_LIB"
+		"lualib",
+		"opengl32"
 	}
 	filter "system:windows"
 		systemversion "latest"
-		defines
-		{
-			"NW_PLATFORM_WINDOWS"
-		}
+		defines { "NW_PLATFORM_WINDOWS" }
 	filter "configurations:debug"
-		defines
-		{
-			"NW_DEBUG",
-			"NWL_DEBUG",
-			"GLIB_DEBUG",
-			"CMD_DEBUG",
-		}
+		defines { "NW_DEBUG" }
 		symbols "on"
 	filter "configurations:release"
-		defines {
-			"NW_RELEASE",
-			"NWL_RELEASE",
-			"GLIB_RELEASE",
-			"CMD_RELEASE",
-		}
+		defines { "NW_RELEASE" }
 		optimize "on"
 --==</engine_project>==--

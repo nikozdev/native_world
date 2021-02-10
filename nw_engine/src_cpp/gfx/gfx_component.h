@@ -1,14 +1,12 @@
 #ifndef GFX_COMPONENT_H
 #define GFX_COMPONENT_H
 
-#include <gfx_engine.h>
-#include <gfx_buffer.h>
-#include <gfx_material.h>
-#include <gfx_shader.h>
-#include <gfx_texture.h>
-#include <gfx_drawable.h>
-
-#include <nwlib/nwl_entity.h>
+#include <gfx/gfx_api.h>
+#include <gfx/gfx_buffer.h>
+#include <gfx/gfx_material.h>
+#include <gfx/gfx_shader.h>
+#include <gfx/gfx_texture.h>
+#include <gfx/gfx_drawable.h>
 
 namespace NW
 {
@@ -42,10 +40,10 @@ namespace NW
 namespace NW
 {
 	/// TransformComponent class
-	class GFX_API TransformCmp : public TCmp<TransformCmp>
+	class NW_API TFormCmp : public TCmp<TFormCmp>
 	{
 	public:
-		TransformCmp() : TCmp() {}
+		TFormCmp() : TCmp() {}
 		// --getters
 		inline Mat4f GetMatrix() const;
 		// --setters
@@ -55,7 +53,7 @@ namespace NW
 		V3f xyzScl = { 1.0f,	1.0f,	1.0f };
 	};
 	// --getters
-	inline Mat4f TransformCmp::GetMatrix() const {
+	inline Mat4f TFormCmp::GetMatrix() const {
 		Mat4f m4Tf = Mat4f(1.0f);
 		m4Tf = glm::translate(m4Tf, xyzCrd);
 		m4Tf = glm::rotate(m4Tf, RadToDeg(xyzRtn.x), V3f{ 1.0f, 0.0f, 0.0f });
@@ -65,17 +63,17 @@ namespace NW
 		return m4Tf;
 	}
 	/// GraphicsComponent2dComponent class
-	class GFX_API Graphics2dCmp : public TCmp<Graphics2dCmp>
+	class NW_API Gfx2dCmp : public TCmp<Gfx2dCmp>
 	{
 	public:
 		Drawable m_drw = Drawable();
 	public:
-		Graphics2dCmp() : TCmp(), m_drw(Drawable()) {
+		Gfx2dCmp() : TCmp(), m_drw(Drawable()) {
 			RefKeeper<VertexBuf> vtxBuf;
 			RefKeeper<IndexBuf> idxBuf;
-			VertexArr::Create(m_drw.vtxArr);
-			VertexBuf::Create(vtxBuf);
-			IndexBuf::Create(idxBuf);
+			m_drw.vtxArr.MakeRef<VertexArr>();
+			vtxBuf.MakeRef<VertexBuf>();
+			idxBuf.MakeRef<IndexBuf>();
 
 			m_drw.vtxArr->AddVtxBuffer(vtxBuf);
 			m_drw.vtxArr->SetIdxBuffer(idxBuf);
@@ -87,7 +85,7 @@ namespace NW
 			idxBuf->SetData(ibData.szData, nullptr);
 			m_drw.UploadVtxData(&vbData);
 			m_drw.UploadIdxData(&ibData);
-			m_drw.gMtl = TDataRes<GMaterial>::GetDataRes("gmt_3d_batch");
+			m_drw.gMtl = DataSys::GetDR<GfxMaterial>("gmt_3d_batch");
 			m_drw.vtxArr->Remake(m_drw.gMtl->GetShader()->GetVtxLayout());
 		}
 	};

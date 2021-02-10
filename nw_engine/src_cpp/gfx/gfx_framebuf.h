@@ -1,13 +1,14 @@
-#ifndef GFX_FRAME_BUFFER_H
-#define GFX_FRAME_BUFFER_H
+#ifndef NW_GFX_FRAME_BUFFER_H
+#define NW_GFX_FRAME_BUFFER_H
 
 #include <gfx_core.hpp>
 
-#if (defined GFX_GAPI)
+#if (defined NW_GAPI)
+#if (NW_GAPI & NW_GAPI_OGL)
 namespace NW
 {
 	/// FrameBufInfo struct
-	struct GFX_API FrameBufInfo
+	struct NW_API FrameBufInfo
 	{
 	public:
 		V4i rectViewport = { 0, 0, 1, 1 };
@@ -22,7 +23,7 @@ namespace NW
 		inline Int32 GetHeight() const { return { rectViewport.w - rectViewport.y }; }
 	};
 	/// FrameBuffer class
-	class GFX_API FrameBuf : public TDataRes<FrameBuf>
+	class NW_API FrameBuf : public TDataRes<FrameBuf>
 	{
 	public:
 		FrameBuf(const char* strName, const FrameBufInfo& rFbInfo);
@@ -39,7 +40,7 @@ namespace NW
 		// --setters
 		void SetViewport(V4i rectViewport);
 		void SetClearColor(V4f rgbaClear);
-		void AttachTexture(RefKeeper<Texture>& rTex);
+		void AttachTexture(Texture& rTex);
 		void DetachTexture(UInt32 unIdx);
 		// --predicates
 		inline bool IsBound() { return m_bIsBound; }
@@ -50,9 +51,6 @@ namespace NW
 		void Clear(UInt32 bitMask = FB_COLOR | FB_DEPTH | FB_STENCIL);
 		void ReadPixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nWidth = 1, Int32 nHeight = 1);
 		void WritePixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nWidth = 1, Int32 nHeight = 1);
-
-		static FrameBuf* Create(const char* strName, const FrameBufInfo& rfbInfo);
-		static void Create(const char* strName, const FrameBufInfo& rfbInfo, RefKeeper<FrameBuf>& rfmBuf);
 		// --data_methods
 		virtual bool SaveF(const char* strFPath) override { return true; }
 		virtual bool LoadF(const char* strFPath) override { return true; }
@@ -64,9 +62,10 @@ namespace NW
 		DArray<RefKeeper<Texture>> m_Attachments;
 	};
 	inline Texture* FrameBuf::GetAttachment(UInt32 unIdx) {
-		NW_ASSERT(unIdx <= m_Attachments.size(), "Overflow");
+		NWL_ASSERT(unIdx <= m_Attachments.size(), "Overflow");
 		return m_Attachments[unIdx].GetRef();
 	}
 }
-#endif	// GFX_GAPI
-#endif // GFX_FRAME_BUFFER_H
+#endif
+#endif	// NW_GAPI
+#endif // NW_GFX_FRAME_BUFFER_H

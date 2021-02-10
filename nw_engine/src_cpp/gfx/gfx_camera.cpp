@@ -1,9 +1,9 @@
-#include <gfx_pch.hpp>
-#include "gfx_camera.h"
+#include <nw_pch.hpp>
+#include "gfx/gfx_camera.h"
 
 namespace NW
 {
-	GCamera::GCamera() :
+	GfxCamera::GfxCamera() :
 		xyzCrd{ 0.0f, 0.0f, 1.0f }, xyzRtn{ 0.0f, 0.0f, 0.0f },
 		nViewScale(1.0f), nViewField(45.0f), nAspectRatio(1.3f),
 		dirRight{ 1.0f, 0.0f, 0.0f }, dirUp{ 0.0f, 1.0f, 0.0f }, dirFront{0.0f, 0.0f, 1.0f},
@@ -12,7 +12,7 @@ namespace NW
 		m_m4Proj(Mat4f{ 1.0f }), m_m4View(Mat4f{ 1.0f }) {}
 
 	// --getters
-	const Mat4f& GCamera::GetProjMatrix()
+	const Mat4f& GfxCamera::GetProjMatrix()
 	{
 		if (m_gcType == GCT_ORTHO) {
 			m_m4Proj = glm::ortho(-nViewScale * nAspectRatio,
@@ -25,7 +25,7 @@ namespace NW
 		return m_m4Proj;
 	}
 
-	const Mat4f& GCamera::GetViewMatrix()
+	const Mat4f& GfxCamera::GetViewMatrix()
 	{
 		V3f xyzNextFront = V3f(0.0f, 0.0f, 0.0f);
 		float nPitch_rad = (nPitch) * 3.14f / 180.0f;

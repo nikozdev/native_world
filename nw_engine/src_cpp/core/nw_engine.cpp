@@ -1,20 +1,19 @@
 #include <nw_pch.hpp>
-#include <core/nw_core_engine.h>
+#include <core/nw_engine.h>
 
-#include <core/nw_window.h>
-
-#include <sys/nw_io_sys.h>
-#include <sys/nw_data_sys.h>
-
-#include <glib_engine.h>
-//#include <cmd_engine.h>
+#if (defined NW_WAPI)
+	#if (NW_WAPI & NW_GLFW)
+		#include <glfw/glfw3.h>
+		#include <glfw/glfw3native.h>
+	#endif
+#endif	// NW_WAPI
 
 namespace NW
 {
 	CoreEngine::CoreEngine() :
 		AEngine(),
 		m_strName("nw_engine"),
-		m_pWindow(RefKeeper<AppWindow>()) { }
+		m_pWindow(RefKeeper<CoreWindow>()) { }
 	CoreEngine::~CoreEngine() { }
 
 	// --==<core_methods>==--
@@ -25,36 +24,28 @@ namespace NW
 		if (m_States.empty()) { Quit(); }
 
 		auto fnRunning = [this]()->void {
-			//CMD::CmdEngine::Get().Run();
-			GLIB::GraphEngine::Get().Run();
 			while (m_bIsRunning) { Update(); }
-			GLIB::GraphEngine::Get().Quit();
-			GLIB::GraphEngine::Get().GetRunThread().join();
-			//CMD::CmdEngine::Get().Quit();
-			//CMD::CmdEngine::Get().GetRunThread().join();
 			Quit();
 		};
-		m_thrRun = Thread(fnRunning);
+		//m_thrRun = Thread(fnRunning);
+		fnRunning();
 	}
 	bool CoreEngine::Init()
 	{
 		if (m_bIsRunning) { return false; }
-		m_Memory = MemArena(new Byte[1 << 18], 1 << 18);
-	#if (defined NW_WINDOW)
-		WindowInfo wInfo{ &m_strName[0], 1200, 800, true, nullptr };
-		#if (NW_WINDOW_GLFW & NW_WINDOW_GLFW)
-		wInfo.wapiType = WAPI_GLFW;
-		#endif
-		AppWindow::Create(wInfo, m_pWindow);
+		MemSys::OnInit(1 << 23);
+		CmpSys::OnInit();
+		EntSys::OnInit();
+		m_Memory = MemArena(MemSys::GetMemory().Alloc(1 << 18), 1 << 18);
+	
+		m_pWindow.MakeRef<CoreWindow>(WindowInfo{ &m_strName[0], 1200, 800, true, nullptr });
 		if (!m_pWindow->Init()) { m_pWindow->OnQuit(); return false; }
-	#endif	// NW_WINDOW
-		m_pWindow->SetEventCallback([this](AEvent& rEvt)->void { return OnEvent(rEvt); });
-		DataSys::OnInit();
-
-		if (!GLIB::GraphEngine::Get().Init()) { return false; }
-		//if (!CMD::CmdEngine::Get().Init()) { return false; }
+		m_pWindow->SetEventCallback([this](AEvent& rEvt)->void { return this->OnEvent(rEvt); });
 		
-		for (auto& itState : m_States) { itState->Init(); }
+		m_pGfx.MakeRef<GfxApi>();
+		if (!m_pGfx->Init()) { return false; }
+
+		for (auto& itState : m_States) { if (!itState->Init()) { NWL_ERR("State is not initialized"); Quit(); return false; } }
 
 		return (m_bIsRunning = true);
 	}
@@ -66,16 +57,17 @@ namespace NW
 		for (auto& itState : m_States) { itState->OnQuit(); }
 		m_States.clear();
 
-		DataSys::OnQuit();
-
-		GLIB::GraphEngine::Get().Quit();
-		//CMD::CmdEngine::Get().Quit();
-
+		m_pGfx->OnQuit();
+		m_pGfx.Reset();
 		m_pWindow->OnQuit();
 		m_pWindow.Reset();
-
-		delete[] m_Memory.GetDataBeg();
+		
+		MemSys::GetMemory().Dealloc(m_Memory.GetDataBeg(), m_Memory.GetDataSize());
 		m_Memory = MemArena(nullptr, 0);
+		EntSys::OnQuit();
+		CmpSys::OnQuit();
+		DataSys::GetStorage().clear();
+		MemSys::OnQuit();
 	}
 
 	void CoreEngine::Update()
@@ -85,9 +77,7 @@ namespace NW
 		IOSys::Update();
 		TimeSys::Update();
 		
-		GLIB::GraphEngine::Get().Update();
-		//CMD::CmdEngine::Get().Update();
-
+		m_pGfx->Update();
 		m_pWindow->Update();
 	}
 	void CoreEngine::OnEvent(AEvent& rEvt)
@@ -157,7 +147,15 @@ namespace NW
 			}
 			for (auto& itState : m_States) { if (rEvt.bIsHandled) { return; } itState->OnEvent(*pwEvt); }
 		}
-		GLIB::GraphEngine::Get().OnEvent(rEvt);
 	}
+
+#if (NW_WAPI & NW_WAPI_GLFW)
+	String CoreEngine::FDialogLoad(const char* strFilter) { return DataSys::FDialogLoad(strFilter, ); }
+	String CoreEngine::FDialogSave(const char* strFilter) { return DataSys::FDialogSave(strFilter, ); }
+#endif
+#if (NW_WAPI & NW_WAPI_WIN)
+	String CoreEngine::FDialogLoad(const char* strFilter) { return DataSys::FDialogLoad(strFilter, reinterpret_cast<HWND>(m_pWindow->GetNative())); }
+	String CoreEngine::FDialogSave(const char* strFilter) { return DataSys::FDialogSave(strFilter, reinterpret_cast<HWND>(m_pWindow->GetNative())); }
+#endif
 	// --==</core_methods>==--
 }

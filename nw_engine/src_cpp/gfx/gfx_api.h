@@ -1,16 +1,15 @@
-#ifndef GFX_ENGINE_H
-#define GFX_ENGINE_H
+#ifndef NW_GFX_API_H
+#define NW_GFX_API_H
 
-#include <nwlib/nwl_engine.h>
-
-#include <gfx_tools.h>
-#include <gfx_drawable.h>
-#include <gfx_material.h>
+#include <gfx/gfx_tools.h>
+#include <gfx/gfx_drawable.h>
+#include <gfx/gfx_material.h>
 #include <gfx_core.hpp>
 
+#if (defined NW_GAPI)
 namespace NW
 {
-	struct GFX_API GfxConfig {
+	struct NW_API GfxConfig {
 		struct {
 			struct {
 				DrawModes dMode = DM_FILL;
@@ -54,8 +53,8 @@ namespace NW
 			DepthTest.Func = DTC_GREATER;
 		}
 	};
-	/// GraphicsEngineInfo struct
-	struct GFX_API GfxInfo
+	/// GraphicsApiInfo struct
+	struct NW_API GfxInfo
 	{
 	public:
 		Char strRenderer[256], strVersion[256], strVendor[256], strShdLang[256];
@@ -94,16 +93,16 @@ namespace NW
 	}
 	inline OutStream& operator<<(OutStream& rStream, GfxInfo& rgInfo) { return rgInfo.operator<<(rStream); }
 }
+#if (NW_GAPI & NW_GAPI_OGL)
 namespace NW
 {
-	/// GraphicsEngine class
-	/// -- Depending on the specification during the build
-	class GFX_API GfxEngine : public AEngine<GfxEngine, AEngineState>
+	/// GraphicsApi class
+	class NW_API GfxApi
 	{
 	public:
-		GfxEngine();
-		~GfxEngine();
-		
+		GfxApi();
+		GfxApi(const GfxApi& rCpy) = delete;
+		~GfxApi();
 		// --getters
 		inline const GfxInfo& GetInfo() const { return m_Info; }
 		inline const GfxConfig& GetConfigs() { return m_Config; }
@@ -118,30 +117,23 @@ namespace NW
 		void SetDepthFunc(DepthConfigs funcId);
 		void SetStencilFunc(StencilConfigs funcId, UInt32 unRefValue, UInt8 unBitMask);
 		void SetFrameBuf(FrameBuf* pfmBuf);
+		// --operators
+		inline void operator=(const GfxApi& rCpy) = delete;
 		// --core_methods
-		virtual void Run() override;
-		virtual bool Init() override;
-		virtual void Quit() override;
-		virtual void Update() override;
-		virtual void OnEvent(AEvent& rEvt) override;
-		// --drawing_methods
-		void OnDraw(VertexArr& rVtxArray, GMaterial& rgMtl);
+		bool Init();
+		void OnQuit();
+		void Update();
+		
+		void OnDraw(VertexArr& rVtxArray, GfxMaterial& rgMtl);
 		void OnDraw(Drawable& rDrb);
-
-		void SetWindow(HWND pWindow);
 	private:
 		GfxInfo m_Info;
 		GfxConfig m_Config;
-		
+
 		FrameBuf* m_pfmBuf;
 		Drawable m_drbScreen;
-#if (GFX_GAPI_DX)
-		HWND m_pWindow;
-		ID3D11Device* m_pDevice;
-		ID3D11DeviceContext* m_pContext;
-		IDXGISwapChain* m_pSwap;
-#endif	// GFX_GAPI
 	};
 }
-
-#endif // GFX_ENGINE_H
+#endif
+#endif	// NW_GAPI
+#endif // NW_GFX_API_H

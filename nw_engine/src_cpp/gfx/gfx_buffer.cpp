@@ -1,26 +1,26 @@
-#include <gfx_pch.hpp>
-#include "gfx_buffer.h"
+#include <nw_pch.hpp>
+#include "gfx/gfx_buffer.h"
 
 #pragma warning(disable : 4312)
 
-#if (defined GFX_GAPI)
-#include <gfx_engine.h>
-#include <gfx_loader.h>
-#endif	// GFX_API
+#if (defined NW_GAPI)
+#include <gfx/gfx_api.h>
+#include <gfx/gfx_loader.h>
+#endif	// NW_API
 
-#if (GFX_GAPI & GFX_GAPI_OGL)
+#if (NW_GAPI & NW_GAPI_OGL)
 namespace NW
 {
-	// --==<AGBuf>==--
-	AGBuffer::AGBuffer(GBufferTypes gbType) : m_unRId(0), m_gbType(gbType), m_bIsBound(false), m_szData(0) { }
-	AGBuffer::~AGBuffer() { Unbind(); if (m_unRId != 0) { glDeleteBuffers(1, &m_unRId); } }
+	// --==<AGfxBuf>==--
+	AGfxBuffer::AGfxBuffer(GfxBufferTypes gbType) : m_unRId(0), m_gbType(gbType), m_bIsBound(false), m_szData(0) { }
+	AGfxBuffer::~AGfxBuffer() { Unbind(); if (m_unRId != 0) { glDeleteBuffers(1, &m_unRId); } }
 	// --setters
-	void AGBuffer::SetSubData(Size szData, const Ptr pVtxData, Size szOffset) {
+	void AGfxBuffer::SetSubData(Size szData, const Ptr pVtxData, Size szOffset) {
 		Bind();
 		glBufferSubData(m_gbType, szOffset, szData, pVtxData);
 		Unbind();
 	}
-	void AGBuffer::SetData(Size szData, const Ptr pVtxData) {
+	void AGfxBuffer::SetData(Size szData, const Ptr pVtxData) {
 		Unbind();
 		m_szData = szData;
 		if (m_unRId != 0) { glDeleteBuffers(1, &m_unRId); m_unRId = 0; }
@@ -30,44 +30,36 @@ namespace NW
 		glBufferData(m_gbType, szData, pVtxData, pVtxData == nullptr ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 		Unbind();
 	}
-	void AGBuffer::Bind() const {
+	void AGfxBuffer::Bind() const {
 		if (m_bIsBound) { return; }
 		glBindBuffer(m_gbType, m_unRId);
 		m_bIsBound = true;
 	}
-	void AGBuffer::Unbind() const {
+	void AGfxBuffer::Unbind() const {
 		if (!m_bIsBound) { return; }
 		glBindBuffer(m_gbType, 0);
 		m_bIsBound = false;
 	}
-	// --==</AGBuf>==--
+	// --==</AGfxBuf>==--
 }
 namespace NW
 {
 	// --==<VertexBuf>==--
-	VertexBuf::VertexBuf() : AGBuffer(GBT_VERTEX) { }
+	VertexBuf::VertexBuf() : AGfxBuffer(GBT_VERTEX) { }
 	VertexBuf::~VertexBuf() { }
-
-	// --core_methods
-	VertexBuf* VertexBuf::Create() { return GfxEngine::Get().NewT<VertexBuf>(); }
-	void VertexBuf::Create(RefKeeper<VertexBuf>& rvtxBuf) { rvtxBuf.MakeRef<VertexBuf>(GfxEngine::Get().GetMemory()); }
 	// --==</VertexBuf>==--
 }
 namespace NW
 {
 	// --==<IndexBuf>==--
-	IndexBuf::IndexBuf() : AGBuffer(GBT_INDEX) { }
+	IndexBuf::IndexBuf() : AGfxBuffer(GBT_INDEX) { }
 	IndexBuf::~IndexBuf() { }
-
-	// --core_methods
-	IndexBuf* IndexBuf::Create() { return GfxEngine::Get().NewT<IndexBuf>(); }
-	void IndexBuf::Create(RefKeeper<IndexBuf>& ridxBuf) { ridxBuf.MakeRef<IndexBuf>(GfxEngine::Get().GetMemory()); }
 	// --==</IndexBuf>==--
 }
 namespace NW
 {
 	// --==<ShaderBuf>==--
-	ShaderBuf::ShaderBuf() : AGBuffer(GBT_SHADER) { }
+	ShaderBuf::ShaderBuf() : AGfxBuffer(GBT_SHADER) { }
 	ShaderBuf::~ShaderBuf() { }
 	// --core_methods
 	void ShaderBuf::Bind() const {
@@ -85,16 +77,13 @@ namespace NW
 		if (m_szData < rBufLayout.GetSize()) { SetData(rBufLayout.GetSize()); }
 		for (auto& rBlock : rBufLayout.GetBlocks()) { Bind(rBlock.unBindPoint, rBlock.szAll, rBlock.szOffset); }
 	}
-
-	ShaderBuf* ShaderBuf::Create() { return GfxEngine::Get().NewT<ShaderBuf>(); }
-	void ShaderBuf::Create(RefKeeper<ShaderBuf>& rshdBuf) { rshdBuf.MakeRef<ShaderBuf>(GfxEngine::Get().GetMemory()); }
 	// --==</AShaderBuf>==--
 }
 namespace NW
 {
 	VertexArr::VertexArr() :
 		m_unRId(0), m_bIsBound(false),
-		m_gpType(PT_TRIANGLES) { glCreateVertexArrays(1, &m_unRId); }
+		m_gpType(GPT_TRIANGLES) { glCreateVertexArrays(1, &m_unRId); }
 	VertexArr::~VertexArr() { glDeleteVertexArrays(1, &m_unRId); }
 	
 	// --setters
@@ -111,12 +100,12 @@ namespace NW
 	}
 
 	void VertexArr::Remake(const VertexBufLayout& rvtxLayout) {
-		NW_ASSERT(m_vtxBufs.size() > 0, "there are no vertex buffers!");
+		NWL_ASSERT(m_vtxBufs.size() > 0, "there are no vertex buffers!");
 		Bind();
 		if (m_idxBuf.GetRef() != nullptr) { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_idxBuf->GetRenderId()); }
 		else { glBindBuffer(GBT_INDEX, 0); }
 		for (auto& itBuf : m_vtxBufs) {
-			NW_ASSERT(itBuf->GetRenderId() != 0, "vertex buffer is invalid!");
+			NWL_ASSERT(itBuf->GetRenderId() != 0, "vertex buffer is invalid!");
 			glBindBuffer(GL_ARRAY_BUFFER, itBuf->GetRenderId());
 		}
 		for (UInt32 ati = 0; ati < m_vtxLayout.GetElems().size(); ati++) { glDisableVertexAttribArray(ati); }
@@ -132,34 +121,31 @@ namespace NW
 	void VertexArr::CreateVtxBuffer()
 	{
 		RefKeeper<VertexBuf> vtxBuf;
-		VertexBuf::Create(vtxBuf);
+		vtxBuf.MakeRef<VertexBuf>();
 		AddVtxBuffer(vtxBuf);
 	}
 	void VertexArr::CreateIdxBuffer()
 	{
 		RefKeeper<IndexBuf> idxBuf;
-		IndexBuf::Create(idxBuf);
+		idxBuf.MakeRef<IndexBuf>();
 		SetIdxBuffer(idxBuf);
 	}
-
-	VertexArr* VertexArr::Create() { return GfxEngine::Get().NewT<VertexArr>(); }
-	void VertexArr::Create(RefKeeper<VertexArr>& rvtxArr) { rvtxArr.MakeRef<VertexArr>(GfxEngine::Get().GetMemory()); }
 	// --==</core_methods>==--
 }
-#endif	// GFX_GAPI
+#endif	// NW_GAPI
 
-#if (GFX_GAPI & GFX_GAPI_DX)
+#if (NW_GAPI & NW_GAPI_DX)
 namespace NW
 {
-	// --==<AGBuf>==--
-	AGBuffer::AGBuffer(GBufferTypes gbType) : m_unRId(0), m_gbType(gbType), m_bIsBound(false), m_szData(0) { }
-	AGBuffer::~AGBuffer() { Unbind(); if (m_unRId != 0) { } }
+	// --==<AGfxBuf>==--
+	AGfxBuffer::AGfxBuffer(GfxBufferTypes gbType) : m_unRId(0), m_gbType(gbType), m_bIsBound(false), m_szData(0) { }
+	AGfxBuffer::~AGfxBuffer() { Unbind(); if (m_unRId != 0) { } }
 	// --setters
-	void AGBuffer::SetSubData(Size szData, const Ptr pVtxData, Size szOffset) {
+	void AGfxBuffer::SetSubData(Size szData, const Ptr pVtxData, Size szOffset) {
 		Bind();
 		Unbind();
 	}
-	void AGBuffer::SetData(Size szData, const Ptr pVtxData) {
+	void AGfxBuffer::SetData(Size szData, const Ptr pVtxData) {
 		Unbind();
 		m_szData = szData;
 		if (m_unRId != 0) { }
@@ -167,42 +153,42 @@ namespace NW
 		Bind();
 		Unbind();
 	}
-	void AGBuffer::Bind() const {
+	void AGfxBuffer::Bind() const {
 		if (m_bIsBound) { return; }
 		m_bIsBound = true;
 	}
-	void AGBuffer::Unbind() const {
+	void AGfxBuffer::Unbind() const {
 		if (!m_bIsBound) { return; }
 		m_bIsBound = false;
 	}
-	// --==</AGBuf>==--
+	// --==</AGfxBuf>==--
 }
 namespace NW
 {
 	// --==<VertexBuf>==--
-	VertexBuf::VertexBuf() : AGBuffer(GBT_VERTEX) { }
+	VertexBuf::VertexBuf() : AGfxBuffer(GBT_VERTEX) { }
 	VertexBuf::~VertexBuf() { }
 
 	// --core_methods
-	VertexBuf* VertexBuf::Create() { return GfxEngine::Get().NewT<VertexBuf>(); }
-	void VertexBuf::Create(RefKeeper<VertexBuf>& rvtxBuf) { rvtxBuf.MakeRef<VertexBuf>(GfxEngine::Get().GetMemory()); }
+	VertexBuf* VertexBuf::Create() { return GfxApi::Get().NewT<VertexBuf>(); }
+	void VertexBuf::Create(RefKeeper<VertexBuf>& rvtxBuf) { rvtxBuf.MakeRef<VertexBuf>(); }
 	// --==</VertexBuf>==--
 }
 namespace NW
 {
 	// --==<IndexBuf>==--
-	IndexBuf::IndexBuf() : AGBuffer(GBT_INDEX) { }
+	IndexBuf::IndexBuf() : AGfxBuffer(GBT_INDEX) { }
 	IndexBuf::~IndexBuf() { }
 
 	// --core_methods
-	IndexBuf* IndexBuf::Create() { return GfxEngine::Get().NewT<IndexBuf>(); }
-	void IndexBuf::Create(RefKeeper<IndexBuf>& ridxBuf) { ridxBuf.MakeRef<IndexBuf>(GfxEngine::Get().GetMemory()); }
+	IndexBuf* IndexBuf::Create() { return GfxApi::Get().NewT<IndexBuf>(); }
+	void IndexBuf::Create(RefKeeper<IndexBuf>& ridxBuf) { ridxBuf.MakeRef<IndexBuf>(); }
 	// --==</IndexBuf>==--
 }
 namespace NW
 {
 	// --==<ShaderBuf>==--
-	ShaderBuf::ShaderBuf() : AGBuffer(GBT_SHADER) { }
+	ShaderBuf::ShaderBuf() : AGfxBuffer(GBT_SHADER) { }
 	ShaderBuf::~ShaderBuf() { }
 	// --core_methods
 	void ShaderBuf::Bind() const {
@@ -218,8 +204,8 @@ namespace NW
 		for (auto& rBlock : rBufLayout.GetBlocks()) { Bind(rBlock.unBindPoint, rBlock.szAll, rBlock.szOffset); }
 	}
 
-	ShaderBuf* ShaderBuf::Create() { return GfxEngine::Get().NewT<ShaderBuf>(); }
-	void ShaderBuf::Create(RefKeeper<ShaderBuf>& rshdBuf) { rshdBuf.MakeRef<ShaderBuf>(GfxEngine::Get().GetMemory()); }
+	ShaderBuf* ShaderBuf::Create() { return GfxApi::Get().NewT<ShaderBuf>(); }
+	void ShaderBuf::Create(RefKeeper<ShaderBuf>& rshdBuf) { rshdBuf.MakeRef<ShaderBuf>(); }
 	// --==</AShaderBuf>==--
 }
 namespace NW
@@ -241,7 +227,7 @@ namespace NW
 	}
 
 	void VertexArr::Remake(const VertexBufLayout& rvtxLayout) {
-		NW_ASSERT(m_vtxBufs.size() > 0, "there are no vertex buffers!");
+		NWL_ASSERT(m_vtxBufs.size() > 0, "there are no vertex buffers!");
 		Bind();
 		Unbind();
 	}
@@ -258,8 +244,8 @@ namespace NW
 		SetIdxBuffer(idxBuf);
 	}
 
-	VertexArr* VertexArr::Create() { return GfxEngine::Get().NewT<VertexArr>(); }
-	void VertexArr::Create(RefKeeper<VertexArr>& rvtxArr) { rvtxArr.MakeRef<VertexArr>(GfxEngine::Get().GetMemory()); }
+	VertexArr* VertexArr::Create() { return GfxApi::Get().NewT<VertexArr>(); }
+	void VertexArr::Create(RefKeeper<VertexArr>& rvtxArr) { rvtxArr.MakeRef<VertexArr>(); }
 	// --==</core_methods>==--
 }
-#endif // GFX_GAPI
+#endif // NW_GAPI

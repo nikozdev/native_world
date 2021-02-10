@@ -1,15 +1,16 @@
-#if (defined GFX_GAPI)
-	#if (GFX_GAPI & GFX_GAPI_OGL)
-			#include <../ext/glad.h>
-		#if (defined GFX_PLATFORM_WINDOWS)
-			#include <../ext/glad_wgl.h>
-		#endif
+#ifndef NW_GFX_LOADER_H
+#define NW_GFX_LOADER_H
+
+#if (defined NW_GAPI)
+	#if (NW_GAPI & NW_GAPI_OGL)
+		#include <../ext/glad/glad.h>
 	#endif
-		#include <nwl_windows.h>
 		//#include <windows.graphics.h>
-	#if (GFX_GAPI & GFX_GAPI_DX)
+	#if (NW_GAPI & NW_GAPI_DX)
 		#include <d3d11.h>
 		//#include <windows.graphics.directx.h>
 		//#include <windows.graphics.directx.direct3d11.h>
 	#endif
 #endif
+
+#endif	// NW_GFX_LOADER_H

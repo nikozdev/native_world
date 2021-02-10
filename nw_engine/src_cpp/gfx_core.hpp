@@ -1,0 +1,193 @@
+#ifndef NW_GFX_CORE_HPP
+#define NW_GFX_CORE_HPP
+
+#include <nw_core.hpp>
+
+// --==<configurations>==--
+#if (NW_WAPI & NW_WAPI_GLFW)
+#define GLFW_INCLUDE_NONE
+#endif	// NW_WAPI
+// --==</configurations>==--
+
+namespace NW
+{
+	class NW_API GfxApi;
+
+	class NW_API Shader;
+	class NW_API GfxMaterial;
+	class NW_API Texture;
+
+	class NW_API FrameBuf;
+
+	class NW_API VertexBufLayout;
+	class NW_API ShaderBufLayout;
+
+	class NW_API VertexBuf;
+	class NW_API IndexBuf;
+	class NW_API ShaderBuf;
+	class NW_API VertexArr;
+
+	class NW_API GfxCameraLad;
+}
+namespace NW
+{
+	struct NW_API Drawable;
+
+	struct NW_API GfxCamera;
+
+	struct NW_API FrameBufInfo;
+	struct NW_API TextureInfo;
+
+	struct NW_API VertexBatch1d;
+	struct NW_API VertexBatch2d;
+	struct NW_API VertexShape3d;
+
+	struct NW_API BufferElement;
+
+	struct NW_API SubTexture1d;
+	struct NW_API SubTexture2d;
+	struct NW_API SubTexture3d;
+}
+namespace NW
+{
+	/// graphics_api_types
+	/// Interface:
+	/// -> Give it to the GraphicsApi create function
+	/// -> Check the types for the abstracted usage
+	enum GfxApiTypes : UInt32 {
+		GAPI_DEFAULT = NW_GAPI_OGL,
+		GAPI_OPENGL = NW_GAPI_OGL,
+		GAPI_DIRECTX = NW_GAPI_DX,
+	};
+	enum GfxBufferTypes : UInt32 {
+		GBT_DEFAULT = NW_GFX_BUFFER_VERTEX,
+		GBT_VERTEX = NW_GFX_BUFFER_VERTEX,
+		GBT_INDEX = NW_GFX_BUFFER_INDEX,
+		GBT_SHADER = NW_GFX_BUFFER_SHADER,
+	};
+	enum FrameBufTypes : UInt32 {
+		FBT_DEFAULT = NW_FRAMEBUF_IN_OUT,
+		FBT_IN = NW_FRAMEBUF_IN, FBT_OUT = NW_FRAMEBUF_OUT, FBT_IN_OUT = NW_FRAMEBUF_IN_OUT,
+	};
+	/// Data that can be loaded in a shader
+	enum ShaderDataTypes : UInt32
+	{
+		SDT_DEFAULT = NW_FLOAT32,
+		SDT_BOOL = NW_BOOL, SDT_INT8 = NW_INT8, SDT_UINT8 = NW_UINT8,
+		SDT_INT16 = NW_INT16, SDT_UINT16 = NW_UINT16,
+		SDT_INT32 = NW_INT32, SDT_UINT32 = NW_UINT32,
+		SDT_FLOAT32 = NW_FLOAT32, SDT_FLOAT64 = NW_FLOAT64,
+
+		SDT_SAMPLER = NW_SAMPLER_1D
+	};
+	/// Accessible (maintained) shader types
+	enum ShaderTypes : UInt32
+	{
+		ST_DEFAULT = NW_SHADER,
+		ST_SHADER = NW_SHADER,
+		ST_VERTEX = NW_SHADER_VERTEX,
+		ST_GEOMETRY = NW_SHADER_GEOMETRY,
+		ST_PIXEL = NW_SHADER_PIXEL
+	};
+	enum FrameBufs : UInt32
+	{
+		FB_DEFAULT = NW_BUFFER_COLOR_BIT | NW_BUFFER_DEPTH_BIT | NW_BUFFER_STENCIL_BIT,
+		FB_COLOR = NW_BUFFER_COLOR_BIT,
+		FB_DEPTH = NW_BUFFER_DEPTH_BIT,
+		FB_STENCIL = NW_BUFFER_STENCIL_BIT
+	};
+	enum GfxPrimitiveTypes : UInt32
+	{
+		GPT_DEFAULT = NW_TRIANGLES,
+		GPT_POINTS = NW_POINTS,
+		GPT_LINES = NW_LINES,
+		GPT_LINE_LOOP = NW_LINE_LOOP,
+		GPT_LINE_STRIP = NW_LINE_STRIP,
+		GPT_TRIANGLES = NW_TRIANGLES,
+		GPT_TRIANGLE_FAN = NW_TRIANGLE_FAN,
+		GPT_TRIANGLE_STRIP = NW_TRIANGLE_STRIP,
+		GPT_QUADS = NW_QUADS,
+		GPT_QUADS_STRIP = NW_QUAD_STRIP
+	};
+	enum DrawModes : UInt32 {
+		DM_DEFAULT = NW_FILL,
+		DM_LINE = NW_LINE, DM_FILL = NW_FILL
+	};
+	enum FacePlanes : UInt32 {
+		FACE_DEFAULT = NW_FRONT_AND_BACK,
+		FACE_FRONT_AND_BACK = NW_FRONT_AND_BACK,
+		FACE_BACK = NW_BACK, FACE_FRONT = NW_FRONT,
+		FACE_LEFT = NW_LEFT, FACE_RIGTH = NW_RIGHT,
+	};
+	enum ProcessingModes : UInt32 {
+		PM_BLEND = NW_BLEND,
+		PM_MULTISAMPLE = NW_MULTISAMPLE,
+		PM_CULL_FACE = NW_CULL_FACE,
+		PM_DEPTH_TEST = NW_DEPTH_TEST,
+		PM_STENCIL_TEST = NW_STENCIL_TEST
+	};
+	enum BlendConfigs : UInt32 {
+		BC_SRC_DEFAULT = 0, BC_DEST_DEFAULT = 0,
+		BC_SRC_ALPHA = NW_SRC_ALPHA, BC_SRC_COLOR = NW_SRC_COLOR,
+		BC_ONE_MINUS_SRC_ALPHA = NW_ONE_MINUS_SRC_ALPHA,
+		BC_ONE_MINUS_SRC_COLOR = NW_ONE_MINUS_SRC_COLOR,
+		BC_DST_ALPHA = NW_DST_ALPHA, BC_DST_COLOR = NW_DST_COLOR,
+		BC_ONE_MUNUS_DST_ALPHA = NW_ONE_MINUS_DST_ALPHA,
+		BC_ONE_MINUS_DST_COLOR = NW_ONE_MINUS_DST_COLOR,
+	};
+	enum CullFaceConfigs : UInt32 {
+		CFC_DEFAULT = 0
+	};
+	enum DepthConfigs : UInt32 {
+		DTC_DEFAULT = NW_GREATER,
+		DTC_EQUAL = NW_EQUAL,
+		DTC_LESS = NW_LESS, DTC_LEQUAL = NW_LEQUAL,
+		DTC_GREATER = NW_GREATER, DTC_GEQUAL = NW_GEQUAL,
+		DTC_NEVER = NW_NEVER, DTC_ALWAYS = NW_ALWAYS
+	};
+	enum StencilConfigs : UInt32 {
+		STC_DEFAULT = 0,
+		STC_KEEP = NW_KEEP, STC_ZERO = NW_ZERO, STC_REPLACE = NW_REPLACE, STC_INVERT = NW_INVERT,
+		STC_INCR = NW_INCR, STC_DECR = NW_DECR
+	};
+	enum TextureTypes : UInt32 {
+		TXT_NONE = 0,
+		TXT_1D = NW_TEXTURE_1D, TXT_2D = NW_TEXTURE_2D, TXT_3D = NW_TEXTURE_3D,
+		TXT_2D_MULTISAMPLE = NW_TEXTURE_2D_MULTISAMPLE, TXT_3D_MULTISAMPLE = NW_TEXTURE_3D_MULTISAMPLE
+	};
+	enum TextureWraps : UInt32 {
+		TXW_NONE = 0, TXW_REPEAT = NW_TEXTURE_WRAP_REPEAT, TXW_CLAMP = NW_TEXTURE_WRAP_CLAMP,
+	};
+	enum TextureFilters : UInt32 {
+		TXF_LINEAR = NW_TEXTURE_FILTER_LINEAR, TXF_NEAREST = NW_TEXTURE_FILTER_NEAREST,
+	};
+	enum TextureFormats : UInt32 {
+		TXF_NONE = 0,
+		TXF_RED = NW_RED, TXF_GREEN = NW_GREEN, TXF_BLUE = NW_BLUE,
+		TXF_RGB = NW_RGB, TXF_RGBA = NW_RGBA,
+		TXF_RED_INT = NW_RED_INT, TXF_GREEN_INT = NW_GREEN_INT, TXF_BLUE_INT = NW_BLUE_INT,
+		TXF_RGB_INT = NW_RGB_INT, TXF_RGBA_INT = NW_RGBA_INT,
+		TXF_DEPTH = NW_DEPTH, TXF_STENCIL = NW_STENCIL,
+		TXF_DEPTH_STENCIL = NW_DEPTH_STENCIL,
+	};
+	enum TextureInterFormats : UInt32 {
+		TXFI_RED_UINT32 = NW_RED_UINT32, TXFI_RED_INT32 = NW_RED_INT32,
+		TXFI_RGB = NW_RGB, TXFI_RGBA8 = NW_RGBA8,
+		TXFI_DEPTH24 = NW_DEPTH24, TXFI_STENCIL8 = NW_STENCIL8,
+		TXFI_DEPTH24_STENCIL8 = NW_DEPTH24_STENCIL8,
+	};
+	enum PixelFormats : UInt32 {
+		FBAT_DEFAULT = 0,
+		PXF_INT8 = NW_INT8, PXF_UINT8 = NW_UINT8,
+		PXF_INT32 = NW_INT32, PXF_UINT32 = NW_UINT32,
+		PXF_UINT24_8 = NW_UINT24_8
+	};
+	//	--==</enums>==--
+}
+
+#endif	// NW_GFX_CORE_HPP
+
+/*
+* The project created in 16.01.2021
+* Graphics library as a tool for game engines and applications
+*/

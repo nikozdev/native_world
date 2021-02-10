@@ -27,7 +27,7 @@ in VS_OUT{
 uniform sampler2D unf_tex;
 
 void main(){
-	ps_pxClr0 = vec4(texture(unf_tex, ps_in.texCrd).rgba);
+	ps_pxClr0 = vec4(texture(unf_tex, ps_in.texCrd).rgba) - 0.5f;
 }
 
 )";

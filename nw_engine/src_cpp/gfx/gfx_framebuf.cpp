@@ -1,12 +1,12 @@
-#include <gfx_pch.hpp>
-#include "gfx_framebuf.h"
+#include <nw_pch.hpp>
+#include "gfx/gfx_framebuf.h"
 
-#if (defined GFX_GAPI)
-#include <gfx_engine.h>
-#include <gfx_texture.h>
-#include <gfx_loader.h>
-#endif // GFX_GAPI
-#if (GFX_GAPI & GFX_GAPI_OGL)
+#if (defined NW_GAPI)
+#include <gfx/gfx_api.h>
+#include <gfx/gfx_texture.h>
+#include <gfx/gfx_loader.h>
+#endif // NW_GAPI
+#if (NW_GAPI & NW_GAPI_OGL)
 namespace NW
 {
 	FrameBuf::FrameBuf(const char* strName, const FrameBufInfo& rfbInfo) :
@@ -24,11 +24,11 @@ namespace NW
 	// --setters
 	void FrameBuf::SetViewport(V4i rectViewport) { m_Info.rectViewport = rectViewport; }
 	void FrameBuf::SetClearColor(V4f rgbaClear) { m_rgbaClear = rgbaClear; }
-	void FrameBuf::AttachTexture(RefKeeper<Texture>& rTex) {
-		m_Attachments.push_back(rTex);
+	void FrameBuf::AttachTexture(Texture& rTex) {
+		m_Attachments.push_back( RefKeeper<Texture>{*DataSys::GetDR(rTex.GetId())} );
 	}
 	void FrameBuf::DetachTexture(UInt32 unIdx) {
-		NW_ASSERT(unIdx <= m_Attachments.size(), "Overflow");
+		NWL_ASSERT(unIdx <= m_Attachments.size(), "Overflow");
 		m_Attachments.erase(m_Attachments.begin() + unIdx);
 	}
 	// --==<core_methods>==--
@@ -58,7 +58,7 @@ namespace NW
 		UInt32 ColorIds[GL_MAX_COLOR_ATTACHMENTS] { 0 };
 
 		for (UInt32 txi = 0; txi < m_Attachments.size(); txi++) {
-			if (m_Attachments[txi].GetRef() == nullptr) { NW_ERR("Null attachment!"); DetachTexture(txi); }
+			if (m_Attachments[txi].GetRef() == nullptr) { NWL_ERR("Null attachment!"); DetachTexture(txi); }
 			auto& rTex = *m_Attachments[txi];
 			ImageInfo imgInfo = rTex.GetImgInfo();
 			if (m_Info.bResizable) {
@@ -101,7 +101,7 @@ namespace NW
 		else { glDrawBuffer(GL_NONE); }
 
 		bool bIsCompleted = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
-		NW_ASSERT(bIsCompleted, "FrameBufOgl is not created!");
+		NWL_ASSERT(bIsCompleted, "FrameBufOgl is not created!");
 
 		Unbind();
 	}
@@ -127,18 +127,11 @@ namespace NW
 		glDrawPixels(nW, nH, texInfo.texFormat, texInfo.pxFormat, pData);
 		Unbind();
 	}
-
-	FrameBuf* FrameBuf::Create(const char* strName, const FrameBufInfo& rfbInfo) {
-		return GfxEngine::Get().NewT<FrameBuf>(strName, rfbInfo);
-	}
-	static void Create(const char* strName, const FrameBufInfo& rfbInfo, RefKeeper<FrameBuf>& rfmBuf) {
-		rfmBuf.MakeRef<FrameBuf>(GfxEngine::Get().GetMemory(), strName, rfbInfo);
-	}
 	// --==</core_methods>==--
 }
-#endif // GFX_GAPI
+#endif // NW_GAPI
 
-#if (GFX_GAPI & GFX_GAPI_DX)
+#if (NW_GAPI & NW_GAPI_DX)
 namespace NW
 {
 	FrameBuf::FrameBuf(const char* strName, const FrameBufInfo& rfbInfo) :
@@ -156,11 +149,11 @@ namespace NW
 	// --setters
 	void FrameBuf::SetViewport(V4i rectViewport) { m_Info.rectViewport = rectViewport; }
 	void FrameBuf::SetClearColor(V4f rgbaClear) { m_rgbaClear = rgbaClear; }
-	void FrameBuf::AttachTexture(RefKeeper<Texture>& rTex) {
-		m_Attachments.push_back(rTex);
+	void FrameBuf::AttachTexture(Texture& rTex) {
+		m_Attachments.push_back( RefKeeper<Texture>{DataSys::GetDR(rTex.GetId())} );
 	}
 	void FrameBuf::DetachTexture(UInt32 unIdx) {
-		NW_ASSERT(unIdx <= m_Attachments.size(), "Overflow");
+		NWL_ASSERT(unIdx <= m_Attachments.size(), "Overflow");
 		m_Attachments.erase(m_Attachments.begin() + unIdx);
 	}
 	// --==<core_methods>==--
@@ -185,7 +178,7 @@ namespace NW
 		UInt32 ColorIds[3]{ 0 };
 
 		for (UInt32 txi = 0; txi < m_Attachments.size(); txi++) {
-			if (m_Attachments[txi].GetRef() == nullptr) { NW_ERR("Null attachment!"); DetachTexture(txi); }
+			if (m_Attachments[txi].GetRef() == nullptr) { NWL_ERR("Null attachment!"); DetachTexture(txi); }
 			auto& rTex = *m_Attachments[txi];
 			ImageInfo imgInfo = rTex.GetImgInfo();
 			if (m_Info.bResizable) {
@@ -227,7 +220,7 @@ namespace NW
 		else { }
 
 		bool bIsCompleted = false;
-		NW_ASSERT(bIsCompleted, "FrameBufOgl is not created!");
+		NWL_ASSERT(bIsCompleted, "FrameBufOgl is not created!");
 
 		Unbind();
 	}
@@ -248,11 +241,11 @@ namespace NW
 	}
 
 	FrameBuf* FrameBuf::Create(const char* strName, const FrameBufInfo& rfbInfo) {
-		return GfxEngine::Get().NewT<FrameBuf>(strName, rfbInfo);
+		return GfxApi::Get().NewT<FrameBuf>(strName, rfbInfo);
 	}
 	static void Create(const char* strName, const FrameBufInfo& rfbInfo, RefKeeper<FrameBuf>& rfmBuf) {
-		rfmBuf.MakeRef<FrameBuf>(GfxEngine::Get().GetMemory(), strName, rfbInfo);
+		rfmBuf.MakeRef<FrameBuf>(GfxApi::Get().GetMemory(), strName, rfbInfo);
 	}
 	// --==</core_methods>==--
 }
-#endif // GFX_GAPI
+#endif // NW_GAPI

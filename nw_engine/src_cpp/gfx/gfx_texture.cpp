@@ -1,11 +1,11 @@
-#include <gfx_pch.hpp>
-#include "gfx_texture.h"
+#include <nw_pch.hpp>
+#include "gfx/gfx_texture.h"
 
-#if (defined GFX_GAPI)
-#include <gfx_engine.h>
-#include <gfx_loader.h>
-#endif	// GFX_GAPI
-#if (GFX_GAPI & GFX_GAPI_OGL)
+#if (defined NW_GAPI)
+#include <gfx/gfx_api.h>
+#include <gfx/gfx_loader.h>
+#endif	// NW_GAPI
+#if (NW_GAPI & NW_GAPI_OGL)
 namespace NW
 {
 	Texture::Texture(const char* strName, TextureTypes texType) :
@@ -98,7 +98,7 @@ namespace NW
 			glTexImage3DMultisample(m_texType, m_texInfo.unSamples, m_texInfo.texInterFormat,
 				m_imgInfo.nWidth, m_imgInfo.nHeight, m_imgInfo.nDepth, false);
 			break;
-		default: NW_ERR("Undefined texture type"); break;
+		default: NWL_ERR("Undefined texture type"); break;
 		}
 
 		if (m_texInfo.bGenMipmap) { glGenerateMipmap(m_texType); }
@@ -107,11 +107,6 @@ namespace NW
 	}
 	void Texture::Clear(Ptr pValue) {
 		glClearTexImage(m_unRId, 0, m_texInfo.texFormat, m_texInfo.pxFormat, pValue);
-	}
-
-	Texture* Texture::Create(const char* strName, TextureTypes texType) { return GfxEngine::Get().NewT<Texture>(strName, texType); }
-	void Texture::Create(const char* strName, TextureTypes texType, RefKeeper<Texture>& rTex) {
-		rTex.MakeRef<Texture>(GfxEngine::Get().GetMemory(), strName, texType);
 	}
 	// --==</core_methods>==--
 	
@@ -137,7 +132,7 @@ namespace NW
 		case 1: texInfo.texFormat = TXF_RED; texInfo.texInterFormat = TXFI_RED_UINT32; break;
 		case 3: texInfo.texFormat = TXF_RGB; texInfo.texInterFormat = TXFI_RGB; break;
 		case 4: texInfo.texFormat = TXF_RGBA; texInfo.texInterFormat = TXFI_RGBA8; break;
-		default: NW_ERR("Unsupported format!"); bSuccess = false; break;
+		default: NWL_ERR("Unsupported format!"); bSuccess = false; break;
 		}
 		if (!bSuccess) {
 			imgInfo.nWidth = imgInfo.nHeight = imgInfo.nDepth = 1;
@@ -158,9 +153,9 @@ namespace NW
 	// --==</data_methods>==--
 	// --==</Texture>==--
 }
-#endif // GFX_GAPI
+#endif // NW_GAPI
 
-#if (GFX_GAPI & GFX_GAPI_DX)
+#if (NW_GAPI & NW_GAPI_DX)
 namespace NW
 {
 	Texture::Texture(const char* strName, TextureTypes texType) :
@@ -213,7 +208,7 @@ namespace NW
 			break;
 		case TXT_3D_MULTISAMPLE:
 			break;
-		default: NW_ERR("Undefined texture type"); break;
+		default: NWL_ERR("Undefined texture type"); break;
 		}
 
 		if (m_texInfo.bGenMipmap) { }
@@ -223,9 +218,9 @@ namespace NW
 	void Texture::Clear(Ptr pValue) {
 	}
 
-	Texture* Texture::Create(const char* strName, TextureTypes texType) { return GfxEngine::Get().NewT<Texture>(strName, texType); }
+	Texture* Texture::Create(const char* strName, TextureTypes texType) { return GfxApi::Get().NewT<Texture>(strName, texType); }
 	void Texture::Create(const char* strName, TextureTypes texType, RefKeeper<Texture>& rTex) {
-		rTex.MakeRef<Texture>(GfxEngine::Get().GetMemory(), strName, texType);
+		rTex.MakeRef<Texture>(GfxApi::Get().GetMemory(), strName, texType);
 	}
 	// --==</core_methods>==--
 
@@ -251,7 +246,7 @@ namespace NW
 		case 1: texInfo.texFormat = TXF_RED; texInfo.texInterFormat = TXFI_RED_UINT32; break;
 		case 3: texInfo.texFormat = TXF_RGB; texInfo.texInterFormat = TXFI_RGB; break;
 		case 4: texInfo.texFormat = TXF_RGBA; texInfo.texInterFormat = TXFI_RGBA8; break;
-		default: NW_ERR("Unsupported format!"); bSuccess = false; break;
+		default: NWL_ERR("Unsupported format!"); bSuccess = false; break;
 		}
 		if (!bSuccess) {
 			imgInfo.nWidth = imgInfo.nHeight = imgInfo.nDepth = 1;
@@ -272,4 +267,4 @@ namespace NW
 	// --==</data_methods>==--
 	// --==</Texture>==--
 }
-#endif // GFX_GAPI
+#endif // NW_GAPI
