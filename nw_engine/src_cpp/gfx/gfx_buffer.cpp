@@ -168,10 +168,6 @@ namespace NW
 	// --==<VertexBuf>==--
 	VertexBuf::VertexBuf() : AGfxBuffer(GBT_VERTEX) { }
 	VertexBuf::~VertexBuf() { }
-
-	// --core_methods
-	VertexBuf* VertexBuf::Create() { return GfxApi::Get().NewT<VertexBuf>(); }
-	void VertexBuf::Create(RefKeeper<VertexBuf>& rvtxBuf) { rvtxBuf.MakeRef<VertexBuf>(); }
 	// --==</VertexBuf>==--
 }
 namespace NW
@@ -179,10 +175,6 @@ namespace NW
 	// --==<IndexBuf>==--
 	IndexBuf::IndexBuf() : AGfxBuffer(GBT_INDEX) { }
 	IndexBuf::~IndexBuf() { }
-
-	// --core_methods
-	IndexBuf* IndexBuf::Create() { return GfxApi::Get().NewT<IndexBuf>(); }
-	void IndexBuf::Create(RefKeeper<IndexBuf>& ridxBuf) { ridxBuf.MakeRef<IndexBuf>(); }
 	// --==</IndexBuf>==--
 }
 namespace NW
@@ -203,16 +195,13 @@ namespace NW
 		if (m_szData < rBufLayout.GetSize()) { SetData(rBufLayout.GetSize()); }
 		for (auto& rBlock : rBufLayout.GetBlocks()) { Bind(rBlock.unBindPoint, rBlock.szAll, rBlock.szOffset); }
 	}
-
-	ShaderBuf* ShaderBuf::Create() { return GfxApi::Get().NewT<ShaderBuf>(); }
-	void ShaderBuf::Create(RefKeeper<ShaderBuf>& rshdBuf) { rshdBuf.MakeRef<ShaderBuf>(); }
 	// --==</AShaderBuf>==--
 }
 namespace NW
 {
 	VertexArr::VertexArr() :
 		m_unRId(0), m_bIsBound(false),
-		m_gpType(PT_TRIANGLES) { }
+		m_gpType(GPT_TRIANGLES) { }
 	VertexArr::~VertexArr() { }
 
 	// --setters
@@ -234,18 +223,15 @@ namespace NW
 	void VertexArr::CreateVtxBuffer()
 	{
 		RefKeeper<VertexBuf> vtxBuf;
-		VertexBuf::Create(vtxBuf);
+		vtxBuf.MakeRef<VertexBuf>();
 		AddVtxBuffer(vtxBuf);
 	}
 	void VertexArr::CreateIdxBuffer()
 	{
 		RefKeeper<IndexBuf> idxBuf;
-		IndexBuf::Create(idxBuf);
+		m_idxBuf.MakeRef<IndexBuf>();
 		SetIdxBuffer(idxBuf);
 	}
-
-	VertexArr* VertexArr::Create() { return GfxApi::Get().NewT<VertexArr>(); }
-	void VertexArr::Create(RefKeeper<VertexArr>& rvtxArr) { rvtxArr.MakeRef<VertexArr>(); }
 	// --==</core_methods>==--
 }
 #endif // NW_GAPI

@@ -15,11 +15,11 @@ namespace NWG
 		virtual bool Init() override;
 		virtual void OnQuit() override;
 		virtual void Update() override;
-		virtual void OnEvent(MouseEvent& rmEvt) override;
+		virtual void OnEvent(CursorEvent& rmEvt) override;
 		virtual void OnEvent(KeyboardEvent& rkEvt) override;
 		virtual void OnEvent(WindowEvent& rwEvt) override;
 	private:
-		CoreEngine& m_rCore;
+		CoreEngine& m_rEngine;
 		DArray<UInt32> m_eIds;
 	};
 }
@@ -36,14 +36,14 @@ namespace NWG
 		virtual bool Init() override;
 		virtual void OnQuit() override;
 		virtual void Update() override;
-		virtual void OnEvent(MouseEvent& rmEvt) override;
+		virtual void OnEvent(CursorEvent& rmEvt) override;
 		virtual void OnEvent(KeyboardEvent& rkEvt) override;
 		virtual void OnEvent(WindowEvent& rwEvt) override;
 	private:
 		inline void BeginDraw();
 		inline void EndDraw();
 	private:
-		CoreEngine& m_rCore;
+		CoreEngine& m_rEngine;
 
 		ImGuiContext* m_pGuiContext;
 		ImGuiIO* m_pGuiIO;

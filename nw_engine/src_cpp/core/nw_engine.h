@@ -5,6 +5,7 @@
 #include <core/nw_window.h>
 #include <gfx/gfx_api.h>
 
+
 namespace NW
 {
 	/// CoreEngine class
@@ -22,21 +23,23 @@ namespace NW
 		inline const char* GetName() const	{ return &m_strName[0]; }
 		inline CoreWindow* GetWindow()		{ return m_pWindow.GetRef(); }
 		inline GfxApi* GetGfx()				{ return m_pGfx.GetRef(); }
-		// --setters
-		void SetName(const char* strName)	{ strcpy(&m_strName[0], &strName[0]); }
+		inline Keyboard& GetKeyboard()		{ return m_Keyboard; }
+		inline Cursor& GetCursor()			{ return m_Cursor; }
 		// --core_methods
 		virtual void Run() override;
 		virtual bool Init() override;
 		virtual void Quit() override;
 		virtual void Update() override;
 		virtual void OnEvent(AEvent& rEvt) override;
-
+		// --data_methods
 		String FDialogLoad(const char* strFilter);
 		String FDialogSave(const char* strFilter);
 	private:
-		Char m_strName[256];
+		const char* m_strName;
 		RefKeeper<CoreWindow> m_pWindow;
 		RefKeeper<GfxApi> m_pGfx;
+		Keyboard m_Keyboard;
+		Cursor m_Cursor;
 	};
 }
 

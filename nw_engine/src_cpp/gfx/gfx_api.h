@@ -93,20 +93,19 @@ namespace NW
 	}
 	inline OutStream& operator<<(OutStream& rStream, GfxInfo& rgInfo) { return rgInfo.operator<<(rStream); }
 }
-#if (NW_GAPI & NW_GAPI_OGL)
 namespace NW
 {
 	/// GraphicsApi class
 	class NW_API GfxApi
 	{
 	public:
-		GfxApi();
+		GfxApi(CoreWindow& rWindow);
 		GfxApi(const GfxApi& rCpy) = delete;
 		~GfxApi();
 		// --getters
-		inline const GfxInfo& GetInfo() const { return m_Info; }
-		inline const GfxConfig& GetConfigs() { return m_Config; }
-		inline FrameBuf* GetFrameBuf() { return m_pfmBuf; }
+		inline const GfxInfo& GetInfo() const { return m_gInfo; }
+		inline const GfxConfig& GetConfigs() { return m_gConfig; }
+		inline FrameBuf* GetFrameBuf() { return m_pfb; }
 		// --setters
 		void SetModes(Bit bEnable, ProcessingModes pModes);
 		void SetViewport(Int32 nX, Int32 nY, Int32 nWidth, Int32 nHeight);
@@ -117,23 +116,40 @@ namespace NW
 		void SetDepthFunc(DepthConfigs funcId);
 		void SetStencilFunc(StencilConfigs funcId, UInt32 unRefValue, UInt8 unBitMask);
 		void SetFrameBuf(FrameBuf* pfmBuf);
+		// --predicates
+		inline bool IsDrawing() { return m_bIsDrawing; }
 		// --operators
 		inline void operator=(const GfxApi& rCpy) = delete;
+		inline void operator delete(Ptr pBlock) = delete;
+		inline void operator delete[](Ptr pBlock) = delete;
 		// --core_methods
 		bool Init();
 		void OnQuit();
 		void Update();
-		
+		void BeginDraw();
+		void EndDraw();
 		void OnDraw(VertexArr& rVtxArray, GfxMaterial& rgMtl);
 		void OnDraw(Drawable& rDrb);
 	private:
-		GfxInfo m_Info;
-		GfxConfig m_Config;
+		inline bool InitDevice();
+		inline void QuitDevice();
+	private:
+		GfxInfo m_gInfo;
+		GfxConfig m_gConfig;
+		CoreWindow* m_pWindow;
+		Bit m_bIsDrawing;
 
-		FrameBuf* m_pfmBuf;
+		FrameBuf* m_pfb;
+#if (NW_GAPI & NW_GAPI_OGL)
 		Drawable m_drbScreen;
+#endif
+#if (NW_GAPI & NW_GAPI_DX)
+		ID3D11Device* m_pDevice;
+		ID3D11DeviceContext* m_pContext;
+		IDXGISwapChain* m_pSwap;
+		ID3D11RenderTargetView* m_pTarget;
+#endif
 	};
 }
-#endif
 #endif	// NW_GAPI
 #endif // NW_GFX_API_H

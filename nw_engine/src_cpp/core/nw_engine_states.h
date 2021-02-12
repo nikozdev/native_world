@@ -16,7 +16,7 @@ namespace NW
 		virtual bool Init() override;
 		virtual void OnQuit() override;
 		virtual void Update() override;
-		virtual void OnEvent(MouseEvent& rmEvt) override;
+		virtual void OnEvent(CursorEvent& rmEvt) override;
 		virtual void OnEvent(KeyboardEvent& rkEvt) override;
 		virtual void OnEvent(WindowEvent& rwEvt) override;
 	private:
@@ -25,6 +25,27 @@ namespace NW
 		CoreEngine& m_rEngine;
 
 		RefKeeper<ShaderBuf> m_pShdBuf;
+	};
+}
+namespace NW
+{
+	/// GfxState class
+	class GfxDxState : public NWL::AEngineState
+	{
+	public:
+		GfxDxState();
+		~GfxDxState();
+		// --core_methods
+		virtual bool Init() override;
+		virtual void OnQuit() override;
+		virtual void Update() override;
+		virtual void OnEvent(CursorEvent& rmEvt) override;
+		virtual void OnEvent(KeyboardEvent& rkEvt) override;
+		virtual void OnEvent(WindowEvent& rwEvt) override;
+	private:
+		inline void DrawScene();
+	private:
+		CoreEngine& m_rEngine;
 	};
 }
 

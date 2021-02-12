@@ -1,38 +1,37 @@
 #include <nw_pch.hpp>
 #include "gfx/gfx_api.h"
-
+#if (defined NW_GAPI)
 #include <gfx/gfx_tools.h>
 #include <gfx/gfx_framebuf.h>
 #include <gfx/gfx_drawable.h>
-
 #include <gfx/gfx_camera.h>
 #include <gfx/gfx_shader.h>
 #include <gfx/gfx_material.h>
 #include <gfx/gfx_texture.h>
-
-#include <../src_glsl/shd_screen.hpp>
-
-#if (defined NW_GAPI)
 #include <gfx/gfx_loader.h>
+#include <../src_glsl/shd_screen.hpp>
+#include <core/nw_window.h>
 #if (NW_GAPI & NW_GAPI_OGL)
 namespace NW
 {
-	GfxApi::GfxApi() :
-		m_Info(GfxInfo()), m_Config(GfxConfig()),
-		m_pfmBuf(nullptr) { }
+	GfxApi::GfxApi(CoreWindow& rWindow) :
+		m_gInfo(GfxInfo()), m_gConfig(GfxConfig()),
+		m_pWindow(&rWindow),
+		m_pTarget(nullptr) { }
 	GfxApi::~GfxApi() { }
 
 	// --setters
 	void GfxApi::SetModes(Bit bEnable, ProcessingModes pModes) {
+		
 		switch (pModes) {
 		case PM_BLEND:
-			m_Config.Blending.bEnable = bEnable;
+			m_gConfig.Blending.bEnable = bEnable;
 			break;
 		case PM_DEPTH_TEST:
-			m_Config.DepthTest.bEnable = bEnable;
+			m_gConfig.DepthTest.bEnable = bEnable;
 			break;
 		case PM_CULL_FACE:
-			m_Config.Culling.bEnable = bEnable;
+			m_gConfig.Culling.bEnable = bEnable;
 			break;
 		default: return; break;
 		}
@@ -47,64 +46,53 @@ namespace NW
 		glViewport(nX, nY, nW, nH);
 	}
 	void GfxApi::SetDrawMode(DrawModes dMode, FacePlanes facePlane) {
-		m_Config.General.PolyMode.dMode = dMode;
-		m_Config.General.PolyMode.facePlane = facePlane;
+		m_gConfig.General.PolyMode.dMode = dMode;
+		m_gConfig.General.PolyMode.facePlane = facePlane;
 		glPolygonMode(facePlane, dMode);
 	}
 	void GfxApi::SetLineWidth(Float32 nLineWidth) {
-		m_Config.General.nLineWidth = nLineWidth;
+		m_gConfig.General.nLineWidth = nLineWidth;
 		glLineWidth(nLineWidth);
 	}
 	void GfxApi::SetPixelSize(Float32 nPxSize) {
-		m_Config.General.nPixelSize = nPxSize;
+		m_gConfig.General.nPixelSize = nPxSize;
 		glPointSize(nPxSize);
 	}
 	void GfxApi::SetBlendFunc(BlendConfigs bcSrcFactor, BlendConfigs bcDestFactor) {
-		m_Config.Blending.FactorSrc = bcSrcFactor;
-		m_Config.Blending.FactorDest = bcDestFactor;
+		m_gConfig.Blending.FactorSrc = bcSrcFactor;
+		m_gConfig.Blending.FactorDest = bcDestFactor;
 		glBlendFunc(bcSrcFactor, bcDestFactor);
 	}
 	void GfxApi::SetDepthFunc(DepthConfigs dcFunc) {
-		m_Config.DepthTest.Func = dcFunc;
+		m_gConfig.DepthTest.Func = dcFunc;
 		glDepthFunc(dcFunc);
 	}
 	void GfxApi::SetStencilFunc(StencilConfigs scFunc, UInt32 unRefValue, UInt8 unBitMask) {
-		m_Config.StencilTest.Func = scFunc;
-		m_Config.StencilTest.nBitMask = unBitMask;
-		m_Config.StencilTest.nRefValue = unRefValue;
+		m_gConfig.StencilTest.Func = scFunc;
+		m_gConfig.StencilTest.nBitMask = unBitMask;
+		m_gConfig.StencilTest.nRefValue = unRefValue;
 		glStencilFunc(scFunc, unRefValue, unBitMask);
 	}
 	void GfxApi::SetFrameBuf(FrameBuf* pfmBuf) {
-		m_pfmBuf = pfmBuf;
+		m_pTarget = pfmBuf;
 		NWL_ASSERT(pfmBuf->GetAttachment(0) != nullptr, "There must be at least one attachment!");
-		m_drbScreen.gMtl->SetTexture(m_pfmBuf->GetAttachment(0));
+		m_drbScreen.gMtl->SetTexture(m_pTarget->GetAttachment(0));
 	}
 	// --==<core_methods>==--
 	bool GfxApi::Init()
 	{
-		
-#if (defined NWL_PLATFORM_WINDOWS && false)
-		m_pModule = LoadLibraryA("opengl32.dll");
-		if (m_pModule == nullptr) {
-			NWL_ERR("Failed to load graphics library!");
-			delete[] m_Memory.GetDataBeg();
-			m_Memory = MemArena(nullptr, 0);
-			return false;
-		}
-#else
 		if (!gladLoadGL()) { NWL_ERR("Failed to load graphics library!"); return false; }
-#endif
 		{
 			String str = ((const char*)glGetString(GL_RENDERER));
-			strcpy(&m_Info.strRenderer[0], &str[0]);
+			strcpy(&m_gInfo.strRenderer[0], &str[0]);
 			str = ((const char*)glGetString(GL_VERSION));
-			strcpy(&m_Info.strVersion[0], &str[0]);
+			strcpy(&m_gInfo.strVersion[0], &str[0]);
 			str = ((const char*)glGetString(GL_VENDOR));
-			strcpy(&m_Info.strVendor[0], &str[0]);
+			strcpy(&m_gInfo.strVendor[0], &str[0]);
 			str = ((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
-			strcpy(&m_Info.strShdLang[0], &str[0]);
+			strcpy(&m_gInfo.strShdLang[0], &str[0]);
 		}
-		std::cout << m_Info;
+		std::cout << m_gInfo;
 		{	// textures
 			Texture* pTex = nullptr;
 			ImageInfo imgInfo;
@@ -181,28 +169,36 @@ namespace NW
 				SetFrameBuf(pfmBuf);
 			}
 		}
+		glClearColor(0.5f, 0.0f, 1.0f, 1.0f);
+
 		return true;
 	}
 	void GfxApi::OnQuit()
 	{
+		if (m_pWindow == nullptr) { return; }
 		m_drbScreen = Drawable();
 
 		DataSys::GetStorage<Shader>().clear();
 		DataSys::GetStorage<GfxMaterial>().clear();
 		DataSys::GetStorage<FrameBuf>().clear();
 		DataSys::GetStorage<Texture>().clear();
-#if (defined NW_PLATFORM_WINDOWS && false)
-		FreeLibrary(m_pModule);
-#endif
+		
+		m_pWindow = nullptr;
 	}
 
 	void GfxApi::Update()
 	{
+	}
+	void GfxApi::BeginDraw() {
+		m_pTarget->Bind();
+	}
+	void GfxApi::EndDraw() {
+		m_pTarget->Unbind();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		OnDraw(m_drbScreen);
 	}
-	
+
 	void GfxApi::OnDraw(VertexArr& rVtxArr, GfxMaterial& rgMtl) {
 		rgMtl.Enable();
 		rVtxArr.Bind();
@@ -232,6 +228,145 @@ namespace NW
 }
 #endif
 #if (NW_GAPI & NW_GAPI_DX)
+namespace NW
+{
+	GfxApi::GfxApi(CoreWindow& rWindow) :
+		m_gInfo(GfxInfo()), m_gConfig(GfxConfig()),
+		m_pWindow(&rWindow), m_bIsDrawing(false),
+		m_pDevice(nullptr), m_pSwap(nullptr) { }
+	GfxApi::~GfxApi() { }
+
+	// --setters
+	void GfxApi::SetModes(Bit bEnable, ProcessingModes pModes) {
+		switch (pModes) {
+		case PM_BLEND:
+			m_gConfig.Blending.bEnable = bEnable;
+			break;
+		case PM_DEPTH_TEST:
+			m_gConfig.DepthTest.bEnable = bEnable;
+			break;
+		case PM_CULL_FACE:
+			m_gConfig.Culling.bEnable = bEnable;
+			break;
+		default: return; break;
+		}
+		if (bEnable) {
+		}
+		else {
+		}
+	}
+	void GfxApi::SetViewport(Int32 nX, Int32 nY, Int32 nW, Int32 nH) {
+	}
+	void GfxApi::SetDrawMode(DrawModes dMode, FacePlanes facePlane) {
+		m_gConfig.General.PolyMode.dMode = dMode;
+		m_gConfig.General.PolyMode.facePlane = facePlane;
+	}
+	void GfxApi::SetLineWidth(Float32 nLineWidth) {
+		m_gConfig.General.nLineWidth = nLineWidth;
+	}
+	void GfxApi::SetPixelSize(Float32 nPxSize) {
+		m_gConfig.General.nPixelSize = nPxSize;
+	}
+	void GfxApi::SetBlendFunc(BlendConfigs bcSrcFactor, BlendConfigs bcDestFactor) {
+		m_gConfig.Blending.FactorSrc = bcSrcFactor;
+		m_gConfig.Blending.FactorDest = bcDestFactor;
+	}
+	void GfxApi::SetDepthFunc(DepthConfigs dcFunc) {
+		m_gConfig.DepthTest.Func = dcFunc;
+	}
+	void GfxApi::SetStencilFunc(StencilConfigs scFunc, UInt32 unRefValue, UInt8 unBitMask) {
+		m_gConfig.StencilTest.Func = scFunc;
+		m_gConfig.StencilTest.nBitMask = unBitMask;
+		m_gConfig.StencilTest.nRefValue = unRefValue;
+	}
+	void GfxApi::SetFrameBuf(FrameBuf* pfmBuf) {
+	}
+	// --==<core_methods>==--
+	bool GfxApi::Init()
+	{
+		if (m_pWindow == nullptr) { return false; }
+
+		if (!InitDevice()) { return false; }
+
+		ID3D11Resource* pdrBackBuf = nullptr;
+		m_pSwap->GetBuffer(0, __uuidof(ID3D11Resource), reinterpret_cast<Ptr*>(&pdrBackBuf));
+		m_pDevice->CreateRenderTargetView(pdrBackBuf, nullptr, &m_pTarget);
+		pdrBackBuf->Release();
+
+		std::cout << m_gInfo;
+		return true;
+	}
+	void GfxApi::OnQuit()
+	{
+		m_pTarget->Release();
+		m_pContext->Release();
+		QuitDevice();
+	}
+
+	void GfxApi::Update()
+	{
+		const Float32 rgbaColor[] = { cosf(static_cast<Float32>(TimeSys::GetCurrS())), sinf(static_cast<Float32>(TimeSys::GetCurrS())), 0.3f, 1.0f };
+		m_pSwap->Present(1u, 0u);
+		m_pContext->ClearRenderTargetView(m_pTarget, rgbaColor);
+	}
+	void GfxApi::BeginDraw()
+	{
+		NWL_ASSERT(!m_bIsDrawing, "Is already drawing");
+		m_bIsDrawing = true;
+	}
+	void GfxApi::EndDraw()
+	{
+		NWL_ASSERT(m_bIsDrawing, "Is not drawing now");
+		m_bIsDrawing = false;
+	}
+
+	void GfxApi::OnDraw(VertexArr& rVtxArr, GfxMaterial& rgMtl) {
+	}
+	void GfxApi::OnDraw(Drawable& rDrb) {
+	}
+	// --==<implementation_methods>==--
+	inline bool GfxApi::InitDevice() {
+		DXGI_SWAP_CHAIN_DESC swapDesc{ 0 };
+		// describe a swapchain
+		swapDesc.BufferDesc.Width = 0;
+		swapDesc.BufferDesc.Height = 0;
+		swapDesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		swapDesc.BufferDesc.RefreshRate.Numerator = 0;
+		swapDesc.BufferDesc.RefreshRate.Denominator = 0;
+		swapDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+		swapDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+		swapDesc.SampleDesc.Count = 1;
+		swapDesc.SampleDesc.Quality = 0;
+		swapDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		swapDesc.BufferCount = 1;
+		swapDesc.OutputWindow = m_pWindow->GetNative();
+		swapDesc.Windowed = TRUE;
+		swapDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+		swapDesc.Flags = 0;
+
+		D3D11CreateDeviceAndSwapChain(
+			nullptr,					// default adapter
+			D3D_DRIVER_TYPE_HARDWARE,	// hardware device
+			nullptr,					// the hmodule binary we want to load
+			NULL,						// flags
+			nullptr,					// any feature levels
+			NULL,						// any levels...
+			D3D11_SDK_VERSION,			// soft development kit version of the system
+			&swapDesc,					// descriptor for the swap chain
+			&m_pSwap,					// 
+			&m_pDevice,					// 
+			nullptr,					// output feature level pointer
+			&m_pContext					// prt to prt for the context
+		);
+
+		return true;
+	}
+	inline void GfxApi::QuitDevice() {
+		m_pSwap->Release();
+		m_pDevice->Release();
+	}
+	// --==</implementation_methods>==--
+}
 #endif
 #endif	// NW_GAPI
 

@@ -13,37 +13,31 @@ namespace NWG
 {
 	GamerState::GamerState() :
 		AEngineState("gamer_state"),
-		m_rCore(CoreEngine::Get()) { }
+		m_rEngine(CoreEngine::Get()) { }
 	GamerState::~GamerState() { }
 
 	// --==<core_methods>==--
-	bool GamerState::Init() {
+	bool GamerState::Init()
+	{
 		return true;
 	}
-	void GamerState::OnQuit() {
+	void GamerState::OnQuit()
+	{
 	}
-	void GamerState::Update() {
+	void GamerState::Update()
+	{
+		m_rEngine.GetGfx()->BeginDraw();
+		m_rEngine.GetGfx()->EndDraw();
 	}
 
-	void GamerState::OnEvent(MouseEvent& rmEvt) { }
+	void GamerState::OnEvent(CursorEvent& rmEvt) { }
 	void GamerState::OnEvent(KeyboardEvent& rkEvt) {
 		switch (rkEvt.evType) {
-		case ET_KEY_RELEASE:
-			switch (rkEvt.unKeyCode) {
-			case NW_KEY_N_78:
-				for (UInt32 ei = 0; ei < 100; ei++) {
-					m_eIds.push_back(EntSys::AddEnt());
-					CmpSys::AddCmp<Gfx2dCmp>(m_eIds.back());
-					CmpSys::AddCmp<TFormCmp>(m_eIds.back());
-				}
+		case ET_KEYBOARD_RELEASE:
+			switch (rkEvt.keyCode) {
+			case KC_N:
 				break;
-			case NW_KEY_R_82:
-				for (UInt32 ei = 0; ei < 100; ei++) {
-					if (!m_eIds.empty()) {
-						EntSys::RmvEnt(m_eIds.back());
-						m_eIds.pop_back();
-					}
-				}
+			case KC_R:
 				default: break;
 			case NWL::KC_K1:
 				break;
@@ -61,7 +55,7 @@ namespace NWG
 {
 	GuiState::GuiState() :
 		AEngineState("gui_state"),
-		m_rCore(CoreEngine::Get()),
+		m_rEngine(CoreEngine::Get()),
 		m_bDockspace(true), m_bFullScreenPersist(true),
 		m_pGuiContext(nullptr), m_pGuiIO(nullptr), m_pGuiStyle(nullptr) { }
 	GuiState::~GuiState() { }
@@ -86,7 +80,9 @@ namespace NWG
 				m_pGuiStyle->WindowRounding = 0.0f;
 				m_pGuiStyle->Colors[ImGuiCol_WindowBg].w = 1.0f;
 			}
-			ImGui_ImplGlfw_InitForOpenGL(reinterpret_cast<GLFWwindow*>(NW::CoreEngine::Get().GetWindow()->GetNative()), true);
+#if(NW_WAPI & NW_WAPI_GLFW)
+			ImGui_ImplGlfw_InitForOpenGL(m_rEngine.GetWindow()->GetNative(), true);
+#endif
 			ImGui_ImplOpenGL3_Init("#version 430");
 		}
 
@@ -130,7 +126,7 @@ namespace NWG
 		EndDraw();
 	}
 
-	void GuiState::OnEvent(MouseEvent& rmEvt) { }
+	void GuiState::OnEvent(CursorEvent& rmEvt) { }
 	void GuiState::OnEvent(KeyboardEvent& rkEvt) { }
 	void GuiState::OnEvent(WindowEvent& rwEvt) { }
 	// --==</core_methods>==--

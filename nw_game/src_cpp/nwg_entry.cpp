@@ -16,12 +16,11 @@ int main(int nArgs, char* strArgs[])
 		//NWC::CmdEngine* pCmdEngine = &NWC::CmdEngine::Get();
 
 		NW::GfxState gfxState;
-		NWG::GuiState guiState;
 		NWG::GamerState gameState;
-		//NWG::CmdMenuState cmenuState;
+		//NWG::GuiState guiState;
 
 		pGameEngine->AddState(gameState);
-		pGameEngine->AddState(gfxState);
+		//pGameEngine->AddState(gfxState);
 
 		pGameEngine->Run();
 		if (pGameEngine->IsRunning()) { pGameEngine->GetRunThread().join(); }

@@ -23,8 +23,7 @@ namespace NWG
 
 		{
 			ImGui::Text("global memory:\n\t%d blocks | %d bytes", MemInfo::GetGlobal().unAlloc, MemInfo::GetGlobal().szAlloc);
-			const MemInfo& rmInfo = CoreEngine::Get().GetMemory().GetInfo();
-			ImGui::Text("core_engine memory:\n\t%d/%d blocks | %d/%d bytes", rmInfo.unAlloc, rmInfo.unMem, rmInfo.szAlloc, rmInfo.szMem);
+			ImGui::Text("mem_sys memory:\n\t%d blocks | %d bytes", MemSys::GetInfo().unAlloc, MemSys::GetInfo().szAlloc);
 		}
 
 		ImGui::End();

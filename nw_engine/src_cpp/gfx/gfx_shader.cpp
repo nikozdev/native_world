@@ -262,13 +262,17 @@ namespace NW
 				}
 			}
 
-			m_SubShaders.push_back(RefKeeper<SubShader>());
-			if (strToken == "vertex") { m_SubShaders.back().MakeRef<SubShader>(&(m_strName + "_" + strToken)[0], ST_VERTEX); }
-			else if (strToken == "geometry") { m_SubShaders.back().MakeRef<SubShader>(&(m_strName + "_" + strToken)[0], ST_GEOMETRY); }
-			else if (strToken == "pixel") { m_SubShaders.back().MakeRef<SubShader>(&(m_strName + "_" + strToken)[0], ST_PIXEL); }
+			String strName = m_strName + "_";
+			ShaderTypes shdType = ST_DEFAULT;
+			if (strToken == "vertex") { shdType = ST_VERTEX; }
+			else if (strToken == "geometry") { shdType = ST_GEOMETRY; }
+			else if (strToken == "pixel") { shdType = ST_PIXEL; }
 			else { continue; }
+			strName += strToken;
 
+			m_SubShaders.push_back(RefKeeper<SubShader>());
 			auto& rSub = m_SubShaders.back();
+			rSub.SetRef<ADataRes>(*DataSys::GetDR(DataSys::NewDR<SubShader>(&(strName)[0], shdType)));
 			rSub->SetCode(&strCodeStream.str()[0]);
 			strCodeStream = std::stringstream();
 		}
@@ -297,7 +301,7 @@ namespace NW
 namespace NW
 {
 	SubShader::SubShader(const char* strName, ShaderTypes sdType) :
-		TDataRes(strName), ACodeRes(),
+		ACodeRes(strName),
 		m_shdType(sdType), m_unRId(0), m_pOverShader(nullptr) {
 		Remake();
 	}
@@ -328,11 +332,6 @@ namespace NW
 		m_unRId = 0;
 		m_strCode = "";
 	}
-
-	SubShader* SubShader::Create(const char* strName, ShaderTypes sdType) { return GfxApi::Get().NewT<SubShader>(strName, sdType); }
-	void SubShader::Create(const char* strName, ShaderTypes sdType, RefKeeper<SubShader>& rsubShader) {
-		rsubShader.MakeRef<SubShader>(strName, sdType);
-	}
 	// --==</core_methods>==--
 
 	// --==<implementation_methods>==--
@@ -353,7 +352,7 @@ namespace NW
 namespace NW
 {
 	Shader::Shader(const char* strName) :
-		ACodeRes(strName), ACodeRes(),
+		ACodeRes(strName),
 		m_unRId(0), m_bIsEnabled(false) {
 		Remake();
 	}
@@ -404,8 +403,6 @@ namespace NW
 		m_vtxLayout.Reset();
 		m_shdLayout.Reset();
 	}
-	Shader* Shader::Create(const char* strName) { return GfxApi::Get().NewT<Shader>(strName); }
-	void Shader::Create(const char* strName, RefKeeper<Shader>& rShader) { rShader.MakeRef<Shader>(strName); }
 	// --==</core_methods>==--
 
 	// --==<data_methods>==--
@@ -456,14 +453,17 @@ namespace NW
 				}
 			}
 
-			RefKeeper<SubShader> pSubShader;
-			if (strToken == "vertex") { SubShader::Create(&(m_strName + "_" + strToken)[0], ST_VERTEX, pSubShader); }
-			else if (strToken == "geometry") { SubShader::Create(&(m_strName + "_" + strToken)[0], ST_GEOMETRY, pSubShader); }
-			else if (strToken == "pixel") { SubShader::Create(&(m_strName + "_" + strToken)[0], ST_PIXEL, pSubShader); }
+			String strName = m_strName + "_";
+			ShaderTypes shdType = ST_DEFAULT;
+			if (strToken == "vertex") { shdType = ST_VERTEX; }
+			else if (strToken == "geometry") { shdType = ST_GEOMETRY; }
+			else if (strToken == "pixel") { shdType = ST_PIXEL; }
 			else { continue; }
-			m_SubShaders.push_back(pSubShader);
+			strName += strToken;
 
+			m_SubShaders.push_back(RefKeeper<SubShader>());
 			auto& rSub = m_SubShaders.back();
+			//rSub.SetRef<ADataRes>(*DataSys::GetDR(DataSys::NewDR<SubShader>((const char*)(&(strName)[0]), shdType)));
 			rSub->SetCode(&strCodeStream.str()[0]);
 			strCodeStream = std::stringstream();
 		}

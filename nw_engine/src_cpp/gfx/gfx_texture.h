@@ -128,5 +128,49 @@ namespace NW
 	};
 }
 #endif
+#if (NW_GAPI & NW_GAPI_DX)
+namespace NW
+{
+	/// Texture class
+	/// Description:
+	/// -> Set props and data -> LoadData -> MakeTexture -> Bind drawing stuff
+	/// -> Enable -> Draw -> Disable
+	/// --It's a wrapping image which has to wrap a mesh
+	class NW_API Texture : public TDataRes<Texture>
+	{
+	public:
+		Texture(const char* strName, TextureTypes texTypes);
+		~Texture();
+
+		// --getters
+		inline UInt32 GetRenderId() const { return m_unRId; }
+		inline UInt32 GetTexSlot() const { return m_unTexSlot; }
+		inline TextureTypes GetType() const { return m_texType; }
+		inline const TextureInfo& GetTexInfo() const { return m_texInfo; }
+		inline const ImageInfo& GetImgInfo() const { return m_imgInfo; }
+		// --setters
+		void SetInfo(const TextureInfo& rTexInfo);
+		void SetInfo(const ImageInfo& rImgInfo);
+		// --predicates
+		inline Bit IsBound() const { return m_bIsBound; }
+
+		// --core_methods
+		void Bind(UInt32 unTexSlot = 0);
+		void Unbind();
+		void Remake();
+		void Clear(Ptr pValue);
+		// --data_methods
+		virtual bool SaveF(const char* strFPath) override;
+		virtual bool LoadF(const char* strFPath) override;
+	private:
+		TextureTypes m_texType;
+		UInt32 m_unRId;
+		mutable Bit m_bIsBound;
+		UInt32 m_unTexSlot;
+		TextureInfo m_texInfo;
+		ImageInfo m_imgInfo;
+	};
+}
+#endif
 #endif	// NW_GAPI
 #endif // GFX_TEXTURE_H

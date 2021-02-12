@@ -24,12 +24,12 @@
 // --graphics_api_choice
 #define NW_GAPI_OGL		1 << 1
 #define NW_GAPI_DX		1 << 2
-#define NW_GAPI			NW_GAPI_OGL
+#define NW_GAPI			NW_GAPI_DX
 
 // --gui_library_choice
-#define NW_GUI_NATIVE			1 << 1
-#define NW_GUI_IMGUI			1 << 2
-#define NW_GUI					NW_GUI_IMGUI | NW_GUI_NATIVE
+#define NW_GUI_NATIVE	1 << 1
+#define NW_GUI_IMGUI	1 << 2
+#define NW_GUI			NW_GUI_IMGUI | NW_GUI_NATIVE
 
 #define NW_GLOBAL_MEMORY	1 << 24
 // --==</configurations>==--
@@ -569,17 +569,6 @@ namespace NW
 #endif // NW_GAPI
 // --==</support_macroses>==--
 
-// --==<pragmas>==--
-#pragma warning(disable : 4005)
-#pragma warning(disable : 4081)
-#pragma warning(disable : 4099)
-#pragma warning(disable : 4102)
-#pragma warning(disable : 4244)
-#pragma warning(disable : 4267)
-#pragma warning(disable : 4552)
-#pragma warning(disable : 4996)
-// --==</pragmas>==--
-
 #include <nw_pch.hpp>
 
 #if (NW_GAPI & NW_GAPI_OGL)
@@ -597,16 +586,16 @@ namespace NW
 #define GL_UNSIGNED_INT_24_8	0x84FA
 // --==</data_types_ogl>==--
 
-// --==<data_types_glib>==--
+// --==<data_types_nw>==--
 #define NW_ZERO			0
 #define NW_ONE			1
 #define NW_BOOL			GL_BOOL
-#define NW_INT16			GL_SHORT
-#define NW_UINT16			GL_UNSIGNED_SHORT
+#define NW_INT16		GL_SHORT
+#define NW_UINT16		GL_UNSIGNED_SHORT
 #define NW_INT8			GL_BYTE
-#define NW_UINT8			GL_UNSIGNED_BYTE
-#define NW_INT32			GL_INT
-#define NW_UINT32			GL_UNSIGNED_INT
+#define NW_UINT8		GL_UNSIGNED_BYTE
+#define NW_INT32		GL_INT
+#define NW_UINT32		GL_UNSIGNED_INT
 #define NW_FLOAT32		GL_FLOAT
 #define NW_FLOAT64		GL_DOUBLE
 #define NW_FLOAT32_VEC2	(NW_FLOAT32 + 0x0020)
@@ -615,9 +604,9 @@ namespace NW
 #define NW_FLOAT32_MAT2	(NW_FLOAT32 + 0x0100)
 #define NW_FLOAT32_MAT3	(NW_FLOAT32 + 0x0200)
 #define NW_FLOAT32_MAT4	(NW_FLOAT32 + 0x0300)
-#define NW_SAMPLER_1D		GL_SAMPLER_1D
+#define NW_SAMPLER_1D	GL_SAMPLER_1D
 #define NW_UINT24_8		GL_UNSIGNED_INT_24_8
-// --==</data_types_glib>==--
+// --==</data_types_nw>==--
 
 // --==<draw_modes_ogl>==--
 #define GL_POINT			0x1B00
@@ -636,10 +625,10 @@ namespace NW
 #define GL_POLYGON			0x0009
 // --==</draw_modes_ogl>==--
 
-// --==<draw_modes_glib>==--
+// --==<draw_modes_nw>==--
 #define NW_POINT			0x1B00
-#define NW_LINE			0x1B01
-#define NW_FILL			0x1B02
+#define NW_LINE				0x1B01
+#define NW_FILL				0x1B02
 // --primitives
 #define NW_POINTS			0x0000
 #define NW_LINES			0x0001
@@ -647,10 +636,10 @@ namespace NW
 #define NW_LINE_LOOP		0x0002
 #define NW_TRIANGLES		0x0004
 #define NW_TRIANGLE_STRIP	0x0005
-#define NW_TRIANGLE_FAN	0x0006
+#define NW_TRIANGLE_FAN		0x0006
 #define NW_QUADS			0x0007
 #define NW_QUAD_STRIP		0x0008
-#define NW_POLYGON		0x0009
+#define NW_POLYGON			0x0009
 // --==</draw_modes_GFX>==--
 
 // --==<planes_ogl>==--
@@ -660,13 +649,13 @@ namespace NW
 #define GL_RIGHT			0x0407
 #define GL_FRONT_AND_BACK	0x0408
 // --==</planes_ogl>==--
-// --==<planes_glib>==--
+// --==<planes_nw>==--
 #define NW_FRONT			GL_FRONT
-#define NW_BACK			GL_BACK
-#define NW_LEFT			GL_LEFT
+#define NW_BACK				GL_BACK
+#define NW_LEFT				GL_LEFT
 #define NW_RIGHT			GL_RIGHT
 #define NW_FRONT_AND_BACK	GL_FRONT_AND_BACK
-// --==</planes_glib>==--
+// --==</planes_nw>==--
 
 // --==<shaders_ogl>==--
 #define GL_SHADER				0x82E1
@@ -676,12 +665,12 @@ namespace NW
 #define GL_VERTEX_SHADER		0x8B31
 // --==<shaders_ogl>==--
 
-// --==<shaders_glib>==--
+// --==<shaders_nw>==--
 #define NW_SHADER				GL_PROGRAM
 #define NW_SHADER_VERTEX		GL_VERTEX_SHADER
-#define NW_SHADER_GEOMETRY	GL_GEOMETRY_SHADER
-#define NW_SHADER_PIXEL		GL_FRAGMENT_SHADER
-// --==</shaders_glib>==--
+#define NW_SHADER_GEOMETRY		GL_GEOMETRY_SHADER
+#define NW_SHADER_PIXEL			GL_FRAGMENT_SHADER
+// --==</shaders_nw>==--
 
 // --==<configurations_ogl>==--
 #define GL_POINT_SIZE			0x0B11
@@ -721,16 +710,16 @@ namespace NW
 #define GL_DECR					0x1E03
 // --==</configurations_ogl>==--
 
-// --==<configurations_glib>==--
+// --==<configurations_nw>==--
 #define NW_POINT_SIZE				GL_POINT_SIZE
-#define NW_LINE_SMOOTH			GL_LINE_SMOOTH
+#define NW_LINE_SMOOTH				GL_LINE_SMOOTH
 #define NW_LINE_WIDTH				GL_LINE_WIDTH
 
 #define NW_CULL_FACE				GL_CULL_FACE
 #define NW_CULL_FACE_MODE			GL_CULL_FACE_MODE
 #define NW_FRONT_FACE				GL_FRONT_FACE
 #define NW_CW						GL_CW
-#define NW_CCW					GL_CCW
+#define NW_CCW						GL_CCW
 
 #define NW_DEPTH_TEST				GL_DEPTH_TEST
 #define NW_DEPTH_FUNC				GL_DEPTH_FUNC
@@ -742,13 +731,13 @@ namespace NW
 #define NW_BLEND_DST				GL_BLEND_DST
 #define NW_BLEND_SRC				GL_BLEND_SRC
 #define NW_SRC_COLOR				GL_SRC_COLOR
-#define NW_ONE_MINUS_SRC_COLOR	GL_ONE_MINUS_SRC_COLOR
+#define NW_ONE_MINUS_SRC_COLOR		GL_ONE_MINUS_SRC_COLOR
 #define NW_SRC_ALPHA				GL_SRC_ALPHA
-#define NW_ONE_MINUS_SRC_ALPHA	GL_ONE_MINUS_SRC_ALPHA
+#define NW_ONE_MINUS_SRC_ALPHA		GL_ONE_MINUS_SRC_ALPHA
 #define NW_DST_ALPHA				GL_DST_ALPHA
-#define NW_ONE_MINUS_DST_ALPHA	GL_ONE_MINUS_DST_ALPHA
+#define NW_ONE_MINUS_DST_ALPHA		GL_ONE_MINUS_DST_ALPHA
 #define NW_DST_COLOR				GL_DST_COLOR
-#define NW_ONE_MINUS_DST_COLOR	GL_ONE_MINUS_DST_COLOR
+#define NW_ONE_MINUS_DST_COLOR		GL_ONE_MINUS_DST_COLOR
 #define NW_SRC_ALPHA_SATURATE		GL_SRC_ALPHA_SATURATE
 
 #define NW_MULTISAMPLE			GL_MULTISAMPLE
@@ -757,7 +746,7 @@ namespace NW
 #define NW_REPLACE				GL_REPLACE
 #define NW_INCR					GL_INCR
 #define NW_DECR					GL_DECR
-// --==</configurations_glib>==--
+// --==</configurations_nw>==--
 
 // --==<expressions_ogl>==--
 // --constants
@@ -792,36 +781,36 @@ namespace NW
 #define GL_NAND				0x150E
 // --==</expressions_ogl>==--
 
-// --==<expressions_glib>==--
+// --==<expressions_nw>==--
 // --constants
-#define NW_NONE		0
+#define NW_NONE			0
 #define NW_FALSE		0
-#define NW_TRUE		1
+#define NW_TRUE			1
 // --conditions
 #define NW_NEVER		0x0200
-#define NW_LESS		0x0201
+#define NW_LESS			0x0201
 #define NW_EQUAL		0x0202
 #define NW_LEQUAL		0x0203
-#define NW_GREATER	0x0204
-#define NW_NOTEQUAL	0x0205
+#define NW_GREATER		0x0204
+#define NW_NOTEQUAL		0x0205
 #define NW_GEQUAL		0x0206
 #define NW_ALWAYS		0x0207
 // --logic
-#define NW_AND			0x1501
-#define NW_AND_REVERSE	0x1502
-#define NW_COPY			0x1503
-#define NW_AND_INVERTED	0x1504
-#define NW_NOOP			0x1505
-#define NW_XOR			0x1506
+#define NW_AND				0x1501
+#define NW_AND_REVERSE		0x1502
+#define NW_COPY				0x1503
+#define NW_AND_INVERTED		0x1504
+#define NW_NOOP				0x1505
+#define NW_XOR				0x1506
 #define NW_OR				0x1507
-#define NW_NOR			0x1508
+#define NW_NOR				0x1508
 #define NW_EQUIV			0x1509
 #define NW_INVERT			0x150A
 #define NW_OR_REVERSE		0x150B
 #define NW_COPY_INVERTED	0x150C
-#define NW_OR_INVERTED	0x150D
-#define NW_NAND			0x150E
-// --==</expressions_glib>==--
+#define NW_OR_INVERTED		0x150D
+#define NW_NAND				0x150E
+// --==</expressions_nw>==--
 
 // --==<pixel_formats_ogl>==--
 #define GL_RED				0x1903
@@ -847,27 +836,27 @@ namespace NW
 #define GL_DEPTH24_STENCIL8	0x88F0
 // --==</pixel_formats_ogl>==--
 
-// --==<pixel_formats_glib>==--
+// --==<pixel_formats_nw>==--
 #define NW_RED				GL_RED
-#define NW_GREEN				GL_GREEN
+#define NW_GREEN			GL_GREEN
 #define NW_BLUE				GL_BLUE
-#define NW_ALPHA				GL_ALPHA
+#define NW_ALPHA			GL_ALPHA
 #define NW_RGB				GL_RGB
 #define NW_RGBA				GL_RGBA
 #define NW_RED_INT			GL_RED_INTEGER
-#define NW_GREEN_INT			GL_GREEN_INTEGER
+#define NW_GREEN_INT		GL_GREEN_INTEGER
 #define NW_BLUE_INT			GL_BLUE_INTEGER
 #define NW_RGB_INT			GL_RGB_INTEGER
 #define NW_RGBA_INT			GL_RGBA_INTEGER
-#define NW_DEPTH				GL_DEPTH
+#define NW_DEPTH			GL_DEPTH
 #define NW_STENCIL			GL_STENCIL
-#define NW_RED_INT32			GL_R32I
-#define NW_RED_UINT32			GL_R32UI
-#define NW_RGBA8				GL_RGBA8
+#define NW_RED_INT32		GL_R32I
+#define NW_RED_UINT32		GL_R32UI
+#define NW_RGBA8			GL_RGBA8
 #define NW_DEPTH24			GL_DEPTH
 #define NW_STENCIL8			GL_STENCIL
 #define NW_DEPTH24_STENCIL8	GL_DEPTH24_STENCIL8
-// --==</pixel_formats_glib>==--
+// --==</pixel_formats_nw>==--
 
 // --==<textures_ogl>==--
 #define GL_TEXTURE_1D					0x0DE0
@@ -889,7 +878,7 @@ namespace NW
 #define GL_REPEAT						0x2901
 // --==</textures_ogl>==--
 
-// --==<textures_glib>==--
+// --==<textures_nw>==--
 // --types
 #define NW_TEXTURE_1D					GL_TEXTURE_1D
 #define NW_TEXTURE_2D					GL_TEXTURE_2D
@@ -897,7 +886,7 @@ namespace NW
 #define NW_TEXTURE_2D_MULTISAMPLE		GL_TEXTURE_2D_MULTISAMPLE
 #define NW_TEXTURE_3D_MULTISAMPLE		GL_TEXTURE_2D_MULTISAMPLE_ARRAY
 #define NW_DEPTH_STENCIL				GL_DEPTH_STENCIL
-#define NW_DEPTH_STENCIL_ATTACHMENT	GL_DEPTH_STENCIL_ATTACHMENT
+#define NW_DEPTH_STENCIL_ATTACHMENT		GL_DEPTH_STENCIL_ATTACHMENT
 // --filters
 #define NW_TEXTURE_MAG_FILTER			GL_TEXTURE_MAG_FILTER
 #define NW_TEXTURE_MIN_FILTER			GL_TEXTURE_MIN_FILTER
@@ -908,21 +897,21 @@ namespace NW
 #define NW_TEXTURE_WRAP_T				GL_TEXTURE_WRAP_T
 #define NW_TEXTURE_WRAP_R				GL_TEXTURE_WRAP_R
 #define NW_TEXTURE_WRAP_CLAMP			GL_CLAMP
-#define NW_TEXTURE_WRAP_REPEAT		GL_REPEAT
-// --==</textures_glib>==--
+#define NW_TEXTURE_WRAP_REPEAT			GL_REPEAT
+// --==</textures_nw>==--
 
 // --==<gbuffers_ogl>==--
-#define GL_ARRAY_BUFFER			0x8892
-#define GL_ELEMENT_ARRAY_BUFFER	0x8893
-#define GL_UNIFORM_BUFFER		0x8A11
+#define GL_ARRAY_BUFFER				0x8892
+#define GL_ELEMENT_ARRAY_BUFFER		0x8893
+#define GL_UNIFORM_BUFFER			0x8A11
 // --==</gbuffers_ogl>==--
 
 
-// --==<gbuffers_glib>==--
+// --==<gbuffers_nw>==--
 #define NW_GFX_BUFFER_VERTEX		GL_ARRAY_BUFFER
-#define NW_GFX_BUFFER_INDEX		GL_ELEMENT_ARRAY_BUFFER
+#define NW_GFX_BUFFER_INDEX			GL_ELEMENT_ARRAY_BUFFER
 #define NW_GFX_BUFFER_SHADER		GL_UNIFORM_BUFFER
-// --==</gbuffers_glib>==--
+// --==</gbuffers_nw>==--
 
 // --==<framebuffers_ogl>==--
 #define GL_DRAW_BUFFER			0x0C01
@@ -936,14 +925,14 @@ namespace NW
 #define GL_STENCIL_ATTACHMENT	0x8D20
 // --==</buffers_ogl>==--
 
-// --==<framebuffers_glib>==--
-#define NW_FRAMEBUF_IN		GL_DRAW_BUFFER
-#define NW_FRAMEBUF_OUT		GL_READ_BUFFER
-#define NW_FRAMEBUF_IN_OUT	GL_FRAMEBUFFER
-#define NW_BUFFER_COLOR_BIT	GL_COLOR_BUFFER_BIT
-#define NW_BUFFER_DEPTH_BIT	GL_DEPTH_BUFFER_BIT
+// --==<framebuffers_nw>==--
+#define NW_FRAMEBUF_IN			GL_DRAW_BUFFER
+#define NW_FRAMEBUF_OUT			GL_READ_BUFFER
+#define NW_FRAMEBUF_IN_OUT		GL_FRAMEBUFFER
+#define NW_BUFFER_COLOR_BIT		GL_COLOR_BUFFER_BIT
+#define NW_BUFFER_DEPTH_BIT		GL_DEPTH_BUFFER_BIT
 #define NW_BUFFER_STENCIL_BIT	GL_STENCIL_BUFFER_BIT
-// --==</framebuffers_glib>==--
+// --==</framebuffers_nw>==--
 
 // --==<data_load_types_ogl>==--
 #define GL_STATIC_DRAW			0x88E4
@@ -951,11 +940,11 @@ namespace NW
 #define GL_DYNAMIC_DRAW			0x88E8
 // --==</data_load_types_ogl>==--
 
-// --==<data_load_types_glib>==--
+// --==<data_load_types_nw>==--
 #define NW_STATIC_DRAW		GL_STATIC_DRAW 
 #define NW_STREAM_DRAW		GL_STREAM_DRAW 
 #define NW_DYNAMIC_DRAW		GL_DYNAMIC_DRAW
-// --==</data_load_types_glib>==--
+// --==</data_load_types_nw>==--
 
 // --==<error_codes_ogl>==--
 #define GL_NO_ERROR				0
@@ -967,15 +956,15 @@ namespace NW
 #define GL_OUT_OF_MEMORY		0x0505
 // --==</error_codes_ogl>==--
 
-// --==<error_codes_glib>==--
+// --==<error_codes_nw>==--
 #define NW_OK					GL_NO_ERROR         
-#define NW_INVALID_ENUM		GL_INVALID_ENUM     
+#define NW_INVALID_ENUM			GL_INVALID_ENUM     
 #define NW_INVALID_VALUE		GL_INVALID_VALUE    
 #define NW_INVALID_OPERATION	GL_INVALID_OPERATION
 #define NW_STACK_OVERFLOW		GL_STACK_OVERFLOW   
-#define NW_STACK_UNDERFLOW	GL_STACK_UNDERFLOW  
+#define NW_STACK_UNDERFLOW		GL_STACK_UNDERFLOW  
 #define NW_OUT_OF_MEMORY		GL_OUT_OF_MEMORY  
-// --==</error_codes_glib>==--
+// --==</error_codes_nw>==--
 
 // --==<info_ogl>==--
 #define GL_VENDOR				0x1F00
@@ -989,25 +978,25 @@ namespace NW
 #define GL_ATTACHED_SHADERS		0x8B85
 // --==</info_ogl>==--
 
-// --==<info_glib>==--
+// --==<info_nw>==--
 #define NW_COMPILE_STATUS		GL_COMPILE_STATUS
-#define NW_LINK_STATUS		GL_LINK_STATUS
-// --==</info_glib>==--
+#define NW_LINK_STATUS			GL_LINK_STATUS
+// --==</info_nw>==--
 #endif // NW_GAPI
 #if (NW_GAPI & NW_GAPI_DX)
 // --==<data_types_dx11>==--
 // --==</data_types_dx11>==--
 
-// --==<data_types_glib>==--
+// --==<data_types_nw>==--
 #define NW_ZERO			0
 #define NW_ONE			1
 #define NW_BOOL			2
-#define NW_INT16			3
-#define NW_UINT16			4
+#define NW_INT16		3
+#define NW_UINT16		4
 #define NW_INT8			5
-#define NW_UINT8			6
-#define NW_INT32			7
-#define NW_UINT32			8
+#define NW_UINT8		6
+#define NW_INT32		7
+#define NW_UINT32		8
 #define NW_FLOAT32		9
 #define NW_FLOAT64		10
 #define NW_FLOAT32_VEC2	11
@@ -1016,85 +1005,84 @@ namespace NW
 #define NW_FLOAT32_MAT2	14
 #define NW_FLOAT32_MAT3	15
 #define NW_FLOAT32_MAT4	16
-#define NW_SAMPLER_1D		17
+#define NW_SAMPLER_1D	17
 #define NW_UINT24_8		18
-// --==</data_types_glib>==--
+// --==</data_types_nw>==--
 
 // --==<draw_modes_dx11>==--
 // --primitives
 // --==</draw_modes_dx11>==--
 
-// --==<draw_modes_glib>==--
-#define NW_POINT	0
-#define NW_LINE	0
-#define NW_FILL	0
+// --==<draw_modes_nw>==--
+#define NW_POINT		3
+#define NW_LINE			2
+#define NW_FILL			1
 // --primitives
-#define NW_POINTS			0
-#define NW_LINES			0
-#define NW_LINE_STRIP		0
-#define NW_LINE_LOOP		0
-#define NW_LINE_BIT		0
-#define NW_TRIANGLES		0
-#define NW_TRIANGLE_STRIP 0
-#define NW_TRIANGLE_FAN	0
-#define NW_QUADS			0
-#define NW_QUAD_STRIP		0
-#define NW_POLYGON		0
-// --==</draw_modes_glib>==--
+#define NW_POINTS			10
+#define NW_LINES			11
+#define NW_LINE_STRIP		9
+#define NW_LINE_LOOP		8
+#define NW_LINE_BIT			7
+#define NW_TRIANGLES		6
+#define NW_TRIANGLE_STRIP	5
+#define NW_TRIANGLE_FAN		4
+#define NW_QUADS			3
+#define NW_QUAD_STRIP		2
+#define NW_POLYGON			1
+// --==</draw_modes_nw>==--
 
 // --==<planes_dx11>==--
 // --==</planes_dx11>==--
 
-// --==<planes_glib>==--
-#define NW_FRONT			0
-#define NW_BACK			0
-#define NW_LEFT			0
-#define NW_RIGHT			0
-#define NW_FRONT_AND_BACK	0
-// --==</planes_glib>==--
+// --==<planes_nw>==--
+#define NW_FRONT			5
+#define NW_BACK				4
+#define NW_LEFT				3
+#define NW_RIGHT			2
+#define NW_FRONT_AND_BACK	1
+// --==</planes_nw>==--
 
 // --==<shaders_dx11>==--
 // --==<shaders_dx11>==--
 
-// --==<shaders_glib>==--
-#define NW_SHADER					0
-#define NW_SHADER_VERTEX			0
-#define NW_SHADER_GEOMETRY		0
-#define NW_SHADER_PIXEL			0
-// --==</shaders_glib>==--
+// --==<shaders_nw>==--
+#define NW_SHADER					4
+#define NW_SHADER_VERTEX			3
+#define NW_SHADER_GEOMETRY			2
+#define NW_SHADER_PIXEL				1
+// --==</shaders_nw>==--
 
 // --==<configurations_dx11>==--
 // --==</configurations_dx11>==--
 
-// --==<configurations_glib>==--
-#define NW_POINT_SIZE				0
-#define NW_LINE_SMOOTH			0
-#define NW_LINE_WIDTH				0
+// --==<configurations_nw>==--
+#define NW_POINT_SIZE			8
+#define NW_LINE_SMOOTH			7
+#define NW_LINE_WIDTH			6
 
-#define NW_CULL_FACE				0
-#define NW_CULL_FACE_MODE			0
-#define NW_FRONT_FACE				0
-#define NW_CW						0
-#define NW_CCW					0
+#define NW_CULL_FACE			5
+#define NW_CULL_FACE_MODE		4
+#define NW_FRONT_FACE			3
+#define NW_CW					2
+#define NW_CCW					1
 
-#define NW_DEPTH_TEST				0
-#define NW_DEPTH_FUNC				0
+#define NW_DEPTH_TEST			51
+#define NW_DEPTH_FUNC			52
+#define NW_STENCIL_TEST			53
+#define NW_STENCIL_FUNC			54
 
-#define NW_STENCIL_TEST			0
-#define NW_STENCIL_FUNC			0
-
-#define NW_BLEND					0
-#define NW_BLEND_DST				0
-#define NW_BLEND_SRC				0
-#define NW_SRC_COLOR				0
-#define NW_ONE_MINUS_SRC_COLOR	0
-#define NW_SRC_ALPHA				0
-#define NW_ONE_MINUS_SRC_ALPHA	0
-#define NW_DST_ALPHA				0
-#define NW_ONE_MINUS_DST_ALPHA	0
-#define NW_DST_COLOR				0
-#define NW_ONE_MINUS_DST_COLOR	0
-#define NW_SRC_ALPHA_SATURATE		0
+#define NW_BLEND				1
+#define NW_BLEND_DST			2
+#define NW_BLEND_SRC			3
+#define NW_SRC_COLOR			4
+#define NW_ONE_MINUS_SRC_COLOR	5
+#define NW_SRC_ALPHA			6
+#define NW_ONE_MINUS_SRC_ALPHA	7
+#define NW_DST_ALPHA			8
+#define NW_ONE_MINUS_DST_ALPHA	9
+#define NW_DST_COLOR			10
+#define NW_ONE_MINUS_DST_COLOR	11
+#define NW_SRC_ALPHA_SATURATE	12
 
 #define NW_MULTISAMPLE			0
 
@@ -1102,7 +1090,7 @@ namespace NW
 #define NW_REPLACE				0
 #define NW_INCR					0
 #define NW_DECR					0
-// --==</configurations_glib>==--
+// --==</configurations_nw>==--
 
 // --==<expressions_dx11>==--
 // --constants
@@ -1110,66 +1098,66 @@ namespace NW
 // --logic
 // --==</expressions_dx11>==--
 
-// --==<expressions_glib>==--
+// --==<expressions_nw>==--
 // --constants
 #define NW_NONE		0
-#define NW_FALSE		0
+#define NW_FALSE	0
 #define NW_TRUE		1
 // --conditions
 #define NW_NEVER		0x0200
-#define NW_LESS		0x0201
+#define NW_LESS			0x0201
 #define NW_EQUAL		0x0202
 #define NW_LEQUAL		0x0203
-#define NW_GREATER	0x0204
-#define NW_NOTEQUAL	0x0205
+#define NW_GREATER		0x0204
+#define NW_NOTEQUAL		0x0205
 #define NW_GEQUAL		0x0206
 #define NW_ALWAYS		0x0207
 // --logic
-#define NW_AND			0x1501
-#define NW_AND_REVERSE	0x1502
-#define NW_COPY			0x1503
-#define NW_AND_INVERTED	0x1504
-#define NW_NOOP			0x1505
-#define NW_XOR			0x1506
+#define NW_AND				0x1501
+#define NW_AND_REVERSE		0x1502
+#define NW_COPY				0x1503
+#define NW_AND_INVERTED		0x1504
+#define NW_NOOP				0x1505
+#define NW_XOR				0x1506
 #define NW_OR				0x1507
-#define NW_NOR			0x1508
+#define NW_NOR				0x1508
 #define NW_EQUIV			0x1509
 #define NW_INVERT			0x150A
 #define NW_OR_REVERSE		0x150B
 #define NW_COPY_INVERTED	0x150C
-#define NW_OR_INVERTED	0x150D
-#define NW_NAND			0x150E
-// --==</expressions_glib>==--
+#define NW_OR_INVERTED		0x150D
+#define NW_NAND				0x150E
+// --==</expressions_nw>==--
 
 // --==<pixel_formats_dx11>==--
 // --==</pixel_formats_dx11>==--
 
-// --==<pixel_formats_glib>==--
-#define NW_RED				0
-#define NW_GREEN				0
-#define NW_BLUE				0
-#define NW_ALPHA				0
-#define NW_RGB				0
-#define NW_RGBA				0
-#define NW_RED_INT			0
-#define NW_GREEN_INT			0
-#define NW_BLUE_INT			0
-#define NW_RGB_INT			0
-#define NW_RGBA_INT			0
-#define NW_DEPTH				0
-#define NW_STENCIL			0
-#define NW_RED_INT32			0
-#define NW_RED_UINT32			0
-#define NW_RGBA8				0
-#define NW_DEPTH24			0
-#define NW_STENCIL8			0
-#define NW_DEPTH24_STENCIL8	0
-// --==</pixel_formats_glib>==--
+// --==<pixel_formats_nw>==--
+#define NW_RED				1
+#define NW_GREEN			2
+#define NW_BLUE				3
+#define NW_ALPHA			4
+#define NW_RGB				5
+#define NW_RGBA				6
+#define NW_RED_INT			7
+#define NW_GREEN_INT		8
+#define NW_BLUE_INT			9
+#define NW_RGB_INT			10
+#define NW_RGBA_INT			11
+#define NW_DEPTH			12
+#define NW_STENCIL			13
+#define NW_RED_INT32		14
+#define NW_RED_UINT32		15
+#define NW_RGBA8			16
+#define NW_DEPTH24			17
+#define NW_STENCIL8			18
+#define NW_DEPTH24_STENCIL8	19
+// --==</pixel_formats_nw>==--
 
 // --==<textures_dx11>==--
 // --==</textures_dx11>==--
 
-// --==<textures_glib>==--
+// --==<textures_nw>==--
 // --types
 #define NW_TEXTURE_1D					1
 #define NW_TEXTURE_2D					2
@@ -1177,71 +1165,71 @@ namespace NW
 #define NW_TEXTURE_2D_MULTISAMPLE		4
 #define NW_TEXTURE_3D_MULTISAMPLE		5
 #define NW_DEPTH_STENCIL				6
-#define NW_DEPTH_STENCIL_ATTACHMENT	7
+#define NW_DEPTH_STENCIL_ATTACHMENT		7
 // --filters
-#define NW_TEXTURE_MAG_FILTER			0
-#define NW_TEXTURE_MIN_FILTER			0
-#define NW_TEXTURE_FILTER_NEAREST		0
-#define NW_TEXTURE_FILTER_LINEAR		0
+#define NW_TEXTURE_MAG_FILTER			1
+#define NW_TEXTURE_MIN_FILTER			2
+#define NW_TEXTURE_FILTER_NEAREST		3
+#define NW_TEXTURE_FILTER_LINEAR		4
 // --wrappers
-#define NW_TEXTURE_WRAP_S				0
-#define NW_TEXTURE_WRAP_T				0
-#define NW_TEXTURE_WRAP_R				0
-#define NW_TEXTURE_WRAP_CLAMP			0
-#define NW_TEXTURE_WRAP_REPEAT		0
-// --==</textures_glib>==--
+#define NW_TEXTURE_WRAP_S				5
+#define NW_TEXTURE_WRAP_T				6
+#define NW_TEXTURE_WRAP_R				7
+#define NW_TEXTURE_WRAP_CLAMP			8
+#define NW_TEXTURE_WRAP_REPEAT			9
+// --==</textures_nw>==--
 
 // --==<gbuffers_dx11>==--
 // --==</gbuffers_dx11>==--
 
 
-// --==<gbuffers_glib>==--
-#define NW_GFX_BUFFER_VERTEX	0
-#define NW_GFX_BUFFER_INDEX	0
-#define NW_GFX_BUFFER_SHADER	0
-// --==</gbuffers_glib>==--
+// --==<gbuffers_nw>==--
+#define NW_GFX_BUFFER_VERTEX	1
+#define NW_GFX_BUFFER_INDEX		2
+#define NW_GFX_BUFFER_SHADER	3
+// --==</gbuffers_nw>==--
 
 // --==<framebuffers_dx11>==--
 // --==</framebuffers_dx11>==--
 
-// --==<framebuffers_glib>==--
-#define NW_FRAMEBUF_IN		0
-#define NW_FRAMEBUF_OUT		0
-#define NW_FRAMEBUF_IN_OUT	0
-#define NW_BUFFER_COLOR_BIT	0
-#define NW_BUFFER_DEPTH_BIT	0
-#define NW_BUFFER_STENCIL_BIT	0
-// --==</framebuffers_glib>==--
+// --==<framebuffers_nw>==--
+#define NW_FRAMEBUF_IN			1
+#define NW_FRAMEBUF_OUT			2
+#define NW_FRAMEBUF_IN_OUT		3
+#define NW_BUFFER_COLOR_BIT		4
+#define NW_BUFFER_DEPTH_BIT		5
+#define NW_BUFFER_STENCIL_BIT	6
+// --==</framebuffers_nw>==--
 
 // --==<data_load_types_dx11>==--
 // --==</data_load_types_dx11>==--
 
-// --==<data_load_types_glib>==--
-#define NW_STATIC_DRAW		0
-#define NW_STREAM_DRAW		0
-#define NW_DYNAMIC_DRAW		0
-// --==</data_load_types_glib>==--
+// --==<data_load_types_nw>==--
+#define NW_STATIC_DRAW		1
+#define NW_STREAM_DRAW		2
+#define NW_DYNAMIC_DRAW		3
+// --==</data_load_types_nw>==--
 
 // --==<error_codes_dx11>==--
 // --==</error_codes_dx11>==--
 
-// --==<error_codes_glib>==--
+// --==<error_codes_nw>==--
 #define NW_OK					0
-#define NW_INVALID_ENUM		0
-#define NW_INVALID_VALUE		0
-#define NW_INVALID_OPERATION	0
-#define NW_STACK_OVERFLOW		0
-#define NW_STACK_UNDERFLOW	0
-#define NW_OUT_OF_MEMORY		0
-// --==</error_codes_glib>==--
+#define NW_INVALID_ENUM			1
+#define NW_INVALID_VALUE		2
+#define NW_INVALID_OPERATION	3
+#define NW_STACK_OVERFLOW		4
+#define NW_STACK_UNDERFLOW		5
+#define NW_OUT_OF_MEMORY		6
+// --==</error_codes_nw>==--
 
 // --==<info_dx11>==--
 // --==</info_dx11>==--
 
-// --==<info_glib>==--
-#define NW_COMPILE_STATUS			0
-#define NW_LINK_STATUS			0
-// --==</info_glib>==--
+// --==<info_nw>==--
+#define NW_COMPILE_STATUS		7
+#define NW_LINK_STATUS			8
+// --==</info_nw>==--
 #endif	// NW_GAPI
 
 
@@ -1249,6 +1237,9 @@ namespace NW
 {
 	class NW_API CoreEngine;
 	class NW_API CoreWindow;
+
+	using Keyboard = NWL::KeyboardT<NW_KEY_COUNT>;
+	using Cursor = NWL::CursorT<NW_MS_BTN_COUNT>;
 }
 
 #endif // NW_CORE_HPP

@@ -217,11 +217,6 @@ namespace NW
 	}
 	void Texture::Clear(Ptr pValue) {
 	}
-
-	Texture* Texture::Create(const char* strName, TextureTypes texType) { return GfxApi::Get().NewT<Texture>(strName, texType); }
-	void Texture::Create(const char* strName, TextureTypes texType, RefKeeper<Texture>& rTex) {
-		rTex.MakeRef<Texture>(GfxApi::Get().GetMemory(), strName, texType);
-	}
 	// --==</core_methods>==--
 
 	// --==<data_methods>==--

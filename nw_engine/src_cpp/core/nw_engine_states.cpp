@@ -17,7 +17,7 @@ namespace NW
 	GfxState::GfxState() :
 		AEngineState("graphics_state"),
 		m_rEngine(CoreEngine::Get()),
-		m_pShdBuf() {}
+		m_pShdBuf() { }
 	GfxState::~GfxState() { }
 
 	// --==<core_methods>==--
@@ -36,7 +36,7 @@ namespace NW
 		}
 		{	// textures
 			Texture* pTex = nullptr;
-			pTex = DataSys::GetDR<Texture>(DataSys::NewDR<Texture>("tex_nw_bat", TXT_2D));
+			//pTex = DataSys::GetDR<Texture>(DataSys::NewDR<Texture>("tex_nw_bat", TextureTypes::TXT_2D));
 			pTex->LoadF(R"(D:\dev\native_world\nw_engine\data\image\nw_bat.png)");
 		}
 		{	// materials
@@ -50,11 +50,14 @@ namespace NW
 		{	// framebuffers
 		}
 
-		for (UInt32 unId = 0; unId < 100; unId++) {
+		for (UInt32 unId = 0; unId < 3; unId++) {
 			UInt32 eId = EntSys::AddEnt();
 			CmpSys::AddCmp<Gfx2dCmp>(eId);
 			CmpSys::AddCmp<TFormCmp>(eId);
 		}
+
+		GfxCameraLad::Get().SetKeyboard(&m_rEngine.GetKeyboard());
+		GfxCameraLad::Get().SetCursor(&m_rEngine.GetCursor());
 
 		return true;
 	}
@@ -67,12 +70,10 @@ namespace NW
 		GfxCameraLad::Get().whBounds.y = m_rEngine.GetGfx()->GetFrameBuf()->GetHeight();
 		GfxCameraLad::Get().UpdateCamera();
 		
-		m_rEngine.GetGfx()->GetFrameBuf()->SetClearColor({ 0.2f, std::sinf(TimeSys::GetCurrS()), std::cosf(TimeSys::GetCurrS()), 1.0f });
-
 		DrawScene();
 	}
 
-	void GfxState::OnEvent(MouseEvent& rmEvt)
+	void GfxState::OnEvent(CursorEvent& rmEvt)
 	{
 		GfxCameraLad::Get().OnEvent(rmEvt);
 	}

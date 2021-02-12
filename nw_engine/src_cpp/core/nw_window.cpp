@@ -11,13 +11,7 @@ namespace NW
 {
 	CoreWindow::CoreWindow(const WindowInfo& rwInfo) :
 		m_wInfo(rwInfo), m_pNative(nullptr),
-		m_pIcon(nullptr)
-	{
-		m_wInfo.strTitle = rwInfo.strTitle;
-		m_wInfo.unWidth = rwInfo.unWidth;
-		m_wInfo.unHeight = rwInfo.unHeight;
-		m_wInfo.nOpacity = rwInfo.nOpacity;
-	}
+		m_pIcon(nullptr) { }
 	CoreWindow::~CoreWindow() {}
 	
 	// --setters
@@ -30,19 +24,32 @@ namespace NW
 		else glfwSwapInterval(0);
 		m_wInfo.bVSync = enabled;
 	}
-	void CoreWindow::SetEventCallback(const EventCallback& fnOnEvent) { m_wInfo.fnOnEvent = fnOnEvent; }
+	void CoreWindow::SetOpacity(float nOpacity) {
+		nOpacity = nOpacity > 1.0f ? 1.0f : nOpacity < 0.1f ? 0.1f : nOpacity;
+		m_wInfo.nOpacity = nOpacity;
+		glfwSetWindowOpacity(m_pNative, nOpacity);
+	}
 	void CoreWindow::SetIcon(const ImageInfo& rInfo) {
 		m_pIcon->pixels = rInfo.pClrData;
 		m_pIcon->width = rInfo.nWidth;
 		m_pIcon->height = rInfo.nHeight;
 		glfwSetWindowIcon(m_pNative, 1, m_pIcon);
 	}
-	void CoreWindow::SetOpacity(float nOpacity) {
-		nOpacity = nOpacity > 1.0f ? 1.0f : nOpacity < 0.1f ? 0.1f : nOpacity;
-		m_wInfo.nOpacity = nOpacity;
-		glfwSetWindowOpacity(m_pNative, nOpacity);
+	void CoreWindow::SetEventCallback(const EventCallback& fnOnEvent) { m_wInfo.fnOnEvent = fnOnEvent; }
+	void CoreWindow::SetKeyboardMode(KeyboardModes kbdMode) {
+		switch (kbdMode) {
+		case KBD_LOCK: break;
+		case KBD_STICK: break;
+		default: break;
+		}
 	}
-
+	void CoreWindow::SetCursorMode(CursorModes crsMode) {
+		switch (crsMode) {
+		case CRS_CAPTURED: glfwSetInputMode(); break;
+		case CRS_HIDDEN: break;
+		default: break;
+		}
+	}
 	// --==<core_methods>==--
 	bool CoreWindow::Init()
 	{
@@ -89,8 +96,8 @@ namespace NW
 
 	void CoreWindow::Update()
 	{
-		glfwSwapBuffers(m_pNative);
 		glfwPollEvents();
+		glfwSwapBuffers(m_pNative);
 	}
 	// --==</core_methods>==--
 
@@ -99,32 +106,32 @@ namespace NW
     void CoreWindow::CbMouseCoord(GLFWwindow* pWindow, double xCrd, double yCrd)
     {
         WindowInfo& rWindowInfo = *(WindowInfo*)(glfwGetWindowUserPointer(pWindow));
-        MouseEvent mEvt = MouseEvent(ET_MOUSE_MOVE, xCrd, yCrd);
+        CursorEvent mEvt = CursorEvent(ET_CURSOR_MOVE, xCrd, yCrd);
         rWindowInfo.fnOnEvent(mEvt);
     }
     void CoreWindow::CbMouseScroll(GLFWwindow* pWindow, double xScrollDelta, double yScrollDelta)
     {
         WindowInfo& rWindowInfo = *(WindowInfo*)(glfwGetWindowUserPointer(pWindow));
-        MouseEvent mEvt = MouseEvent(ET_MOUSE_SCROLL, xScrollDelta, yScrollDelta);
+        CursorEvent mEvt = CursorEvent(ET_CURSOR_SCROLL, xScrollDelta, yScrollDelta);
         rWindowInfo.fnOnEvent(mEvt);
     }
     void CoreWindow::CbMouseButton(GLFWwindow* pWindow, Int32 nButton, Int32 nAction, Int32 nMode)
     {   // If the mouse event is gotten - set true/false in the keylist
         WindowInfo& rWindowInfo = *(WindowInfo*)(glfwGetWindowUserPointer(pWindow));
-        if (nAction == GLFW_PRESS) { rWindowInfo.fnOnEvent(MouseEvent(ET_MOUSE_PRESS, nButton)); }
-        else if (nAction == GLFW_RELEASE) { rWindowInfo.fnOnEvent(MouseEvent(ET_MOUSE_RELEASE, nButton)); }
+        if (nAction == GLFW_PRESS) { rWindowInfo.fnOnEvent(CursorEvent(ET_CURSOR_PRESS, nButton)); }
+        else if (nAction == GLFW_RELEASE) { rWindowInfo.fnOnEvent(CursorEvent(ET_CURSOR_RELEASE, nButton)); }
     }
     void CoreWindow::CbKeyboard(GLFWwindow* pWindow, Int32 nKeyCode, Int32 nScanCode, Int32 nAction, Int32 nMode)
     {   // If the key event is gotten - set true/false in the keylist
         WindowInfo& rWindowInfo = *(WindowInfo*)(glfwGetWindowUserPointer(pWindow));
-        if (nAction == GLFW_PRESS) { rWindowInfo.fnOnEvent(KeyboardEvent(ET_KEY_PRESS, nKeyCode)); }
-        else if (nAction == GLFW_RELEASE) { rWindowInfo.fnOnEvent(KeyboardEvent(ET_KEY_RELEASE, nKeyCode));}
+        if (nAction == GLFW_PRESS) { rWindowInfo.fnOnEvent(KeyboardEvent(ET_KEYBOARD_PRESS, nKeyCode)); }
+        else if (nAction == GLFW_RELEASE) { rWindowInfo.fnOnEvent(KeyboardEvent(ET_KEYBOARD_RELEASE, nKeyCode));}
 		if (nKeyCode == GLFW_KEY_F11) { glfwMaximizeWindow(glfwGetCurrentContext()); }
     }
     void CoreWindow::CbKeyboardChar(GLFWwindow* pWindow, UInt32 unChar)
     {
         WindowInfo& rWindowInfo = *(WindowInfo*)(glfwGetWindowUserPointer(pWindow));
-        KeyboardEvent kEvt(ET_KEY_CHAR, unChar);
+        KeyboardEvent kEvt(ET_KEYBOARD_CHAR, unChar);
 
         rWindowInfo.fnOnEvent(kEvt);
     }
@@ -162,24 +169,16 @@ namespace NW
 namespace NW
 {
 	CoreWindow::CoreWindow(const WindowInfo& rwInfo) :
-		m_wInfo(rwInfo), m_pNative(nullptr),
-		m_devContext(nullptr), m_oglContext(nullptr),
+		m_wInfo(rwInfo),
+		m_Native{ 0 }, m_Context{ 0 },
 		m_wndClass{ 0 }, m_wMsg{ 0 },
-		m_pxfDesc{ 0 },
-		m_pntStruct{ 0 }
-	{
-		m_wInfo.strTitle = rwInfo.strTitle;
-		m_wInfo.unWidth = rwInfo.unWidth;
-		m_wInfo.unHeight = rwInfo.unHeight;
-		m_wInfo.nOpacity = rwInfo.nOpacity;
-		m_wInfo.fnOnEvent = [](AEvent& rEvt)->void { return; };
-	}
-	CoreWindow::~CoreWindow() {}
+		m_pntStruct{ 0 } { }
+	CoreWindow::~CoreWindow() { OnQuit(); }
 
 	// --setters
 	void CoreWindow::SetTitle(const char* strTitle) {
 		m_wInfo.strTitle = strTitle;
-		SetWindowTextA(m_pNative, strTitle);
+		SetWindowTextA(m_Native, strTitle);
 	}
 	void CoreWindow::SetVSync(bool enabled) {
 		m_wInfo.bVSync = enabled;
@@ -190,55 +189,40 @@ namespace NW
 		nOpacity = nOpacity > 1.0f ? 1.0f : nOpacity < 0.1f ? 0.1f : nOpacity;
 		m_wInfo.nOpacity = nOpacity;
 	}
+	void CoreWindow::SetFocused(bool bFocus) {
+		if (m_wInfo.bIsFocused == bFocus) { return; }
+		SetFocus(m_Native);
+	}
+	void CoreWindow::SetEnabled(bool bEnable) {
+		if (m_wInfo.bIsEnabled == bEnable) { return; }
+		m_wInfo.bIsEnabled = bEnable;
+		EnableWindow(m_Native, IsEnabled());
+	}
+	void CoreWindow::SetKeyboardMode(KeyboardModes kbdMode) {
+		switch (kbdMode) {
+		case KBD_LOCK: break;
+		case KBD_STICK: break;
+		default: break;
+		}
+	}
+	void CoreWindow::SetCursorMode(CursorModes crsMode) {
+		switch (crsMode) {
+		case CRS_CAPTURED:
+			// SetCapture(m_pNative);
+			break;
+		case CRS_HIDDEN: break;
+		default: break;
+		}
+	}
 
 	// --==<core_methods>==--
 	bool CoreWindow::Init()
 	{
 		if (m_wndClass.hInstance != nullptr) { return false; }
 
-		{
-			auto strClsName = L"nw_core_window";
-			m_wndClass.lpszClassName = strClsName;
-			m_wndClass.lpszMenuName = NULL;
-			m_wndClass.lpfnWndProc = MsgProcInit;
-			m_wndClass.style = CS_OWNDC;
-			m_wndClass.hInstance = GetModuleHandle(nullptr);
-			m_wndClass.hIcon = LoadIcon(m_wndClass.hInstance, MAKEINTRESOURCE(NW_ICON0));
-			m_wndClass.hIconSm = LoadIcon(m_wndClass.hInstance, MAKEINTRESOURCE(NW_ICON0));
-			m_wndClass.hCursor = LoadCursor(m_wndClass.hInstance, MAKEINTRESOURCE(NW_CURSOR0));
-			m_wndClass.hbrBackground = NULL;
-			m_wndClass.cbClsExtra = 0;
-			m_wndClass.cbWndExtra = 0;
-			m_wndClass.cbSize = sizeof(WNDCLASSEX);
-			if (!RegisterClassEx(&m_wndClass)) { return false; }
-
-			RECT wndRect = { 100, 100, 100 + GetWidth(), 100 + GetHeight() };
-			AdjustWindowRect(&wndRect, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE);
-			auto strWndName = reinterpret_cast<const wchar_t*>(GetTitle());
-			m_pNative = CreateWindowEx(0,
-				strClsName, strWndName,
-				WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX,
-				CW_USEDEFAULT, CW_USEDEFAULT, GetWidth(), GetHeight(),
-				NULL, NULL,
-				m_wndClass.hInstance, this);
-			if (m_pNative == nullptr) { return false; }
-		}
-		{
-			m_devContext = GetDC(m_pNative);
-			m_pxfDesc.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-			m_pxfDesc.nVersion = 1;
-			m_pxfDesc.dwFlags = PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL;
-			m_pxfDesc.iPixelType = PFD_TYPE_RGBA;
-			m_pxfDesc.cColorBits = 32;
-			Int32 nPxFormat = ChoosePixelFormat(m_devContext, &m_pxfDesc);
-			if (nPxFormat == 0) { return false; }
-			if (!SetPixelFormat(m_devContext, nPxFormat, &m_pxfDesc)) { return false; }
-			DescribePixelFormat(m_devContext, nPxFormat, m_pxfDesc.nSize, &m_pxfDesc);
-			
-			m_oglContext = wglCreateContext(m_devContext);
-			wglMakeCurrent(m_devContext, m_oglContext);
-			ShowWindow(m_pNative, SW_SHOWDEFAULT);
-		}
+		// Register a window class to create a window. ModuleHandle is the current app
+		if (!InitWindow()) { return false; }
+		if (!InitContext()) { return false; }
 
 		SetTitle(GetTitle());
 		std::cout << m_wInfo;
@@ -248,29 +232,120 @@ namespace NW
 	void CoreWindow::OnQuit()
 	{
 		if (m_wndClass.hInstance == nullptr) { return; }
-		
-		wglMakeCurrent(NULL, NULL);
-		wglDeleteContext(m_oglContext);
-		ReleaseDC(m_pNative, m_devContext);
-		
-		UnregisterClass(m_wndClass.lpszClassName, m_wndClass.hInstance);
-		DestroyWindow(m_pNative);
+		// Get rid of the windows window and it's class
+		QuitContext();
+		QuitWindow();
 	}
 
 	void CoreWindow::Update()
 	{
 		// if there is false - we don't have a message
-		if (PeekMessage(&m_wMsg, m_pNative, NULL, NULL, PM_NOREMOVE)) {
+		if (PeekMessage(&m_wMsg, m_Native, NULL, NULL, PM_NOREMOVE)) {
 			// if there is false - we've got a quit
-			if (GetMessage(&m_wMsg, m_pNative, NULL, NULL)) {
+			if (GetMessage(&m_wMsg, m_Native, NULL, NULL)) {
 				TranslateMessage(&m_wMsg);
 				DispatchMessage(&m_wMsg);
 			}
 			else { CoreEngine::Get().StopRunning(); return; }
 		}
-		SwapBuffers(m_devContext);
+#if (NW_GAPI & NW_GAPI_OGL)
+		SwapBuffers(m_Context);
+#endif
+		Char strTitle[128];
+		sprintf(strTitle, "%s|ups:%3.2f|", GetTitle(), 1.0f / TimeSys::GetDeltaS());
+		SetWindowTextA(m_Native, strTitle);
 	}
 	// --==</core_methods>==--
+
+	// --==<implementation_methods>==--
+	inline bool CoreWindow::InitWindow() {
+		auto strClsName = L"nw_core_window";
+		m_wndClass.lpszClassName = strClsName;
+		m_wndClass.lpszMenuName = NULL;
+		m_wndClass.lpfnWndProc = MsgProcInit;
+		m_wndClass.style = CS_OWNDC;
+		m_wndClass.hInstance = GetModuleHandle(NULL);
+		m_wndClass.hIcon = LoadIcon(m_wndClass.hInstance, MAKEINTRESOURCE(NW_ICON0));
+		m_wndClass.hIconSm = LoadIcon(m_wndClass.hInstance, MAKEINTRESOURCE(NW_ICON0));
+		m_wndClass.hCursor = LoadCursor(m_wndClass.hInstance, MAKEINTRESOURCE(NW_CURSOR0));
+		m_wndClass.hbrBackground = NULL;
+		m_wndClass.cbClsExtra = 0;
+		m_wndClass.cbWndExtra = 0;
+		m_wndClass.cbSize = sizeof(WNDCLASSEX);
+		if (!RegisterClassEx(&m_wndClass)) { return false; }
+
+		RECT wndRect = { 100, 100, 100 + GetSizeW(), 100 + GetSizeH() };
+		AdjustWindowRect(&wndRect, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE);
+
+		auto strWndName = reinterpret_cast<const wchar_t*>(GetTitle());
+		m_Native.pHandle = CreateWindowEx(0, strClsName, strWndName,
+			WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX,
+			CW_USEDEFAULT, CW_USEDEFAULT, GetSizeW(), GetSizeH(),
+			NULL, NULL, m_wndClass.hInstance, this);
+		if (m_Native.pHandle == nullptr) { return false; }
+		ShowWindow(m_Native, SW_SHOWDEFAULT);
+		return true;
+	}
+	inline void CoreWindow::QuitWindow() {
+		DestroyWindow(m_Native);
+		m_Native = { 0 };
+		UnregisterClass(m_wndClass.lpszClassName, m_wndClass.hInstance);
+		m_wndClass = { 0 };
+	}
+	inline bool CoreWindow::InitContext() {
+		PIXELFORMATDESCRIPTOR pxfDesc{ 0 };
+		// Get device context, set it's pixel format and only then  make render context.
+		// Get default device context. Only one DC can be used in a single thread at one time.
+		m_Context.pHandle = GetWindowDC(GetNative());
+		pxfDesc.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+		pxfDesc.nVersion = 1;
+		pxfDesc.dwFlags = PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL;
+		pxfDesc.iPixelType = PFD_TYPE_RGBA;
+		pxfDesc.iLayerType = PFD_MAIN_PLANE;
+		pxfDesc.cColorBits = 24;
+		pxfDesc.cRedBits = 0; pxfDesc.cGreenBits = 0; pxfDesc.cBlueBits = 0; pxfDesc.cAlphaBits = 0;
+		pxfDesc.cRedShift = 0; pxfDesc.cGreenShift = 0; pxfDesc.cBlueShift = 0; pxfDesc.cAlphaShift = 0;
+		pxfDesc.cAccumBits = 0;
+		pxfDesc.cAccumRedBits = 0; pxfDesc.cAccumGreenBits = 0; pxfDesc.cAccumBlueBits = 0; pxfDesc.cAccumAlphaBits = 0;
+		pxfDesc.cAuxBuffers = 0;
+		pxfDesc.cDepthBits = 24;
+		pxfDesc.cStencilBits = 8;
+		pxfDesc.bReserved = 0;
+		pxfDesc.dwVisibleMask = 0; pxfDesc.dwLayerMask = 0; pxfDesc.dwDamageMask = 0;
+		// Get the best availabple pixel format for device context
+		Int32 nPxFormat = ChoosePixelFormat(m_Context, &pxfDesc);
+		if (nPxFormat == 0) { return false; }
+		// Pixel format can be set to some window only once
+		if (!SetPixelFormat(m_Context, nPxFormat, &pxfDesc)) { return false; }
+		DescribePixelFormat(m_Context, nPxFormat, pxfDesc.nSize, &pxfDesc);
+#if (NW_GAPI & NW_GAPI_OGL)
+		// Create opengl context and associate that with the device context
+		// It will be attached to the current frame and DC so,
+		// this is only one current context we can use
+		m_Context.pGfx = wglCreateContext(m_Context.pDevice);
+		wglMakeCurrent(m_Context.pDevice, m_Context);
+#endif
+#if NW_GAPI & NW_GAPI_DX
+#endif
+		return true;
+	}
+	inline void CoreWindow::QuitContext() {
+#if (NW_GAPI & NW_GAPI_OGL)
+		// Break the connection between our thread and the rendering context
+		wglMakeCurrent(NULL, NULL);
+		// Release the associated DC and delete the rendering context
+		ReleaseDC(m_Native, m_Context);
+		// Before delete - we need to release that
+		// DeleteDC(m_Context);	// delete only created device context
+		// Before this call device context must be released or deleted
+		wglDeleteContext(m_Context);
+#endif
+#if (NW_GAPI & NW_GAPI_DX)
+		ReleaseDC(m_Native, m_Context);
+#endif
+		m_Context = { 0 };
+	}
+	// --==</implementation_methods>==--
 
 	// --==<callback_methods>==--
 	inline LRESULT __stdcall CoreWindow::MsgProcInit(HWND hWnd, UINT unMsg, WPARAM wParam, LPARAM lParam) {
@@ -300,37 +375,81 @@ namespace NW
 			break;
 		case WM_PAINT:
 		{
-			BeginPaint(m_pNative, &m_pntStruct);
-			EndPaint(m_pNative, &m_pntStruct);
-			return 0;
+			return 0L;
 			break;
 		}
+		case WM_ERASEBKGND:
+			return 0L;
+			break;
 
 		case WM_MOUSEMOVE:
 		{
 			const POINTS xyCrd = MAKEPOINTS(lParam);
-			m_wInfo.fnOnEvent(MouseEvent(ET_MOUSE_MOVE, xyCrd.x, xyCrd.y));
+			if (IsCollidPointRect({ xyCrd.x, xyCrd.y }, { 0, 0 }, { GetSizeW(), GetSizeH() })) {
+				//if (!IsHovered()) { SetCapture(m_pNative); m_wInfo.bIsHovered = true; }
+				//else { m_wInfo.bIsHovered = false; }
+			}
+			else {
+				if (wParam & (MK_LBUTTON | MK_RBUTTON | MK_MBUTTON | MK_XBUTTON1 | MK_XBUTTON2)) {
+					m_wInfo.fnOnEvent(CursorEvent(ET_CURSOR_MOVE, xyCrd.x, xyCrd.y));
+				}
+			}
 			break;
 		}
-		case WM_LBUTTONDOWN:
+		case WM_MOUSEHWHEEL:
 		{
-			m_wInfo.fnOnEvent(MouseEvent(ET_MOUSE_PRESS, wParam));
+			m_wInfo.fnOnEvent(CursorEvent(ET_CURSOR_SCROLL, GET_WHEEL_DELTA_WPARAM(wParam) / 500.0f, 0.0));
 			break;
 		}
+		case WM_MOUSEWHEEL:
+		{
+			m_wInfo.fnOnEvent(CursorEvent(ET_CURSOR_SCROLL, 0.0, GET_WHEEL_DELTA_WPARAM(wParam) / 500.0f));
+			break;
+		}
+		case WM_XBUTTONDOWN: case WM_RBUTTONDOWN: case WM_LBUTTONDOWN: case WM_MBUTTONDOWN:
+		{
+			m_wInfo.fnOnEvent(CursorEvent(ET_CURSOR_PRESS, static_cast<CursorCodes>(wParam)));
+			break;
+		}
+		case WM_XBUTTONUP: case WM_RBUTTONUP: case WM_LBUTTONUP: case WM_MBUTTONUP:
+		{
+			m_wInfo.fnOnEvent(CursorEvent(ET_CURSOR_RELEASE, static_cast<CursorCodes>(wParam)));
+			break;
+		}
+		case WM_LBUTTONDBLCLK:
+			break;
+		case WM_MBUTTONDBLCLK:
+			break;
 
 		case WM_SYSKEYDOWN: case WM_KEYDOWN:
-			m_wInfo.fnOnEvent(KeyboardEvent(ET_KEY_PRESS, wParam));
+			m_wInfo.fnOnEvent(KeyboardEvent(ET_KEYBOARD_PRESS, static_cast<KeyCodes>(wParam)));
 			break;
 		case WM_SYSKEYUP: case WM_KEYUP:
-			m_wInfo.fnOnEvent(KeyboardEvent(ET_KEY_RELEASE, wParam));
+			m_wInfo.fnOnEvent(KeyboardEvent(ET_KEYBOARD_RELEASE, static_cast<KeyCodes>(wParam)));
 			break;
 		case WM_CHAR:
-			m_wInfo.fnOnEvent(KeyboardEvent(ET_KEY_CHAR, wParam));
+			m_wInfo.fnOnEvent(KeyboardEvent(ET_KEYBOARD_CHAR, static_cast<KeyCodes>(wParam)));
 			break;
 
 		case WM_SIZE:
-			m_wInfo.fnOnEvent(WindowEvent(ET_WINDOW_RESIZE, LOWORD(lParam), HIWORD(lParam)));
-			PostMessage(m_pNative, WM_PAINT, 0, 0);
+			m_wInfo.nW = LOWORD(lParam);
+			m_wInfo.nH = HIWORD(lParam);
+			m_wInfo.fnOnEvent(WindowEvent(ET_WINDOW_RESIZE, m_wInfo.nW, m_wInfo.nH));
+			PostMessage(m_Native, WM_PAINT, 0, 0);
+			break;
+		case WM_MOVE:
+			m_wInfo.nX = LOWORD(lParam);
+			m_wInfo.nY = HIWORD(lParam);
+			m_wInfo.fnOnEvent(WindowEvent(ET_WINDOW_MOVE, m_wInfo.nX, m_wInfo.nY));
+			PostMessage(m_Native, WM_PAINT, 0, 0);
+			break;
+		case WM_SETFOCUS:	// wParam is the last window was focused, lParam is not used
+			m_wInfo.fnOnEvent(WindowEvent(ET_WINDOW_FOCUS));
+			m_wInfo.bIsFocused = true;
+			return 0L;
+			break;
+		case WM_KILLFOCUS:	// wParam is the next window will be focused, lParam is not used
+			m_wInfo.bIsFocused = false;
 			break;
 		case WM_CLOSE:
 			m_wInfo.fnOnEvent(WindowEvent(ET_WINDOW_CLOSE));
