@@ -1,7 +1,6 @@
 #include <nw_pch.hpp>
 #include "gfx/gfx_material.h"
 
-#include <gfx/gfx_api.h>
 #include <gfx/gfx_buffer.h>
 #include <gfx/gfx_texture.h>
 #include <gfx/gfx_shader.h>

@@ -1,42 +1,48 @@
 --==<engine project>==--
 project "nw_engine"
-	kind "staticlib" --.lib
+	kind "consoleapp"
 	staticruntime "on"
 	language "c++"
 	cppdialect "c++17"
-	targetdir("bin/"..dir_out.."%{prj.name}")
-	objdir("bin/int/"..dir_out.."%{prj.name}")
+	targetdir(dir_out_res)
+	objdir(dir_out_int)
 	pchheader "nw_pch.hpp"
 	pchsource "src_cpp/nw_pch.cpp"
+	shadermodel("6.3")
+	shaderassembler("assemblycode")
 	files
 	{
-		"../data/**.**",
 		"src_cpp/**.c**",
 		"src_cpp/**.h**",
-		"%{prj.name}/src_glsl/**.glsl",
-		"%{prj.name}/src_hlsl/**.hlsl",
-		"%{prj.name}/src_lua/**.lua",
+		dir_lua.."**.**",
+		dir_glsl.."**.**",
+		dir_hlsl.."**.**",
+		dir_data.."**.**",
 	}
 	includedirs
 	{
-		"../data/",
+		dir_data,
 		"src_cpp/",
 		"%{dir_cpp.nw_lib}",
-		"%{dir_cpp.glfw}",
-		"%{dir_cpp.lualib}"
+		"%{dir_cpp.nw_cmd}",
+		"%{dir_cpp.lualib}",
+		"%{dir_cpp.imgui}",
 	}
 	libdirs
 	{
 		"%{dir_lib.nw_lib}",
-		"%{dir_lib.glfw}",
-		"%{dir_lib.lualib}"
+		"%{dir_lib.nw_cmd}",
+		"%{dir_lib.lualib}",
+		"%{dir_lib.imgui}",
 	}
 	links
 	{
 		"nw_lib",
-		"glfw",
+		"nw_cmd",
+		"imgui",
 		"lualib",
-		"opengl32"
+		"opengl32",
+		"d3d11",
 	}
 	filter "system:windows"
 		systemversion "latest"
@@ -47,4 +53,16 @@ project "nw_engine"
 	filter "configurations:release"
 		defines { "NW_RELEASE" }
 		optimize "on"
+	filter("files:**.hlsl")
+		flags("excludefrombuild")
+		shaderobjectfileoutput(dir_out_res.."%{file.basename}"..".cso")
+	filter("files:**_pxl.hlsl")
+		removeflags("excludefrombuild")
+		shadertype("pixel")
+	filter("files:**_vtx.hlsl")
+		removeflags("excludefrombuild")
+		shadertype("vertex")
+	filter("files:**_gmt.hlsl")
+		removeflags("excludefrombuild")
+		shadertype("geometry")
 --==</engine_project>==--

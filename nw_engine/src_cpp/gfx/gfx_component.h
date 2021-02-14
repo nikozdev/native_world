@@ -1,7 +1,7 @@
-#ifndef GFX_COMPONENT_H
+//#ifndef GFX_COMPONENT_H
+#if (false)
 #define GFX_COMPONENT_H
 
-#include <gfx/gfx_api.h>
 #include <gfx/gfx_buffer.h>
 #include <gfx/gfx_material.h>
 #include <gfx/gfx_shader.h>

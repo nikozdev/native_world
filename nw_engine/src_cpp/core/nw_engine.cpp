@@ -6,8 +6,7 @@ namespace NW
 	CoreEngine::CoreEngine() :
 		AEngine(),
 		m_strName("nw_engine"),
-		m_pWindow(RefKeeper<CoreWindow>()),
-		m_Keyboard(Keyboard()), m_Cursor(Cursor()) { }
+		m_pWindow(RefKeeper<CoreWindow>()), m_pGfx(RefKeeper<GfxEngine>()) { }
 	CoreEngine::~CoreEngine() { }
 
 	// --==<core_methods>==--
@@ -15,51 +14,66 @@ namespace NW
 	{
 		Init();
 		if (!m_bIsRunning) { return; }
-		if (m_States.empty()) { Quit(); }
 
 		auto fnRunning = [this]()->void {
-			while (m_bIsRunning) { Update(); }
-			Quit();
+			try {
+
+				while (m_bIsRunning) { Update(); }
+				Quit();
+			}
+			catch (AException& exc) {
+				Quit();
+				NWL_ERR(exc.GetStr());
+				NWL_ERR(exc.GetStrType());
+				throw CodeException("running loop has been crashed", NWL_ERR_NO_INIT, __FILE__, __LINE__);
+			}
 		};
 		//m_thrRun = Thread(fnRunning);
 		fnRunning();
 	}
 	bool CoreEngine::Init()
 	{
-		if (m_bIsRunning) { return false; }
-		m_bIsRunning = true;
-		
-		MemSys::OnInit(1 << 23);
-		CmpSys::OnInit();
-		EntSys::OnInit();
-	
-		m_pWindow.MakeRef<CoreWindow>(WindowInfo{ &m_strName[0], 1200, 800, true });
-		if (!m_pWindow->Init()) { m_pWindow->OnQuit(); return false; }
-		m_pWindow->SetEventCallback([this](AEvent& rEvt)->void { return this->OnEvent(rEvt); });
-		
-		m_pGfx.MakeRef<GfxApi, CoreWindow&>(*m_pWindow);
-		if (!m_pGfx->Init()) { return false; }
+		try {
+			if (m_bIsRunning) { throw; }
+			m_bIsRunning = true;
 
-		for (auto& itState : m_States) { if (!itState->Init()) { NWL_ERR("State is not initialized"); Quit(); return false; } }
-		
-		return m_bIsRunning;
+			MemSys::OnInit(1 << 23);
+			DataSys::OnInit();
+			CmpSys::OnInit();
+			EntSys::OnInit();
+
+			m_pWindow.MakeRef<CoreWindow>(WindowInfo{ &m_strName[0], 1200, 800, true });
+			m_pWindow->SetEventCallback([this](AEvent& rEvt)->void { return this->OnEvent(rEvt); });
+			GfxEngine::Create(m_pGfx, m_pWindow->GetNative());
+
+			for (auto& itState : m_States) {
+				if (!itState->Init()) {
+					throw CodeException("state is not initialized", NWL_ERR_NO_INIT, __FILE__, __LINE__);
+				}
+			}
+		}
+		catch (AException& exc) {
+			Quit();
+			NWL_ERR(exc.GetStr());
+			throw CodeException("initialization has been failed", NWL_ERR_NO_INIT, __FILE__, __LINE__);
+			return false;
+		}
+		return true;
 	}
 	void CoreEngine::Quit()
 	{
 		if (!m_bIsRunning && m_pWindow.GetRef() == nullptr) { return; }
 		m_bIsRunning = false;
 
-		for (auto& itState : m_States) { itState->OnQuit(); }
+		for (auto& itState : m_States) { itState->Quit(); }
 		m_States.clear();
 
-		m_pGfx->OnQuit();
 		m_pGfx.Reset();
-		m_pWindow->OnQuit();
 		m_pWindow.Reset();
 		
 		EntSys::OnQuit();
 		CmpSys::OnQuit();
-		DataSys::GetStorage().clear();
+		DataSys::OnQuit();
 		MemSys::OnQuit();
 	}
 
@@ -69,8 +83,8 @@ namespace NW
 	
 		TimeSys::Update();
 		
-		m_pGfx->Update();
 		m_pWindow->Update();
+		m_pGfx->Update();
 	}
 	void CoreEngine::OnEvent(AEvent& rEvt)
 	{
@@ -78,30 +92,30 @@ namespace NW
 			CursorEvent* pmEvt = static_cast<CursorEvent*>(&rEvt);
 			switch (pmEvt->evType) {
 			case ET_CURSOR_MOVE:
-				m_Cursor.xMove = pmEvt->nX;
-				m_Cursor.yMove = pmEvt->nY;
-				m_Cursor.xMoveDelta = pmEvt->nX - m_Cursor.xMove;
-				m_Cursor.yMoveDelta = pmEvt->nY - m_Cursor.yMove;
-				if (m_Cursor.GetHeld(pmEvt->cButton)) {
-					m_Cursor.Buttons[pmEvt->cButton].xHeldDelta = m_Cursor.xMove - m_Cursor.Buttons[pmEvt->cButton].xHeld;
-					m_Cursor.Buttons[pmEvt->cButton].yHeldDelta = m_Cursor.yMove - m_Cursor.Buttons[pmEvt->cButton].yHeld;
+				m_crs.xMove = pmEvt->nX;
+				m_crs.yMove = pmEvt->nY;
+				m_crs.xMoveDelta = pmEvt->nX - m_crs.xMove;
+				m_crs.yMoveDelta = pmEvt->nY - m_crs.yMove;
+				if (m_crs.GetHeld(pmEvt->cButton)) {
+					m_crs.Buttons[pmEvt->cButton].xHeldDelta = m_crs.xMove - m_crs.Buttons[pmEvt->cButton].xHeld;
+					m_crs.Buttons[pmEvt->cButton].yHeldDelta = m_crs.yMove - m_crs.Buttons[pmEvt->cButton].yHeld;
 				}
 				break;
 			case ET_CURSOR_SCROLL:
-				m_Cursor.xScrollDelta = pmEvt->nX;
-				m_Cursor.yScrollDelta = pmEvt->nY;
+				m_crs.xScrollDelta = pmEvt->nX;
+				m_crs.yScrollDelta = pmEvt->nY;
 				break;
 			case ET_CURSOR_PRESS:
 			{
-				auto& rBtn = m_Cursor.Buttons[pmEvt->cButton];
+				auto& rBtn = m_crs.Buttons[pmEvt->cButton];
 				rBtn.bState = rBtn.bState == BS_PRESSED ? BS_HELD : BS_PRESSED;
-				rBtn.xHeld = m_Cursor.xMove;
-				rBtn.yHeld = m_Cursor.yMove;
+				rBtn.xHeld = m_crs.xMove;
+				rBtn.yHeld = m_crs.yMove;
 				break;
 			}
 			case ET_CURSOR_RELEASE:
 			{
-				auto& rBtn = m_Cursor.Buttons[pmEvt->cButton];
+				auto& rBtn = m_crs.Buttons[pmEvt->cButton];
 				rBtn.bState = BS_RELEASED;
 				rBtn.xHeldDelta = 0.0;
 				rBtn.yHeldDelta = 0.0;
@@ -116,7 +130,7 @@ namespace NW
 			switch (pkEvt->evType) {
 			case ET_KEYBOARD_PRESS:
 			{
-				auto& rKey = m_Keyboard.Keys[pkEvt->keyCode];
+				auto& rKey = m_kbd.Keys[pkEvt->keyCode];
 				if (rKey.bState == BS_PRESSED) {
 					rKey.bState = BS_PRESSED;
 					rKey.unRepeats = 1;
@@ -133,7 +147,7 @@ namespace NW
 			}
 			case ET_KEYBOARD_RELEASE:
 			{
-				auto& rKey = m_Keyboard.Keys[pkEvt->keyCode];
+				auto& rKey = m_kbd.Keys[pkEvt->keyCode];
 				rKey.bState = BS_RELEASED;
 				rKey.unRepeats = 0;
 				switch (pkEvt->keyCode) {
@@ -142,8 +156,8 @@ namespace NW
 					rEvt.bIsHandled = true;
 					break;
 				case KC_M:
-					m_Cursor.crsMode = m_Cursor.crsMode == CRS_DEFAULT ? CRS_CAPTURED : CRS_DEFAULT;
-					m_pWindow->SetCursorMode(m_Cursor.crsMode);
+					m_crs.crsMode = m_crs.crsMode == CRS_DEFAULT ? CRS_CAPTURED : CRS_DEFAULT;
+					m_pWindow->SetCursorMode(m_crs.crsMode);
 					break;
 				default: break;
 				}

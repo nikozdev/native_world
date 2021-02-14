@@ -4,10 +4,8 @@ project "lualib"
 	language "c"
 	staticruntime "on"
 	systemversion "latest"
-
-	targetdir ("bin/"..dir_out.. "/%{prj.name}")
-	objdir ("bin/"..dir_out.. "/%{prj.name}")
-
+	targetdir (dir_out_res)
+	objdir (dir_out_int)
 	files
 	{
 		"src/**.h",

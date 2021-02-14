@@ -106,15 +106,15 @@ namespace NW
 		if (!(m_crs->GetMode() & CRS_CAPTURED)) { return; }
 		if (m_kbd->GetHeld(KC_LCTRL)) {
 			if (m_kbd->GetHeld(KC_C)) {
-				if (m_kbd->GetHeld(KC_K0)) { rCamera = GfxCamera(); }
-				else if (m_kbd->GetHeld(KC_K2)) { rCamera.SetMode(GCM_2D); rCamera.SetType(GCT_ORTHO); }
-				else if (m_kbd->GetHeld(KC_K3)) { rCamera.SetMode(GCM_3D); rCamera.SetType(GCT_PERSPECT); }
+				if (m_kbd->GetHeld(KC_0)) { rCamera = GfxCamera(); }
+				else if (m_kbd->GetHeld(KC_2)) { rCamera.SetMode(GCM_2D); rCamera.SetType(GCT_ORTHO); }
+				else if (m_kbd->GetHeld(KC_3)) { rCamera.SetMode(GCM_3D); rCamera.SetType(GCT_PERSPECT); }
 			}
 		}
 		switch (rkEvt.evType) {
 		case ET_KEYBOARD_RELEASE:
 			switch (rkEvt.keyCode) {
-			case KC_K0:
+			case KC_0:
 				break;
 			default: break;
 			}

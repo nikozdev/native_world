@@ -9,6 +9,7 @@
 // --==</global>==--
 
 // --==</graphics_library>==--
+#include <gfx/gfx_engine.h>
 #include <gfx/gfx_tools.h>
 #include <gfx/gfx_buffer.h>
 #include <gfx/gfx_framebuf.h>

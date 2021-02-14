@@ -2,7 +2,6 @@
 #include "gfx/gfx_framebuf.h"
 
 #if (defined NW_GAPI)
-#include <gfx/gfx_api.h>
 #include <gfx/gfx_texture.h>
 #include <gfx/gfx_loader.h>
 #endif // NW_GAPI

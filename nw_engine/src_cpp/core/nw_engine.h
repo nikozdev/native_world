@@ -3,8 +3,7 @@
 
 #include <nw_core.hpp>
 #include <core/nw_window.h>
-#include <gfx/gfx_api.h>
-
+#include <gfx/gfx_engine.h>
 
 namespace NW
 {
@@ -21,25 +20,21 @@ namespace NW
 		~CoreEngine();
 		// --getters
 		inline const char* GetName() const	{ return &m_strName[0]; }
-		inline CoreWindow* GetWindow()		{ return m_pWindow.GetRef(); }
-		inline GfxApi* GetGfx()				{ return m_pGfx.GetRef(); }
-		inline Keyboard& GetKeyboard()		{ return m_Keyboard; }
-		inline Cursor& GetCursor()			{ return m_Cursor; }
+		inline CoreWindow* GetWindow()		{ return m_pWindow; }
+		inline GfxEngine* GetGfx()			{ return m_pGfx; }
 		// --core_methods
-		virtual void Run() override;
-		virtual bool Init() override;
-		virtual void Quit() override;
-		virtual void Update() override;
-		virtual void OnEvent(AEvent& rEvt) override;
+		void Run();
+		bool Init();
+		void Quit();
+		void Update();
+		void OnEvent(AEvent& rEvt);
 		// --data_methods
 		String FDialogLoad(const char* strFilter);
 		String FDialogSave(const char* strFilter);
 	private:
 		const char* m_strName;
 		RefKeeper<CoreWindow> m_pWindow;
-		RefKeeper<GfxApi> m_pGfx;
-		Keyboard m_Keyboard;
-		Cursor m_Cursor;
+		RefKeeper<GfxEngine> m_pGfx;
 	};
 }
 

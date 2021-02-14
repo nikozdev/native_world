@@ -4,148 +4,81 @@
 #pragma warning(disable : 4312)
 
 #if (defined NW_GAPI)
-#include <gfx/gfx_api.h>
 #include <gfx/gfx_loader.h>
-#endif	// NW_API
-
+namespace NW
+{
+	VertexBuf::VertexBuf() :
+		m_unRId(0), m_bIsBound(false), m_szData(0) { }
+	VertexBuf::~VertexBuf() {}
+	IndexBuf::IndexBuf() :
+		m_unRId(0), m_bIsBound(false), m_szData(0) { }
+	IndexBuf::~IndexBuf() { }
+	ShaderBuf::ShaderBuf() :
+		m_unRId(0), m_bIsBound(false), m_szData(0) { }
+	ShaderBuf::~ShaderBuf() { }
+}
 #if (NW_GAPI & NW_GAPI_OGL)
 namespace NW
 {
-	// --==<AGfxBuf>==--
-	AGfxBuffer::AGfxBuffer(GfxBufferTypes gbType) : m_unRId(0), m_gbType(gbType), m_bIsBound(false), m_szData(0) { }
-	AGfxBuffer::~AGfxBuffer() { Unbind(); if (m_unRId != 0) { glDeleteBuffers(1, &m_unRId); } }
+	VertexBufOgl::VertexBufOgl() : VertexBuf() { }
+	VertexBufOgl::~VertexBufOgl() { }
 	// --setters
-	void AGfxBuffer::SetSubData(Size szData, const Ptr pVtxData, Size szOffset) {
+	void VertexBufOgl::SetSubData(Size szData, const Ptr pVtxData, Size szOffset) {
 		Bind();
-		glBufferSubData(m_gbType, szOffset, szData, pVtxData);
+		glBufferSubData(GL_ARRAY_BUFFER, szOffset, szData, pVtxData);
 		Unbind();
 	}
-	void AGfxBuffer::SetData(Size szData, const Ptr pVtxData) {
+	void VertexBufOgl::SetData(Size szData, const Ptr pVtxData) {
 		Unbind();
 		m_szData = szData;
 		if (m_unRId != 0) { glDeleteBuffers(1, &m_unRId); m_unRId = 0; }
 		if (szData == 0) { return; }
 		glGenBuffers(1, &m_unRId);
 		Bind();
-		glBufferData(m_gbType, szData, pVtxData, pVtxData == nullptr ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, szData, pVtxData, pVtxData == nullptr ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 		Unbind();
 	}
-	void AGfxBuffer::Bind() const {
+	void VertexBufOgl::Bind() const {
 		if (m_bIsBound) { return; }
-		glBindBuffer(m_gbType, m_unRId);
+		glBindBuffer(GL_ARRAY_BUFFER, m_unRId);
 		m_bIsBound = true;
 	}
-	void AGfxBuffer::Unbind() const {
+	void VertexBufOgl::Unbind() const {
 		if (!m_bIsBound) { return; }
-		glBindBuffer(m_gbType, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		m_bIsBound = false;
 	}
-	// --==</AGfxBuf>==--
-}
-namespace NW
-{
-	// --==<VertexBuf>==--
-	VertexBuf::VertexBuf() : AGfxBuffer(GBT_VERTEX) { }
-	VertexBuf::~VertexBuf() { }
-	// --==</VertexBuf>==--
-}
-namespace NW
-{
-	// --==<IndexBuf>==--
-	IndexBuf::IndexBuf() : AGfxBuffer(GBT_INDEX) { }
-	IndexBuf::~IndexBuf() { }
-	// --==</IndexBuf>==--
-}
-namespace NW
-{
-	// --==<ShaderBuf>==--
-	ShaderBuf::ShaderBuf() : AGfxBuffer(GBT_SHADER) { }
-	ShaderBuf::~ShaderBuf() { }
+	void ShaderBufOgl::ShaderBufOgl() : ShaderBuf() { }
+	void ShaderBufOgl::~ShaderBufOgl() { }
 	// --core_methods
-	void ShaderBuf::Bind() const {
+	void ShaderBufOgl::Bind() const {
 		if (m_bIsBound) { return; }
-		glBindBuffer(m_gbType, m_unRId);
+		glBindBuffer(GL_UNIFORM_BUFFER, m_unRId);
 		m_bIsBound = true;
 	}
-	void ShaderBuf::Bind(UInt32 unPoint) const {
+	void ShaderBufOgl::Bind(UInt32 unPoint) const {
 		glBindBufferBase(GL_UNIFORM_BUFFER, unPoint, m_unRId);
 	}
-	void ShaderBuf::Bind(UInt32 unPoint, Size szData, Size szOffset) const {
+	void ShaderBufOgl::Bind(UInt32 unPoint, Size szData, Size szOffset) const {
 		glBindBufferRange(GL_UNIFORM_BUFFER, unPoint, m_unRId, szOffset, szData);
 	}
-	void ShaderBuf::Remake(const ShaderBufLayout& rBufLayout) {
+	void ShaderBufOgl::Remake(const ShaderBufLayout& rBufLayout) {
 		if (m_szData < rBufLayout.GetSize()) { SetData(rBufLayout.GetSize()); }
 		for (auto& rBlock : rBufLayout.GetBlocks()) { Bind(rBlock.unBindPoint, rBlock.szAll, rBlock.szOffset); }
 	}
-	// --==</AShaderBuf>==--
 }
-namespace NW
-{
-	VertexArr::VertexArr() :
-		m_unRId(0), m_bIsBound(false),
-		m_gpType(GPT_TRIANGLES) { glCreateVertexArrays(1, &m_unRId); }
-	VertexArr::~VertexArr() { glDeleteVertexArrays(1, &m_unRId); }
-	
-	// --setters
-	// --==<core_methods>==--
-	void VertexArr::Bind() const {
-		if (m_bIsBound) { return; }
-		glBindVertexArray(m_unRId);
-		m_bIsBound = true;
-	}
-	void VertexArr::Unbind() const {
-		if (!m_bIsBound) { return; }
-		glBindVertexArray(0);
-		m_bIsBound = false;
-	}
-
-	void VertexArr::Remake(const VertexBufLayout& rvtxLayout) {
-		NWL_ASSERT(m_vtxBufs.size() > 0, "there are no vertex buffers!");
-		Bind();
-		if (m_idxBuf.GetRef() != nullptr) { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_idxBuf->GetRenderId()); }
-		else { glBindBuffer(GBT_INDEX, 0); }
-		for (auto& itBuf : m_vtxBufs) {
-			NWL_ASSERT(itBuf->GetRenderId() != 0, "vertex buffer is invalid!");
-			glBindBuffer(GL_ARRAY_BUFFER, itBuf->GetRenderId());
-		}
-		for (UInt32 ati = 0; ati < m_vtxLayout.GetElems().size(); ati++) { glDisableVertexAttribArray(ati); }
-		m_vtxLayout = rvtxLayout;
-		for (UInt32 ati = 0; ati < m_vtxLayout.GetElems().size(); ati++) {
-			const BufferElement& rBufElem = m_vtxLayout.GetElem(ati);
-			glEnableVertexAttribArray(ati);
-			glVertexAttribPointer(ati, rBufElem.unCount, rBufElem.sdType,
-				rBufElem.bNormalized ? GL_TRUE : GL_FALSE, m_vtxLayout.GetStride(), reinterpret_cast<Ptr>(rBufElem.unOffset));
-		}
-		Unbind();
-	}
-	void VertexArr::CreateVtxBuffer()
-	{
-		RefKeeper<VertexBuf> vtxBuf;
-		vtxBuf.MakeRef<VertexBuf>();
-		AddVtxBuffer(vtxBuf);
-	}
-	void VertexArr::CreateIdxBuffer()
-	{
-		RefKeeper<IndexBuf> idxBuf;
-		idxBuf.MakeRef<IndexBuf>();
-		SetIdxBuffer(idxBuf);
-	}
-	// --==</core_methods>==--
-}
-#endif	// NW_GAPI
-
+#endif
 #if (NW_GAPI & NW_GAPI_DX)
 namespace NW
 {
-	// --==<AGfxBuf>==--
-	AGfxBuffer::AGfxBuffer(GfxBufferTypes gbType) : m_unRId(0), m_gbType(gbType), m_bIsBound(false), m_szData(0) { }
-	AGfxBuffer::~AGfxBuffer() { Unbind(); if (m_unRId != 0) { } }
+	VertexBufDx::VertexBufDx() : VertexBuf() { }
+	VertexBufDx::~VertexBufDx() { }
 	// --setters
-	void AGfxBuffer::SetSubData(Size szData, const Ptr pVtxData, Size szOffset) {
+	void VertexBufDx::SetSubData(Size szData, const Ptr pVtxData, Size szOffset) {
 		Bind();
 		Unbind();
 	}
-	void AGfxBuffer::SetData(Size szData, const Ptr pVtxData) {
+	void VertexBufDx::SetData(Size szData, const Ptr pVtxData) {
 		Unbind();
 		m_szData = szData;
 		if (m_unRId != 0) { }
@@ -153,85 +86,64 @@ namespace NW
 		Bind();
 		Unbind();
 	}
-	void AGfxBuffer::Bind() const {
+	void VertexBufDx::Bind() const {
 		if (m_bIsBound) { return; }
 		m_bIsBound = true;
 	}
-	void AGfxBuffer::Unbind() const {
+	void VertexBufDx::Unbind() const {
 		if (!m_bIsBound) { return; }
 		m_bIsBound = false;
 	}
-	// --==</AGfxBuf>==--
-}
-namespace NW
-{
-	// --==<VertexBuf>==--
-	VertexBuf::VertexBuf() : AGfxBuffer(GBT_VERTEX) { }
-	VertexBuf::~VertexBuf() { }
-	// --==</VertexBuf>==--
-}
-namespace NW
-{
-	// --==<IndexBuf>==--
-	IndexBuf::IndexBuf() : AGfxBuffer(GBT_INDEX) { }
-	IndexBuf::~IndexBuf() { }
-	// --==</IndexBuf>==--
-}
-namespace NW
-{
-	// --==<ShaderBuf>==--
-	ShaderBuf::ShaderBuf() : AGfxBuffer(GBT_SHADER) { }
-	ShaderBuf::~ShaderBuf() { }
-	// --core_methods
-	void ShaderBuf::Bind() const {
-		if (m_bIsBound) { return; }
-		m_bIsBound = true;
-	}
-	void ShaderBuf::Bind(UInt32 unPoint) const {
-	}
-	void ShaderBuf::Bind(UInt32 unPoint, Size szData, Size szOffset) const {
-	}
-	void ShaderBuf::Remake(const ShaderBufLayout& rBufLayout) {
-		if (m_szData < rBufLayout.GetSize()) { SetData(rBufLayout.GetSize()); }
-		for (auto& rBlock : rBufLayout.GetBlocks()) { Bind(rBlock.unBindPoint, rBlock.szAll, rBlock.szOffset); }
-	}
-	// --==</AShaderBuf>==--
-}
-namespace NW
-{
-	VertexArr::VertexArr() :
-		m_unRId(0), m_bIsBound(false),
-		m_gpType(GPT_TRIANGLES) { }
-	VertexArr::~VertexArr() { }
-
+	
+	IndexBufDx::IndexBufDx() : IndexBuf() { }
+	IndexBufDx::~IndexBufDx() { }
 	// --setters
-	// --==<core_methods>==--
-	void VertexArr::Bind() const {
-		if (m_bIsBound) { return; }
-		m_bIsBound = true;
-	}
-	void VertexArr::Unbind() const {
-		if (!m_bIsBound) { return; }
-		m_bIsBound = false;
-	}
-
-	void VertexArr::Remake(const VertexBufLayout& rvtxLayout) {
-		NWL_ASSERT(m_vtxBufs.size() > 0, "there are no vertex buffers!");
+	void IndexBufDx::SetSubData(Size szData, const Ptr pVtxData, Size szOffset) {
 		Bind();
 		Unbind();
 	}
-	void VertexArr::CreateVtxBuffer()
-	{
-		RefKeeper<VertexBuf> vtxBuf;
-		vtxBuf.MakeRef<VertexBuf>();
-		AddVtxBuffer(vtxBuf);
+	void IndexBufDx::SetData(Size szData, const Ptr pVtxData) {
+		Unbind();
+		m_szData = szData;
+		if (m_unRId != 0) {}
+		if (szData == 0) { return; }
+		Bind();
+		Unbind();
 	}
-	void VertexArr::CreateIdxBuffer()
-	{
-		RefKeeper<IndexBuf> idxBuf;
-		m_idxBuf.MakeRef<IndexBuf>();
-		SetIdxBuffer(idxBuf);
+	// --core_methods
+	void IndexBufDx::Bind() const {
+		if (m_bIsBound) { return; }
+		m_bIsBound = true;
 	}
-	// --==</core_methods>==--
+	void IndexBufDx::Unbind() const { }
+
+	ShaderBufDx::ShaderBufDx() : ShaderBuf() { }
+	ShaderBufDx::~ShaderBufDx() { }
+	// --setters
+	void ShaderBufDx::SetSubData(Size szData, const Ptr pVtxData, Size szOffset) {
+		Bind();
+		Unbind();
+	}
+	void ShaderBufDx::SetData(Size szData, const Ptr pVtxData) {
+		Unbind();
+		m_szData = szData;
+		if (m_unRId != 0) {}
+		if (szData == 0) { return; }
+		Bind();
+		Unbind();
+	}
+	// --core_methods
+	void ShaderBufDx::Bind() const {
+		if (m_bIsBound) { return; }
+		m_bIsBound = true;
+	}
+	void ShaderBufDx::Bind(UInt32 unPoint) const { }
+	void ShaderBufDx::Bind(UInt32 unPoint, Size szData, Size szOffset) const { }
+	void ShaderBufDx::Unbind() const { }
+	void ShaderBufDx::Remake(const ShaderBufLayout& rBufLayout) {
+		if (m_szData < rBufLayout.GetSize()) { SetData(rBufLayout.GetSize()); }
+		for (auto& rBlock : rBufLayout.GetBlocks()) { Bind(rBlock.unBindPoint, rBlock.szAll, rBlock.szOffset); }
+	}
 }
-#endif // NW_GAPI
+#endif
+#endif	// NW_GAPI

@@ -1,10 +1,8 @@
 project "imgui"
 	kind "staticlib"
 	language "c++"
-
-	targetdir ("bin/".. dir_out.."/%{prj.name}")
-	objdir ("bin/int/"..dir_out.."/%{prj.name}")
-
+	targetdir (dir_out_res)
+	objdir (dir_out_int)
 	files
 	{
 		"imconfig.h",
@@ -18,7 +16,6 @@ project "imgui"
 		"imstb_truetype.h",
 		"imgui_demo.cpp"
 	}
-
 	filter "system:windows"
 		systemversion "latest"
 		cppdialect "C++17"

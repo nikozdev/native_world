@@ -3,8 +3,8 @@
 
 #include <gfx/gfx_material.h>
 #include <gfx/gfx_buffer.h>
-#include <gfx/gfx_api.h>
 
+#if false
 namespace NW
 {
 	Drawable::Drawable() :
@@ -46,3 +46,4 @@ namespace NW
 		}
 	}
 }
+#endif

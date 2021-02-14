@@ -3,7 +3,58 @@
 
 #include <nw_core.hpp>
 #include <gfx_core.hpp>
+#include <core/nw_gui_of.h>
 
+namespace NW
+{
+	/// GamerState class
+	class GamerState : public NWL::AEngineState
+	{
+	public:
+		GamerState();
+		~GamerState();
+		// --core_methods
+		virtual bool Init() override;
+		virtual void Quit() override;
+		virtual void Update() override;
+		virtual void OnEvent(CursorEvent& rmEvt) override;
+		virtual void OnEvent(KeyboardEvent& rkEvt) override;
+		virtual void OnEvent(WindowEvent& rwEvt) override;
+	private:
+		CoreEngine& m_rEngine;
+		DArray<UInt32> m_eIds;
+	};
+}
+namespace NW
+{
+	/// GuiState class
+	/// Description:
+	class GuiState : public NWL::AEngineState
+	{
+	public:
+		GuiState();
+		~GuiState();
+		// --core_methods
+		virtual bool Init() override;
+		virtual void Quit() override;
+		virtual void Update() override;
+		virtual void OnEvent(CursorEvent& rmEvt) override;
+		virtual void OnEvent(KeyboardEvent& rkEvt) override;
+		virtual void OnEvent(WindowEvent& rwEvt) override;
+	private:
+		inline void BeginDraw();
+		inline void EndDraw();
+	private:
+		CoreEngine& m_rEngine;
+
+		ImGuiContext* m_pGuiContext;
+		ImGuiIO* m_pGuiIO;
+		ImGuiStyle* m_pGuiStyle;
+
+		bool m_bFullScreenPersist;
+		bool m_bDockspace;
+	};
+}
 namespace NW
 {
 	/// GfxState class
@@ -14,7 +65,7 @@ namespace NW
 		~GfxState();
 		// --core_methods
 		virtual bool Init() override;
-		virtual void OnQuit() override;
+		virtual void Quit() override;
 		virtual void Update() override;
 		virtual void OnEvent(CursorEvent& rmEvt) override;
 		virtual void OnEvent(KeyboardEvent& rkEvt) override;
@@ -25,27 +76,6 @@ namespace NW
 		CoreEngine& m_rEngine;
 
 		RefKeeper<ShaderBuf> m_pShdBuf;
-	};
-}
-namespace NW
-{
-	/// GfxState class
-	class GfxDxState : public NWL::AEngineState
-	{
-	public:
-		GfxDxState();
-		~GfxDxState();
-		// --core_methods
-		virtual bool Init() override;
-		virtual void OnQuit() override;
-		virtual void Update() override;
-		virtual void OnEvent(CursorEvent& rmEvt) override;
-		virtual void OnEvent(KeyboardEvent& rkEvt) override;
-		virtual void OnEvent(WindowEvent& rwEvt) override;
-	private:
-		inline void DrawScene();
-	private:
-		CoreEngine& m_rEngine;
 	};
 }
 

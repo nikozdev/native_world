@@ -9,10 +9,4 @@
 #include <native_library.hpp>
 using namespace NWL;
 
-//#include <gl/gl.h>
-#include <d3d11.h>
-
-#pragma comment(lib, "opengl32.lib")
-#pragma comment(lib, "d3d11.lib")
-
 #endif	// NW_PCH_HPP

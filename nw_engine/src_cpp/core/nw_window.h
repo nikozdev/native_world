@@ -1,7 +1,6 @@
 #ifndef NW_CORE_WINDOW_H
 #define NW_CORE_WINDOW_H
 #include <nw_core.hpp>
-#if (defined NW_WAPI)
 namespace NW
 {
 	using EventCallback = std::function<void(AEvent&)>;
@@ -26,7 +25,8 @@ namespace NW
 			nX(0), nY(0), nW(unWidth), nH(unHeight),
 			bVSync(bVerticalSync), nAspectRatio((Float32)unWidth / (Float32)unHeight) { }
 		inline OutStream& operator<<(OutStream& rStream) {
-			return rStream << "--==<window_info>==--" << std::endl <<
+			return rStream <<
+				"--==<window_info>==--" << std::endl <<
 				"title: " << &strTitle[0] << std::endl <<
 				"coordx/coordy: " << nX << "/" << nY << std::endl <<
 				"width/height: " << nW << "/" << nH << std::endl <<
@@ -36,36 +36,7 @@ namespace NW
 	};
 	inline OutStream& operator<<(OutStream& rStream, WindowInfo& rwInfo) { return rwInfo.operator<<(rStream); }
 }
-#if (NW_WAPI & NW_WAPI_GLFW)
-struct NativeWindow {
-public:
-	GLFWwindow* pHandle = nullptr;
-public:
-	inline operator GLFWwindow*() { return pHandle; };
-};
-struct DeviceContext {
-public:
-	GLFWcontext* pHandle = nullptr;
-public:
-	inline operator GLFWcontext*() { return pHandle; };
-};
-#endif
-#if (NW_WAPI & NW_WAPI_WIN)
-struct NativeWindow {
-public:
-	HWND pHandle = nullptr;
-public:
-	inline operator HWND() { return pHandle; };
-};
-struct WindowContext {
-public:
-	HDC pHandle = nullptr;
-	HGLRC pGfx = nullptr;
-public:
-	inline operator HDC() { return pHandle; };
-	inline operator HGLRC() { return pGfx; };
-};
-#endif	// NW_WAPI
+#if (defined NW_PLATFORM_WINDOWS)
 namespace NW
 {
 	/// Window Class
@@ -75,7 +46,6 @@ namespace NW
 		CoreWindow(const WindowInfo& rwInfo);
 		CoreWindow(const CoreWindow& rCpy) = delete;
 		~CoreWindow();
-
 		// --getters
 		inline UInt16 GetSizeW() const		{ return m_wInfo.nW; }
 		inline UInt16 GetSizeH() const		{ return m_wInfo.nH; }
@@ -84,8 +54,7 @@ namespace NW
 		inline UInt16 GetOpacity() const	{ return m_wInfo.nOpacity; }
 		inline const char* GetTitle() const	{ return &m_wInfo.strTitle[0]; }
 		inline const WindowInfo& GetWindowInfo() const { return m_wInfo; }
-		inline NativeWindow& GetNative()	{ return m_Native; }
-		inline WindowContext& GetContext()	{ return m_Context; }
+		inline NativeWindow& GetNative()	{ return m_wNative; }
 		// --setters
 		void SetTitle(const char* strTitle);
 		void SetVSync(bool bEnable);
@@ -106,46 +75,20 @@ namespace NW
 		void operator delete(Ptr pBlock) = delete;
 		void operator delete[](Ptr pBlock) = delete;
 		// --core_methods
-		bool Init();
-		void OnQuit();
 		void Update();
 	private:
-		inline bool InitWindow();
-		inline void QuitWindow();
-		inline bool InitContext();
-		inline void QuitContext();
-#if (NW_WAPI & NW_WAPI_GLFW)
-		// --input_callbacks: mouse
-		static void CbMouseCoord(GLFWwindow* pWindow, double xCrd, double yCrd);
-		static void CbMouseScroll(GLFWwindow* pWindow, double xScroll, double yScroll);
-		static void CbMouseButton(GLFWwindow* pWindow, Int32 nButton, Int32 nAction, Int32 nMode);
-		// --input_callbacks: keyboard
-		static void CbKeyboard(GLFWwindow* pWindow, Int32 nKey, Int32 nScanCode, Int32 nAction, Int32 nMode);
-		static void CbKeyboardChar(GLFWwindow* pWindow, UInt32 unChar);
-		// --input_callbacks: window
-		static void CbWindowClose(GLFWwindow* pWindow);
-		static void CbWindowSize(GLFWwindow* pWindow, Int32 nWidth, Int32 nHeight);
-		static void CbWindowFocus(GLFWwindow* pWindow, Int32 nFocus);
-		// --other_callbacks: window
-		static void CbError(Int32 nErrCode, const char* strErrMsg);
-#endif
-#if (NW_WAPI & NW_WAPI_WIN)
 		static inline LRESULT __stdcall MsgProcInit(HWND pWindow, UINT unMsg, WPARAM wParam, LPARAM lParam);
 		static inline LRESULT __stdcall StaticMsgProc(HWND pWindow, UINT unMsg, WPARAM wParam, LPARAM lParam);
 		inline LRESULT __stdcall MsgProc(HWND pWindow, UINT unMsg, WPARAM wParam, LPARAM lParam);
-#endif
 	private:
 		WindowInfo m_wInfo;
-		NativeWindow m_Native;
-		WindowContext m_Context;
-#if (NW_WAPI & NW_WAPI_WIN)
+		NativeWindow m_wNative;
 		MSG m_wMsg;
 		WNDCLASSEX m_wndClass;
 		PAINTSTRUCT m_pntStruct;
-#endif
 	};
 }
-#endif	// NW_WAPI
+#endif	// NW_PLATFORM
 
 #endif	// NW_CORE_WINDOW_H
 /*
