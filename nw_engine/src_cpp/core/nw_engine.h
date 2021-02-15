@@ -1,10 +1,7 @@
 #ifndef NW_ENGINE_H
 #define NW_ENGINE_H
-
 #include <nw_core.hpp>
 #include <core/nw_window.h>
-#include <gfx/gfx_engine.h>
-
 namespace NW
 {
 	/// CoreEngine class

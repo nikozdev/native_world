@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_cmd", "nw_cmd\nw_cmd.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_engine", "nw_engine\nw_engine.vcxproj", "{7F70A556-EBDA-59CD-3419-0B73A0C23722}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_gfx", "nw_gfx\nw_gfx.vcxproj", "{AEB91511-9A5B-40E7-8316-543B6F57C737}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_lib", "nw_lib\nw_lib.vcxproj", "{40CF1511-2C71-40E7-152C-543B016DC737}"
 EndProject
 Global
@@ -33,6 +35,10 @@ Global
 		{7F70A556-EBDA-59CD-3419-0B73A0C23722}.debug|x64.Build.0 = debug|x64
 		{7F70A556-EBDA-59CD-3419-0B73A0C23722}.release|x64.ActiveCfg = release|x64
 		{7F70A556-EBDA-59CD-3419-0B73A0C23722}.release|x64.Build.0 = release|x64
+		{AEB91511-9A5B-40E7-8316-543B6F57C737}.debug|x64.ActiveCfg = debug|x64
+		{AEB91511-9A5B-40E7-8316-543B6F57C737}.debug|x64.Build.0 = debug|x64
+		{AEB91511-9A5B-40E7-8316-543B6F57C737}.release|x64.ActiveCfg = release|x64
+		{AEB91511-9A5B-40E7-8316-543B6F57C737}.release|x64.Build.0 = release|x64
 		{40CF1511-2C71-40E7-152C-543B016DC737}.debug|x64.ActiveCfg = debug|x64
 		{40CF1511-2C71-40E7-152C-543B016DC737}.debug|x64.Build.0 = debug|x64
 		{40CF1511-2C71-40E7-152C-543B016DC737}.release|x64.ActiveCfg = release|x64

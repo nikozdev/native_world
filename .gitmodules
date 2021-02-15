@@ -4,3 +4,6 @@
 [submodule "nw_cmd"]
 	path = nw_cmd
 	url = https://github.com/Natlys/nw_cmd
+[submodule "nw_gfx"]
+	path = nw_gfx
+	url = https://github.com/Natlys/nw_gfx.git

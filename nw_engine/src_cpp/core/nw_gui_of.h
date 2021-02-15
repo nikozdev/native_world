@@ -2,25 +2,16 @@
 #define NW_GUI_OF_H
 
 #include <nw_core.hpp>
-#include <gfx_core.hpp>
 
 #include <core/nw_engine.h>
-#include <gfx/gfx_engine.h>
 #include <lua/lua_engine.h>
-
-#include <gfx/gfx_buffer.h>
-#include <gfx/gfx_drawable.h>
-
-#include <gfx/gfx_texture.h>
-#include <gfx/gfx_shader.h>
-#include <gfx/gfx_material.h>
 
 #if (NW_GUI & NW_GUI_IMGUI)
 	#include <imgui.h>
 	#include <imgui_internal.h>
 	#include <examples/imgui_impl_win32.h>
 	#define GUI_DEFAULT_TREE_FLAGS ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick
-	#include <gfx/gfx_loader.h>
+	#include <nwg_loader.h>
 	#if (NW_GAPI & NW_GAPI_OGL)
 		#include <examples/imgui_impl_opengl3.h>
 	#endif

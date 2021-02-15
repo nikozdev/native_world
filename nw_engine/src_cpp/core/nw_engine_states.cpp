@@ -3,14 +3,6 @@
 
 #include <core/nw_engine.h>
 
-#include <gfx/gfx_buffer.h>
-#include <gfx/gfx_framebuf.h>
-#include <gfx/gfx_shader.h>
-#include <gfx/gfx_material.h>
-#include <gfx/gfx_texture.h>
-#include <gfx/gfx_camera_lad.h>
-#include <gfx/gfx_component.h>
-
 namespace NW
 {
 	GamerState::GamerState() :
@@ -27,7 +19,7 @@ namespace NW
 	}
 	void GamerState::Quit()
 	{
-		if (m_imgInfo.pClrData != nullptr) { DelTArr<UByte>(m_imgInfo.pClrData, m_imgInfo.GetDataSize()); }
+		if (m_imgInfo.pClrData != nullptr) { MemSys::DelTArr<UByte>(m_imgInfo.pClrData, m_imgInfo.GetDataSize()); }
 	}
 	void GamerState::Update()
 	{

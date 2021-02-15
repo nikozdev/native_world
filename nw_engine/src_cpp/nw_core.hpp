@@ -18,11 +18,6 @@
 // --==</linking>==--
 
 // --==<configurations>==--
-// --graphics_api_choice
-#define NW_GAPI_OGL		1 << 1
-#define NW_GAPI_DX		1 << 2
-#define NW_GAPI			NW_GAPI_OGL
-
 // --gui_library_choice
 #define NW_GUI_NATIVE	1 << 1
 #define NW_GUI_IMGUI	1 << 2

@@ -12,19 +12,20 @@ project "nw_engine"
 	shaderassembler("assemblycode")
 	files
 	{
-		"src_cpp/**.c**",
-		"src_cpp/**.h**",
+		"%{dir_cpp.own}**.c**",
+		"%{dir_cpp.own}**.h**",
 		dir_lua.."**.**",
 		dir_glsl.."**.**",
 		dir_hlsl.."**.**",
-		dir_data.."**.**",
+		dir_data.."**.h", dir_data.."**.rc",  dir_data.."**.aps",
 	}
 	includedirs
 	{
 		dir_data,
-		"src_cpp/",
-		"ext/",
+		"%{dir_cpp.own}",
+		"%{dir_cpp.ext}",
 		"%{dir_cpp.nw_lib}",
+		"%{dir_cpp.nw_gfx}",
 		"%{dir_cpp.nw_cmd}",
 		"%{dir_cpp.lualib}",
 		"%{dir_cpp.imgui}",
@@ -32,6 +33,7 @@ project "nw_engine"
 	libdirs
 	{
 		"%{dir_lib.nw_lib}",
+		"%{dir_lib.nw_gfx}",
 		"%{dir_lib.nw_cmd}",
 		"%{dir_lib.lualib}",
 		"%{dir_lib.imgui}",
@@ -39,11 +41,10 @@ project "nw_engine"
 	links
 	{
 		"nw_lib",
+		"nw_gfx",
 		"nw_cmd",
 		"imgui",
 		"lualib",
-		"opengl32",
-		"d3d11",
 	}
 	filter "system:windows"
 		systemversion "latest"
@@ -54,17 +55,4 @@ project "nw_engine"
 	filter "configurations:release"
 		defines { "NW_RELEASE" }
 		optimize "on"
-	filter("files:**.hlsl")
-		flags("excludefrombuild")
-		shaderobjectfileoutput(dir_out_res.."%{file.basename}"..".cso")
-		shaderassembleroutput(dir_out_int.."%{file.basename}"..".asm")
-	filter("files:**_pxl.hlsl")
-		removeflags("excludefrombuild")
-		shadertype("pixel")
-	filter("files:**_vtx.hlsl")
-		removeflags("excludefrombuild")
-		shadertype("vertex")
-	filter("files:**_gmt.hlsl")
-		removeflags("excludefrombuild")
-		shadertype("geometry")
 --==</engine_project>==--

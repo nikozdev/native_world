@@ -2,7 +2,6 @@
 #define NW_ENGINE_STATES_H
 
 #include <nw_core.hpp>
-#include <gfx_core.hpp>
 #include <core/nw_gui_of.h>
 
 namespace NW
