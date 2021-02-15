@@ -1,73 +1,9 @@
-#ifndef NW_GFX_TEXTURE_H
-#define NW_GFX_TEXTURE_H
-
+#ifndef NWG_TEXTURE_H
+#define NWG_TEXTURE_H
 #include <gfx_core.hpp>
-
 #if (defined NW_GAPI)
+#include <gfx/gfx_entity.h>
 #include <gfx/gfx_tools.h>
-namespace NW
-{
-	/// SubTexture1d struct
-	struct NW_API SubTexture1d
-	{
-	public:
-		Int32 nTexCrd = 0;
-		Int32 nTexSize = 1;
-		Texture* pOverTex = nullptr;
-	public:
-		// --getters
-		inline float GetTexCoord_0_1() const {
-			return static_cast<float>(nTexCrd) / static_cast<float>(nOverTexSize);
-		}
-		inline float GetTexSize_0_1() const {
-			return static_cast<float>(nTexSize) / static_cast<float>(nOverTexSize);
-		}
-	private:
-		Int32 nOverTexSize = 0;
-	};
-	/// SubTexture2d struct
-	struct NW_API SubTexture2d
-	{
-	public:
-		V2i xyTexCrd = { 0, 0 };
-		V2i whTexSize = { 1, 1 };
-		Texture* pOverTex = nullptr;
-		V2i whOverTexSize = { 0, 0 };
-	public:
-		// --getters
-		inline V2f GetTexCoord_0_1() const {
-			return V2f{ static_cast<float>(xyTexCrd.x) / static_cast<float>(whOverTexSize.x),
-				static_cast<float>(xyTexCrd.y) / static_cast<float>(whOverTexSize.y) };
-		}
-		inline V2f GetTexSize_0_1() const {
-			return V2f{ static_cast<float>(whTexSize.x) / static_cast<float>(whOverTexSize.x),
-				static_cast<float>(whTexSize.y) / static_cast<float>(whOverTexSize.y) };
-		}
-	private:
-	};
-	/// SubTexture3d struct
-	struct NW_API SubTexture3d
-	{
-	public:
-		V3i xyzTexCrd = { 0, 0, 0 };
-		V3i whdTexSize = { 1, 1, 1 };
-		Texture* pOverTex = nullptr;
-	public:
-		// --getters
-		inline V3f GetTexCoord_0_1() const {
-			return V3f{ static_cast<float>(xyzTexCrd.x) / static_cast<float>(whdOverTexSize.x),
-				static_cast<float>(xyzTexCrd.y) / static_cast<float>(whdOverTexSize.y),
-				static_cast<float>(xyzTexCrd.z) / static_cast<float>(whdOverTexSize.z) };
-		}
-		inline V3f GetTexSize_0_1() const {
-			return V3f{ static_cast<float>(whdTexSize.x) / static_cast<float>(whdOverTexSize.x),
-				static_cast<float>(whdTexSize.y) / static_cast<float>(whdOverTexSize.y),
-				static_cast<float>(whdTexSize.z) / static_cast<float>(whdOverTexSize.z) };
-		}
-	private:
-		V3i whdOverTexSize = { 1, 1, 1 };
-	};
-}
 namespace NW
 {
 	/// TextureInfo struct
@@ -84,6 +20,41 @@ namespace NW
 		UInt32 unSamples = 1;
 	};
 }
+namespace NW
+{
+	/// Texture class
+	/// Description:
+	/// -> Set props and data -> LoadData -> MakeTexture -> Bind drawing stuff
+	/// -> Enable -> Draw -> Disable
+	/// --It's a wrapping image which has to wrap a mesh
+	class NW_API Texture : public TDataRes<Texture>, public GfxEntity
+	{
+	public:
+		Texture(const char* strName, TextureTypes texTypes);
+		virtual ~Texture();
+		// --getters
+		inline UInt32 GetTexSlot() const { return m_unTexSlot; }
+		inline TextureTypes GetType() const { return m_texType; }
+		inline const TextureInfo& GetTexInfo() const { return m_texInfo; }
+		inline const ImageInfo& GetImgInfo() const { return m_imgInfo; }
+		// --setters
+		void SetSlot(UInt32 unSlot) { m_unTexSlot = unSlot; }
+		void SetInfo(const TextureInfo& rTexInfo);
+		void SetInfo(const ImageInfo& rImgInfo);
+		// --core_methods
+		virtual void Bind() const = 0;
+		virtual void Remake() = 0;
+		virtual void Clear(Ptr pValue) = 0;
+		// --data_methods
+		virtual bool SaveF(const char* strFPath) override;
+		virtual bool LoadF(const char* strFPath) override;
+	protected:
+		TextureTypes m_texType;
+		UInt32 m_unTexSlot;
+		TextureInfo m_texInfo;
+		ImageInfo m_imgInfo;
+	};
+}
 #if (NW_GAPI & NW_GAPI_OGL)
 namespace NW
 {
@@ -92,39 +63,15 @@ namespace NW
 	/// -> Set props and data -> LoadData -> MakeTexture -> Bind drawing stuff
 	/// -> Enable -> Draw -> Disable
 	/// --It's a wrapping image which has to wrap a mesh
-	class NW_API Texture : public TDataRes<Texture>
+	class NW_API TextureOgl : public Texture, public GfxEntityOgl
 	{
 	public:
-		Texture(const char* strName, TextureTypes texTypes);
-		~Texture();
-
-		// --getters
-		inline UInt32 GetRenderId() const { return m_unRId; }
-		inline UInt32 GetTexSlot() const { return m_unTexSlot; }
-		inline TextureTypes GetType() const { return m_texType; }
-		inline const TextureInfo& GetTexInfo() const { return m_texInfo; }
-		inline const ImageInfo& GetImgInfo() const { return m_imgInfo; }
-		// --setters
-		void SetInfo(const TextureInfo& rTexInfo);
-		void SetInfo(const ImageInfo& rImgInfo);
-		// --predicates
-		inline Bit IsBound() const { return m_bIsBound; }
-
+		TextureOgl(const char* strName, TextureTypes texTypes, GfxEngineOgl& rGfx);
+		~TextureOgl();
 		// --core_methods
-		void Bind(UInt32 unTexSlot = 0);
-		void Unbind();
-		void Remake();
-		void Clear(Ptr pValue);
-		// --data_methods
-		virtual bool SaveF(const char* strFPath) override;
-		virtual bool LoadF(const char* strFPath) override;
-	private:
-		TextureTypes m_texType;
-		UInt32 m_unRId;
-		mutable Bit m_bIsBound;
-		UInt32 m_unTexSlot;
-		TextureInfo m_texInfo;
-		ImageInfo m_imgInfo;
+		virtual void Bind() const override;
+		virtual void Remake() override;
+		virtual void Clear(Ptr pValue) override;
 	};
 }
 #endif
@@ -136,39 +83,16 @@ namespace NW
 	/// -> Set props and data -> LoadData -> MakeTexture -> Bind drawing stuff
 	/// -> Enable -> Draw -> Disable
 	/// --It's a wrapping image which has to wrap a mesh
-	class NW_API Texture : public TDataRes<Texture>
+	class NW_API TextureDx : public Texture, public GfxEntityDx
 	{
 	public:
-		Texture(const char* strName, TextureTypes texTypes);
-		~Texture();
-
-		// --getters
-		inline UInt32 GetRenderId() const { return m_unRId; }
-		inline UInt32 GetTexSlot() const { return m_unTexSlot; }
-		inline TextureTypes GetType() const { return m_texType; }
-		inline const TextureInfo& GetTexInfo() const { return m_texInfo; }
-		inline const ImageInfo& GetImgInfo() const { return m_imgInfo; }
-		// --setters
-		void SetInfo(const TextureInfo& rTexInfo);
-		void SetInfo(const ImageInfo& rImgInfo);
-		// --predicates
-		inline Bit IsBound() const { return m_bIsBound; }
-
+		TextureDx(const char* strName, TextureTypes texTypes, GfxEngineDx& rGfx);
+		~TextureDx();
 		// --core_methods
-		void Bind(UInt32 unTexSlot = 0);
-		void Unbind();
-		void Remake();
-		void Clear(Ptr pValue);
-		// --data_methods
-		virtual bool SaveF(const char* strFPath) override;
-		virtual bool LoadF(const char* strFPath) override;
-	private:
-		TextureTypes m_texType;
-		UInt32 m_unRId;
-		mutable Bit m_bIsBound;
-		UInt32 m_unTexSlot;
-		TextureInfo m_texInfo;
-		ImageInfo m_imgInfo;
+		virtual void Bind(UInt32 unTexSlot = 0u) override;
+		virtual void Unbind() override;
+		virtual void Remake() override;
+		virtual void Clear(Ptr pValue) override;
 	};
 }
 #endif

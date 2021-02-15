@@ -1,6 +1,9 @@
 #include <nw_pch.hpp>
 #include "nw_gui_of.h"
 
+#pragma warning(disable:4312)
+
+#if (false)
 // --==<GuiOfGlobal>==--
 namespace NW
 {
@@ -746,3 +749,4 @@ namespace NW
 #endif
 }
 // --==</GuiOfSceneEditor>==--
+#endif

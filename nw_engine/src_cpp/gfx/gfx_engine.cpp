@@ -36,7 +36,6 @@ namespace NW
 }
 #if (NW_GAPI & NW_GAPI_OGL)
 #include <../src_glsl/shd_screen.glsl>
-NW::GfxEngineOgl* NW::GfxEngineOgl::s_pGfx = nullptr;
 namespace NW
 {
 	GfxEngineOgl::GfxEngineOgl(HWND pWindow) :
@@ -84,7 +83,6 @@ namespace NW
 		strcpy(&m_gInfo.strVendor[0], &((const char*)glGetString(GL_VENDOR))[0]);
 		strcpy(&m_gInfo.strShdLang[0], &((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION))[0]);
 		std::cout << m_gInfo;
-		s_pGfx = this;
 	}
 	GfxEngineOgl::~GfxEngineOgl()
 	{
@@ -96,11 +94,9 @@ namespace NW
 		// DeleteDC(m_Context);	// delete only created device context
 		// Before this call device context must be released or deleted
 		wglDeleteContext(m_pContext);
-
-		if (s_pGfx == this) { s_pGfx = nullptr; }
 	}
 	// --==<setters>==--
-	void GfxEngineOgl::SetPrimitive(GfxPrimitiveTypes gfxPrimitiveTopology) {
+	void GfxEngineOgl::SetPrimitive(GfxPrimitives gfxPrimitiveTopology) {
 	}
 	void GfxEngineOgl::SetModes(Bit bEnable, ProcessingModes pmModes) {
 
@@ -131,13 +127,18 @@ namespace NW
 		m_gConfig.General.PolyMode.facePlane = facePlane;
 		glPolygonMode(facePlane, dMode);
 	}
-	void GfxEngineOgl::SetLineWidth(Float32 nLineWidth) {
-		m_gConfig.General.nLineWidth = nLineWidth;
-		glLineWidth(nLineWidth);
-	}
-	void GfxEngineOgl::SetPixelSize(Float32 nPxSize) {
-		m_gConfig.General.nPixelSize = nPxSize;
-		glPointSize(nPxSize);
+	void GfxEngineOgl::SetVariable(GfxVariables gfxVar, Float32 nValue) {
+		switch (gfxVar) {
+		case GV_LINE_WIDTH:
+			m_gConfig.General.nLineWidth = nValue;
+			glLineWidth(nValue);
+			break;
+		case GV_POINT_SIZE:
+		m_gConfig.General.nPixelSize = nValue;
+			glPointSize(nValue);
+			break;
+		default:	break;
+		}
 	}
 	void GfxEngineOgl::SetBlendFunc(BlendConfigs bcSrcFactor, BlendConfigs bcDestFactor) {
 		m_gConfig.Blending.FactorSrc = bcSrcFactor;
@@ -155,6 +156,7 @@ namespace NW
 		glStencilFunc(scFunc, unRefValue, unBitMask);
 	}
 	// --==</setters>==--
+
 	// --==<core_methods>==--
 	void GfxEngineOgl::Update()
 	{
@@ -163,28 +165,42 @@ namespace NW
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
+	void GfxEngineOgl::BeginDraw()
+	{
+		//
+	}
+	void GfxEngineOgl::EndDraw()
+	{
+		//
+	}
 	void GfxEngineOgl::CreateVtxBuf(RefKeeper<VertexBuf>& rBuf)
 	{
+		rBuf.MakeRef<VertexBufOgl>(*this);
 	}
 	void GfxEngineOgl::CreateIdxBuf(RefKeeper<IndexBuf>& rBuf)
 	{
-		//
+		rBuf.MakeRef<IndexBufOgl>(*this);
 	}
 	void GfxEngineOgl::CreateShdBuf(RefKeeper<ShaderBuf>& rBuf)
 	{
-		//
+		rBuf.MakeRef<ShaderBufOgl>(*this);
+	}
+	void GfxEngineOgl::CreateTexture(RefKeeper<Texture>& rTexture, const char* strName, TextureTypes texType)
+	{
+		rTexture.MakeRef<TextureOgl>(strName, texType, *this);
 	}
 	void GfxEngineOgl::CreateFrameBuf(RefKeeper<FrameBuf>& rFrameBuf, const char* strName, FrameBufInfo& rInfo)
 	{
+		rFrameBuf.MakeRef<FrameBufOgl>(strName, rInfo, *this);
 	}
 	void GfxEngineOgl::CreateShader(RefKeeper<Shader>& rShader, const char* strName)
 	{
+		rShader.MakeRef<ShaderOgl>(strName, *this);
 	}
 	// --==</core_methods>==--
 }
 #endif
 #if (NW_GAPI & NW_GAPI_DX)
-NW::GfxEngineDx* NW::GfxEngineDx::s_pGfx = nullptr;
 namespace NW
 {
 	GfxEngineDx::GfxEngineDx(HWND pWindow) :
@@ -323,7 +339,6 @@ namespace NW
 			// set the primitive typology
 			SetPrimitive(GPT_TRIANGLES);
 		}
-		s_pGfx = this;
 	}
 	GfxEngineDx::~GfxEngineDx()
 	{
@@ -351,11 +366,9 @@ namespace NW
 		if (m_pSwap != nullptr) {
 			m_pSwap->Release();
 		}
-
-		if (s_pGfx == this) { s_pGfx = nullptr; }
 	}
 	// --==<setters>==--
-	void GfxEngineDx::SetPrimitive(GfxPrimitiveTypes gfxPrimitiveTopology) {
+	void GfxEngineDx::SetPrimitive(GfxPrimitives gfxPrimitiveTopology) {
 		m_pContext->IASetPrimitiveTopology(static_cast<D3D11_PRIMITIVE_TOPOLOGY>(gfxPrimitiveTopology));
 	}
 	void GfxEngineDx::SetModes(Bit bEnable, ProcessingModes pmModes) {

@@ -4,53 +4,46 @@
 #if (defined NW_GAPI)
 #include <gfx/gfx_texture.h>
 #include <gfx/gfx_loader.h>
-#endif // NW_GAPI
 #if (NW_GAPI & NW_GAPI_OGL)
 namespace NW
 {
-	FrameBuf::FrameBuf(const char* strName, const FrameBufInfo& rfbInfo) :
+	FrameBuf::FrameBuf(const char* strName, const FrameBufInfo& rInfo) :
 		TDataRes(strName),
-		m_unRId(0), m_bIsBound(false),
-		m_Info(rfbInfo),
-		m_rgbaClear{ 0.5f, 0.5f, 0.5f, 1.0f }
-	{ }
-	FrameBuf::~FrameBuf()
+		m_Info(rInfo),
+		m_rgbaClear{ 0.5f, 0.5f, 0.5f, 1.0f } { }
+	FrameBuf::~FrameBuf() { }
+	// --setters
+	void FrameBuf::SetViewport(V4i rectViewport) { m_Info.rectViewport = rectViewport; }
+	void FrameBuf::SetClearColor(V4f rgbaClear) { m_rgbaClear = rgbaClear; }
+}
+namespace NW
+{
+	FrameBufOgl::FrameBufOgl(const char* strName, const FrameBufInfo& rInfo, GfxEngineOgl& rGfx) :
+		FrameBuf(strName, rInfo), GfxEntityOgl(rGfx) { }
+	FrameBufOgl::~FrameBufOgl()
 	{
 		SetViewport({ 0, 0, 0, 0 });
 		Remake();
 	}
-
 	// --setters
-	void FrameBuf::SetViewport(V4i rectViewport) { m_Info.rectViewport = rectViewport; }
-	void FrameBuf::SetClearColor(V4f rgbaClear) { m_rgbaClear = rgbaClear; }
-	void FrameBuf::AttachTexture(Texture& rTex) {
-		m_Attachments.push_back(&rTex);
+	void FrameBufOgl::AttachTexture(Texture& rTex) {
+		m_Attachments.push_back(RefKeeper<Texture>{ *DataSys::GetDR(rTex.GetId()) });
 	}
-	void FrameBuf::DetachTexture(UInt32 unIdx) {
-		NWL_ASSERT(unIdx <= m_Attachments.size(), "Overflow");
+	void FrameBufOgl::DetachTexture(UInt32 unIdx) {
 		m_Attachments.erase(m_Attachments.begin() + unIdx);
 	}
 	// --==<core_methods>==--
-	void FrameBuf::Bind() const {
-		if (m_bIsBound) { return; }
+	void FrameBufOgl::Bind() const {
 		glBindFramebuffer(GL_FRAMEBUFFER, m_unRId);
 		glViewport(0, 0, GetWidth(), GetHeight());
-		m_bIsBound = true;
 	}
-	void FrameBuf::Unbind() const {
-		if (!m_bIsBound) { return; }
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		m_bIsBound = false;
-	}
-
-	void FrameBuf::Remake()
+	void FrameBufOgl::Remake()
 	{
-		Unbind();
 		if (m_unRId != 0) { glDeleteFramebuffers(1, &m_unRId); m_unRId = 0; }
 		if (m_Info.GetHeight() < 1 || m_Info.GetWidth() < 1) { return; }
 
 		glCreateFramebuffers(1, &m_unRId);
-		Bind();
+		glBindFramebuffer(GL_FRAMEBUFFER, m_unRId);
 
 		m_Info.bHasStencil = m_Info.bHasDepth = false;
 		m_Info.unColorCount = 0;
@@ -94,78 +87,50 @@ namespace NW
 				unAttachType = GL_DEPTH_STENCIL_ATTACHMENT;
 			}
 			glFramebufferTexture2D(GL_FRAMEBUFFER, unAttachType, rTex.GetType(), rTex.GetRenderId(), 0);
-			rTex.Unbind();
 		}
 		if (m_Info.unColorCount > 0) { glDrawBuffers(m_Info.unColorCount, &ColorIds[0]); }
 		else { glDrawBuffer(GL_NONE); }
 
 		bool bIsCompleted = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
 		NWL_ASSERT(bIsCompleted, "FrameBufOgl is not created!");
-
-		Unbind();
 	}
-	void FrameBuf::Clear(UInt32 bitMask) {
+	void FrameBufOgl::Clear(UInt32 bitMask) {
 		glClearColor(m_rgbaClear.r, m_rgbaClear.g, m_rgbaClear.b, m_rgbaClear.a);
 		glClear(bitMask);
 	}
 
-	void FrameBuf::ReadPixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nW, Int32 nH)
+	void FrameBufOgl::ReadPixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nW, Int32 nH)
 	{
 		const TextureInfo& texInfo = GetAttachment()->GetTexInfo();
-		Bind();
 		glReadBuffer(GL_COLOR_ATTACHMENT0 + unAttachIdx);
 		glReadPixels(nX, nY, nW, nH, texInfo.texFormat, texInfo.pxFormat, pData);
-		Unbind();
 	}
-	void FrameBuf::WritePixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nW, Int32 nH)
+	void FrameBufOgl::WritePixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nW, Int32 nH)
 	{
 		const TextureInfo& texInfo = GetAttachment()->GetTexInfo();
-		Bind();
-		//glDrawBuffer(GL_COLOR_ATTACHMENT0 + unAttachIdx);
 		glRasterPos2i(nX, nY);
 		glDrawPixels(nW, nH, texInfo.texFormat, texInfo.pxFormat, pData);
-		Unbind();
 	}
 	// --==</core_methods>==--
 }
-#endif // NW_GAPI
-
+#endif
 #if (NW_GAPI & NW_GAPI_DX)
 namespace NW
 {
-	FrameBuf::FrameBuf(const char* strName, const FrameBufInfo& rfbInfo) :
-		TDataRes(strName),
-		m_unRId(0), m_bIsBound(false),
-		m_Info(rfbInfo),
-		m_rgbaClear{ 0.5f, 0.5f, 0.5f, 1.0f }
-	{ }
-	FrameBuf::~FrameBuf()
-	{
-		SetViewport({ 0, 0, 0, 0 });
-		Remake();
-	}
-
-	// --setters
-	void FrameBuf::SetViewport(V4i rectViewport) { m_Info.rectViewport = rectViewport; }
-	void FrameBuf::SetClearColor(V4f rgbaClear) { m_rgbaClear = rgbaClear; }
-	void FrameBuf::AttachTexture(Texture& rTex) {
-		m_Attachments.push_back( RefKeeper<Texture>{ *DataSys::GetDR(rTex.GetId())} );
-	}
-	void FrameBuf::DetachTexture(UInt32 unIdx) {
-		NWL_ASSERT(unIdx <= m_Attachments.size(), "Overflow");
-		m_Attachments.erase(m_Attachments.begin() + unIdx);
-	}
+	FrameBuf::FrameBuf(const char* strName, const FrameBufInfo& rInfo) :
+		FrameBuf(strName, rInfo) { }
+	FrameBufDx::~FrameBufDx() { }
 	// --==<core_methods>==--
-	void FrameBuf::Bind() const {
+	void FrameBufDx::Bind() const {
 		if (m_bIsBound) { return; }
 		m_bIsBound = true;
 	}
-	void FrameBuf::Unbind() const {
+	void FrameBufDx::Unbind() const {
 		if (!m_bIsBound) { return; }
 		m_bIsBound = false;
 	}
 
-	void FrameBuf::Remake()
+	void FrameBufDx::Remake()
 	{
 		Unbind();
 		if (m_unRId != 0) {  }
@@ -223,16 +188,16 @@ namespace NW
 
 		Unbind();
 	}
-	void FrameBuf::Clear(UInt32 bitMask) {
+	void FrameBufDx::Clear(UInt32 bitMask) {
 	}
 
-	void FrameBuf::ReadPixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nW, Int32 nH)
+	void FrameBufDx::ReadPixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nW, Int32 nH)
 	{
 		const TextureInfo& texInfo = GetAttachment()->GetTexInfo();
 		Bind();
 		Unbind();
 	}
-	void FrameBuf::WritePixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nW, Int32 nH)
+	void FrameBufDx::WritePixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nW, Int32 nH)
 	{
 		const TextureInfo& texInfo = GetAttachment()->GetTexInfo();
 		Bind();
@@ -240,4 +205,5 @@ namespace NW
 	}
 	// --==</core_methods>==--
 }
+#endif
 #endif // NW_GAPI

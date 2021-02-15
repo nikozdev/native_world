@@ -2,3 +2,8 @@
 #Multi-line description
 #feel free to be detailed
 --==/subject==--
+
+It turns out that I can render in OpenGL via simple glVertex glBegin. etc functions.
+That's not very efficient and powerful but if I need some simple test - it this actually what I need.
+CoreWindow is changed a little bit. Now it is able to hide and clip cursor positions.
+----

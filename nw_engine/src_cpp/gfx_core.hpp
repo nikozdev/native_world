@@ -1,5 +1,5 @@
-#ifndef NW_GFX_CORE_HPP
-#define NW_GFX_CORE_HPP
+#ifndef NWG_CORE_HPP
+#define NWG_CORE_HPP
 
 #include <nw_core.hpp>
 
@@ -15,7 +15,7 @@ namespace NW
 		function;\
 		NWL_ASSERT(OglErrLog(#function, NWL_FNAME_APATH((std::string)__FILE__), __LINE__), "GL_ERROR: ")
 #else
-#define NW_OGL_CALL(function);
+	#define NW_OGL_CALL(function);
 #endif // NW_DEBUG
 #endif // NW_GAPI
 #if (NW_GAPI & NW_GAPI_DX)
@@ -352,9 +352,9 @@ namespace NW
 
 
 // --==<gbuffers_nw>==--
-#define NW_GFX_BUFFER_VERTEX		GL_ARRAY_BUFFER
-#define NW_GFX_BUFFER_INDEX			GL_ELEMENT_ARRAY_BUFFER
-#define NW_GFX_BUFFER_SHADER		GL_UNIFORM_BUFFER
+#define NWG_BUFFER_VERTEX		GL_ARRAY_BUFFER
+#define NWG_BUFFER_INDEX			GL_ELEMENT_ARRAY_BUFFER
+#define NWG_BUFFER_SHADER		GL_UNIFORM_BUFFER
 // --==</gbuffers_nw>==--
 
 // --==<framebuffers_ogl>==--
@@ -634,9 +634,9 @@ namespace NW
 
 
 // --==<gbuffers_nw>==--
-#define NW_GFX_BUFFER_VERTEX	1
-#define NW_GFX_BUFFER_INDEX		2
-#define NW_GFX_BUFFER_SHADER	3
+#define NWG_BUFFER_VERTEX	1
+#define NWG_BUFFER_INDEX	2
+#define NWG_BUFFER_SHADER	3
 // --==</gbuffers_nw>==--
 
 // --==<framebuffers_dx11>==--
@@ -696,10 +696,16 @@ struct ID3D11PixelShader;
 namespace NW
 {
 	class NW_API GfxEngine;
+	class NW_API GfxEngineOgl;
+	class NW_API GfxEngineDx;
 
 	class NW_API Shader;
-	class NW_API GfxMaterial;
+	class NW_API ShaderOgl;
+	class NW_API ShaderDx;
 	class NW_API Texture;
+	class NW_API TextureOgl;
+	class NW_API TextureDx;
+	class NW_API GfxMaterial;
 
 	class NW_API FrameBuf;
 
@@ -707,11 +713,20 @@ namespace NW
 	class NW_API ShaderBufLayout;
 
 	class NW_API VertexBuf;
+	class NW_API VertexBufOgl;
+	class NW_API VertexBufDx;
+	
 	class NW_API IndexBuf;
+	class NW_API IndexBufOgl;
+	class NW_API IndexBufDx;
+	
 	class NW_API ShaderBuf;
-	class NW_API VertexArr;
+	class NW_API ShaderBufOgl;
+	class NW_API ShaderBufDx;
 
-	class NW_API GfxCameraLad;
+	class NW_API VertexArr;
+	class NW_API VertexArrOgl;
+	class NW_API VertexArrDx;
 }
 namespace NW
 {
@@ -722,10 +737,6 @@ namespace NW
 	struct NW_API FrameBufInfo;
 	struct NW_API TextureInfo;
 
-	struct NW_API VertexBatch1d;
-	struct NW_API VertexBatch2d;
-	struct NW_API VertexShape3d;
-
 	struct NW_API BufferElement;
 
 	struct NW_API SubTexture1d;
@@ -734,28 +745,40 @@ namespace NW
 }
 namespace NW
 {
-	/// graphics_api_types
-	/// Interface:
-	/// -> Give it to the GraphicsApi create function
-	/// -> Check the types for the abstracted usage
 	enum GfxApiTypes : UInt32 {
 		GAPI_DEFAULT = NW_GAPI,
 		GAPI_OPENGL = NW_GAPI_OGL,
 		GAPI_DIRECTX = NW_GAPI_DX,
 	};
 	enum GfxBufferTypes : UInt32 {
-		GBT_DEFAULT = NW_GFX_BUFFER_VERTEX,
-		GBT_VERTEX = NW_GFX_BUFFER_VERTEX,
-		GBT_INDEX = NW_GFX_BUFFER_INDEX,
-		GBT_SHADER = NW_GFX_BUFFER_SHADER,
+		GBT_DEFAULT = NWG_BUFFER_VERTEX,
+		GBT_VERTEX = NWG_BUFFER_VERTEX,
+		GBT_INDEX = NWG_BUFFER_INDEX,
+		GBT_SHADER = NWG_BUFFER_SHADER,
 	};
 	enum FrameBufTypes : UInt32 {
 		FBT_DEFAULT = NW_FRAMEBUF_IN_OUT,
 		FBT_IN = NW_FRAMEBUF_IN, FBT_OUT = NW_FRAMEBUF_OUT, FBT_IN_OUT = NW_FRAMEBUF_IN_OUT,
 	};
-	/// Data that can be loaded in a shader
-	enum ShaderDataTypes : UInt32
-	{
+	enum ShaderTypes : UInt32 {
+		ST_DEFAULT = NW_SHADER,
+		ST_SHADER = NW_SHADER,
+		ST_VERTEX = NW_SHADER_VERTEX,
+		ST_GEOMETRY = NW_SHADER_GEOMETRY,
+		ST_PIXEL = NW_SHADER_PIXEL
+	};
+	enum FrameBufs : UInt32 {
+		FB_DEFAULT = NW_BUFFER_COLOR_BIT | NW_BUFFER_DEPTH_BIT | NW_BUFFER_STENCIL_BIT,
+		FB_COLOR = NW_BUFFER_COLOR_BIT,
+		FB_DEPTH = NW_BUFFER_DEPTH_BIT,
+		FB_STENCIL = NW_BUFFER_STENCIL_BIT
+	};
+	enum TextureTypes : UInt32 {
+		TXT_NONE = 0,
+		TXT_1D = NW_TEXTURE_1D, TXT_2D = NW_TEXTURE_2D, TXT_3D = NW_TEXTURE_3D,
+		TXT_2D_MULTISAMPLE = NW_TEXTURE_2D_MULTISAMPLE, TXT_3D_MULTISAMPLE = NW_TEXTURE_3D_MULTISAMPLE
+	};
+	enum ShaderDataTypes : UInt32 {
 		SDT_DEFAULT = NW_FLOAT32,
 		SDT_BOOL = NW_BOOL, SDT_INT8 = NW_INT8, SDT_UINT8 = NW_UINT8,
 		SDT_INT16 = NW_INT16, SDT_UINT16 = NW_UINT16,
@@ -764,24 +787,10 @@ namespace NW
 
 		SDT_SAMPLER = NW_SAMPLER_1D
 	};
-	/// Accessible (maintained) shader types
-	enum ShaderTypes : UInt32
-	{
-		ST_DEFAULT = NW_SHADER,
-		ST_SHADER = NW_SHADER,
-		ST_VERTEX = NW_SHADER_VERTEX,
-		ST_GEOMETRY = NW_SHADER_GEOMETRY,
-		ST_PIXEL = NW_SHADER_PIXEL
-	};
-	enum FrameBufs : UInt32
-	{
-		FB_DEFAULT = NW_BUFFER_COLOR_BIT | NW_BUFFER_DEPTH_BIT | NW_BUFFER_STENCIL_BIT,
-		FB_COLOR = NW_BUFFER_COLOR_BIT,
-		FB_DEPTH = NW_BUFFER_DEPTH_BIT,
-		FB_STENCIL = NW_BUFFER_STENCIL_BIT
-	};
-	enum GfxPrimitiveTypes : UInt32
-	{
+}
+namespace NW
+{
+	enum GfxPrimitives : UInt32 {
 		GPT_DEFAULT = NW_TRIANGLES,
 		GPT_POINTS = NW_POINTS,
 		GPT_LINES = NW_LINES,
@@ -800,6 +809,10 @@ namespace NW
 		FACE_FRONT_AND_BACK = NW_FRONT_AND_BACK,
 		FACE_BACK = NW_BACK, FACE_FRONT = NW_FRONT,
 		FACE_LEFT = NW_LEFT, FACE_RIGTH = NW_RIGHT,
+	};
+	enum GfxVariables : UInt32 {
+		GV_DEFAULT = NW_LINE_WIDTH,
+		GV_LINE_WIDTH = NW_LINE_WIDTH, GV_POINT_SIZE = NW_POINT_SIZE,
 	};
 	enum ProcessingModes : UInt32 {
 		PM_BLEND = NW_BLEND,
@@ -832,11 +845,9 @@ namespace NW
 		STC_KEEP = NW_KEEP, STC_ZERO = NW_ZERO, STC_REPLACE = NW_REPLACE, STC_INVERT = NW_INVERT,
 		STC_INCR = NW_INCR, STC_DECR = NW_DECR
 	};
-	enum TextureTypes : UInt32 {
-		TXT_NONE = 0,
-		TXT_1D = NW_TEXTURE_1D, TXT_2D = NW_TEXTURE_2D, TXT_3D = NW_TEXTURE_3D,
-		TXT_2D_MULTISAMPLE = NW_TEXTURE_2D_MULTISAMPLE, TXT_3D_MULTISAMPLE = NW_TEXTURE_3D_MULTISAMPLE
-	};
+}
+namespace NW
+{
 	enum TextureWraps : UInt32 {
 		TXW_NONE = 0, TXW_REPEAT = NW_TEXTURE_WRAP_REPEAT, TXW_CLAMP = NW_TEXTURE_WRAP_CLAMP,
 	};
@@ -867,7 +878,7 @@ namespace NW
 	//	--==</enums>==--
 }
 
-#endif	// NW_GFX_CORE_HPP
+#endif	// NWG_CORE_HPP
 
 /*
 * The project created in 16.01.2021

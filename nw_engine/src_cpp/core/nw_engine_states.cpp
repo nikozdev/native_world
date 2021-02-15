@@ -11,7 +11,6 @@
 #include <gfx/gfx_camera_lad.h>
 #include <gfx/gfx_component.h>
 
-#if (false)
 namespace NW
 {
 	GamerState::GamerState() :
@@ -22,13 +21,43 @@ namespace NW
 	// --==<core_methods>==--
 	bool GamerState::Init()
 	{
+		if (!DataSys::LoadFImageBmp("..\\data\\image\\img_home_0.bmp", m_imgInfo)) { return false; }
+
 		return true;
 	}
 	void GamerState::Quit()
 	{
+		if (m_imgInfo.pClrData != nullptr) { DelTArr<UByte>(m_imgInfo.pClrData, m_imgInfo.GetDataSize()); }
 	}
 	void GamerState::Update()
 	{
+		V2f whWndSize = { static_cast<Float32>(m_rEngine.GetWindow()->GetSizeW()), static_cast<Float32>(m_rEngine.GetWindow()->GetSizeH()) };
+		glViewport( 0, 0, whWndSize.x, whWndSize.y);
+		glPointSize(8.0f);
+		glBegin(GL_POINTS);
+		for (Int32 iy = -m_imgInfo.nHeight / 2; iy < m_imgInfo.nHeight / 2; iy++) {
+			for (Int32 ix = -m_imgInfo.nWidth / 2; ix < m_imgInfo.nWidth / 2; ix++) {
+				Size szCoord = NWL_XY_TO_X((ix + m_imgInfo.nWidth / 2) * 3, (iy + m_imgInfo.nHeight / 2) * 3, m_imgInfo.nWidth);
+				glVertex2f(static_cast<Float32>(ix * 16) / static_cast<Float32>(whWndSize.x),
+					static_cast<Float32>(iy * 16) / static_cast<Float32>(whWndSize.y));
+				glColor3ub(m_imgInfo.pClrData[szCoord + 0], m_imgInfo.pClrData[szCoord + 1], m_imgInfo.pClrData[szCoord + 2]);
+			}
+		}
+		glEnd();
+		V2i xyCrsCrdI = { m_rEngine.GetCursor().GetMoveX(), m_rEngine.GetCursor().GetMoveY() };
+		xyCrsCrdI.x = xyCrsCrdI.x - (whWndSize.x / 2.0f);
+		xyCrsCrdI.y = -(xyCrsCrdI.y + whWndSize.y / 2.0f) + whWndSize.y;
+		V2f xyCrsCrdF = xyCrsCrdI;
+		xyCrsCrdF.x /= (whWndSize.x / 2.0f);
+		xyCrsCrdF.y /= (whWndSize.y / 2.0f);
+		glPointSize(32.0f);
+		glBegin(GL_POINTS);
+		if (m_rEngine.GetCursor().GetHeld(CRS_0)) {
+			m_imgInfo.SetPixel(((xyCrsCrdF.x + whWndSize.x) * 100.0f) / m_imgInfo.nWidth * 100, ((xyCrsCrdF.y + whWndSize.y) * 100.0f) / m_imgInfo.nHeight * 100, 150, 150, 150);
+		}
+		glVertex2f(xyCrsCrdF.x, xyCrsCrdF.y);
+		glColor3ub(255, 255, 255);
+		glEnd();
 	}
 
 	void GamerState::OnEvent(CursorEvent& rmEvt) { }
@@ -52,6 +81,7 @@ namespace NW
 	void GamerState::OnEvent(WindowEvent& rwEvt) {}
 	// --==</core_methods>==--
 }
+#if (false)
 namespace NW
 {
 	GuiState::GuiState() :

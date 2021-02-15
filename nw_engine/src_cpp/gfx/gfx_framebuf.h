@@ -1,8 +1,8 @@
-#ifndef NW_GFX_FRAME_BUFFER_H
-#define NW_GFX_FRAME_BUFFER_H
-
+#ifndef NWG_FRAME_BUFFER_H
+#define NWG_FRAME_BUFFER_H
 #include <gfx_core.hpp>
-
+#include <gfx/gfx_entity.h>
+#include <gfx/gfx_texture.h>
 #if (defined NW_GAPI)
 namespace NW
 {
@@ -22,7 +22,6 @@ namespace NW
 		inline Int32 GetHeight() const { return { rectViewport.w - rectViewport.y }; }
 	};
 }
-#if (NW_GAPI & NW_GAPI_OGL)
 namespace NW
 {
 	/// FrameBuffer class
@@ -31,92 +30,73 @@ namespace NW
 	public:
 		FrameBuf(const char* strName, const FrameBufInfo& rFbInfo);
 		virtual ~FrameBuf();
-
 		// --getters
-		inline UInt32 GetRenderId() const { return m_unRId; }
 		inline Int32 GetWidth() const { return m_Info.GetWidth(); }
 		inline Int32 GetHeight() const { return m_Info.GetHeight(); }
-		inline Texture* GetAttachment(UInt32 unIdx = 0);
 		inline const V4i& GetViewport() const { return m_Info.rectViewport; }
 		inline const V4f GetClearColor() const { return m_rgbaClear; }
 		inline const FrameBufInfo& GetInfo() const { return m_Info; }
+		virtual inline Texture* GetAttachment(UInt32 unIdx = 0) = 0;
 		// --setters
 		void SetViewport(V4i rectViewport);
 		void SetClearColor(V4f rgbaClear);
-		void AttachTexture(Texture& rTex);
-		void DetachTexture(UInt32 unIdx);
-		// --predicates
-		inline bool IsBound() { return m_bIsBound; }
+		virtual void AttachTexture(Texture& rTex) = 0;
+		virtual void DetachTexture(UInt32 unIdx) = 0;
 		// --core_methods
-		void Bind() const;
-		void Unbind() const;
-		void Remake();
-		void Clear(UInt32 bitMask = FB_COLOR | FB_DEPTH | FB_STENCIL);
-		void ReadPixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nWidth = 1, Int32 nHeight = 1);
-		void WritePixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nWidth = 1, Int32 nHeight = 1);
+		virtual void Remake() = 0;
+		virtual void Clear(UInt32 bitMask = FB_COLOR | FB_DEPTH | FB_STENCIL) = 0;
+		virtual void ReadPixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nWidth = 1, Int32 nHeight = 1) = 0;
+		virtual void WritePixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nWidth = 1, Int32 nHeight = 1) = 0;
 		// --data_methods
 		virtual bool SaveF(const char* strFPath) override { return true; }
 		virtual bool LoadF(const char* strFPath) override { return true; }
 	protected:
-		mutable Bit m_bIsBound;
-		UInt32 m_unRId;
 		FrameBufInfo m_Info;
 		V4f m_rgbaClear;
-		DArray<Texture*> m_Attachments;
 	};
-	inline Texture* FrameBuf::GetAttachment(UInt32 unIdx) {
-		NWL_ASSERT(unIdx <= m_Attachments.size(), "Overflow");
-		return m_Attachments[unIdx];
-	}
+}
+#if (NW_GAPI & NW_GAPI_OGL)
+namespace NW
+{
+	/// FrameBufferOgl class
+	class NW_API FrameBufOgl : public FrameBuf, public GfxEntityOgl
+	{
+	public:
+		FrameBufOgl(const char* strName, const FrameBufInfo& rFbInfo, GfxEngineOgl& rGfx);
+		virtual ~FrameBufOgl();
+		// --getters
+		virtual inline Texture* GetAttachment(UInt32 unIdx = 0) override { return static_cast<Texture*>(m_Attachments[unIdx]); }
+		// --setters
+		virtual void AttachTexture(Texture& rTex) override;
+		virtual void DetachTexture(UInt32 unIdx) override;
+		// --core_methods
+		virtual void Bind() const override;
+		virtual void Remake() override;
+		virtual void Clear(UInt32 bitMask = FB_COLOR | FB_DEPTH | FB_STENCIL) override;
+		virtual void ReadPixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nWidth = 1, Int32 nHeight = 1) override;
+		void WritePixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nWidth = 1, Int32 nHeight = 1) override;
+	private:
+		DArray<TextureOgl*> m_Attachments;
+	};
 }
 #endif
 #if (NW_GAPI & NW_GAPI_DX)
 namespace NW
 {
-	/// FrameBuffer class
-	class NW_API FrameBuf : public TDataRes<FrameBuf>
+	/// FrameBufferOgl class
+	class NW_API FrameBufDx : public FrameBuf, public GfxEntityDx
 	{
 	public:
-		FrameBuf(const char* strName, const FrameBufInfo& rFbInfo);
-		virtual ~FrameBuf();
-
-		// --getters
-		inline UInt32 GetRenderId() const { return m_unRId; }
-		inline Int32 GetWidth() const { return m_Info.GetWidth(); }
-		inline Int32 GetHeight() const { return m_Info.GetHeight(); }
-		inline const V4i& GetViewport() const { return m_Info.rectViewport; }
-		inline const V4f& GetClearColor() const { return m_rgbaClear; }
-		inline Texture* GetAttachment(UInt32 unIdx = 0);
-		inline const FrameBufInfo& GetInfo() const { return m_Info; }
-		// --setters
-		void SetViewport(V4i rectViewport);
-		void SetClearColor(V4f rgbaClear);
-		void AttachTexture(Texture& rTex);
-		void DetachTexture(UInt32 unIdx);
-		// --predicates
-		inline bool IsBound() { return m_bIsBound; }
+		FrameBufDx(const char* strName, const FrameBufInfo& rFbInfo, GfxEngineDx& rGfx);
+		virtual ~FrameBufDx();
 		// --core_methods
-		void Bind() const;
-		void Unbind() const;
-		void Remake();
-		void Clear(UInt32 bitMask = FB_COLOR | FB_DEPTH | FB_STENCIL);
-		void ReadPixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nWidth = 1, Int32 nHeight = 1);
-		void WritePixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nWidth = 1, Int32 nHeight = 1);
-		// --data_methods
-		virtual bool SaveF(const char* strFPath) override { return true; }
-		virtual bool LoadF(const char* strFPath) override { return true; }
-	protected:
-		mutable Bit m_bIsBound;
-		UInt32 m_unRId;
-		FrameBufInfo m_Info;
-		V4f m_rgbaClear;
-		DArray<Texture*> m_Attachments;
+		virtual void Bind() const override;
+		virtual void Remake() override;
+		virtual void Clear(UInt32 bitMask = FB_COLOR | FB_DEPTH | FB_STENCIL) override;
+		virtual void ReadPixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nWidth = 1, Int32 nHeight = 1) override;
+		void WritePixels(Ptr pData, UInt32 unAttachIdx, Int32 nX, Int32 nY, Int32 nWidth = 1, Int32 nHeight = 1) override;
 	};
-	inline Texture* FrameBuf::GetAttachment(UInt32 unIdx) {
-		NWL_ASSERT(unIdx <= m_Attachments.size(), "Overflow");
-		return m_Attachments[unIdx];
-	}
 }
 #endif
 #endif	// NW_GAPI
-#endif // NW_GFX_FRAME_BUFFER_H
+#endif // NWG_FRAME_BUFFER_H

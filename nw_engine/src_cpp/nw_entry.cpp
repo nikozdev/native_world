@@ -6,28 +6,67 @@
 #define NWG_LAUNCH			NWG_LAUNCH_ENGINE
 
 #include <core/nw_engine_states.h>
+
+#include <native_console.hpp>
 #include <nwl_test.h>
 
 int main(int nArgs, char* strArgs[])
 {
 	try {
 #if (NWG_LAUNCH & NWG_LAUNCH_ENGINE)
-		NW::CoreEngine* pGameEngine = &NW::CoreEngine::Get();
-
-		pGameEngine->Run();
-		if (pGameEngine->IsRunning()) { pGameEngine->GetRunThread().join(); }
+		NW::CoreEngine* pGame = &NW::CoreEngine::Get();
+		NW::GamerState gmState;
+		pGame->AddState(gmState);
+		pGame->Run();
+		if (pGame->GetRunThread().joinable()) { pGame->GetRunThread().join(); }
 #endif
 #if (NWG_LAUNCH & NWG_LAUNCH_NWC)
-		CmdEngine* pCmd = &CmdEngine::Get();
-		
+		NWC::CmdEngine* pCmd = &NWC::CmdEngine::Get();
 		pCmd->Run();
-		pCmd->GetRunThread().join();
+		if (pCmd->GetRunThread().joinable()) { pCmd->GetRunThread().join(); }
+#endif
+#if (NWG_LAUNCH & NWG_LAUNCH_TEST)
+		if (true) {
+			//SetDllDirectory(LR"(F:\dev\lua_jit\)");
+			//HMODULE hLib = LoadLibrary(LR"(lua_jit.dll)");
+			HMODULE hLib = LoadLibrary(LR"(opengl32.dll)");
+			typedef Ptr(APIENTRYP nwgGetProcAddress)(const Char*);
+			typedef const GLubyte* (APIENTRYP nwgGetString)(GLenum);
+			nwgGetProcAddress nwgGetProc;
+			nwgGetString nwgGetStr;
+			nwgGetProc = reinterpret_cast<nwgGetProcAddress>(GetProcAddress(hLib, "wglGetProcAddress"));
+			nwgGetStr = reinterpret_cast<nwgGetString>(GetProcAddress(hLib, "glGetString"));
+			auto str = (const Char*)(nwgGetStr(GL_RENDERER));
+			FreeLibrary(hLib);
+		}
+		if (false) {
+			STARTUPINFO spInfo{ 0 };
+			PROCESS_INFORMATION pcInfo{ 0 };
+			if (!CreateProcess(
+				LR"(F:\dev\lua_jit\lua_jit.exe)",
+				//&(reinterpret_cast<TCHAR*>(R"(F:\dev\lua_jit\lua_jit.exe)"))[0],
+				NULL,		// cmd arguments
+				NULL,		// process is not inheritable
+				NULL,		// not inherit the handle
+				FALSE,		// handle inheritance to false
+				0,			// no creation flags
+				NULL,		// parrent's environment
+				NULL,		// parent's directory
+				&spInfo,
+				&pcInfo
+			)) {
+				throw(CodeException("failed to create a process", GetLastError()));
+			}
+			WaitForSingleObject(pcInfo.hProcess, INFINITE);
+			CloseHandle(pcInfo.hProcess);
+			CloseHandle(pcInfo.hThread);
+		}
 #endif
 	}
-	catch (NWL::AException exc) {
+	catch (NWL::AException& exc) {
 		NWL_ERR(exc.GetStr());
 	}
-	catch (std::exception exc) {
+	catch (std::exception& exc) {
 		NWL_ERR(exc.what());
 	}
 	catch (...) {

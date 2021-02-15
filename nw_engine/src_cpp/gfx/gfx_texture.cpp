@@ -3,16 +3,13 @@
 
 #if (defined NW_GAPI)
 #include <gfx/gfx_loader.h>
-#endif	// NW_GAPI
-#if (NW_GAPI & NW_GAPI_OGL)
 namespace NW
 {
 	Texture::Texture(const char* strName, TextureTypes texType) :
-		TDataRes(strName),
-		m_texType(texType), m_unRId(0), m_unTexSlot(0), m_bIsBound(false),
-		m_texInfo(TextureInfo()), m_imgInfo(ImageInfo()) { Remake(); }
-	Texture::~Texture() { m_imgInfo.nWidth = -1; Remake(); }
-	
+		TDataRes<Texture>(strName),
+		m_texType(texType), m_unTexSlot(0),
+		m_texInfo(TextureInfo()), m_imgInfo(ImageInfo()) { }
+	Texture::~Texture() { }
 	// --setters
 	void Texture::SetInfo(const TextureInfo& rTexInfo) {
 		m_texInfo = rTexInfo;
@@ -23,30 +20,68 @@ namespace NW
 		else if ((m_texType == TXT_3D) && (m_imgInfo.nWidth < 1 || m_imgInfo.nHeight < 1 || m_imgInfo.nDepth < 1)) { return; }
 		m_imgInfo = rImgInfo;
 	}
+	// --==<data_methods>==--
+	bool Texture::SaveF(const char* strFPath) { return true; }
+	bool Texture::LoadF(const char* strFPath)
+	{
+		String strFile("");
+		Size szBytes = 0;
+		bool bSuccess = true;
+		UByte s_texErr[4 * 4] = {
+			0,	255,	0,		255,
+			0,	0,		255,	255,
+			0,	0,		255,	255,
+			0,	255,	0,		255
+		};
+
+		ImageInfo imgInfo;
+		TextureInfo texInfo;
+
+		if (!DataSys::LoadFImage(strFPath, imgInfo)) { bSuccess = false; }
+		switch (imgInfo.nChannels) {
+		case 1: texInfo.texFormat = TXF_RED; texInfo.texInterFormat = TXFI_RED_UINT32; break;
+		case 3: texInfo.texFormat = TXF_RGB; texInfo.texInterFormat = TXFI_RGB; break;
+		case 4: texInfo.texFormat = TXF_RGBA; texInfo.texInterFormat = TXFI_RGBA8; break;
+		default: NWL_ERR("Unsupported format!"); bSuccess = false; break;
+		}
+		if (!bSuccess) {
+			imgInfo.nWidth = imgInfo.nHeight = imgInfo.nDepth = 1;
+			imgInfo.nChannels = 4;
+			imgInfo.pClrData = s_texErr;
+			texInfo.texFormat = TXF_RGBA; texInfo.texInterFormat = TXFI_RGBA8;
+			texInfo.FilterMag = texInfo.FilterMin = TXF_NEAREST;
+			texInfo.WrapTypeS = texInfo.WrapTypeT = texInfo.WrapTypeR = TXW_REPEAT;
+		}
+
+		SetInfo(texInfo);
+		SetInfo(imgInfo);
+		Remake();
+		if (bSuccess) { delete[] imgInfo.pClrData; }
+
+		return bSuccess;
+	}
+	// --==</data_methods>==--
+}
+#if (NW_GAPI & NW_GAPI_OGL)
+namespace NW
+{
+	TextureOgl::TextureOgl(const char* strName, TextureTypes texType, GfxEngineOgl& rGfx) :
+		Texture(strName, texType), GfxEntityOgl(rGfx)
+	{ Remake(); }
+	TextureOgl::~TextureOgl() { m_imgInfo.nWidth = -1; Remake(); }
+	
 	// --==<core_methods>==--
-	void Texture::Bind(UInt32 unTexSlot) {
-		if (m_bIsBound) { return; }
-		m_unTexSlot = unTexSlot;
+	void TextureOgl::Bind() const {
 		glActiveTexture(GL_TEXTURE0 + m_unTexSlot);
 		glBindTexture(m_texType, m_unRId);
-		m_bIsBound = true;
 	}
-	void Texture::Unbind()
+	void TextureOgl::Remake()
 	{
-		if (!m_bIsBound) { return; }
-		glActiveTexture(GL_TEXTURE0 + m_unTexSlot);
-		glBindTexture(m_texType, 0);
-		m_unTexSlot = 0;
-		m_bIsBound = false;
-	}
-	void Texture::Remake()
-	{
-		Unbind();
 		if (m_unRId != 0) { glDeleteTextures(1, &m_unRId); m_unRId = 0; }
 		if (m_imgInfo.nWidth == -1) { return; }
 		
 		glCreateTextures(m_texType, 1, &m_unRId);
-		Bind();
+		glBindTexture(m_texType, m_unRId);
 		switch (m_texType) {
 		case TXT_1D:
 			glTextureParameteri(m_unRId, GL_TEXTURE_MIN_FILTER, m_texInfo.FilterMin);
@@ -101,93 +136,32 @@ namespace NW
 		}
 
 		if (m_texInfo.bGenMipmap) { glGenerateMipmap(m_texType); }
-
-		Unbind();
 	}
-	void Texture::Clear(Ptr pValue) {
+	void TextureOgl::Clear(Ptr pValue) {
 		glClearTexImage(m_unRId, 0, m_texInfo.texFormat, m_texInfo.pxFormat, pValue);
 	}
 	// --==</core_methods>==--
-	
-	// --==<data_methods>==--
-	bool Texture::SaveF(const char* strFPath) { return true; }
-	bool Texture::LoadF(const char* strFPath)
-	{
-		String strFile("");
-		Size szBytes = 0;
-		bool bSuccess = true;
-		UByte s_texErr[4 * 4] = {
-			0,	255,	0,		255,
-			0,	0,		255,	255,
-			0,	0,		255,	255,
-			0,	255,	0,		255
-		};
-
-		ImageInfo imgInfo;
-		TextureInfo texInfo;
-
-		if (!DataSys::LoadFImage(strFPath, imgInfo)) { bSuccess = false; }
-		switch (imgInfo.nChannels) {
-		case 1: texInfo.texFormat = TXF_RED; texInfo.texInterFormat = TXFI_RED_UINT32; break;
-		case 3: texInfo.texFormat = TXF_RGB; texInfo.texInterFormat = TXFI_RGB; break;
-		case 4: texInfo.texFormat = TXF_RGBA; texInfo.texInterFormat = TXFI_RGBA8; break;
-		default: NWL_ERR("Unsupported format!"); bSuccess = false; break;
-		}
-		if (!bSuccess) {
-			imgInfo.nWidth = imgInfo.nHeight = imgInfo.nDepth = 1;
-			imgInfo.nChannels = 4;
-			imgInfo.pClrData = s_texErr;
-			texInfo.texFormat = TXF_RGBA; texInfo.texInterFormat = TXFI_RGBA8;
-			texInfo.FilterMag = texInfo.FilterMin = TXF_NEAREST;
-			texInfo.WrapTypeS = texInfo.WrapTypeT = texInfo.WrapTypeR = TXW_REPEAT;
-		}
-
-		SetInfo(texInfo);
-		SetInfo(imgInfo);
-		Remake();
-		if (bSuccess) { delete[] imgInfo.pClrData; }
-
-		return bSuccess;
-	}
-	// --==</data_methods>==--
-	// --==</Texture>==--
 }
-#endif // NW_GAPI
-
+#endif
 #if (NW_GAPI & NW_GAPI_DX)
 namespace NW
 {
-	Texture::Texture(const char* strName, TextureTypes texType) :
-		TDataRes(strName),
-		m_texType(texType), m_unRId(0), m_unTexSlot(0), m_bIsBound(false),
-		m_texInfo(TextureInfo()), m_imgInfo(ImageInfo()) {
-		Remake();
-	}
-	Texture::~Texture() { m_imgInfo.nWidth = -1; Remake(); }
-
-	// --setters
-	void Texture::SetInfo(const TextureInfo& rTexInfo) {
-		m_texInfo = rTexInfo;
-	}
-	void Texture::SetInfo(const ImageInfo& rImgInfo) {
-		if ((m_texType == TXT_1D || m_texType == TXT_2D || m_texType == TXT_3D) && (m_imgInfo.nWidth < 1)) { return; }
-		else if ((m_texType == TXT_2D || m_texType == TXT_3D) && (m_imgInfo.nWidth < 1 || m_imgInfo.nHeight < 1)) { return; }
-		else if ((m_texType == TXT_3D) && (m_imgInfo.nWidth < 1 || m_imgInfo.nHeight < 1 || m_imgInfo.nDepth < 1)) { return; }
-		m_imgInfo = rImgInfo;
-	}
+	TextureDx::TextureDx(const char* strName, TextureTypes texType, GfxEngineDx& rGfx) :
+		Texture(strName, texType), GfxEntityDx(rGfx) { }
+	TextureDx::~TextureDx() { }
 	// --==<core_methods>==--
-	void Texture::Bind(UInt32 unTexSlot) {
+	void TextureDx::Bind(UInt32 unTexSlot) {
 		if (m_bIsBound) { return; }
 		m_unTexSlot = unTexSlot;
 		m_bIsBound = true;
 	}
-	void Texture::Unbind()
+	void TextureDx::Unbind()
 	{
 		if (!m_bIsBound) { return; }
 		m_unTexSlot = 0;
 		m_bIsBound = false;
 	}
-	void Texture::Remake()
+	void TextureDx::Remake()
 	{
 		Unbind();
 		if (m_unRId != 0) { m_unRId = 0; }
@@ -214,51 +188,8 @@ namespace NW
 
 		Unbind();
 	}
-	void Texture::Clear(Ptr pValue) {
-	}
+	void TextureDx::Clear(Ptr pValue) { }
 	// --==</core_methods>==--
-
-	// --==<data_methods>==--
-	bool Texture::SaveF(const char* strFPath) { return true; }
-	bool Texture::LoadF(const char* strFPath)
-	{
-		String strFile("");
-		Size szBytes = 0;
-		bool bSuccess = true;
-		UByte s_texErr[4 * 4] = {
-			0,	255,	0,		255,
-			0,	0,		255,	255,
-			0,	0,		255,	255,
-			0,	255,	0,		255
-		};
-
-		ImageInfo imgInfo;
-		TextureInfo texInfo;
-
-		if (!DataSys::LoadFImage(strFPath, imgInfo)) { bSuccess = false; }
-		switch (imgInfo.nChannels) {
-		case 1: texInfo.texFormat = TXF_RED; texInfo.texInterFormat = TXFI_RED_UINT32; break;
-		case 3: texInfo.texFormat = TXF_RGB; texInfo.texInterFormat = TXFI_RGB; break;
-		case 4: texInfo.texFormat = TXF_RGBA; texInfo.texInterFormat = TXFI_RGBA8; break;
-		default: NWL_ERR("Unsupported format!"); bSuccess = false; break;
-		}
-		if (!bSuccess) {
-			imgInfo.nWidth = imgInfo.nHeight = imgInfo.nDepth = 1;
-			imgInfo.nChannels = 4;
-			imgInfo.pClrData = s_texErr;
-			texInfo.texFormat = TXF_RGBA; texInfo.texInterFormat = TXFI_RGBA8;
-			texInfo.FilterMag = texInfo.FilterMin = TXF_NEAREST;
-			texInfo.WrapTypeS = texInfo.WrapTypeT = texInfo.WrapTypeR = TXW_REPEAT;
-		}
-
-		SetInfo(texInfo);
-		SetInfo(imgInfo);
-		Remake();
-		if (bSuccess) { delete[] imgInfo.pClrData; }
-
-		return bSuccess;
-	}
-	// --==</data_methods>==--
-	// --==</Texture>==--
 }
-#endif // NW_GAPI
+#endif
+#endif	// NW_GAPI

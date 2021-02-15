@@ -1,6 +1,7 @@
-#ifndef NW_GFX_BUFFER_H
-#define NW_GFX_BUFFER_H
+#ifndef NWG_BUFFER_H
+#define NWG_BUFFER_H
 
+#include <gfx/gfx_entity.h>
 #include <gfx/gfx_tools.h>
 
 #if (defined NW_GAPI)
@@ -14,19 +15,11 @@ namespace NW
 		VertexBuf();
 		virtual ~VertexBuf();
 		// --getters
-		inline UInt32 GetRenderId() const { return m_unRId; }
 		inline Size GetDataSize() const { return m_szData; }
 		// --setters
 		virtual void SetData(Size szData, const Ptr pVtxData = nullptr) = 0;
 		virtual void SetSubData(Size szData, const Ptr pVtxData, Size szOffset = 0) = 0;
-		// --predicates
-		inline Bit IsBound() const { return m_bIsBound; }
-		// --core_methods
-		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
 	protected:
-		UInt32 m_unRId;
-		mutable Bit m_bIsBound;
 		Size m_szData;
 	};
 	/// Abstract IndexBuffer Class
@@ -36,19 +29,11 @@ namespace NW
 		IndexBuf();
 		virtual ~IndexBuf();
 		// --getters
-		inline UInt32 GetRenderId() const { return m_unRId; }
 		inline Size GetDataSize() const { return m_szData; }
 		// --setters
 		virtual void SetData(Size szData, const Ptr pVtxData = nullptr) = 0;
 		virtual void SetSubData(Size szData, const Ptr pVtxData, Size szOffset = 0) = 0;
-		// --predicates
-		inline Bit IsBound() const { return m_bIsBound; }
-		// --core_methods
-		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
 	protected:
-		UInt32 m_unRId;
-		mutable Bit m_bIsBound;
 		Size m_szData;
 	};
 	/// Abstract ShaderBuffer class
@@ -60,22 +45,15 @@ namespace NW
 		ShaderBuf();
 		virtual ~ShaderBuf();
 		// --getters
-		inline UInt32 GetRenderId() const { return m_unRId; }
 		inline Size GetDataSize() const { return m_szData; }
 		// --setters
 		virtual void SetData(Size szData, const Ptr pVtxData = nullptr) = 0;
 		virtual void SetSubData(Size szData, const Ptr pVtxData, Size szOffset = 0) = 0;
-		// --predicates
-		inline Bit IsBound() const { return m_bIsBound; }
 		// --core_methods
-		virtual void Bind() const = 0;
 		virtual void Bind(UInt32 unPoint) const = 0;
 		virtual void Bind(UInt32 unPoint, Size szData, Size szOffset = 0) const = 0;
-		virtual void Unbind() const = 0;
 		virtual void Remake(const ShaderBufLayout& rShdLayout) = 0;
 	protected:
-		UInt32 m_unRId;
-		mutable Bit m_bIsBound;
 		Size m_szData;
 	};
 }
@@ -83,43 +61,38 @@ namespace NW
 namespace NW
 {
 	/// VertexBuffer Class
-	class NW_API VertexBufOgl : public VertexBuf
+	class NW_API VertexBufOgl : public VertexBuf, public GfxEntityOgl
 	{
-		friend class GfxEngine;
 		friend class VertexArrOgl;
 	public:
-		VertexBufOgl();
+		VertexBufOgl(GfxEngineOgl& rGfx);
 		virtual ~VertexBufOgl();
 		// --setters
 		virtual void SetData(Size szData, const Ptr pVtxData = nullptr) override;
 		virtual void SetSubData(Size szData, const Ptr pVtxData, Size szOffset = 0) override;
 		// --core_methods
 		virtual void Bind() const override;
-		virtual void Unbind() const override;
-	protected:
-		UInt32 m_unRId;
 	};
 	/// Abstract IndexBuffer Class
-	class NW_API IndexBufOgl : public IndexBuf
+	class NW_API IndexBufOgl : public IndexBuf, public GfxEntityOgl
 	{
 		friend class GfxEngine;
 	public:
-		IndexBufOgl();
+		IndexBufOgl(GfxEngineOgl& rGfx);
 		virtual ~IndexBufOgl();
 		// --setters
 		virtual void SetData(Size szData, const Ptr pVtxData = nullptr) override;
 		virtual void SetSubData(Size szData, const Ptr pVtxData, Size szOffset = 0) override;
 		// --core_methods
 		virtual void Bind() const override;
-		virtual void Unbind() const override;
 	};
 	/// Abstract ShaderBuffer class
 	/// Description:
 	/// -- Is used by shaders as opengl uniform setter, or as directx constant buffer
-	class NW_API ShaderBufOgl : public ShaderBuf
+	class NW_API ShaderBufOgl : public ShaderBuf, public GfxEntityOgl
 	{
 	public:
-		ShaderBufOgl();
+		ShaderBufOgl(GfxEngineOgl& rGfx);
 		virtual ~ShaderBufOgl();
 		// --setters
 		virtual void SetData(Size szData, const Ptr pVtxData = nullptr) override;
@@ -128,7 +101,6 @@ namespace NW
 		virtual void Bind() const override;
 		virtual void Bind(UInt32 unPoint) const override;
 		virtual void Bind(UInt32 unPoint, Size szData, Size szOffset = 0) const override;
-		virtual void Unbind() const override;
 		virtual void Remake(const ShaderBufLayout& rShdLayout) override;
 	};
 }
@@ -137,44 +109,37 @@ namespace NW
 namespace NW
 {
 	/// VertexBuffer Class
-	class NW_API VertexBufDx : public VertexBuf
+	class NW_API VertexBufDx : public VertexBuf, public GfxEntityDx
 	{
-		friend class GfxEngine;
 		friend class VertexArrDx;
 	public:
-		VertexBufDx();
+		VertexBufDx(GfxEngineDx& rGfx);
 		virtual ~VertexBufDx();
 		// --setters
 		virtual void SetData(Size szData, const Ptr pVtxData = nullptr) override;
 		virtual void SetSubData(Size szData, const Ptr pVtxData, Size szOffset = 0) override;
 		// --core_methods
 		virtual void Bind() const override;
-		virtual void Unbind() const override;
-	protected:
-		UInt32 m_unRId;
 	};
 	/// Abstract IndexBuffer Class
-	class NW_API IndexBufDx : public IndexBuf
+	class NW_API IndexBufDx : public IndexBuf, public GfxEntityDx
 	{
-		friend class GfxEngine;
 	public:
-		IndexBufDx();
+		IndexBufDx(GfxEngineDx& rGfx);
 		virtual ~IndexBufDx();
 		// --setters
 		virtual void SetData(Size szData, const Ptr pVtxData = nullptr) override;
 		virtual void SetSubData(Size szData, const Ptr pVtxData, Size szOffset = 0) override;
 		// --core_methods
 		virtual void Bind() const override;
-		virtual void Unbind() const override;
 	};
 	/// Abstract ShaderBuffer class
 	/// Description:
 	/// -- Is used by shaders as opengl uniform setter, or as directx constant buffer
-	class NW_API ShaderBufDx : public ShaderBuf
+	class NW_API ShaderBufDx : public ShaderBuf, public GfxEntityDx
 	{
-		friend class GfxEngine;
 	public:
-		ShaderBufDx();
+		ShaderBufDx(GfxEngineDx& rGfx);
 		virtual ~ShaderBufDx();
 		// --setters
 		virtual void SetData(Size szData, const Ptr pVtxData = nullptr) override;
@@ -183,10 +148,9 @@ namespace NW
 		virtual void Bind() const override;
 		virtual void Bind(UInt32 unPoint) const override;
 		virtual void Bind(UInt32 unPoint, Size szData, Size szOffset = 0u) const override;
-		virtual void Unbind() const override;
 		virtual void Remake(const ShaderBufLayout& rShdLayout) override;
 	};
 }
 #endif
 #endif	// NW_GAPI
-#endif	// NW_GFX_BUFFER_H
+#endif	// NWG_BUFFER_H

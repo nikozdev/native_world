@@ -12,12 +12,10 @@ namespace NW
 	// --==<core_methods>==--
 	void CoreEngine::Run()
 	{
-		Init();
-		if (!m_bIsRunning) { return; }
-
+		m_bIsRunning = true;
 		auto fnRunning = [this]()->void {
 			try {
-
+				if (!Init()) { return; }
 				while (m_bIsRunning) { Update(); }
 				Quit();
 			}
@@ -28,14 +26,14 @@ namespace NW
 				throw CodeException("running loop has been crashed", NWL_ERR_NO_INIT, __FILE__, __LINE__);
 			}
 		};
-		//m_thrRun = Thread(fnRunning);
-		fnRunning();
+		m_thrRun = Thread(fnRunning);
+		//fnRunning();
 	}
 	bool CoreEngine::Init()
 	{
 		try {
-			if (m_bIsRunning) { throw; }
-			m_bIsRunning = true;
+			if (m_pGfx.IsValid() || m_pWindow.IsValid()) { return false; }
+			if (!m_bIsRunning) { m_bIsRunning = true; }
 
 			MemSys::OnInit(1 << 23);
 			DataSys::OnInit();
@@ -62,8 +60,8 @@ namespace NW
 	}
 	void CoreEngine::Quit()
 	{
-		if (!m_bIsRunning && m_pWindow.GetRef() == nullptr) { return; }
-		m_bIsRunning = false;
+		if (!m_pWindow.IsValid() || !m_pGfx.IsValid()) { return; }
+		if (m_bIsRunning) { m_bIsRunning = false; }
 
 		for (auto& itState : m_States) { itState->Quit(); }
 		m_States.clear();
@@ -92,10 +90,10 @@ namespace NW
 			CursorEvent* pmEvt = static_cast<CursorEvent*>(&rEvt);
 			switch (pmEvt->evType) {
 			case ET_CURSOR_MOVE:
-				m_crs.xMove = pmEvt->nX;
-				m_crs.yMove = pmEvt->nY;
 				m_crs.xMoveDelta = pmEvt->nX - m_crs.xMove;
 				m_crs.yMoveDelta = pmEvt->nY - m_crs.yMove;
+				m_crs.xMove = pmEvt->nX;
+				m_crs.yMove = pmEvt->nY;
 				if (m_crs.GetHeld(pmEvt->cButton)) {
 					m_crs.Buttons[pmEvt->cButton].xHeldDelta = m_crs.xMove - m_crs.Buttons[pmEvt->cButton].xHeld;
 					m_crs.Buttons[pmEvt->cButton].yHeldDelta = m_crs.yMove - m_crs.Buttons[pmEvt->cButton].yHeld;

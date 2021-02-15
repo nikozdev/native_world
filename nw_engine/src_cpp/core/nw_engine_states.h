@@ -23,6 +23,8 @@ namespace NW
 	private:
 		CoreEngine& m_rEngine;
 		DArray<UInt32> m_eIds;
+
+		ImageInfo m_imgInfo;
 	};
 }
 namespace NW

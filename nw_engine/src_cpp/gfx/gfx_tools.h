@@ -1,5 +1,5 @@
-#ifndef NW_GFX_TOOLS_H
-#define NW_GFX_TOOLS_H
+#ifndef NWG_TOOLS_H
+#define NWG_TOOLS_H
 
 #include <gfx_core.hpp>
 
@@ -255,6 +255,69 @@ namespace NW
 		}
 	};
 }
+namespace NW
+{
+	/// SubTexture1d struct
+	struct NW_API SubTexture1d
+	{
+	public:
+		Int32 nTexCrd = 0;
+		Int32 nTexSize = 1;
+		Texture* pOverTex = nullptr;
+	public:
+		// --getters
+		inline float GetTexCoord_0_1() const {
+			return static_cast<float>(nTexCrd) / static_cast<float>(nOverTexSize);
+		}
+		inline float GetTexSize_0_1() const {
+			return static_cast<float>(nTexSize) / static_cast<float>(nOverTexSize);
+		}
+	private:
+		Int32 nOverTexSize = 0;
+	};
+	/// SubTexture2d struct
+	struct NW_API SubTexture2d
+	{
+	public:
+		V2i xyTexCrd = { 0, 0 };
+		V2i whTexSize = { 1, 1 };
+		Texture* pOverTex = nullptr;
+		V2i whOverTexSize = { 0, 0 };
+	public:
+		// --getters
+		inline V2f GetTexCoord_0_1() const {
+			return V2f{ static_cast<float>(xyTexCrd.x) / static_cast<float>(whOverTexSize.x),
+				static_cast<float>(xyTexCrd.y) / static_cast<float>(whOverTexSize.y) };
+		}
+		inline V2f GetTexSize_0_1() const {
+			return V2f{ static_cast<float>(whTexSize.x) / static_cast<float>(whOverTexSize.x),
+				static_cast<float>(whTexSize.y) / static_cast<float>(whOverTexSize.y) };
+		}
+	private:
+	};
+	/// SubTexture3d struct
+	struct NW_API SubTexture3d
+	{
+	public:
+		V3i xyzTexCrd = { 0, 0, 0 };
+		V3i whdTexSize = { 1, 1, 1 };
+		Texture* pOverTex = nullptr;
+	public:
+		// --getters
+		inline V3f GetTexCoord_0_1() const {
+			return V3f{ static_cast<float>(xyzTexCrd.x) / static_cast<float>(whdOverTexSize.x),
+				static_cast<float>(xyzTexCrd.y) / static_cast<float>(whdOverTexSize.y),
+				static_cast<float>(xyzTexCrd.z) / static_cast<float>(whdOverTexSize.z) };
+		}
+		inline V3f GetTexSize_0_1() const {
+			return V3f{ static_cast<float>(whdTexSize.x) / static_cast<float>(whdOverTexSize.x),
+				static_cast<float>(whdTexSize.y) / static_cast<float>(whdOverTexSize.y),
+				static_cast<float>(whdTexSize.z) / static_cast<float>(whdOverTexSize.z) };
+		}
+	private:
+		V3i whdOverTexSize = { 1, 1, 1 };
+	};
+}
 #if (NW_GAPI & NW_GAPI_OGL)
 // --functions
 namespace NW
@@ -284,4 +347,4 @@ namespace NW
 }
 #endif
 #endif	// NW_GAPI
-#endif	// NW_GFX_TOOLS_H
+#endif	// NWG_TOOLS_H

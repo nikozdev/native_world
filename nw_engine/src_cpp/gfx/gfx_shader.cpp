@@ -2,32 +2,73 @@
 #include "gfx/gfx_shader.h"
 
 #if (defined NW_GAPI)
+#include <gfx/gfx_engine.h>
 #include <gfx/gfx_buffer.h>
 #include <gfx/gfx_loader.h>
-#endif	// NW_GAPI
-#if (NW_GAPI & NW_GAPI_OGL)
 namespace NW
 {
 	SubShader::SubShader(const char* strName, ShaderTypes sdType) :
 		ACodeRes(strName),
-		m_shdType(sdType), m_unRId(0), m_pOverShader(nullptr) { Remake(); }
-	SubShader::~SubShader() { Remake(); }
-
+		m_shdType(sdType) { }
+	SubShader::~SubShader() { }
 	// --==<data_methods>==--
 	bool SubShader::SaveF(const char* strFPath) { return true; }
 	bool SubShader::LoadF(const char* strFPath) { return true; }
 	// --==</data_methods>==--
-
-	// --==<core_methods>==--
-	void SubShader::Attach(Shader* pOverShader) {
-		Detach();
-		m_pOverShader = pOverShader;
-		if (m_pOverShader == nullptr) return;
-		glAttachShader(m_pOverShader->GetRenderId(), m_unRId);
+}
+namespace NW
+{
+	Shader::Shader(const char* strName) :
+		ACodeRes(strName), GfxEntity() { }
+	Shader::~Shader() { }
+	// --==<data_methods>==--
+	bool Shader::SaveF(const char* strFPath)
+	{
+		String strFile = m_strCode;
+		return true;
 	}
-	void SubShader::Detach() { if (m_pOverShader) { glDetachShader(m_pOverShader->GetRenderId(), m_unRId); } }
+	bool Shader::LoadF(const char* strFPath)
+	{
+		bool bSuccess = false;
+		std::fstream fStream(strFPath);
 
-	bool SubShader::Compile()
+		if (!fStream.is_open()) { return false; }
+		fStream.seekg(0, std::ios::end);
+		m_strCode.resize(fStream.tellg());
+		fStream.seekg(0);
+		fStream.read(&m_strCode[0], m_strCode.size());
+		fStream.close();
+
+		if (!Compile()) {
+			String strFile = m_strCode;
+			bSuccess = false;
+		}
+		else { bSuccess = true; }
+
+		return bSuccess;
+	}
+	// --==</data_methods>==--
+}
+#if (NW_GAPI & NW_GAPI_OGL)
+namespace NW
+{
+	SubShaderOgl::SubShaderOgl(const char* strName, ShaderTypes sdType, GfxEngineOgl& rGfx) :
+		SubShader(strName, sdType), GfxEntityOgl(rGfx),
+		m_pOverShader(nullptr) { Remake(); }
+	SubShaderOgl::~SubShaderOgl() { Remake(); }
+	// --==<core_methods>==--
+	void SubShaderOgl::Attach(Shader* pOverShader) {
+		Detach();
+		m_pOverShader = static_cast<ShaderOgl*>(pOverShader);
+		if (m_pOverShader == nullptr) return;
+		glAttachShader(m_pOverShader->m_unRId, m_unRId);
+	}
+	void SubShaderOgl::Detach() {
+		if (m_pOverShader == nullptr) { return; }
+		glDetachShader(m_pOverShader->m_unRId, m_unRId);
+	}
+
+	bool SubShaderOgl::Compile()
 	{
 		if (!CodeProc()) { return false; }
 		const char* strSource = &m_strCode[0];
@@ -35,7 +76,7 @@ namespace NW
 		glCompileShader(m_unRId);
 		return true;
 	}
-	void SubShader::Remake() {
+	void SubShaderOgl::Remake() {
 		Detach();
 		if (m_unRId != 0) { glDeleteShader(m_unRId); m_unRId = 0; }
 		m_unRId = glCreateShader(m_shdType);
@@ -44,7 +85,7 @@ namespace NW
 	// --==</core_methods>==--
 
 	// --==<implementation_methods>==--
-	bool SubShader::CodeProc() {
+	bool SubShaderOgl::CodeProc() {
 		StrStream strCodeStream(m_strCode);
 		String strToken("", 256);
 		String strLine("", 256);
@@ -157,39 +198,29 @@ namespace NW
 }
 namespace NW
 {
-	Shader::Shader(const char* strName) :
-		ACodeRes(strName),
-		m_unRId(0), m_bIsEnabled(false) { Remake(); }
-	Shader::~Shader() { Remake(); }
-
+	ShaderOgl::ShaderOgl(const char* strName, GfxEngineOgl& rGfx) : Shader(strName), GfxEntityOgl(rGfx) { Remake(); }
+	ShaderOgl::~ShaderOgl() { Remake(); }
 	// --setters
-	void Shader::SetBool(const char* name, bool value) const { glUniform1i(GetUniformLoc(name), value); }
-	void Shader::SetInt(const char* name, int value) const { glUniform1i(GetUniformLoc(name), value); }
-	void Shader::SetIntArray(const char* name, Int32* pIntArr, UInt32 unCount) const { glUniform1iv(GetUniformLoc(name), unCount, pIntArr); }
-	void Shader::SetUIntArray(const char* name, UInt32* pUIntArr, UInt32 unCount) const { glUniform1uiv(GetUniformLoc(name), unCount, pUIntArr); }
-	void Shader::SetFloat(const char* name, float value) const { glUniform1f(GetUniformLoc(name), value); }
-	void Shader::SetFloatArray(const char* name, float* pFloatArr, UInt32 unCount) const { glUniform1fv(GetUniformLoc(name), unCount, pFloatArr); }
-	void Shader::SetV2f(const char* name, const V2f& value) const { glUniform2fv(GetUniformLoc(name), 1, &(value[0])); }
-	void Shader::SetV3f(const char* name, const V3f& value) const { glUniform3fv(GetUniformLoc(name), 1, &(value[0])); }
-	void Shader::SetV4f(const char* name, const V4f& value) const { glUniform4fv(GetUniformLoc(name), 1, &(value[0])); }
-	void Shader::SetM4f(const char* name, const Mat4f& value) const { glUniformMatrix4fv(GetUniformLoc(name), 1, GL_FALSE, &value[0][0]); }
+	void ShaderOgl::SetBool(const char* name, bool value) const { glUniform1i(GetUniformLoc(name), value); }
+	void ShaderOgl::SetInt(const char* name, int value) const { glUniform1i(GetUniformLoc(name), value); }
+	void ShaderOgl::SetIntArray(const char* name, Int32* pIntArr, UInt32 unCount) const { glUniform1iv(GetUniformLoc(name), unCount, pIntArr); }
+	void ShaderOgl::SetUIntArray(const char* name, UInt32* pUIntArr, UInt32 unCount) const { glUniform1uiv(GetUniformLoc(name), unCount, pUIntArr); }
+	void ShaderOgl::SetFloat(const char* name, float value) const { glUniform1f(GetUniformLoc(name), value); }
+	void ShaderOgl::SetFloatArray(const char* name, float* pFloatArr, UInt32 unCount) const { glUniform1fv(GetUniformLoc(name), unCount, pFloatArr); }
+	void ShaderOgl::SetV2f(const char* name, const V2f& value) const { glUniform2fv(GetUniformLoc(name), 1, &(value[0])); }
+	void ShaderOgl::SetV3f(const char* name, const V3f& value) const { glUniform3fv(GetUniformLoc(name), 1, &(value[0])); }
+	void ShaderOgl::SetV4f(const char* name, const V4f& value) const { glUniform4fv(GetUniformLoc(name), 1, &(value[0])); }
+	void ShaderOgl::SetM4f(const char* name, const Mat4f& value) const { glUniformMatrix4fv(GetUniformLoc(name), 1, GL_FALSE, &value[0][0]); }
 
 	// --==<core_methods>==--
-	void Shader::Enable() {
-		if (m_bIsEnabled) { return; }
+	void ShaderOgl::Bind() const {
 		glUseProgram(m_unRId);
 		for (UInt8 bi = 0; bi < m_shdLayout.GetBlocks().size(); bi++) {
 			glUniformBlockBinding(m_unRId, bi, m_shdLayout.GetBlock(bi).unBindPoint);
 		}
-		m_bIsEnabled = true;
-	}
-	void Shader::Disable() {
-		if (!m_bIsEnabled) { return; }
-		glUseProgram(0);
-		m_bIsEnabled = false;
 	}
 
-	bool Shader::Compile()
+	bool ShaderOgl::Compile()
 	{
 		Remake();
 		if (!CodeProc()) { return false; }
@@ -202,7 +233,7 @@ namespace NW
 		
 		return true;
 	}
-	void Shader::Remake()
+	void ShaderOgl::Remake()
 	{
 		if (m_unRId != 0) { glDeleteProgram(m_unRId); m_unRId = 0; }
 		m_unRId = glCreateProgram();
@@ -213,36 +244,8 @@ namespace NW
 	}
 	// --==</core_methods>==--
 
-	// --==<data_methods>==--
-	bool Shader::SaveF(const char* strFPath)
-	{
-		String strFile = m_strCode;
-		return true;
-	}
-	bool Shader::LoadF(const char* strFPath)
-	{
-		bool bSuccess = false;
-		std::fstream fStream(strFPath);
-
-		if (!fStream.is_open()) { return false; }
-		fStream.seekg(0, std::ios::end);
-		m_strCode.resize(fStream.tellg());
-		fStream.seekg(0);
-		fStream.read(&m_strCode[0], m_strCode.size());
-		fStream.close();
-
-		if (!Compile()) {
-			String strFile = m_strCode;
-			bSuccess = false;
-		}
-		else { bSuccess = true; }
-
-		return bSuccess;
-	}
-	// --==</data_methods>==--
-
 	// --==<implementation_methods>==--
-	inline bool Shader::CodeProc()
+	inline bool ShaderOgl::CodeProc()
 	{
 		StrStream strStream(m_strCode), strCodeStream;
 		String strToken = "", strLine = "";
@@ -271,7 +274,7 @@ namespace NW
 
 			m_SubShaders.push_back(RefKeeper<SubShader>());
 			auto& rSub = m_SubShaders.back();
-			rSub.SetRef<ADataRes>(*DataSys::GetDR(DataSys::NewDR<SubShader>(&(strName)[0], shdType)));
+			rSub.SetRef<ADataRes>(*DataSys::GetDR(DataSys::NewDR<SubShaderOgl>(&(strName)[0], shdType, m_rGfx)));
 			rSub->SetCode(&strCodeStream.str()[0]);
 			strCodeStream = std::stringstream();
 		}
@@ -279,13 +282,13 @@ namespace NW
 		return true;
 	}
 
-	inline Int32 Shader::GetUniformLoc(const char* strName) const {
+	inline Int32 ShaderOgl::GetUniformLoc(const char* strName) const {
 		for (auto& itPar : m_Globals) { if (strcmp(itPar.first.c_str(), strName) == 0) { return itPar.second; } }
 		Int32 nLoc = glGetUniformLocation(m_unRId, strName);
 		m_Globals[strName] = nLoc;
 		return nLoc;
 	}
-	inline Int32 Shader::GetBlockIdx(const char* strName) const {
+	inline Int32 ShaderOgl::GetBlockIdx(const char* strName) const {
 		for (auto& itBlk : m_Blocks) { if (strcmp(itBlk.first.c_str(), strName) == 0) { return itBlk.second; } }
 		Int32 nIdx = glGetUniformBlockIndex(m_unRId, &strName[0]);
 		m_Blocks[strName] = nIdx;
@@ -294,8 +297,7 @@ namespace NW
 	}
 	// --==</implementation_methods>==--
 }
-#endif // NW_GAPI
-
+#endif
 #if (NW_GAPI & NW_GAPI_DX)
 namespace NW
 {
@@ -485,4 +487,5 @@ namespace NW
 	}
 	// --==</implementation_methods>==--
 }
-#endif // NW_GAPI
+#endif
+#endif	// NW_GAPI

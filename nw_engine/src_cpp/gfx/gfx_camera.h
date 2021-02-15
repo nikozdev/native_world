@@ -1,5 +1,5 @@
-#ifndef NW_GFX_GCAMERA_H
-#define NW_GFX_GCAMERA_H
+#ifndef NWG_GCAMERA_H
+#define NWG_GCAMERA_H
 
 #include <gfx_core.hpp>
 
@@ -88,4 +88,4 @@ namespace NW
 		GfxCameraModes m_gcMode;
 	};
 }
-#endif // NW_GFX_GCAMERA_H
+#endif // NWG_GCAMERA_H

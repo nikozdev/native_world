@@ -23,6 +23,7 @@ project "nw_engine"
 	{
 		dir_data,
 		"src_cpp/",
+		"ext/",
 		"%{dir_cpp.nw_lib}",
 		"%{dir_cpp.nw_cmd}",
 		"%{dir_cpp.lualib}",
@@ -56,6 +57,7 @@ project "nw_engine"
 	filter("files:**.hlsl")
 		flags("excludefrombuild")
 		shaderobjectfileoutput(dir_out_res.."%{file.basename}"..".cso")
+		shaderassembleroutput(dir_out_int.."%{file.basename}"..".asm")
 	filter("files:**_pxl.hlsl")
 		removeflags("excludefrombuild")
 		shadertype("pixel")

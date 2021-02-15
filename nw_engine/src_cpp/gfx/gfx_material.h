@@ -1,5 +1,5 @@
-#ifndef NW_GFX_MATERIAL_H
-#define NW_GFX_MATERIAL_H
+#ifndef NWG_MATERIAL_H
+#define NWG_MATERIAL_H
 
 #include <gfx/gfx_tools.h>
 #include <gfx_core.hpp>
@@ -43,7 +43,6 @@ namespace NW
 		void SetColor(const V4f& rgbaClr, const char* strType = "");
 		// --core_methods
 		void Enable();
-		void Disable();
 		// --data_methods
 		virtual bool SaveF(const char* strFPath) override;
 		virtual bool LoadF(const char* strFPath) override;
@@ -56,4 +55,4 @@ namespace NW
 #endif
 }
 
-#endif // NW_GFX_MATERIAL_H
+#endif // NWG_MATERIAL_H

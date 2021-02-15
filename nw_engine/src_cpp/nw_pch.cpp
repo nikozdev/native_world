@@ -1,4 +1,5 @@
 #include <nw_pch.hpp>
+#include <nw_core.hpp>
 /// PreCompiled source.cpp file
 /// Gets all the code of nw_pch and compile creates .pch from it
 #include <examples/imgui_impl_win32.cpp>

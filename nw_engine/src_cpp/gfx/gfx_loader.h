@@ -1,5 +1,5 @@
-#ifndef NW_GFX_LOADER_H
-#define NW_GFX_LOADER_H
+#ifndef NWG_LOADER_H
+#define NWG_LOADER_H
 
 #if (defined NW_GAPI)
 	#if (NW_GAPI & NW_GAPI_OGL)
@@ -15,4 +15,4 @@
 	#endif
 #endif
 
-#endif	// NW_GFX_LOADER_H
+#endif	// NWG_LOADER_H

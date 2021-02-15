@@ -44,23 +44,15 @@ namespace NW
 	// --core_methods
 	void GfxMaterial::Enable()
 	{
-		m_pShader->Enable();
+		m_pShader->Bind();
 		for (auto itClr : m_Colors) { m_pShader->SetV4f(&itClr.first[0], itClr.second); }
 		auto itTex = m_Textures.begin();
 		for (UInt8 txi = 0; txi < m_Textures.size(); txi++) {
-			itTex->second->Bind(txi);
+			itTex->second->SetSlot(txi);
+			itTex->second->Bind();
 			m_pShader->SetInt(&itTex->first[0], itTex->second->GetTexSlot());
 			itTex++;
 		}
-	}
-	void GfxMaterial::Disable()
-	{
-		auto itTex = m_Textures.begin();
-		for (UInt8 txi = 0; txi < m_Textures.size(); txi++) {
-			itTex->second->Unbind();
-			itTex++;
-		}
-		m_pShader->Disable();
 	}
 
 	// --data_methods

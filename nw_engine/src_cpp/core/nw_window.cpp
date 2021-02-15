@@ -17,7 +17,7 @@ namespace NW
 		m_wndClass.lpszClassName = strClsName;
 		m_wndClass.lpszMenuName = NULL;
 		m_wndClass.lpfnWndProc = MsgProcInit;
-		m_wndClass.style = CS_OWNDC;
+		m_wndClass.style = CS_OWNDC | CS_VREDRAW | CS_HREDRAW;
 		m_wndClass.hInstance = GetModuleHandle(NULL);
 		m_wndClass.hIcon = LoadIcon(m_wndClass.hInstance, MAKEINTRESOURCE(NW_ICON0));
 		m_wndClass.hIconSm = LoadIcon(m_wndClass.hInstance, MAKEINTRESOURCE(NW_ICON0));
@@ -28,12 +28,13 @@ namespace NW
 		m_wndClass.cbSize = sizeof(WNDCLASSEX);
 		if (!RegisterClassEx(&m_wndClass)) { NWL_ERR("Window class is not registered"); CoreEngine::Get().StopRunning(); return; }
 
+		DWORD wStyle = WS_OVERLAPPED | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU | WS_VISIBLE;
 		RECT wndRect = { 100, 100, 100 + GetSizeW(), 100 + GetSizeH() };
-		AdjustWindowRect(&wndRect, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE);
+		AdjustWindowRect(&wndRect, wStyle, FALSE);
 
 		auto strWndName = reinterpret_cast<const wchar_t*>(GetTitle());
 		m_wNative.pHandle = CreateWindowEx(0, strClsName, strWndName,
-			WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX,
+			wStyle,
 			CW_USEDEFAULT, CW_USEDEFAULT, GetSizeW(), GetSizeH(),
 			NULL, NULL, m_wndClass.hInstance, this);
 		if (m_wNative == nullptr) { NWL_ERR("Window is not created"); CoreEngine::Get().StopRunning(); return; }
@@ -84,10 +85,25 @@ namespace NW
 	void CoreWindow::SetCursorMode(CursorModes crsMode) {
 		switch (crsMode) {
 		case CRS_CAPTURED:
-			// SetCapture(m_pNative);
+		{
+			SetCapture(m_wNative);
+			RECT wRect = { GetCoordX(), GetCoordY(), GetCoordX() + GetSizeW(), GetCoordY() + GetSizeH() };
+			ClipCursor(&wRect);
+			ShowCursor(FALSE);
 			break;
-		case CRS_HIDDEN: break;
-		default: break;
+		}
+		case CRS_HIDDEN:
+		{
+			ShowCursor(FALSE);
+			break;
+		}
+		default:
+		{
+			ShowCursor(TRUE);
+			ClipCursor(NULL);
+			ReleaseCapture();
+			break;
+		}
 		}
 	}
 
@@ -96,16 +112,15 @@ namespace NW
 	{
 		// if there is false - we don't have a message
 		if (PeekMessage(&m_wMsg, m_wNative, NULL, NULL, PM_NOREMOVE)) {
-			// if there is false - we've got a quit
-			if (GetMessage(&m_wMsg, m_wNative, NULL, NULL)) {
-				TranslateMessage(&m_wMsg);
-				DispatchMessage(&m_wMsg);
-			}
-			else { CoreEngine::Get().StopRunning(); return; }
+			// get the message from the queue; if it's empty - blocks the thread
+			// if there is 0 - we've got a quit; -1 means 
+			Int32 nRes = GetMessage(&m_wMsg, m_wNative, NULL, NULL);
+			if (nRes == 0 || nRes == -1) { throw CodeException("window has been stopped"); }
+			TranslateMessage(&m_wMsg);	// make WM_CHAR/WM_SYSCHAR messages
+			DispatchMessage(&m_wMsg);	// send all the messages into window procedure
 		}
-		
 		Char strTitle[128];
-		sprintf(strTitle, "%s|ups:%3.2f|", GetTitle(), 1.0f / TimeSys::GetDeltaS());
+		sprintf(strTitle, "%s|ups:%d|", GetTitle(), static_cast<Int32>(1.0f / TimeSys::GetDeltaS()));
 		SetWindowTextA(m_wNative, strTitle);
 	}
 	// --==</core_methods>==--
@@ -148,15 +163,7 @@ namespace NW
 		case WM_MOUSEMOVE:
 		{
 			const POINTS xyCrd = MAKEPOINTS(lParam);
-			if (IsCollidPointRect({ xyCrd.x, xyCrd.y }, { 0, 0 }, { GetSizeW(), GetSizeH() })) {
-				//if (!IsHovered()) { SetCapture(m_pNative); m_wInfo.bIsHovered = true; }
-				//else { m_wInfo.bIsHovered = false; }
-			}
-			else {
-				if (wParam & (MK_LBUTTON | MK_RBUTTON | MK_MBUTTON | MK_XBUTTON1 | MK_XBUTTON2)) {
-					m_wInfo.fnOnEvent(CursorEvent(ET_CURSOR_MOVE, xyCrd.x, xyCrd.y));
-				}
-			}
+			m_wInfo.fnOnEvent(CursorEvent(ET_CURSOR_MOVE, xyCrd.x, xyCrd.y));
 			break;
 		}
 		case WM_MOUSEHWHEEL:

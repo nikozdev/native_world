@@ -20,6 +20,7 @@
 	#include <imgui_internal.h>
 	#include <examples/imgui_impl_win32.h>
 	#define GUI_DEFAULT_TREE_FLAGS ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick
+	#include <gfx/gfx_loader.h>
 	#if (NW_GAPI & NW_GAPI_OGL)
 		#include <examples/imgui_impl_opengl3.h>
 	#endif
