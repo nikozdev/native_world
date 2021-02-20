@@ -20,10 +20,15 @@ namespace NW
 		virtual void OnEvent(KeyboardEvent& rkEvt) override;
 		virtual void OnEvent(WindowEvent& rwEvt) override;
 	private:
+		inline void DrawTestImage();
+	private:
 		CoreEngine& m_rEngine;
-		DArray<UInt32> m_eIds;
 
+		DArray<UInt32> m_eIds;
 		ImageInfo m_imgInfo;
+		
+		RefKeeper<ShaderProgram> m_psProg;
+		RefKeeper<IndexedDrawable> m_pDrb;
 	};
 }
 namespace NW
@@ -75,8 +80,6 @@ namespace NW
 		inline void DrawScene();
 	private:
 		CoreEngine& m_rEngine;
-
-		RefKeeper<ShaderBuf> m_pShdBuf;
 	};
 }
 

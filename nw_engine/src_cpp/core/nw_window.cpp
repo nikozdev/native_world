@@ -19,8 +19,8 @@ namespace NW
 		m_wndClass.lpfnWndProc = MsgProcInit;
 		m_wndClass.style = CS_OWNDC | CS_VREDRAW | CS_HREDRAW;
 		m_wndClass.hInstance = GetModuleHandle(NULL);
-		m_wndClass.hIcon = LoadIcon(m_wndClass.hInstance, MAKEINTRESOURCE(NW_ICON0));
-		m_wndClass.hIconSm = LoadIcon(m_wndClass.hInstance, MAKEINTRESOURCE(NW_ICON0));
+		m_wndClass.hIcon = LoadIcon(m_wndClass.hInstance, MAKEINTRESOURCE(NW_ICON1));
+		m_wndClass.hIconSm = LoadIcon(m_wndClass.hInstance, MAKEINTRESOURCE(NW_ICON1));
 		m_wndClass.hCursor = LoadCursor(m_wndClass.hInstance, MAKEINTRESOURCE(NW_CURSOR0));
 		m_wndClass.hbrBackground = NULL;
 		m_wndClass.cbClsExtra = 0;
@@ -115,7 +115,7 @@ namespace NW
 			// get the message from the queue; if it's empty - blocks the thread
 			// if there is 0 - we've got a quit; -1 means 
 			Int32 nRes = GetMessage(&m_wMsg, m_wNative, NULL, NULL);
-			if (nRes == 0 || nRes == -1) { throw CodeException("window has been stopped"); }
+			if (nRes == 0 || nRes == -1) { throw Exception("Window has been stopped"); }
 			TranslateMessage(&m_wMsg);	// make WM_CHAR/WM_SYSCHAR messages
 			DispatchMessage(&m_wMsg);	// send all the messages into window procedure
 		}

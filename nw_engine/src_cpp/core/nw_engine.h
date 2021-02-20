@@ -14,7 +14,7 @@ namespace NW
 	{
 	public:
 		CoreEngine();
-		~CoreEngine();
+		virtual ~CoreEngine();
 		// --getters
 		inline const char* GetName() const	{ return &m_strName[0]; }
 		inline CoreWindow* GetWindow()		{ return m_pWindow; }

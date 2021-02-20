@@ -13,18 +13,55 @@ namespace NW
 	// --==<core_methods>==--
 	bool GamerState::Init()
 	{
-		if (!DataSys::LoadFImageBmp("..\\data\\image\\img_home_0.bmp", m_imgInfo)) { return false; }
+		Vtx3f vtxData[] = {
+			Vtx3f{ V3f{ -0.5f,	-0.5f,	Random::GetFloat() } },
+			Vtx3f{ V3f{ -0.5f,	0.5f,	Random::GetFloat() } },
+			Vtx3f{ V3f{ 0.5f,	0.5f,	Random::GetFloat() } },
+			Vtx3f{ V3f{ 0.5f,	-0.5f,	Random::GetFloat() } },
+			Vtx3f{ V3f{ 0.0f,	-1.0f,	Random::GetFloat() } },
+			Vtx3f{ V3f{ 0.0f,	1.0f,	Random::GetFloat() } },
+		};
+		UInt16 idxData[] = {
+			0, 1, 5,
+			5, 2, 0,
+			0, 2, 3,
+			3, 4, 0,
+		};
+		m_rEngine.GetGfx()->CreateRes<IndexedDrawable>(m_pDrb);
+		m_rEngine.GetGfx()->CreateRes<ShaderProgram>(m_psProg, "shd_0_test");
+		
+		if (!m_psProg->LoadF(R"(D:\dev\native_world\data\shader\dx_test_0.shd)")) { return false; }
+
+		m_pDrb->AddVtxBuf<Vtx3f>(sizeof(vtxData) / sizeof(Vtx3f), &vtxData[0]);
+		m_pDrb->SetIdxBuf<UInt16>(sizeof(idxData) / sizeof(UInt16), &idxData[0]);
 
 		return true;
 	}
 	void GamerState::Quit()
 	{
 		if (m_imgInfo.pClrData != nullptr) { MemSys::DelTArr<UByte>(m_imgInfo.pClrData, m_imgInfo.GetDataSize()); }
+		
+		m_pDrb.Reset();
+		m_psProg.Reset();
 	}
 	void GamerState::Update()
 	{
+		m_rEngine.GetGfx()->SetViewport(0, 0, m_rEngine.GetWindow()->GetSizeW(), m_rEngine.GetWindow()->GetSizeH());
+		m_psProg->Bind();
+		m_rEngine.GetGfx()->GetConfigs().General.unSwapInterval = 0;
+		m_rEngine.GetGfx()->BeginDraw();
+		m_rEngine.GetGfx()->OnDraw(m_pDrb);
+		m_rEngine.GetGfx()->EndDraw();
+	}
+
+	void GamerState::OnEvent(CursorEvent& rmEvt) { }
+	void GamerState::OnEvent(KeyboardEvent& rkEvt) { }
+	void GamerState::OnEvent(WindowEvent& rwEvt) { }
+	// --==</core_methods>==--
+	inline void GamerState::DrawTestImage() {
+#if (NWG_GAPI & NWG_GAPI_OGL)
 		V2f whWndSize = { static_cast<Float32>(m_rEngine.GetWindow()->GetSizeW()), static_cast<Float32>(m_rEngine.GetWindow()->GetSizeH()) };
-		glViewport( 0, 0, whWndSize.x, whWndSize.y);
+		glViewport(0, 0, whWndSize.x, whWndSize.y);
 		glPointSize(8.0f);
 		glBegin(GL_POINTS);
 		for (Int32 iy = -m_imgInfo.nHeight / 2; iy < m_imgInfo.nHeight / 2; iy++) {
@@ -50,28 +87,8 @@ namespace NW
 		glVertex2f(xyCrsCrdF.x, xyCrsCrdF.y);
 		glColor3ub(255, 255, 255);
 		glEnd();
+#endif
 	}
-
-	void GamerState::OnEvent(CursorEvent& rmEvt) { }
-	void GamerState::OnEvent(KeyboardEvent& rkEvt) {
-		switch (rkEvt.evType) {
-		case ET_KEYBOARD_RELEASE:
-			switch (rkEvt.keyCode) {
-			case KC_N:
-				break;
-			case KC_R:
-				default: break;
-			case KC_1:
-				break;
-			case KC_2:
-				break;
-			}
-			break;
-		default: break;
-		}
-	}
-	void GamerState::OnEvent(WindowEvent& rwEvt) {}
-	// --==</core_methods>==--
 }
 #if (false)
 namespace NW

@@ -444,12 +444,12 @@ namespace NW
 	// -- Components
 	/// OnDraw Abstract EntityComponent
 	/// Description:
-	/// -- Gets any inherited of AEntityCmp component and draws default tree with "settings" button
+	/// -- Gets any inherited of EntityCmp component and draws default tree with "settings" button
 	/// -- All individual GUI for particular component can be implemented inside callback function
 	/// -- Because a callback can be simple function or a lambda expression, I use templated CBType
 	/// -- So, to draw GUI of some component, we need to give a component and the callback function
 	/// which will be called in the tree node
-	template <typename CBType> inline void GuiOfEntityEditor::OnDraw(AEntityCmp* pACmp, CBType& fnCallback) {
+	template <typename CBType> inline void GuiOfEntityEditor::OnDraw(EntityCmp* pACmp, CBType& fnCallback) {
 		if (pACmp == nullptr) return;
 		ImGui::PushID(pACmp->GetId());
 		bool bOpened0 = ImGui::TreeNodeEx(pACmp->GetName(), GUI_DEFAULT_TREE_FLAGS);
@@ -568,7 +568,7 @@ namespace NW
 		OnDraw(pC2Cmp, cbC2Cmp);
 	}
 	// --setters
-	void GuiOfEntityEditor::SetContext(AEntity* pContext) {
+	void GuiOfEntityEditor::SetContext(Entity* pContext) {
 		this->pContext = pContext;
 		if (pContext == nullptr) {
 			bIsEnabled = false;
@@ -653,37 +653,37 @@ namespace NW
 		ImGui::Begin("scene_editor", &bIsEnabled);
 
 		if (ImGui::BeginPopupContextWindow(0, 1, false)) {
-			AEntity* pEnt0 = nullptr;
+			Entity* pEnt0 = nullptr;
 			if (ImGui::MenuItem("create entity")) {
-				pEnt0 = MemSys::NewT<AEntity>();
+				pEnt0 = MemSys::NewT<Entity>();
 				pEnt0->AddCmp<Transform2dCmp>();
 				pEnt0->AddCmp<Gfx2dCmp>();
 			}
 			else if (ImGui::MenuItem("create 10 entities")) {
 				for (UInt8 ei = 0; ei < 10; ei++) {
-					pEnt0 = MemSys::NewT<AEntity>();
+					pEnt0 = MemSys::NewT<Entity>();
 					pEnt0->AddCmp<Transform2dCmp>();
 					pEnt0->AddCmp<Gfx2dCmp>();
 				}
 			}
 			else if (ImGui::MenuItem("create 50 entities")) {
 				for (UInt8 ei = 0; ei < 50; ei++) {
-					pEnt0 = MemSys::NewT<AEntity>();
+					pEnt0 = MemSys::NewT<Entity>();
 					pEnt0->AddCmp<Transform2dCmp>();
 					pEnt0->AddCmp<Gfx2dCmp>();
 				}
 			}
 			else if (ImGui::MenuItem("destroy 50 entities")) {
-				auto& rEnts = ADataRes::GetStorage<AEntity>();
+				auto& rEnts = ADataRes::GetStorage<Entity>();
 				for (UInt8 ei = 0; ei < 50; ei++) {
 					if (rEnts.empty()) { return; };
-					MemSys::DelT<AEntity>(rEnts.begin()->second);
+					MemSys::DelT<Entity>(rEnts.begin()->second);
 					rEnts.erase(rEnts.begin());
 				}
 			}
 			ImGui::EndPopup();
 		}
-		OnDraw(ADataRes::GetStorage<AEntity>());
+		OnDraw(ADataRes::GetStorage<Entity>());
 		ImGui::End();
 
 		OnDraw(GfxCameraLad::Get().GetGfxCamera());
@@ -711,26 +711,26 @@ namespace NW
 
 		if (pDestroyEnt != nullptr) {
 			GuiOfEntityEditor::Get().SetContext(nullptr);
-			MemSys::DelT<AEntity>(ADataRes::GetDataRes<AEntity>(pDestroyEnt->GetId()));
+			MemSys::DelT<Entity>(ADataRes::GetDataRes<Entity>(pDestroyEnt->GetId()));
 			pDestroyEnt = nullptr;
 		}
 	}
 
-	inline void GuiOfSceneEditor::OnDraw(AEntity* pEnt)
+	inline void GuiOfSceneEditor::OnDraw(Entity* pEnt)
 	{
 		bool bOpened = ImGui::TreeNodeEx(&pEnt->GetName()[0], GUI_DEFAULT_TREE_FLAGS);
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) { GuiOfEntityEditor::Get().SetContext(pEnt); }
 
 		if (ImGui::BeginPopupContextItem(&pEnt->GetName()[0])) {
 			if (ImGui::MenuItem("create subent")) {
-				AEntity* pSubEnt = MemSys::NewT<AEntity>();
+				Entity* pSubEnt = MemSys::NewT<Entity>();
 				pEnt->AddSubEnt(pSubEnt);
 				pSubEnt->AddCmp<Transform2dCmp>();
 				pSubEnt->AddCmp<Gfx2dCmp>();
 			}
 			else if (ImGui::MenuItem("create 10 subents")) {
 				for (UInt8 ei = 0; ei < 10; ei++) {
-					AEntity* pSubEnt = MemSys::NewT<AEntity>();
+					Entity* pSubEnt = MemSys::NewT<Entity>();
 					pEnt->AddSubEnt(pSubEnt);
 					pSubEnt->AddCmp<Transform2dCmp>();
 					pSubEnt->AddCmp<Gfx2dCmp>();

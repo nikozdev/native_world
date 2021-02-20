@@ -1,6 +1,8 @@
 workspace "native_world"
 	architecture "x64"
 	configurations { "debug", "release" }
+	shadermodel("4.0")
+	shaderassembler("assemblycode")
 	defines
 	{
 		"NW_BUILD_EXE",
@@ -44,8 +46,8 @@ workspace "native_world"
 	}
 	filter("files:**.hlsl")
 		flags("excludefrombuild")
-		shaderobjectfileoutput("src_hlsl/%{file.basename}.cso")
-		shaderassembleroutput("src_hlsl/%{file.basename}.asm")
+		shaderobjectfileoutput("../nw_gfx/src_hlsl/%{file.basename}.cso")
+		shaderassembleroutput("../nw_gfx/src_hlsl/%{file.basename}.asm")
 	filter("files:**_pxl.hlsl")
 		removeflags("excludefrombuild")
 		shadertype("pixel")

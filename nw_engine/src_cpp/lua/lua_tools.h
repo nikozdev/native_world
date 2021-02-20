@@ -29,7 +29,7 @@ namespace NW
 		inline void RemoveType(UInt8 unCount) { while (unCount > 0 && unLevel > 0) { unCount--; unLevel--; StackTypes[unLevel] = LT_NON; } }
 		inline void Reset() { RemoveType(unLevel); }
 		// -- Operators
-		inline OutStream& operator<<(OutStream& rStream) const {
+		inline OStream& operator<<(OStream& rStream) const {
 			rStream << "--==LuaEngineInfo==--" << std::endl <<
 				"The top of the stack:" << std::endl;
 			for (UInt8 ti = 0; ti < StackTypes.GetSize(); ti++) {
@@ -54,7 +54,7 @@ namespace NW
 			return rStream;
 		}
 	};
-	inline OutStream& operator<<(OutStream& rStream, LuaEngineInfo& rInfo) { return rInfo.operator<<(rStream); }
+	inline OStream& operator<<(OStream& rStream, LuaEngineInfo& rInfo) { return rInfo.operator<<(rStream); }
 	/// LuaRegistrableFunction struct
 	/// Description:
 	/// -- This is a handler of lua for a function

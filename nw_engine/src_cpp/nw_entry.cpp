@@ -26,7 +26,7 @@ int main(int nArgs, char* strArgs[])
 		if (pCmd->GetRunThread().joinable()) { pCmd->GetRunThread().join(); }
 #endif
 #if (NWG_LAUNCH & NWG_LAUNCH_TEST)
-		if (true) {
+		if (false) {
 			//SetDllDirectory(LR"(F:\dev\lua_jit\)");
 			//HMODULE hLib = LoadLibrary(LR"(lua_jit.dll)");
 			HMODULE hLib = LoadLibrary(LR"(opengl32.dll)");
@@ -63,7 +63,7 @@ int main(int nArgs, char* strArgs[])
 		}
 #endif
 	}
-	catch (NWL::AException& exc) {
+	catch (NWL::Exception& exc) {
 		NWL_ERR(exc.GetStr());
 	}
 	catch (std::exception& exc) {

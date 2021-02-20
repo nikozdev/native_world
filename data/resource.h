@@ -1,5 +1,6 @@
 #define NW_ICON0                       101
-#define NW_CURSOR0                     102
+#define NW_ICON1                       102
+#define NW_CURSOR0                     103
 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS

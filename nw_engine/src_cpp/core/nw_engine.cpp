@@ -19,15 +19,13 @@ namespace NW
 				while (m_bIsRunning) { Update(); }
 				Quit();
 			}
-			catch (AException& exc) {
+			catch (Exception& exc) {
 				Quit();
-				NWL_ERR(exc.GetStr());
-				NWL_ERR(exc.GetStrType());
-				throw CodeException("running loop has been crashed", NWL_ERR_NO_INIT, __FILE__, __LINE__);
+				std::cout << exc;
+				return;
 			}
 		};
 		m_thrRun = Thread(fnRunning);
-		//fnRunning();
 	}
 	bool CoreEngine::Init()
 	{
@@ -37,8 +35,8 @@ namespace NW
 
 			MemSys::OnInit(1 << 23);
 			DataSys::OnInit();
-			CmpSys::OnInit();
 			EntSys::OnInit();
+			CmpSys::OnInit();
 
 			m_pWindow.MakeRef<CoreWindow>(WindowInfo{ &m_strName[0], 1200, 800, true });
 			m_pWindow->SetEventCallback([this](AEvent& rEvt)->void { return this->OnEvent(rEvt); });
@@ -46,14 +44,14 @@ namespace NW
 
 			for (auto& itState : m_States) {
 				if (!itState->Init()) {
-					throw CodeException("state is not initialized", NWL_ERR_NO_INIT, __FILE__, __LINE__);
+					throw Exception("state is not initialized", NWL_ERR_NO_INIT, __FILE__, __LINE__);
 				}
 			}
 		}
-		catch (AException& exc) {
+		catch (Exception& exc) {
 			Quit();
 			NWL_ERR(exc.GetStr());
-			throw CodeException("initialization has been failed", NWL_ERR_NO_INIT, __FILE__, __LINE__);
+			throw Exception("initialization has been failed", NWL_ERR_NO_INIT, __FILE__, __LINE__);
 			return false;
 		}
 		return true;
@@ -69,8 +67,8 @@ namespace NW
 		m_pGfx.Reset();
 		m_pWindow.Reset();
 		
-		EntSys::OnQuit();
 		CmpSys::OnQuit();
+		EntSys::OnQuit();
 		DataSys::OnQuit();
 		MemSys::OnQuit();
 	}

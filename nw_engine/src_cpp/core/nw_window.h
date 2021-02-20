@@ -24,7 +24,7 @@ namespace NW
 			strTitle(cstTitle),
 			nX(0), nY(0), nW(unWidth), nH(unHeight),
 			bVSync(bVerticalSync), nAspectRatio((Float32)unWidth / (Float32)unHeight) { }
-		inline OutStream& operator<<(OutStream& rStream) {
+		inline OStream& operator<<(OStream& rStream) {
 			return rStream <<
 				"--==<window_info>==--" << std::endl <<
 				"title: " << &strTitle[0] << std::endl <<
@@ -34,18 +34,18 @@ namespace NW
 				"--==</window_info>==--" << std::endl;
 		}
 	};
-	inline OutStream& operator<<(OutStream& rStream, WindowInfo& rwInfo) { return rwInfo.operator<<(rStream); }
+	inline OStream& operator<<(OStream& rStream, WindowInfo& rwInfo) { return rwInfo.operator<<(rStream); }
 }
 #if (defined NW_PLATFORM_WINDOWS)
 namespace NW
 {
 	/// Window Class
-	class NW_API CoreWindow
+	class NW_API CoreWindow : public TEntity<CoreWindow>
 	{
 	public:
 		CoreWindow(const WindowInfo& rwInfo);
 		CoreWindow(const CoreWindow& rCpy) = delete;
-		~CoreWindow();
+		virtual ~CoreWindow();
 		// --getters
 		inline UInt16 GetSizeW() const		{ return m_wInfo.nW; }
 		inline UInt16 GetSizeH() const		{ return m_wInfo.nH; }
@@ -72,8 +72,6 @@ namespace NW
 		inline bool IsEnabled() const	{ return m_wInfo.bIsEnabled; }
 		// --operators
 		void operator=(const CoreWindow& rCpy) = delete;
-		void operator delete(Ptr pBlock) = delete;
-		void operator delete[](Ptr pBlock) = delete;
 		// --core_methods
 		void Update();
 	private:

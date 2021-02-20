@@ -15,8 +15,6 @@ project "nw_engine"
 		"%{dir_cpp.own}**.c**",
 		"%{dir_cpp.own}**.h**",
 		dir_lua.."**.**",
-		dir_glsl.."**.**",
-		dir_hlsl.."**.**",
 		dir_data.."**.h", dir_data.."**.rc",  dir_data.."**.aps",
 	}
 	includedirs
