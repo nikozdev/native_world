@@ -1,9 +1,9 @@
 #include <nw_pch.hpp>
 
-#define NWG_LAUNCH_TEST		1 << 0
-#define NWG_LAUNCH_ENGINE	1 << 1
-#define NWG_LAUNCH_NWC		1 << 2
-#define NWG_LAUNCH			NWG_LAUNCH_ENGINE
+#define NW_LAUNCH_TEST		1 << 0
+#define NW_LAUNCH_ENGINE	1 << 1
+#define NW_LAUNCH_NWC		1 << 2
+#define NW_LAUNCH			NW_LAUNCH_ENGINE
 
 #include <core/nw_engine_states.h>
 
@@ -13,19 +13,21 @@
 int main(int nArgs, char* strArgs[])
 {
 	try {
-#if (NWG_LAUNCH & NWG_LAUNCH_ENGINE)
+#if (NW_LAUNCH & NW_LAUNCH_ENGINE)
 		NW::CoreEngine* pGame = &NW::CoreEngine::Get();
 		NW::GamerState gmState;
-		pGame->AddState(gmState);
+		NW::GuiState guiState;
+		//pGame->AddState(gmState);
+		pGame->AddState(guiState);
 		pGame->Run();
 		if (pGame->GetRunThread().joinable()) { pGame->GetRunThread().join(); }
 #endif
-#if (NWG_LAUNCH & NWG_LAUNCH_NWC)
+#if (NW_LAUNCH & NW_LAUNCH_NWC)
 		NWC::CmdEngine* pCmd = &NWC::CmdEngine::Get();
 		pCmd->Run();
 		if (pCmd->GetRunThread().joinable()) { pCmd->GetRunThread().join(); }
 #endif
-#if (NWG_LAUNCH & NWG_LAUNCH_TEST)
+#if (NW_LAUNCH & NW_LAUNCH_TEST)
 		if (false) {
 			//SetDllDirectory(LR"(F:\dev\lua_jit\)");
 			//HMODULE hLib = LoadLibrary(LR"(lua_jit.dll)");
@@ -63,15 +65,9 @@ int main(int nArgs, char* strArgs[])
 		}
 #endif
 	}
-	catch (NWL::Exception& exc) {
-		NWL_ERR(exc.GetStr());
-	}
-	catch (std::exception& exc) {
-		NWL_ERR(exc.what());
-	}
-	catch (...) {
-		NWL_ERR("somethig went wrong");
-	}
+	catch (NWL::Exception& exc) { NWL_ERR(exc.GetStr()); }
+	catch (std::exception& exc) { NWL_ERR(exc.what()); }
+	catch (...) { NWL_ERR("somethig went wrong"); }
 
 	return 0;
 }

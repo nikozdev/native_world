@@ -1,0 +1,304 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"co",
+				"cstdio\tstandard header"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"Arithmetic"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 157.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/D/dev/native_world"
+	],
+	"file_history":
+	[
+		"/D/art/isometry_2d/canvas_2.aseprite",
+		"/D/dev/native_world/premake5.lua",
+		"/D/dev/native_world/nw_gfx/premake5.lua",
+		"/D/dev/native_world/nw_gfx/src_glsl/pxl_3d_default.glsl",
+		"/D/dev/native_world/nw_gfx/src_glsl/vtx_2d_default.glsl",
+		"/D/dev/native_world/nw_gfx/src_glsl/vtx_3d_default.glsl",
+		"/D/dev/native_world/nw_gfx/src_glsl/pxl_2d_default.glsl",
+		"/D/dev/native_world/nw_gfx/src_glsl/vtx_2d_batch.glsl",
+		"/D/dev/native_world/nw_gfx/src_glsl/shd_2d_batch.glsl",
+		"/D/dev/native_world/.git/TAG_EDITMSG",
+		"/D/dev/native_world/.git/COMMIT_EDITMSG",
+		"/D/dev/native_world/nw_lib/.git/COMMIT_EDITMSG",
+		"/D/dev/native_world/.git/modules/nw_gfx/TAG_EDITMSG",
+		"/D/dev/native_world/.git/modules/nw_gfx/COMMIT_EDITMSG",
+		"/D/dev/native_world/nw_gfx/.gitignore",
+		"/D/dev/native_world/nw_gfx/.git",
+		"/D/dev/native_world/data/shader/dx_test_0.shd",
+		"/D/dev/native_world/data/resource.h",
+		"/D/dev/native_world/data/resource.rc",
+		"/D/dev/native_world/nw_engine/premake5.lua",
+		"/F/dev/lua_jit/projects/math_19.lua",
+		"/F/dev/lua_jit/projects/math_19.txt",
+		"/D/dev/native_world/nw_gfx/src_hlsl/shd_0_vtx.cso",
+		"/D/dev/native_world/nw_lib/.git/TAG_EDITMSG",
+		"/D/dev/native_world/nw_cmd/premake5.lua",
+		"/D/dev/native_world/nw_lib/premake5.lua",
+		"/F/dev/lua_jit/projects/exam_16.lua",
+		"/D/dev/native_world/.gitmessage",
+		"/D/dev/native_world/nw_cmd/src_cpp/cmd_def.hpp",
+		"/D/dev/native_world/nw_cmd/.git/TAG_EDITMSG",
+		"/D/dev/native_world/nw_cmd/.git/COMMIT_EDITMSG",
+		"/D/dev/native_world/nw_lib/src_cpp/core/nwl_code_res.h",
+		"/D/dev/native_world/nw_lib/src_cpp/core/nwl_code_res.cpp",
+		"/D/dev/native_world/nw_lib/.gitignore",
+		"/D/dev/nw_lib/src_cpp/core/nwl_code_res.h",
+		"/D/dev/nw_lib/src_cpp/core/nwl_code_res.cpp",
+		"/F/dev/lua_jit/launch_script.bat",
+		"/D/dev/native_world/scripts/gen_project_premake5.bat",
+		"/D/dev/native_world/nw_engine/src_cpp/core/nw_gui_of.h",
+		"/D/dev/native_world/nw_engine/src_cpp/core/nw_engine_states.h",
+		"/D/dev/native_world/nw_game/src_cpp/nwg_engine_states.h",
+		"/D/dev/native_world/nw_game/src_cpp/nw_engine_states.cpp",
+		"/D/dev/native_world/nw_engine/src_cpp/core/nw_engine_states.cpp",
+		"/D/dev/native_world/nw_game/premake5.lua",
+		"/D/dev/native_world/ext/lualib/premake5.lua",
+		"/D/dev/native_world/ext/imgui/premake5.lua",
+		"/F/dev/lua_jit/projects/exam_17.lua",
+		"/D/dev/code_schoolar/exam_17.lua",
+		"/D/dev/code_schoolar/learn_script.cpp",
+		"/D/dev/native_world/nw_engine/src_hlsl/shd_0_pxl.cso",
+		"/D/dev/native_world/nw_cmd/README.md",
+		"/D/dev/native_world/.gitignore",
+		"/D/dev/native_engine/nw_lib/src_cpp/nwl_core.hpp",
+		"/D/dev/native_engine/nw_lib/premake5.lua",
+		"/D/dev/native_engine/premake5.lua",
+		"/D/dev/native_engine/scripts/gen_project_premake5.bat",
+		"/D/dev/native_engine/nw_lib/.gitignore",
+		"/D/dev/native_engine/.gitmodules",
+		"/D/dev/native_engine/nw_lib/src_cpp/native_world_library.hpp",
+		"/D/dev/native_engine/README.md",
+		"/D/dev/native_engine/nw_cmd/premake5.lua",
+		"/D/dev/native_engine/nw_engine/premake5.lua",
+		"/D/dev/native_engine/nw_game/premake5.lua",
+		"/D/dev/native_engine/.git/COMMIT_EDITMSG",
+		"/D/dev/native_engine/.git/config",
+		"/D/dev/native_engine/ext/glfw/premake5.lua",
+		"/D/dev/native_engine/nw_engine/src_cpp/lua/nw_lua_engine.cpp",
+		"/D/dev/native_engine/nw_engine/src_cpp/lua/nw_lua_core.h",
+		"/D/dev/native_engine/nw_engine/src_cpp/lua_decl.hpp",
+		"/D/dev/native_world/nw_engine/src_cpp/nw_def.hpp",
+		"/D/dev/native_world/nw_engine/src_cpp/nw_core.hpp",
+		"/D/dev/native_engine/nw_engine/src_cpp/lua/nw_lua_core.cpp",
+		"/D/dev/native_engine/ext/imgui/premake5.lua",
+		"/D/dev/native_engine/nw_engine/src_cpp/core/nw_window.cpp",
+		"/D/dev/native_engine/nw_library/.git",
+		"/D/dev/native_world/nw_lib/.git",
+		"/D/dev/native_world/.gitmodules",
+		"/D/dev/native_world/README.md",
+		"/D/dev/native_world/nw_core/premake5.lua",
+		"/D/dev/native_world/nw_core/gfx/premake5.lua",
+		"/D/dev/native_world/.git/config",
+		"/D/dev/native_world/nw_glib/premake5.lua",
+		"/D/dev/native_world/nw_engine/src_cpp/resource.aps",
+		"/C/Users/Asus/AppData/Roaming/Microsoft/Windows/Themes/TranscodedWallpaper",
+		"/D/dev/native_world/nw_console/premake5.lua",
+		"/D/dev/native_world/nw_library/premake5.lua",
+		"/D/dev/native_world/nw_engine/data/Resource.rc",
+		"/D/dev/native_world/nw_engine/data/Resource.aps",
+		"/D/dev/native_world/ext/glew/include/GL/wglew.h",
+		"/D/dev/native_world/ext/glew/premake5.lua",
+		"/D/dev/native_world/ext/test/glew/auto/src/glxew_head.h",
+		"/D/dev/native_world/.git/modules/nw_glib/TAG_EDITMSG",
+		"/D/dev/native_world/.git/modules/nw_glib/COMMIT_EDITMSG",
+		"/E/learning/coding/sotring",
+		"/D/dev/native_world/.git/modules/nw_library/TAG_EDITMSG",
+		"/D/dev/native_world/.git/modules/nw_library/COMMIT_EDITMSG",
+		"/D/dev/native_world/.gitconfig",
+		"/D/dev/native_world/.gitattributes",
+		"/E/storage/skyrim files/Meshes/face_female_0.obj",
+		"/E/storage/skyrim files/Meshes/raw_mesh/dragon_0_head.dae",
+		"/E/storage/skyrim files/Meshes/vampire_lord.mtl",
+		"/E/storage/skyrim files/Meshes/vampire_lord.obj",
+		"/D/dev/native_world/.git/modules/nw_console/COMMIT_EDITMSG",
+		"/D/dev/native_world/nw_glib/src_glsl/shd_3d_batch.glsl",
+		"/D/dev/code_schoolar/learn_script.lua",
+		"/D/dev/code_schoolar/cpp_build.bat",
+		"/D/dev/code_schoolar/knowledge.exe",
+		"/D/dev/learn_script.cpp",
+		"/D/dev/cpp_build.bat",
+		"/E/learning/coding/graph_library",
+		"/C/Users/Asus/.gitconfig",
+		"/D/dev/native_world/ext/stbi/stb_image_write.h",
+		"/D/dev/native_world/ext/stbi/stb_image.h",
+		"/E/learning/coding/cout_api_0",
+		"/E/Своё родное/english_crossword",
+		"/D/dev/native_world/nw_library/.gitignore",
+		"/D/dev/native_world/.git/modules/nw_console/TAG_EDITMSG",
+		"/D/dev/native_world/nw_console/README.md",
+		"/D/dev/native_world/nw_glib/README.md",
+		"/D/dev/native_world/nw_library/README.md",
+		"/D/dev/native_world/nw_library/src_cpp/nwlib/nwl_memory.h",
+		"/D/dev/native_world/nw_library/src_cpp/nwlib/nwl_memory.cpp",
+		"/E/Dism/¦ы¦L-тT¦гмL¬¦єL-LT¦¦гбгбгб.txt",
+		"/D/dev/native_world/ext/glad/include/glad/glad.h",
+		"/D/dev/native_world/ext/glfw/include/GLFW/glfw3.h",
+		"/D/dev/native_world/nw_glib/premake5.txt",
+		"/D/dev/native_world/~.gitmessage",
+		"/D/dev/native_world/~.gitmessage.txt"
+	],
+	"find":
+	{
+		"height": 23.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/C++/C++ Single File.sublime-build",
+	"project": "native_world.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 221.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

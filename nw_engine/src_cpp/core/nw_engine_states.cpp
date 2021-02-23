@@ -13,84 +13,75 @@ namespace NW
 	// --==<core_methods>==--
 	bool GamerState::Init()
 	{
-		Vtx3f vtxData[] = {
-			Vtx3f{ V3f{ -0.5f,	-0.5f,	Random::GetFloat() } },
-			Vtx3f{ V3f{ -0.5f,	0.5f,	Random::GetFloat() } },
-			Vtx3f{ V3f{ 0.5f,	0.5f,	Random::GetFloat() } },
-			Vtx3f{ V3f{ 0.5f,	-0.5f,	Random::GetFloat() } },
-			Vtx3f{ V3f{ 0.0f,	-1.0f,	Random::GetFloat() } },
-			Vtx3f{ V3f{ 0.0f,	1.0f,	Random::GetFloat() } },
+#if false
+		Vtx3f2f3f vtxData[] = {
+			{ { -0.5f,	-0.5f,	0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
+			{ { -0.5f,	0.5f,	0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, -1.0f } },
+			{ { 0.5f,	0.5f,	0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f } },
+			{ { 0.5f,	-0.5f,	0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
 		};
-		UInt16 idxData[] = {
-			0, 1, 5,
-			5, 2, 0,
-			0, 2, 3,
-			3, 4, 0,
+#else
+		Vtx2f2f vtxData[] = {
+			{ { -0.5f,	-0.5f }, { 0.0f, 0.0f } },
+			{ { -0.5f,	0.5f }, { 0.0f, 1.0f } },
+			{ { 0.5f,	0.5f }, { 1.0f, 1.0f } },
+			{ { 0.5f,	-0.5f }, { 1.0f, 0.0f } },
 		};
-		m_rEngine.GetGfx()->CreateRes<IndexedDrawable>(m_pDrb);
-		m_rEngine.GetGfx()->CreateRes<ShaderProgram>(m_psProg, "shd_0_test");
-		
-		if (!m_psProg->LoadF(R"(D:\dev\native_world\data\shader\dx_test_0.shd)")) { return false; }
+#endif
+		UInt32 idxData[] = {
+			0, 1, 2,
+			2, 3, 0,
+		};
 
-		m_pDrb->AddVtxBuf<Vtx3f>(sizeof(vtxData) / sizeof(Vtx3f), &vtxData[0]);
-		m_pDrb->SetIdxBuf<UInt16>(sizeof(idxData) / sizeof(UInt16), &idxData[0]);
+		m_rEngine.GetGfx()->CreateRes<Drawable, IdxDrawable>(m_pDrb,
+			sizeof(idxData) / sizeof(UInt32), &idxData[0],
+			sizeof(vtxData) / sizeof(Vtx2f2f), &vtxData[0]);
+
+		RefKeeper<GfxMaterial> gMtl;
+		m_rEngine.GetGfx()->CreateRes<GfxMaterial>(gMtl, "gmt_2d_default");
+		m_rEngine.GetGfx()->CreateRes<Texture, Texture2d>(gMtl->GetTexture(), "tex_solid_white");
+		m_rEngine.GetGfx()->CreateRes<ShaderProg>(gMtl->GetShaderProg(), "shp_2d_default");
+		if (!gMtl->GetShaderProg()->LoadF(R"(D:\dev\native_world\data\shader\shp_2d_default.shd)")) { return false; }
+		m_pDrb->AddResource(gMtl);
 
 		return true;
 	}
 	void GamerState::Quit()
 	{
-		if (m_imgInfo.pClrData != nullptr) { MemSys::DelTArr<UByte>(m_imgInfo.pClrData, m_imgInfo.GetDataSize()); }
-		
 		m_pDrb.Reset();
-		m_psProg.Reset();
 	}
 	void GamerState::Update()
 	{
-		m_rEngine.GetGfx()->SetViewport(0, 0, m_rEngine.GetWindow()->GetSizeW(), m_rEngine.GetWindow()->GetSizeH());
-		m_psProg->Bind();
+		GfxCameraLad::Get().UpdateCamera();
+
 		m_rEngine.GetGfx()->GetConfigs().General.unSwapInterval = 0;
 		m_rEngine.GetGfx()->BeginDraw();
 		m_rEngine.GetGfx()->OnDraw(m_pDrb);
 		m_rEngine.GetGfx()->EndDraw();
 	}
 
-	void GamerState::OnEvent(CursorEvent& rmEvt) { }
-	void GamerState::OnEvent(KeyboardEvent& rkEvt) { }
-	void GamerState::OnEvent(WindowEvent& rwEvt) { }
-	// --==</core_methods>==--
-	inline void GamerState::DrawTestImage() {
-#if (NWG_GAPI & NWG_GAPI_OGL)
-		V2f whWndSize = { static_cast<Float32>(m_rEngine.GetWindow()->GetSizeW()), static_cast<Float32>(m_rEngine.GetWindow()->GetSizeH()) };
-		glViewport(0, 0, whWndSize.x, whWndSize.y);
-		glPointSize(8.0f);
-		glBegin(GL_POINTS);
-		for (Int32 iy = -m_imgInfo.nHeight / 2; iy < m_imgInfo.nHeight / 2; iy++) {
-			for (Int32 ix = -m_imgInfo.nWidth / 2; ix < m_imgInfo.nWidth / 2; ix++) {
-				Size szCoord = NWL_XY_TO_X((ix + m_imgInfo.nWidth / 2) * 3, (iy + m_imgInfo.nHeight / 2) * 3, m_imgInfo.nWidth);
-				glVertex2f(static_cast<Float32>(ix * 16) / static_cast<Float32>(whWndSize.x),
-					static_cast<Float32>(iy * 16) / static_cast<Float32>(whWndSize.y));
-				glColor3ub(m_imgInfo.pClrData[szCoord + 0], m_imgInfo.pClrData[szCoord + 1], m_imgInfo.pClrData[szCoord + 2]);
-			}
-		}
-		glEnd();
-		V2i xyCrsCrdI = { m_rEngine.GetCursor().GetMoveX(), m_rEngine.GetCursor().GetMoveY() };
-		xyCrsCrdI.x = xyCrsCrdI.x - (whWndSize.x / 2.0f);
-		xyCrsCrdI.y = -(xyCrsCrdI.y + whWndSize.y / 2.0f) + whWndSize.y;
-		V2f xyCrsCrdF = xyCrsCrdI;
-		xyCrsCrdF.x /= (whWndSize.x / 2.0f);
-		xyCrsCrdF.y /= (whWndSize.y / 2.0f);
-		glPointSize(32.0f);
-		glBegin(GL_POINTS);
-		if (m_rEngine.GetCursor().GetHeld(CRS_0)) {
-			m_imgInfo.SetPixel(((xyCrsCrdF.x + whWndSize.x) * 100.0f) / m_imgInfo.nWidth * 100, ((xyCrsCrdF.y + whWndSize.y) * 100.0f) / m_imgInfo.nHeight * 100, 150, 150, 150);
-		}
-		glVertex2f(xyCrsCrdF.x, xyCrsCrdF.y);
-		glColor3ub(255, 255, 255);
-		glEnd();
-#endif
+	void GamerState::OnEvent(CursorEvent& rEvt) {
+		GfxCameraLad::Get().OnEvent(rEvt);
 	}
+	void GamerState::OnEvent(KeyboardEvent& rEvt) {
+		GfxCameraLad::Get().OnEvent(rEvt);
+	}
+	void GamerState::OnEvent(WindowEvent& rEvt) {
+		GfxCameraLad::Get().OnEvent(rEvt);
+		switch (rEvt.evType) {
+		case EVT_WINDOW_RESIZE: {
+			V4i rectViewport = m_rEngine.GetGfx()->GetConfigs().General.rectViewport;
+			rectViewport[2] = rEvt.nX;
+			rectViewport[3] = rEvt.nY;
+			m_rEngine.GetGfx()->SetViewport(rectViewport[0], rectViewport[1], rectViewport[2], rectViewport[3]);
+			break;
+		}
+		case EVT_WINDOW_MOVE: { break; }
+		default: break;
+		}
+	}
+	// --==</core_methods>==--
 }
-#if (false)
 namespace NW
 {
 	GuiState::GuiState() :
@@ -120,32 +111,31 @@ namespace NW
 				m_pGuiStyle->WindowRounding = 0.0f;
 				m_pGuiStyle->Colors[ImGuiCol_WindowBg].w = 1.0f;
 			}
-#if(NW_WAPI & NW_WAPI_WIN)
+#if(defined NW_PLATFORM_WINDOWS)
 			ImGui_ImplWin32_Init(m_rEngine.GetWindow()->GetNative());
 #endif
-#if (NW_GAPI & NW_GAPI_OGL)
+#if (NWG_GAPI & NWG_GAPI_OGL)
 			ImGui_ImplOpenGL3_Init("#version 430");
 #endif
-#if (NW_GAPI & NW_GAPI_DX)
-			auto pGfx = static_cast<GfxEngineDx*>(m_rEngine.GetGfx());
-			ImGui_ImplDX11_Init(pGfx->GetDevice(), pGfx->GetContext());
+#if (NWG_GAPI & NWG_GAPI_DX)
+			ImGui_ImplDX11_Init(m_rEngine.GetGfx()->GetDevice(), m_rEngine.GetGfx()->GetContext());
 #endif
 		}
 
 		GuiOfCoreEngine::Get().bIsEnabled = true;
-		GuiOfGraphEngine::Get().bIsEnabled = true;
+		GuiOfGfxEngine::Get().bIsEnabled = true;
 		GuiOfDataSys::Get().bIsEnabled = true;
 
 		return true;
 	}
 	void GuiState::Quit() {
-#if (NW_GAPI & NW_GAPI_OGL)
+#if (NWG_GAPI & NWG_GAPI_OGL)
 		ImGui_ImplOpenGL3_Shutdown();
 #endif
-#if (NW_GAPI & NW_GAPI_DX)
+#if (NWG_GAPI & NWG_GAPI_DX)
 		ImGui_ImplDX11_Shutdown();
 #endif
-#if (NW_WAPI & NW_WAPI_WIN)
+#if(defined NW_PLATFORM_WINDOWS)
 		ImGui_ImplWin32_Shutdown();
 #endif
 		ImGui::DestroyContext();
@@ -156,7 +146,7 @@ namespace NW
 			if (ImGui::BeginMenuBar()) {
 				if (ImGui::BeginMenu("view")) {
 					ImGui::Checkbox("core_engine",			&GuiOfCoreEngine::Get().bIsEnabled);
-					ImGui::Checkbox("graphichs_engine",		&GuiOfGraphEngine::Get().bIsEnabled);
+					ImGui::Checkbox("graphichs_engine",		&GuiOfGfxEngine::Get().bIsEnabled);
 					ImGui::Checkbox("console_engine",		&GuiOfCmdEngine::Get().bIsEnabled);
 					ImGui::Checkbox("data_system",			&GuiOfDataSys::Get().bIsEnabled);
 					ImGui::Checkbox("code_editor",			&GuiOfCodeEditor::Get().bIsEnabled);
@@ -169,7 +159,7 @@ namespace NW
 			}
 
 			GuiOfCoreEngine::Get().OnDraw();
-			GuiOfGraphEngine::Get().OnDraw();
+			GuiOfGfxEngine::Get().OnDraw();
 			GuiOfCmdEngine::Get().OnDraw();
 			GuiOfDataSys::Get().OnDraw();
 			GuiOfCodeEditor::Get().OnDraw();
@@ -186,13 +176,13 @@ namespace NW
 	
 	// --==<implementation_methods>==--
 	inline void GuiState::BeginDraw() {
-#if (NW_GAPI & NW_GAPI_OGL)
+#if (NWG_GAPI & NWG_GAPI_OGL)
 		ImGui_ImplOpenGL3_NewFrame();
 #endif
-#if (NW_GAPI & NW_GAPI_DX)
+#if (NWG_GAPI & NWG_GAPI_DX)
 		ImGui_ImplDX11_NewFrame();
 #endif
-#if (NW_WAPI & NW_WAPI_WIN)
+#if (defined NW_PLATFORM_WINDOWS)
 		ImGui_ImplWin32_NewFrame();
 #endif
 		ImGui::NewFrame();
@@ -233,10 +223,10 @@ namespace NW
 	inline void GuiState::EndDraw() {
 		ImGui::End();
 		ImGui::Render();
-#if (NW_GAPI & NW_GAPI_OGL)
+#if (NWG_GAPI & NWG_GAPI_OGL)
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 #endif
-#if (NW_GAPI & NW_GAPI_DX)
+#if (NWG_GAPI & NWG_GAPI_DX)
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 #endif
 		ImGui::EndFrame();
@@ -253,42 +243,11 @@ namespace NW
 {
 	GfxState::GfxState() :
 		AEngineState("graphics_state"),
-		m_rEngine(CoreEngine::Get()),
-		m_pShdBuf() { }
+		m_rEngine(CoreEngine::Get()) { }
 	GfxState::~GfxState() { }
 
 	// --==<core_methods>==--
 	bool GfxState::Init() {
-		m_pShdBuf.MakeRef<ShaderBuf>();
-		m_pShdBuf->SetData(1 << 12, nullptr);
-
-		{	// shaders
-			Shader* pShader = nullptr;
-			pShader = DataSys::GetDR<Shader>(DataSys::NewDR<Shader>("shd_3d_default"));
-			if (!pShader->LoadF("D:/dev/native_world/nw_engine/src_glsl/shd_3d_default.glsl")) { return false; }
-
-			pShader = DataSys::GetDR<Shader>(DataSys::NewDR<Shader>("shd_3d_batch"));
-			if (!pShader->LoadF("D:/dev/native_world/nw_engine/src_glsl/shd_3d_batch.glsl")) { return false; }
-			m_pShdBuf->Remake(pShader->GetShdLayout());
-		}
-		{	// textures
-			Texture* pTex = nullptr;
-			//pTex = DataSys::GetDR<Texture>(DataSys::NewDR<Texture>("tex_nw_bat", TextureTypes::TXT_2D));
-			pTex->LoadF(R"(D:\dev\native_world\nw_engine\data\image\nw_bat.png)");
-		}
-		{	// materials
-			GfxMaterial* pgMtl = nullptr;
-			pgMtl = DataSys::GetDR<GfxMaterial>(DataSys::NewDR<GfxMaterial>("gmt_3d_default"));
-			pgMtl->SetShader(DataSys::GetDR<Shader>("shd_3d_default"));
-			pgMtl = DataSys::GetDR<GfxMaterial>(DataSys::NewDR<GfxMaterial>("gmt_3d_batch"));
-			pgMtl->SetShader(DataSys::GetDR<Shader>("shd_3d_batch"));
-			pgMtl->SetTexture(DataSys::GetDR<Texture>("tex_nw_bat"), "unf_tex[0]");
-		}
-		{	// framebuffers
-		}
-
-		GfxCameraLad::Get().SetKeyboard(&m_rEngine.GetKeyboard());
-		GfxCameraLad::Get().SetCursor(&m_rEngine.GetCursor());
 
 		return true;
 	}
@@ -320,4 +279,3 @@ namespace NW
 	}
 	// --==</implementation_methods>==--
 }
-#endif

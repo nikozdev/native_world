@@ -8,8 +8,6 @@ project "nw_engine"
 	objdir(dir_out_int)
 	pchheader "nw_pch.hpp"
 	pchsource "src_cpp/nw_pch.cpp"
-	shadermodel("6.3")
-	shaderassembler("assemblycode")
 	files
 	{
 		"%{dir_cpp.own}**.c**",
@@ -26,7 +24,6 @@ project "nw_engine"
 		"%{dir_cpp.nw_gfx}",
 		"%{dir_cpp.nw_cmd}",
 		"%{dir_cpp.lualib}",
-		"%{dir_cpp.imgui}",
 	}
 	libdirs
 	{
@@ -34,14 +31,12 @@ project "nw_engine"
 		"%{dir_lib.nw_gfx}",
 		"%{dir_lib.nw_cmd}",
 		"%{dir_lib.lualib}",
-		"%{dir_lib.imgui}",
 	}
 	links
 	{
 		"nw_lib",
 		"nw_gfx",
 		"nw_cmd",
-		"imgui",
 		"lualib",
 	}
 	filter "system:windows"

@@ -6,19 +6,16 @@
 #include <core/nw_engine.h>
 #include <lua/lua_engine.h>
 
-#if (NW_GUI & NW_GUI_IMGUI)
-	#include <imgui.h>
-	#include <imgui_internal.h>
-	#include <examples/imgui_impl_win32.h>
-	#define GUI_DEFAULT_TREE_FLAGS ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick
-	#include <nwg_loader.h>
-	#if (NW_GAPI & NW_GAPI_OGL)
-		#include <examples/imgui_impl_opengl3.h>
-	#endif
-	#if (NW_GAPI & NW_GAPI_DX)
-		#include <examples/imgui_impl_dx11.h>
-	#endif
+#include <../ext/imgui/imgui_core.hpp>
+#include <../ext/imgui/imgui_internal.h>
+#include <../ext/imgui/impl/imgui_win.h>
+#if (NWG_GAPI & NWG_GAPI_OGL)
+#	include <../ext/imgui/impl/imgui_ogl.h>
 #endif
+#if (NWG_GAPI & NWG_GAPI_DX)
+#	include <../ext/imgui/impl/imgui_dx.h>
+#endif
+#define GUI_DEFAULT_TREE_FLAGS ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick
 
 namespace NW
 {
@@ -42,7 +39,7 @@ namespace NW
 
 namespace NW
 {
-	/// GuiOfEngine struct
+	/// GuiOfCoreEngine struct
 	/// Description:
 	/// -- Renders the core engine state and window gui
 	struct NW_API GuiOfCoreEngine : public AGuiOf<GuiOfCoreEngine>
@@ -55,13 +52,13 @@ namespace NW
 		virtual void OnDraw() override;
 	};
 	/// GuiOfGraphEngine struct
-	struct NW_API GuiOfGraphEngine : public AGuiOf<GuiOfGraphEngine>
+	struct NW_API GuiOfGfxEngine : public AGuiOf<GuiOfGfxEngine>
 	{
-		friend class AGuiOf<GuiOfGraphEngine>;
+		friend class AGuiOf<GuiOfGfxEngine>;
 	private:
-		GuiOfGraphEngine();
-		~GuiOfGraphEngine();
+		GuiOfGfxEngine();
 	public:
+		~GuiOfGfxEngine();
 		virtual void OnDraw() override;
 	private:
 	};
@@ -88,10 +85,8 @@ namespace NW
 	public:
 		virtual void OnDraw() override;
 	private:
-		// --data_system
 		Char strDir[256]{ 0 };
 		Char strCurrDir[256]{ 0 };
-		// --time system
 	};
 }
 namespace NW
@@ -119,7 +114,6 @@ namespace NW
 	private:
 		GuiOfGfxMaterialEditor();
 	public:
-		// --getters
 		// --setters
 		void SetContext(GfxMaterial& rContext);
 
@@ -136,7 +130,6 @@ namespace NW
 	private:
 		GuiOfSpriteEditor();
 	public:
-		// --getters
 		// --setters
 		void SetContext(Texture& rContext);
 
@@ -146,10 +139,9 @@ namespace NW
 		Texture* pContext;
 		Char strContextName[128];
 
-		float nAspectRatio = 1.0f;
+		Float32 nAspectRatio = 1.0f;
 
 		ImageInfo ImgInfo;
-		TextureInfo TexInfo;
 	};
 }
 #endif	// NW_GUI_OF_H

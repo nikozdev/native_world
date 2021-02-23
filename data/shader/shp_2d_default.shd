@@ -1,0 +1,7 @@
+--==<shader_program_info>==--
+name:ogl_2d_default;
+gapi:opengl;
+vtx_file:D:\dev\native_world\data\shader\vtx_2d_default.shd;
+pxl_file:D:\dev\native_world\data\shader\pxl_2d_default.shd;
+gmt_file:D:\dev\native_world\data\shader\gmt_2d_default.shd;
+--==</shader_program_info>==--

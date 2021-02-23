@@ -1,6 +1,0 @@
-gapi:directx;
-name:dx_test_0;
-vertex_src:D:\dev\native_world\nw_gfx\src_hlsl\shd_0_vtx.hlsl;
-vertex_bin:D:\dev\native_world\nw_gfx\src_hlsl\shd_0_vtx.cso;
-pixel_src:D:\dev\native_world\nw_gfx\src_hlsl\shd_0_pxl.hlsl;
-pixel_bin:D:\dev\native_world\nw_gfx\src_hlsl\shd_0_pxl.cso;

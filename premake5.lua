@@ -1,22 +1,29 @@
 workspace "native_world"
 	architecture "x64"
 	configurations { "debug", "release" }
-	shadermodel("4.0")
-	shaderassembler("assemblycode")
+	rtti("off")
 	defines
 	{
 		"NW_BUILD_EXE",
 		--"NW_BUILD_LIB",
+		--"NW_LINK_STATIC",
 		--"NW_BUILD_DLL"
+		--"NW_LINK_DYNAMIC",
 
 		"NWL_BUILD_LIB",
+		"NWL_LINK_STATIC",
 		--"NWL_BUILD_DLL"
+		--"NWL_LINK_DYNAMIC",
 		
 		"NWG_BUILD_LIB",
-		--"NWC_BUILD_DLL",
+		"NWG_LINK_STATIC",
+		--"NWG_BUILD_DLL",
+		--"NWG_LINK_DYNAMIC",
 		
-		"NWC_BUILD_DLL",
+		"NWC_BUILD_LIB",
+		"NWC_LINK_STATIC",
 		--"NWC_BUILD_DLL"
+		--"NWC_LINK_DYNAMIC",
 	}
 	filter "system:windows"
 	systemversion "latest"
@@ -30,6 +37,7 @@ workspace "native_world"
 	filter "configurations:debug"
 	defines
 	{
+		"DEBUG",
 		"NW_DEBUG",
 		"NWL_DEBUG",
 		"NWG_DEBUG",
@@ -39,6 +47,7 @@ workspace "native_world"
 	filter "configurations:release"
 	defines
 	{
+		"NDEBUG",
 		"NW_RELEASE",
 		"NWL_RELEASE",
 		"NWG_RELEASE",
@@ -46,18 +55,19 @@ workspace "native_world"
 	}
 	filter("files:**.hlsl")
 		flags("excludefrombuild")
+		shadermodel("5.0")
+		shaderassembler("assemblycode")
 		shaderobjectfileoutput("../nw_gfx/src_hlsl/%{file.basename}.cso")
 		shaderassembleroutput("../nw_gfx/src_hlsl/%{file.basename}.asm")
-	filter("files:**_pxl.hlsl")
 		removeflags("excludefrombuild")
-		shadertype("pixel")
-	filter("files:**_vtx.hlsl")
-		removeflags("excludefrombuild")
+	filter("files:**vtx_*.hlsl")
 		shadertype("vertex")
-	filter("files:**_gmt.hlsl")
-		removeflags("excludefrombuild")
+	filter("files:**pxl_*.hlsl")
+		shadertype("pixel")
+	filter("files:**gmt_*.hlsl")
 		shadertype("geometry")
-
+	filter("files:**.lua")
+		removeflags("excludefrombuild")
 
 dir_out_res = "bin/"
 dir_out_int = "bin/int/"
@@ -69,20 +79,18 @@ dir_cpp["nw_lib"] = "../nw_lib/src_cpp/"
 dir_cpp["nw_gfx"] = "../nw_gfx/src_cpp/"
 dir_cpp["nw_cmd"] = "../nw_cmd/src_cpp/"
 dir_cpp["nw_engine"] = "../nw_engine/src_cpp/"
-dir_cpp["imgui"] = "../ext/imgui/"
 dir_cpp["lualib"] = "../ext/lualib/src/"
 
 dir_data = "../data/"
-dir_lua = "src_lua/"
-dir_hlsl = "src_hlsl/"
-dir_glsl = "src_glsl/"
+dir_lua = "../nw_engine/src_lua/"
+dir_hlsl = "../nw_gfx/src_hlsl/"
+dir_glsl = "../nw_gfx/src_glsl/"
 
 dir_lib = {}
 dir_lib["nw_lib"] = "../nw_lib/"
 dir_lib["nw_cmd"] = "../nw_cmd/"
 dir_lib["nw_engine"] = "../nw_engine/"
 dir_lib["nw_game"] = "../nw_game/"
-dir_lib["imgui"] = "../ext/imgui/"
 dir_lib["lualib"] = "../ext/lualib/"
 
 --==<library project>==--
@@ -94,7 +102,5 @@ include "nw_cmd"
 --==<engine project>==--
 include "nw_engine"
 
---==<imgui project>==--
-include "ext/imgui"
 --==<lualib project>==--
 include "ext/lualib"

@@ -3,12 +3,11 @@
 #include <nw_core.hpp>
 namespace NW
 {
-	using EventCallback = std::function<void(AEvent&)>;
 	struct NW_API WindowInfo
 	{
 	public:
-		String strTitle = "none";
-		String strApiVer = "none";
+		String strTitle = "default";
+		String strApiVer = "default";
 		UInt16 nX = 0, nY = 0, nW = 800, nH = 600;
 		Float32 nAspectRatio = 800.0f / 600.0f;
 		Float32 nOpacity = 0.0f;
@@ -16,31 +15,17 @@ namespace NW
 		Bit bIsHovered = false;
 		Bit bIsFocused = false;
 		Bit bIsEnabled = false;
-		EventCallback fnOnEvent = [](AEvent&)->void {return; };
+		EventCallback fnOnEvent = [](AEvent&)->void { return; };
 	public:
-		WindowInfo(const char* cstTitle = "native_window",
-			UInt16 unWidth = 800, UInt16 unHeight = 600,
-			Bit bVerticalSync = false) :
-			strTitle(cstTitle),
-			nX(0), nY(0), nW(unWidth), nH(unHeight),
-			bVSync(bVerticalSync), nAspectRatio((Float32)unWidth / (Float32)unHeight) { }
-		inline OStream& operator<<(OStream& rStream) {
-			return rStream <<
-				"--==<window_info>==--" << std::endl <<
-				"title: " << &strTitle[0] << std::endl <<
-				"coordx/coordy: " << nX << "/" << nY << std::endl <<
-				"width/height: " << nW << "/" << nH << std::endl <<
-				"api_version: " << &strApiVer[0] << std::endl <<
-				"--==</window_info>==--" << std::endl;
-		}
+		WindowInfo(const char* cstTitle = "default", UInt16 unWidth = 800, UInt16 unHeight = 600, Bit bVSync = false);
+		OutStream& operator<<(OutStream& rStream);
 	};
-	inline OStream& operator<<(OStream& rStream, WindowInfo& rwInfo) { return rwInfo.operator<<(rStream); }
 }
 #if (defined NW_PLATFORM_WINDOWS)
 namespace NW
 {
 	/// Window Class
-	class NW_API CoreWindow : public TEntity<CoreWindow>
+	class NW_API CoreWindow : public AMemUser
 	{
 	public:
 		CoreWindow(const WindowInfo& rwInfo);
@@ -54,7 +39,7 @@ namespace NW
 		inline UInt16 GetOpacity() const	{ return m_wInfo.nOpacity; }
 		inline const char* GetTitle() const	{ return &m_wInfo.strTitle[0]; }
 		inline const WindowInfo& GetWindowInfo() const { return m_wInfo; }
-		inline NativeWindow& GetNative()	{ return m_wNative; }
+		inline HWND& GetNative()	{ return m_pNative; }
 		// --setters
 		void SetTitle(const char* strTitle);
 		void SetVSync(bool bEnable);
@@ -80,7 +65,7 @@ namespace NW
 		inline LRESULT __stdcall MsgProc(HWND pWindow, UINT unMsg, WPARAM wParam, LPARAM lParam);
 	private:
 		WindowInfo m_wInfo;
-		NativeWindow m_wNative;
+		HWND m_pNative;
 		MSG m_wMsg;
 		WNDCLASSEX m_wndClass;
 		PAINTSTRUCT m_pntStruct;

@@ -381,17 +381,19 @@ namespace NW
 		m_Info.RemoveType(unLevel);
 		for (UInt16 ti = 0; ti < unLevel; ti++) { m_Info.AddType(lua_type(m_LState, -ti)); }
 		
-		LogSys::WriteStr("Lua_stack_info\n"
+		LogSys::WriteInf(
+			"Lua_stack_info\n"
 			"status: {int};\nvalues: {int}\nstack_size: {int};",
-			m_LState->status, m_LState->stack->val, m_LState->stacksize);
+			m_LState->status, m_LState->stack->val, m_LState->stacksize
+		);
 		
-		LogSys::GetLogOut() << m_Info;
+		std::cout << m_Info;
 	}
 	inline void LuaEngine::WriteErr(const char* strFormat, ...)
 	{
 		va_list valArgs;
 		va_start(valArgs, strFormat);
-		String strErrLog = LogSys::MakeFormatStr(strFormat, valArgs);
+		String strErrLog = StrGetFormatVa(strFormat, valArgs);
 		va_end(valArgs);
 		if (lua_isstring(m_LState, -1)) { strErrLog += lua_tolstring(m_LState, -1, 0); }
 		LuaClear();

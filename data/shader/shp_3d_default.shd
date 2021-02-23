@@ -1,0 +1,6 @@
+gapi:directx;
+name:dx_default_3d;
+vertex_src:D:\dev\native_world\nw_gfx\src_hlsl\vtx_3d_default.hlsl;
+vertex_bin:D:\dev\native_world\nw_gfx\src_hlsl\vtx_3d_default.cso;
+pixel_src:D:\dev\native_world\nw_gfx\src_hlsl\pxl_3d_default.hlsl;
+pixel_bin:D:\dev\native_world\nw_gfx\src_hlsl\pxl_3d_default.cso;

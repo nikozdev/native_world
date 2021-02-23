@@ -35,23 +35,28 @@ namespace NW
 
 			MemSys::OnInit(1 << 23);
 			DataSys::OnInit();
-			EntSys::OnInit();
-			CmpSys::OnInit();
+			
+			TimeSys::OnInit();
+			LogSys::OnInit();
 
+			CmpSys::OnInit();
+			EntSys::OnInit();
+
+			GfxCameraLad::Get().SetCursor(&m_crs);
+			GfxCameraLad::Get().SetKeyboard(&m_kbd);
+			
 			m_pWindow.MakeRef<CoreWindow>(WindowInfo{ &m_strName[0], 1200, 800, true });
 			m_pWindow->SetEventCallback([this](AEvent& rEvt)->void { return this->OnEvent(rEvt); });
 			GfxEngine::Create(m_pGfx, m_pWindow->GetNative());
 
-			for (auto& itState : m_States) {
-				if (!itState->Init()) {
-					throw Exception("state is not initialized", NWL_ERR_NO_INIT, __FILE__, __LINE__);
-				}
-			}
+			m_pGfx->SetViewport(0, 0, m_pWindow->GetSizeW(), m_pWindow->GetSizeH());
+
+			for (auto& itState : m_States) { if (!itState->Init()) { throw Exception("state is not initialized"); } }
 		}
+		
 		catch (Exception& exc) {
 			Quit();
-			NWL_ERR(exc.GetStr());
-			throw Exception("initialization has been failed", NWL_ERR_NO_INIT, __FILE__, __LINE__);
+			std::cout << exc;
 			return false;
 		}
 		return true;
@@ -67,8 +72,15 @@ namespace NW
 		m_pGfx.Reset();
 		m_pWindow.Reset();
 		
-		CmpSys::OnQuit();
+		GfxCameraLad::Get().SetCursor(nullptr);
+		GfxCameraLad::Get().SetKeyboard(nullptr);
+
 		EntSys::OnQuit();
+		CmpSys::OnQuit();
+		
+		LogSys::OnQuit();
+		TimeSys::OnQuit();
+		
 		DataSys::OnQuit();
 		MemSys::OnQuit();
 	}
@@ -77,17 +89,18 @@ namespace NW
 	{
 		for (auto& itState : m_States) { itState->Update(); }
 	
+		LogSys::Update();
 		TimeSys::Update();
-		
+
 		m_pWindow->Update();
 		m_pGfx->Update();
 	}
 	void CoreEngine::OnEvent(AEvent& rEvt)
 	{
-		if (rEvt.IsInCategory(EC_CURSOR)) {
+		if (rEvt.IsInCategory(EVC_CURSOR)) {
 			CursorEvent* pmEvt = static_cast<CursorEvent*>(&rEvt);
 			switch (pmEvt->evType) {
-			case ET_CURSOR_MOVE:
+			case EVT_CURSOR_MOVE:
 				m_crs.xMoveDelta = pmEvt->nX - m_crs.xMove;
 				m_crs.yMoveDelta = pmEvt->nY - m_crs.yMove;
 				m_crs.xMove = pmEvt->nX;
@@ -97,11 +110,11 @@ namespace NW
 					m_crs.Buttons[pmEvt->cButton].yHeldDelta = m_crs.yMove - m_crs.Buttons[pmEvt->cButton].yHeld;
 				}
 				break;
-			case ET_CURSOR_SCROLL:
+			case EVT_CURSOR_SCROLL:
 				m_crs.xScrollDelta = pmEvt->nX;
 				m_crs.yScrollDelta = pmEvt->nY;
 				break;
-			case ET_CURSOR_PRESS:
+			case EVT_CURSOR_PRESS:
 			{
 				auto& rBtn = m_crs.Buttons[pmEvt->cButton];
 				rBtn.bState = rBtn.bState == BS_PRESSED ? BS_HELD : BS_PRESSED;
@@ -109,7 +122,7 @@ namespace NW
 				rBtn.yHeld = m_crs.yMove;
 				break;
 			}
-			case ET_CURSOR_RELEASE:
+			case EVT_CURSOR_RELEASE:
 			{
 				auto& rBtn = m_crs.Buttons[pmEvt->cButton];
 				rBtn.bState = BS_RELEASED;
@@ -121,10 +134,10 @@ namespace NW
 			}
 			for (auto& itState : m_States) { if (rEvt.bIsHandled) return; itState->OnEvent(*pmEvt); }
 		}
-		else if (rEvt.IsInCategory(EC_KEYBOARD)) {
+		else if (rEvt.IsInCategory(EVC_KEYBOARD)) {
 			KeyboardEvent* pkEvt = static_cast<KeyboardEvent*>(&rEvt);
 			switch (pkEvt->evType) {
-			case ET_KEYBOARD_PRESS:
+			case EVT_KEYBOARD_PRESS:
 			{
 				auto& rKey = m_kbd.Keys[pkEvt->keyCode];
 				if (rKey.bState == BS_PRESSED) {
@@ -141,7 +154,7 @@ namespace NW
 				}
 				break;
 			}
-			case ET_KEYBOARD_RELEASE:
+			case EVT_KEYBOARD_RELEASE:
 			{
 				auto& rKey = m_kbd.Keys[pkEvt->keyCode];
 				rKey.bState = BS_RELEASED;
@@ -159,23 +172,23 @@ namespace NW
 				}
 				break;
 			}
-			case ET_KEYBOARD_CHAR:
+			case EVT_KEYBOARD_CHAR:
 				break;
 			}
 			for (auto& itState : m_States) { if (rEvt.bIsHandled) { return; } itState->OnEvent(*pkEvt); }
 		}
-		else if (rEvt.IsInCategory(EC_WINDOW)) {
+		else if (rEvt.IsInCategory(EVC_WINDOW)) {
 			WindowEvent* pwEvt = static_cast<WindowEvent*>(&rEvt);
 			switch (pwEvt->evType) {
-			case ET_WINDOW_RESIZE:
+			case EVT_WINDOW_RESIZE:
 				break;
-			case ET_WINDOW_MOVE:
+			case EVT_WINDOW_MOVE:
 				break;
-			case ET_WINDOW_FOCUS:
+			case EVT_WINDOW_FOCUS:
 				break;
-			case ET_WINDOW_DEFOCUS:
+			case EVT_WINDOW_DEFOCUS:
 				break;
-			case ET_WINDOW_CLOSE:
+			case EVT_WINDOW_CLOSE:
 				StopRunning();
 				rEvt.bIsHandled = true;
 				break;

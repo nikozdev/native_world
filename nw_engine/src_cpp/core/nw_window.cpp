@@ -4,11 +4,28 @@
 #include <core/nw_engine.h>
 #include <resource.h>
 
+namespace NW
+{
+	WindowInfo::WindowInfo(const char* cstTitle, UInt16 unWidth, UInt16 unHeight, Bit bVSync) :
+		strTitle(cstTitle),
+		nX(0), nY(0), nW(unWidth), nH(unHeight),
+		bVSync(bVSync), nAspectRatio((Float32)unWidth / (Float32)unHeight) { }
+	OutStream& WindowInfo::operator<<(OutStream& rStream) {
+		return rStream <<
+			"--==<window_info>==--" << std::endl <<
+			"title: " << &strTitle[0] << std::endl <<
+			"coordx/coordy: " << nX << "/" << nY << std::endl <<
+			"width/height: " << nW << "/" << nH << std::endl <<
+			"api_version: " << &strApiVer[0] << std::endl <<
+			"--==</window_info>==--" << std::endl;
+	}
+	OutStream& operator<<(OutStream& rStream, WindowInfo& rwInfo) { return rwInfo.operator<<(rStream); }
+}
 #if (defined NW_PLATFORM_WINDOWS)
 namespace NW
 {
 	CoreWindow::CoreWindow(const WindowInfo& rwInfo) :
-		m_wInfo(rwInfo), m_wNative{ 0 },
+		m_wInfo(rwInfo), m_pNative{ 0 },
 		m_wndClass{ 0 }, m_wMsg{ 0 },
 		m_pntStruct{ 0 }
 	{
@@ -33,12 +50,12 @@ namespace NW
 		AdjustWindowRect(&wndRect, wStyle, FALSE);
 
 		auto strWndName = reinterpret_cast<const wchar_t*>(GetTitle());
-		m_wNative.pHandle = CreateWindowEx(0, strClsName, strWndName,
+		m_pNative = CreateWindowEx(0, strClsName, strWndName,
 			wStyle,
 			CW_USEDEFAULT, CW_USEDEFAULT, GetSizeW(), GetSizeH(),
 			NULL, NULL, m_wndClass.hInstance, this);
-		if (m_wNative == nullptr) { NWL_ERR("Window is not created"); CoreEngine::Get().StopRunning(); return; }
-		ShowWindow(m_wNative, SW_SHOWDEFAULT);
+		if (m_pNative == nullptr) { NWL_ERR("Window is not created"); CoreEngine::Get().StopRunning(); return; }
+		ShowWindow(m_pNative, SW_SHOWDEFAULT);
 
 		SetTitle(GetTitle());
 		std::cout << m_wInfo;
@@ -46,8 +63,8 @@ namespace NW
 	CoreWindow::~CoreWindow()
 	{
 		// Get rid of the windows window and it's class
-		DestroyWindow(m_wNative);
-		m_wNative = { 0 };
+		DestroyWindow(m_pNative);
+		m_pNative = { 0 };
 		UnregisterClass(m_wndClass.lpszClassName, m_wndClass.hInstance);
 		m_wndClass = { 0 };
 	}
@@ -55,7 +72,7 @@ namespace NW
 	// --setters
 	void CoreWindow::SetTitle(const char* strTitle) {
 		m_wInfo.strTitle = strTitle;
-		SetWindowTextA(m_wNative, strTitle);
+		SetWindowTextA(m_pNative, strTitle);
 	}
 	void CoreWindow::SetVSync(bool enabled) {
 		m_wInfo.bVSync = enabled;
@@ -68,12 +85,12 @@ namespace NW
 	}
 	void CoreWindow::SetFocused(bool bFocus) {
 		if (m_wInfo.bIsFocused == bFocus) { return; }
-		SetFocus(m_wNative);
+		SetFocus(m_pNative);
 	}
 	void CoreWindow::SetEnabled(bool bEnable) {
 		if (m_wInfo.bIsEnabled == bEnable) { return; }
 		m_wInfo.bIsEnabled = bEnable;
-		EnableWindow(m_wNative, IsEnabled());
+		EnableWindow(m_pNative, IsEnabled());
 	}
 	void CoreWindow::SetKeyboardMode(KeyboardModes kbdMode) {
 		switch (kbdMode) {
@@ -84,21 +101,18 @@ namespace NW
 	}
 	void CoreWindow::SetCursorMode(CursorModes crsMode) {
 		switch (crsMode) {
-		case CRS_CAPTURED:
-		{
-			SetCapture(m_wNative);
+		case CRS_CAPTURED: {
+			SetCapture(m_pNative);
 			RECT wRect = { GetCoordX(), GetCoordY(), GetCoordX() + GetSizeW(), GetCoordY() + GetSizeH() };
 			ClipCursor(&wRect);
 			ShowCursor(FALSE);
 			break;
 		}
-		case CRS_HIDDEN:
-		{
+		case CRS_HIDDEN: {
 			ShowCursor(FALSE);
 			break;
 		}
-		default:
-		{
+		default: {
 			ShowCursor(TRUE);
 			ClipCursor(NULL);
 			ReleaseCapture();
@@ -111,17 +125,17 @@ namespace NW
 	void CoreWindow::Update()
 	{
 		// if there is false - we don't have a message
-		if (PeekMessage(&m_wMsg, m_wNative, NULL, NULL, PM_NOREMOVE)) {
+		if (PeekMessage(&m_wMsg, m_pNative, NULL, NULL, PM_NOREMOVE)) {
 			// get the message from the queue; if it's empty - blocks the thread
 			// if there is 0 - we've got a quit; -1 means 
-			Int32 nRes = GetMessage(&m_wMsg, m_wNative, NULL, NULL);
+			Int32 nRes = GetMessage(&m_wMsg, m_pNative, NULL, NULL);
 			if (nRes == 0 || nRes == -1) { throw Exception("Window has been stopped"); }
 			TranslateMessage(&m_wMsg);	// make WM_CHAR/WM_SYSCHAR messages
 			DispatchMessage(&m_wMsg);	// send all the messages into window procedure
 		}
 		Char strTitle[128];
-		sprintf(strTitle, "%s|ups:%d|", GetTitle(), static_cast<Int32>(1.0f / TimeSys::GetDeltaS()));
-		SetWindowTextA(m_wNative, strTitle);
+		sprintf(strTitle, "%s|fps:%3.2d|", GetTitle(), static_cast<Int32>(TimeSys::GetFPS()));
+		SetWindowTextA(m_pNative, strTitle);
 	}
 	// --==</core_methods>==--
 
@@ -160,30 +174,25 @@ namespace NW
 			return 0L;
 			break;
 
-		case WM_MOUSEMOVE:
-		{
+		case WM_MOUSEMOVE: {
 			const POINTS xyCrd = MAKEPOINTS(lParam);
-			m_wInfo.fnOnEvent(CursorEvent(ET_CURSOR_MOVE, xyCrd.x, xyCrd.y));
+			m_wInfo.fnOnEvent(CursorEvent(EVT_CURSOR_MOVE, xyCrd.x, xyCrd.y));
 			break;
 		}
-		case WM_MOUSEHWHEEL:
-		{
-			m_wInfo.fnOnEvent(CursorEvent(ET_CURSOR_SCROLL, GET_WHEEL_DELTA_WPARAM(wParam) / 500.0f, 0.0));
+		case WM_MOUSEHWHEEL: {
+			m_wInfo.fnOnEvent(CursorEvent(EVT_CURSOR_SCROLL, GET_WHEEL_DELTA_WPARAM(wParam) / 100.0f, 0.0));
 			break;
 		}
-		case WM_MOUSEWHEEL:
-		{
-			m_wInfo.fnOnEvent(CursorEvent(ET_CURSOR_SCROLL, 0.0, GET_WHEEL_DELTA_WPARAM(wParam) / 500.0f));
+		case WM_MOUSEWHEEL: {
+			m_wInfo.fnOnEvent(CursorEvent(EVT_CURSOR_SCROLL, 0.0, GET_WHEEL_DELTA_WPARAM(wParam) / 100.0f));
 			break;
 		}
-		case WM_XBUTTONDOWN: case WM_RBUTTONDOWN: case WM_LBUTTONDOWN: case WM_MBUTTONDOWN:
-		{
-			m_wInfo.fnOnEvent(CursorEvent(ET_CURSOR_PRESS, static_cast<CursorCodes>(wParam)));
+		case WM_RBUTTONDOWN: case WM_LBUTTONDOWN: case WM_MBUTTONDOWN: {
+			m_wInfo.fnOnEvent(CursorEvent(EVT_CURSOR_PRESS, static_cast<CursorCodes>(wParam)));
 			break;
 		}
-		case WM_XBUTTONUP: case WM_RBUTTONUP: case WM_LBUTTONUP: case WM_MBUTTONUP:
-		{
-			m_wInfo.fnOnEvent(CursorEvent(ET_CURSOR_RELEASE, static_cast<CursorCodes>(wParam)));
+		case WM_RBUTTONUP: case WM_LBUTTONUP: case WM_MBUTTONUP: {
+			m_wInfo.fnOnEvent(CursorEvent(EVT_CURSOR_RELEASE, static_cast<CursorCodes>(wParam)));
 			break;
 		}
 		case WM_LBUTTONDBLCLK:
@@ -192,29 +201,29 @@ namespace NW
 			break;
 
 		case WM_SYSKEYDOWN: case WM_KEYDOWN:
-			m_wInfo.fnOnEvent(KeyboardEvent(ET_KEYBOARD_PRESS, static_cast<KeyCodes>(wParam)));
+			m_wInfo.fnOnEvent(KeyboardEvent(EVT_KEYBOARD_PRESS, static_cast<KeyCodes>(wParam)));
 			break;
 		case WM_SYSKEYUP: case WM_KEYUP:
-			m_wInfo.fnOnEvent(KeyboardEvent(ET_KEYBOARD_RELEASE, static_cast<KeyCodes>(wParam)));
+			m_wInfo.fnOnEvent(KeyboardEvent(EVT_KEYBOARD_RELEASE, static_cast<KeyCodes>(wParam)));
 			break;
 		case WM_CHAR:
-			m_wInfo.fnOnEvent(KeyboardEvent(ET_KEYBOARD_CHAR, static_cast<KeyCodes>(wParam)));
+			m_wInfo.fnOnEvent(KeyboardEvent(EVT_KEYBOARD_CHAR, static_cast<KeyCodes>(wParam)));
 			break;
 
 		case WM_SIZE:
 			m_wInfo.nW = LOWORD(lParam);
 			m_wInfo.nH = HIWORD(lParam);
-			m_wInfo.fnOnEvent(WindowEvent(ET_WINDOW_RESIZE, m_wInfo.nW, m_wInfo.nH));
-			PostMessage(m_wNative, WM_PAINT, 0, 0);
+			m_wInfo.fnOnEvent(WindowEvent(EVT_WINDOW_RESIZE, m_wInfo.nW, m_wInfo.nH));
+			PostMessage(m_pNative, WM_PAINT, 0, 0);
 			break;
 		case WM_MOVE:
 			m_wInfo.nX = LOWORD(lParam);
 			m_wInfo.nY = HIWORD(lParam);
-			m_wInfo.fnOnEvent(WindowEvent(ET_WINDOW_MOVE, m_wInfo.nX, m_wInfo.nY));
-			PostMessage(m_wNative, WM_PAINT, 0, 0);
+			m_wInfo.fnOnEvent(WindowEvent(EVT_WINDOW_MOVE, m_wInfo.nX, m_wInfo.nY));
+			PostMessage(m_pNative, WM_PAINT, 0, 0);
 			break;
 		case WM_SETFOCUS:	// wParam is the last window was focused, lParam is not used
-			m_wInfo.fnOnEvent(WindowEvent(ET_WINDOW_FOCUS));
+			m_wInfo.fnOnEvent(WindowEvent(EVT_WINDOW_FOCUS));
 			m_wInfo.bIsFocused = true;
 			return 0L;
 			break;
@@ -222,7 +231,7 @@ namespace NW
 			m_wInfo.bIsFocused = false;
 			break;
 		case WM_CLOSE:
-			m_wInfo.fnOnEvent(WindowEvent(ET_WINDOW_CLOSE));
+			m_wInfo.fnOnEvent(WindowEvent(EVT_WINDOW_CLOSE));
 			PostQuitMessage(0);
 			break;
 		default: DefWindowProc(hWnd, unMsg, wParam, lParam); break;

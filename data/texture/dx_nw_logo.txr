@@ -1,0 +1,9 @@
+gapi:directx;
+name:tex_0_test;
+size:64_64_1;
+channels:4;
+pixel_format:r8g8b8a8_uint;
+border_color:0_0_0;
+tex_wrap:repeat_repeat_repeat;
+tex_filter:nearest_nearest;
+img_file:D:\dev\native_world\data\image\gui_eye.png;

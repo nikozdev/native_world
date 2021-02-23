@@ -1,0 +1,6 @@
+--==shader_info==--
+name:vtx_2d_default;
+gapi:opengl;
+type:1;
+source:D:\dev\native_world\nw_gfx\src_glsl\vtx_2d_default.glsl;
+--==/shader_info==--
