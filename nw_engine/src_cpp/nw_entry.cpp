@@ -5,6 +5,7 @@
 #define NW_LAUNCH_NWC		1 << 2
 #define NW_LAUNCH			NW_LAUNCH_ENGINE
 
+#include <core/nw_engine.h>
 #include <core/nw_engine_states.h>
 
 #include <native_console.hpp>
@@ -14,33 +15,17 @@ int main(int nArgs, char* strArgs[])
 {
 	try {
 #if (NW_LAUNCH & NW_LAUNCH_ENGINE)
-		NW::CoreEngine* pGame = &NW::CoreEngine::Get();
-		NW::GamerState gmState;
-		NW::GuiState guiState;
-		//pGame->AddState(gmState);
-		pGame->AddState(guiState);
-		pGame->Run();
-		if (pGame->GetRunThread().joinable()) { pGame->GetRunThread().join(); }
+		NW::CoreEngine Game = NW::CoreEngine();
+		Game.AddState<NW::GfxState>();
+		Game.Run();
+		if (Game.GetRunThread()->joinable()) { Game.GetRunThread()->join(); }
 #endif
 #if (NW_LAUNCH & NW_LAUNCH_NWC)
-		NWC::CmdEngine* pCmd = &NWC::CmdEngine::Get();
+		NWC::CmdEngine Cmd = NWC::CmdEngine();
 		pCmd->Run();
 		if (pCmd->GetRunThread().joinable()) { pCmd->GetRunThread().join(); }
 #endif
 #if (NW_LAUNCH & NW_LAUNCH_TEST)
-		if (false) {
-			//SetDllDirectory(LR"(F:\dev\lua_jit\)");
-			//HMODULE hLib = LoadLibrary(LR"(lua_jit.dll)");
-			HMODULE hLib = LoadLibrary(LR"(opengl32.dll)");
-			typedef Ptr(APIENTRYP nwgGetProcAddress)(const Char*);
-			typedef const GLubyte* (APIENTRYP nwgGetString)(GLenum);
-			nwgGetProcAddress nwgGetProc;
-			nwgGetString nwgGetStr;
-			nwgGetProc = reinterpret_cast<nwgGetProcAddress>(GetProcAddress(hLib, "wglGetProcAddress"));
-			nwgGetStr = reinterpret_cast<nwgGetString>(GetProcAddress(hLib, "glGetString"));
-			auto str = (const Char*)(nwgGetStr(GL_RENDERER));
-			FreeLibrary(hLib);
-		}
 		if (false) {
 			STARTUPINFO spInfo{ 0 };
 			PROCESS_INFORMATION pcInfo{ 0 };
@@ -65,7 +50,7 @@ int main(int nArgs, char* strArgs[])
 		}
 #endif
 	}
-	catch (NWL::Exception& exc) { NWL_ERR(exc.GetStr()); }
+	catch (NWL::Exception& exc) { std::cout << exc; }
 	catch (std::exception& exc) { NWL_ERR(exc.what()); }
 	catch (...) { NWL_ERR("somethig went wrong"); }
 

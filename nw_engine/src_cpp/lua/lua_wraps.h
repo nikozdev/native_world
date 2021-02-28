@@ -28,7 +28,7 @@ namespace NW
 		else if (nTypeArg == LT_NUM) { return nullptr; }
 		else { return nullptr; }
 	}
-	EntityCmp* CreateCmpOfEnt(Entity* pEnt, const char* strCmpName) {
+	EntityCmp* CreateCmpOfEnt(AEnt* pEnt, const char* strCmpName) {
 		if (pEnt == nullptr) return nullptr;
 		if (strcmp(strCmpName, "cmp_transform_2d") == 0) {
 			return pEnt->AddCmp<Transform2dCmp>();
@@ -44,7 +44,7 @@ namespace NW
 		}
 		return nullptr;
 	}
-	EntityCmp* GetCmpOfEnt(Entity* pEnt, const char* strCmpName) {
+	EntityCmp* GetCmpOfEnt(AEnt* pEnt, const char* strCmpName) {
 		if (pEnt == nullptr) return nullptr;
 		if (strcmp(strCmpName, "cmp_transform_2d") == 0 || strcmp(strCmpName, "cmp_transform_3d") == 0) {
 			return pEnt->GetCmp<ATFormCmp>();
@@ -55,11 +55,11 @@ namespace NW
 		return nullptr;
 	}
 	// -- Support methods
-	static inline Entity* GetEntByArg(LuaState* pLState, Int32 nIdx) {
+	static inline AEnt* GetEntByArg(LuaState* pLState, Int32 nIdx) {
 		Int32 nTypeArg = lua_type(pLState, nIdx);
-		if (nTypeArg == LT_STR) { return ADataRes::GetDataRes<Entity>(lua_tostring(pLState, nIdx)); }
-		else if (nTypeArg == LT_LUD) { return static_cast<Entity*>(lua_touserdata(pLState, nIdx)); }
-		else if (nTypeArg == LT_NUM) { return ADataRes::GetDataRes<Entity>(lua_tonumber(pLState, nIdx)); }
+		if (nTypeArg == LT_STR) { return ADataRes::GetDataRes<AEnt>(lua_tostring(pLState, nIdx)); }
+		else if (nTypeArg == LT_LUD) { return static_cast<AEnt*>(lua_touserdata(pLState, nIdx)); }
+		else if (nTypeArg == LT_NUM) { return ADataRes::GetDataRes<AEnt>(lua_tonumber(pLState, nIdx)); }
 		else { return nullptr; }
 	}
 	class NW_API LuaCmpSys
@@ -99,7 +99,7 @@ namespace NW
 		// -- CmpSys methods
 		/// In Lua: cmp_sys.get_cmp(ent_name/ent_ref/ent_id, cmp_name)
 		static Int32 GetCmp(LuaState* pLState) {
-			Entity* pEnt = GetEntByArg(pLState, -2);
+			AEnt* pEnt = GetEntByArg(pLState, -2);
 			if (lua_type(pLState, -1) != LT_STR) { lua_pop(pLState, 1); lua_pushnil(pLState); return 1; }
 			EntityCmp* pCmp = GetCmpOfEnt(pEnt, lua_tostring(pLState, -1));
 
@@ -113,7 +113,7 @@ namespace NW
 		}
 		/// In Lua: cmp_sys.create_cmp(ent_name/ent_ref/ent_id, cmp_name)
 		static inline Int32 CreateCmp(LuaState* pLState) {
-			Entity* pEnt = GetEntByArg(pLState, -2);
+			AEnt* pEnt = GetEntByArg(pLState, -2);
 			if (lua_type(pLState, -1) != LT_STR) { lua_pop(pLState, 1); lua_pushnil(pLState); return 1; }
 			EntityCmp* pCmp = CreateCmpOfEnt(pEnt, lua_tostring(pLState, -1));
 
@@ -136,7 +136,7 @@ namespace NW
 				MemSys::DelT<EntityCmp>(pCmp);
 			}
 			else {
-				Entity* pEnt = GetEntByArg(pLState, -2);
+				AEnt* pEnt = GetEntByArg(pLState, -2);
 				if (pEnt == nullptr) { return 0; }
 				else if (nTypeArg == LT_STR) {	// Destroy by name/id
 					if (pCmp = GetCmpOfEnt(pEnt, lua_tostring(pLState, -1))) {
@@ -220,7 +220,7 @@ namespace NW
 		/// In Lua: "ent_sys.get_ent_id(ent_name/ent_ref/ent_id)"
 		static inline Int32 GetEntId(LuaState* pLState) {
 			Int32 nTypeEnt = lua_type(pLState, -1);
-			Entity* pEnt = nullptr;
+			AEnt* pEnt = nullptr;
 
 			if ((pEnt = GetEntByArg(pLState, -1)) == nullptr) { lua_pop(pLState, 1); lua_pushnil(pLState); return 1; }
 			lua_pushstring(pLState, &pEnt->GetName()[0]);
@@ -228,7 +228,7 @@ namespace NW
 		}
 		/// In Lua: "ent_sys.get_ent_name(ent_name/ent_ref/ent_id)"
 		static inline Int32 GetEntName(LuaState* pLState) {
-			Entity* pEnt = nullptr;
+			AEnt* pEnt = nullptr;
 			if ((pEnt = GetEntByArg(pLState, -1)) == nullptr) { lua_pop(pLState, 1); lua_pushnil(pLState); return 1; }
 
 			lua_pushstring(pLState, pEnt->GetName());
@@ -236,7 +236,7 @@ namespace NW
 		}
 		/// In Lua: "ent_sys.get_over_ent(ent_name/ent_ref/ent_id)"
 		static inline Int32 GetOverEnt(LuaState* pLState) {
-			Entity* pEnt = nullptr;
+			AEnt* pEnt = nullptr;
 			if ((pEnt = GetEntByArg(pLState, -1)) == nullptr) { lua_pop(pLState, 1); lua_pushnil(pLState); return 1; }
 
 			lua_pushlightuserdata(pLState, pEnt->GetOverEnt());
@@ -244,7 +244,7 @@ namespace NW
 		}
 		/// In Lua: "ent_sys.is_ent_enabled(ent_name/ent_ref/ent_id)"
 		static inline Int32 IsEntEnabled(LuaState* pLState) {
-			Entity* pEnt = nullptr;
+			AEnt* pEnt = nullptr;
 			if ((pEnt = GetEntByArg(pLState, -1)) == nullptr) { lua_pop(pLState, 1); lua_pushnil(pLState); return 1; }
 			
 			lua_pushboolean(pLState, pEnt->IsEnabled());
@@ -252,7 +252,7 @@ namespace NW
 		}
 		/// In Lua: "ent_sys.set_ent_name(ent_name/ent_ref/ent_id, "name")"
 		static inline Int32 SetEntName(LuaState* pLState) {
-			Entity* pEnt = nullptr;
+			AEnt* pEnt = nullptr;
 			if ((pEnt = GetEntByArg(pLState, -2)) == nullptr) { lua_pop(pLState, 2); lua_pushnil(pLState); return 1; }
 			
 			Int32 nTypeArg = lua_type(pLState, -1);
@@ -263,7 +263,7 @@ namespace NW
 		}
 		/// In Lua: "ent_sys.set_ent_enabled(ent_name/ent_ref/ent_id, true/false)"
 		static inline Int32 SetEntEnabled(LuaState* pLState) {
-			Entity* pEnt = nullptr;
+			AEnt* pEnt = nullptr;
 			if ((pEnt = GetEntByArg(pLState, -2)) == nullptr) { lua_pop(pLState, 2); lua_pushnil(pLState); return 1; }
 		
 			Int32 nTypeArg = lua_type(pLState, -1);
@@ -274,9 +274,9 @@ namespace NW
 		}
 		/// In Lua: "ent_sys.set_over_ent(ent_name/ent_ref/ent_id, over_ent_str/over_ent_ref/over_ent_id)"
 		static inline Int32 SetOverEnt(LuaState* pLState) {
-			Entity* pEnt = nullptr;
+			AEnt* pEnt = nullptr;
 			if ((pEnt = GetEntByArg(pLState, -2)) == nullptr) { lua_pop(pLState, 2); lua_pushnil(pLState); return 1; }
-			Entity* pOverEnt = nullptr;
+			AEnt* pOverEnt = nullptr;
 			if ((pEnt = GetEntByArg(pLState, -1)) == nullptr) { lua_pop(pLState, 1); lua_pushnil(pLState); return 1; }
 
 			pEnt->SetOverEnt(pOverEnt);
@@ -285,7 +285,7 @@ namespace NW
 		// -- EntSys Methods
 		/// In Lua: "ent_sys.get_ent(ent_name/ent_id)"
 		static inline Int32 GetEnt(LuaState* pLState) {
-			Entity* pEnt = nullptr;
+			AEnt* pEnt = nullptr;
 			if ((pEnt = GetEntByArg(pLState, -2)) == nullptr) { lua_pop(pLState, 1); lua_pushnil(pLState); return 1; }
 
 			// if entity pointer doesn't still have metatable - it has to be set
@@ -298,7 +298,7 @@ namespace NW
 		/// In Lua: "ent_sys.create_ent(void/ent_name)"
 		static inline Int32 CreateEnt(LuaState* pLState) {
 			Int32 nType = lua_type(pLState, -1);
-			Entity* pEnt = MemSys::NewT<Entity>();
+			AEnt* pEnt = MemSys::NewT<AEnt>();
 			
 			if (nType == LT_STR) { pEnt->SetName(lua_tostring(pLState, -1)); }
 			else { lua_pop(pLState, -1); }
@@ -316,7 +316,7 @@ namespace NW
 				//Scene::Get().DestroyEntity(lua_tostring(pLState, -1));
 			}
 			else if (nType == LT_LUD) {		// destroy by reference
-				//Scene::Get().DestroyEntity(static_cast<Entity*>(lua_touserdata(pLState, -1)));
+				//Scene::Get().DestroyEntity(static_cast<AEnt*>(lua_touserdata(pLState, -1)));
 			}
 			else if (nType == LT_NUM) {		// destroy by id
 				//Scene::Get().DestroyEntity(lua_tonumber(pLState, -1));
@@ -326,7 +326,7 @@ namespace NW
 
 		// -- MetaMethods
 		static inline Int32 Index(LuaState* pLState) {
-			Entity* pEnt = static_cast<Entity*>(lua_touserdata(pLState, -2));
+			AEnt* pEnt = static_cast<AEnt*>(lua_touserdata(pLState, -2));
 			const char* strKey = lua_tostring(pLState, -1);
 			EntityCmp* pCmp = nullptr;
 
@@ -359,7 +359,7 @@ namespace NW
 			return 1;
 		}
 		static inline Int32 NewIndex(LuaState* pLState) {
-			Entity* pEnt = static_cast<Entity*>(lua_touserdata(pLState, -3));
+			AEnt* pEnt = static_cast<AEnt*>(lua_touserdata(pLState, -3));
 			const char* strKey = lua_tostring(pLState, -2);
 
 			if (lua_type(pLState, -1) == LT_BOL) {

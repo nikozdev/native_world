@@ -3,7 +3,7 @@
 #include <nw_core.hpp>
 namespace NW
 {
-	struct NW_API WindowInfo
+	struct NW_API WindowInfo : public AInfo
 	{
 	public:
 		String strTitle = "default";
@@ -11,14 +11,15 @@ namespace NW
 		UInt16 nX = 0, nY = 0, nW = 800, nH = 600;
 		Float32 nAspectRatio = 800.0f / 600.0f;
 		Float32 nOpacity = 0.0f;
-		Bit bVSync = false;
 		Bit bIsHovered = false;
 		Bit bIsFocused = false;
 		Bit bIsEnabled = false;
 		EventCallback fnOnEvent = [](AEvent&)->void { return; };
 	public:
 		WindowInfo(const char* cstTitle = "default", UInt16 unWidth = 800, UInt16 unHeight = 600, Bit bVSync = false);
-		OutStream& operator<<(OutStream& rStream);
+		// --operators
+		virtual OutStream& operator<<(OutStream& rStream) const override;
+		virtual InStream& operator>>(InStream& rStream) override;
 	};
 }
 #if (defined NW_PLATFORM_WINDOWS)
@@ -32,17 +33,16 @@ namespace NW
 		CoreWindow(const CoreWindow& rCpy) = delete;
 		virtual ~CoreWindow();
 		// --getters
-		inline UInt16 GetSizeW() const		{ return m_wInfo.nW; }
-		inline UInt16 GetSizeH() const		{ return m_wInfo.nH; }
-		inline UInt16 GetCoordX() const		{ return m_wInfo.nX; }
-		inline UInt16 GetCoordY() const		{ return m_wInfo.nY; }
-		inline UInt16 GetOpacity() const	{ return m_wInfo.nOpacity; }
-		inline const char* GetTitle() const	{ return &m_wInfo.strTitle[0]; }
-		inline const WindowInfo& GetWindowInfo() const { return m_wInfo; }
+		inline UInt16 GetSizeW() const		{ return m_Info.nW; }
+		inline UInt16 GetSizeH() const		{ return m_Info.nH; }
+		inline UInt16 GetCoordX() const		{ return m_Info.nX; }
+		inline UInt16 GetCoordY() const		{ return m_Info.nY; }
+		inline UInt16 GetOpacity() const	{ return m_Info.nOpacity; }
+		inline const char* GetTitle() const	{ return &m_Info.strTitle[0]; }
+		inline const WindowInfo& GetWindowInfo() const { return m_Info; }
 		inline HWND& GetNative()	{ return m_pNative; }
 		// --setters
 		void SetTitle(const char* strTitle);
-		void SetVSync(bool bEnable);
 		void SetFocused(bool bFocus);
 		void SetEnabled(bool bEnable);
 		void SetOpacity(float nOpacity);
@@ -51,20 +51,19 @@ namespace NW
 		void SetKeyboardMode(KeyboardModes kbdMode);
 		void SetCursorMode(CursorModes crsMode);
 		// --predicates
-		inline bool IsVSync() const		{ return m_wInfo.bVSync; }
-		inline bool IsHovered() const	{ return m_wInfo.bIsHovered; }
-		inline bool IsFocused() const	{ return m_wInfo.bIsFocused; }
-		inline bool IsEnabled() const	{ return m_wInfo.bIsEnabled; }
+		inline bool IsHovered() const	{ return m_Info.bIsHovered; }
+		inline bool IsFocused() const	{ return m_Info.bIsFocused; }
+		inline bool IsEnabled() const	{ return m_Info.bIsEnabled; }
 		// --operators
 		void operator=(const CoreWindow& rCpy) = delete;
 		// --core_methods
 		void Update();
 	private:
-		static inline LRESULT __stdcall MsgProcInit(HWND pWindow, UINT unMsg, WPARAM wParam, LPARAM lParam);
-		static inline LRESULT __stdcall StaticMsgProc(HWND pWindow, UINT unMsg, WPARAM wParam, LPARAM lParam);
-		inline LRESULT __stdcall MsgProc(HWND pWindow, UINT unMsg, WPARAM wParam, LPARAM lParam);
+		static LRESULT __stdcall MsgProcInit(HWND pWindow, UINT unMsg, WPARAM wParam, LPARAM lParam);
+		static LRESULT __stdcall StaticMsgProc(HWND pWindow, UINT unMsg, WPARAM wParam, LPARAM lParam);
+		LRESULT __stdcall MsgProc(HWND pWindow, UINT unMsg, WPARAM wParam, LPARAM lParam);
 	private:
-		WindowInfo m_wInfo;
+		WindowInfo m_Info;
 		HWND m_pNative;
 		MSG m_wMsg;
 		WNDCLASSEX m_wndClass;

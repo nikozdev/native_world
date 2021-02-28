@@ -1,130 +1,121 @@
 #include <nw_pch.hpp>
 #include <core/nw_engine.h>
-
 namespace NW
 {
-	CoreEngine::CoreEngine() :
-		AEngine(),
-		m_strName("nw_engine"),
-		m_pWindow(RefKeeper<CoreWindow>()), m_pGfx(RefKeeper<GfxEngine>()) { }
-	CoreEngine::~CoreEngine() { }
-
-	// --==<core_methods>==--
-	void CoreEngine::Run()
+	CoreEngine::CoreEngine(const char* strName) :
+		m_strName(&strName[0]),
+		m_bIsRunning(false), m_thrRun(Thread()), m_mtxRun(Mutex()),
+		m_Graphics(RefKeeper<GfxEngine>()),
+		m_Window(RefKeeper<CoreWindow>()),
+		m_Keyboard(Keyboard()), m_Cursor(Cursor())
 	{
-		m_bIsRunning = true;
-		auto fnRunning = [this]()->void {
-			try {
-				if (!Init()) { return; }
-				while (m_bIsRunning) { Update(); }
-				Quit();
-			}
-			catch (Exception& exc) {
-				Quit();
-				std::cout << exc;
-				return;
-			}
-		};
-		m_thrRun = Thread(fnRunning);
+		MemSys::OnInit(1 << 23);
+		DataSys::OnInit();
+
+		TimeSys::OnInit();
+		LogSys::OnInit();
+
+		EntSys::OnInit();
+		CmpSys::OnInit();
 	}
+	CoreEngine::~CoreEngine()
+	{
+		m_Graphics.Reset();
+		m_Window.Reset();
+		m_States.clear();
+
+		EntSys::OnQuit();
+		CmpSys::OnQuit();
+
+		LogSys::OnQuit();
+		TimeSys::OnQuit();
+
+		DataSys::OnQuit();
+		MemSys::OnQuit();
+	}
+	// --setters
+	void CoreEngine::AddState(RefKeeper<State>& rState) { m_States.push_back(rState); }
+	void CoreEngine::RmvState(UInt8 nIdx) { if (m_States.size() <= nIdx) { return; } m_States.erase(m_States.begin() + nIdx); }
+	void CoreEngine::StopRunning() { m_bIsRunning = false; }
+	// --==<core_methods>==--
 	bool CoreEngine::Init()
 	{
-		try {
-			if (m_pGfx.IsValid() || m_pWindow.IsValid()) { return false; }
-			if (!m_bIsRunning) { m_bIsRunning = true; }
+		if (m_Window.IsValid() || m_Graphics.IsValid()) { return false; }
+		if (!m_bIsRunning) { m_bIsRunning = true; }
 
-			MemSys::OnInit(1 << 23);
-			DataSys::OnInit();
-			
-			TimeSys::OnInit();
-			LogSys::OnInit();
+		m_Window.MakeRef<CoreWindow>(WindowInfo{ &m_strName[0], 1200, 800, true });
+		m_Window->SetEventCallback([this](AEvent& rEvt)->void { return this->OnEvent(rEvt); });
 
-			CmpSys::OnInit();
-			EntSys::OnInit();
+		GfxEngine::Create(m_Graphics, m_Window->GetNative());
+		m_Graphics->SetViewport(0, 0, m_Window->GetSizeW(), m_Window->GetSizeH());
+		m_Graphics->SetVSync(true);
 
-			GfxCameraLad::Get().SetCursor(&m_crs);
-			GfxCameraLad::Get().SetKeyboard(&m_kbd);
-			
-			m_pWindow.MakeRef<CoreWindow>(WindowInfo{ &m_strName[0], 1200, 800, true });
-			m_pWindow->SetEventCallback([this](AEvent& rEvt)->void { return this->OnEvent(rEvt); });
-			GfxEngine::Create(m_pGfx, m_pWindow->GetNative());
-
-			m_pGfx->SetViewport(0, 0, m_pWindow->GetSizeW(), m_pWindow->GetSizeH());
-
-			for (auto& itState : m_States) { if (!itState->Init()) { throw Exception("state is not initialized"); } }
-		}
+		for (auto& itState : m_States) { if (!itState->Init()) { return false; } }
 		
-		catch (Exception& exc) {
-			Quit();
-			std::cout << exc;
-			return false;
-		}
 		return true;
 	}
 	void CoreEngine::Quit()
 	{
-		if (!m_pWindow.IsValid() || !m_pGfx.IsValid()) { return; }
-		if (m_bIsRunning) { m_bIsRunning = false; }
-
+		if (!m_Window.IsValid() || !m_Graphics.IsValid()) { return; }
+		if (!m_bIsRunning) { m_bIsRunning = true; }
+		
 		for (auto& itState : m_States) { itState->Quit(); }
-		m_States.clear();
 
-		m_pGfx.Reset();
-		m_pWindow.Reset();
-		
-		GfxCameraLad::Get().SetCursor(nullptr);
-		GfxCameraLad::Get().SetKeyboard(nullptr);
-
-		EntSys::OnQuit();
-		CmpSys::OnQuit();
-		
-		LogSys::OnQuit();
-		TimeSys::OnQuit();
-		
-		DataSys::OnQuit();
-		MemSys::OnQuit();
+		m_Graphics.Reset();
+		m_Window.Reset();
 	}
-
+	void CoreEngine::Run()
+	{
+		m_bIsRunning = true;
+		auto fnRunning = [this]()->void {
+			if (!Init()) { return; }
+			while (m_bIsRunning) { Update(); }
+			Quit();
+		};
+		m_thrRun = Thread(fnRunning);
+	}
 	void CoreEngine::Update()
 	{
+		m_mtxRun.lock();
+		
 		for (auto& itState : m_States) { itState->Update(); }
-	
+		
 		LogSys::Update();
 		TimeSys::Update();
 
-		m_pWindow->Update();
-		m_pGfx->Update();
+		m_Window->Update();
+		m_Graphics->Update();
+
+		m_mtxRun.unlock();
 	}
 	void CoreEngine::OnEvent(AEvent& rEvt)
 	{
 		if (rEvt.IsInCategory(EVC_CURSOR)) {
 			CursorEvent* pmEvt = static_cast<CursorEvent*>(&rEvt);
 			switch (pmEvt->evType) {
-			case EVT_CURSOR_MOVE:
-				m_crs.xMoveDelta = pmEvt->nX - m_crs.xMove;
-				m_crs.yMoveDelta = pmEvt->nY - m_crs.yMove;
-				m_crs.xMove = pmEvt->nX;
-				m_crs.yMove = pmEvt->nY;
-				if (m_crs.GetHeld(pmEvt->cButton)) {
-					m_crs.Buttons[pmEvt->cButton].xHeldDelta = m_crs.xMove - m_crs.Buttons[pmEvt->cButton].xHeld;
-					m_crs.Buttons[pmEvt->cButton].yHeldDelta = m_crs.yMove - m_crs.Buttons[pmEvt->cButton].yHeld;
+			case EVT_CURSOR_MOVE: {
+				m_Cursor.xMoveDelta = pmEvt->nX - m_Cursor.xMove;
+				m_Cursor.yMoveDelta = pmEvt->nY - m_Cursor.yMove;
+				m_Cursor.xMove = pmEvt->nX;
+				m_Cursor.yMove = pmEvt->nY;
+				if (m_Cursor.GetHeld(pmEvt->cButton)) {
+					m_Cursor.Buttons[pmEvt->cButton].xHeldDelta = m_Cursor.xMove - m_Cursor.Buttons[pmEvt->cButton].xHeld;
+					m_Cursor.Buttons[pmEvt->cButton].yHeldDelta = m_Cursor.yMove - m_Cursor.Buttons[pmEvt->cButton].yHeld;
 				}
 				break;
-			case EVT_CURSOR_SCROLL:
-				m_crs.xScrollDelta = pmEvt->nX;
-				m_crs.yScrollDelta = pmEvt->nY;
+			}
+			case EVT_CURSOR_SCROLL: m_Cursor.xScrollDelta = pmEvt->nX;
+				m_Cursor.yScrollDelta = pmEvt->nY;
 				break;
-			case EVT_CURSOR_PRESS:
-			{
-				auto& rBtn = m_crs.Buttons[pmEvt->cButton];
+			case EVT_CURSOR_PRESS: {
+				auto& rBtn = m_Cursor.Buttons[pmEvt->cButton];
 				rBtn.bState = rBtn.bState == BS_PRESSED ? BS_HELD : BS_PRESSED;
-				rBtn.xHeld = m_crs.xMove;
-				rBtn.yHeld = m_crs.yMove;
+				rBtn.xHeld = m_Cursor.xMove;
+				rBtn.yHeld = m_Cursor.yMove;
 				break;
 			}
-			case EVT_CURSOR_RELEASE:
-			{
-				auto& rBtn = m_crs.Buttons[pmEvt->cButton];
+			case EVT_CURSOR_RELEASE: {
+				auto& rBtn = m_Cursor.Buttons[pmEvt->cButton];
 				rBtn.bState = BS_RELEASED;
 				rBtn.xHeldDelta = 0.0;
 				rBtn.yHeldDelta = 0.0;
@@ -137,9 +128,8 @@ namespace NW
 		else if (rEvt.IsInCategory(EVC_KEYBOARD)) {
 			KeyboardEvent* pkEvt = static_cast<KeyboardEvent*>(&rEvt);
 			switch (pkEvt->evType) {
-			case EVT_KEYBOARD_PRESS:
-			{
-				auto& rKey = m_kbd.Keys[pkEvt->keyCode];
+			case EVT_KEYBOARD_PRESS: {
+				auto& rKey = m_Keyboard.Keys[pkEvt->keyCode];
 				if (rKey.bState == BS_PRESSED) {
 					rKey.bState = BS_PRESSED;
 					rKey.unRepeats = 1;
@@ -148,56 +138,60 @@ namespace NW
 					rKey.bState = BS_HELD;
 					rKey.unRepeats++;
 				}
-				switch (pkEvt->keyCode) {
-				case KC_ESCAPE:
-				default: break;
-				}
 				break;
 			}
-			case EVT_KEYBOARD_RELEASE:
-			{
-				auto& rKey = m_kbd.Keys[pkEvt->keyCode];
+			case EVT_KEYBOARD_RELEASE: {
+				auto& rKey = m_Keyboard.Keys[pkEvt->keyCode];
 				rKey.bState = BS_RELEASED;
 				rKey.unRepeats = 0;
 				switch (pkEvt->keyCode) {
+				case KC_V:
+					if (m_Keyboard.GetHeld(KC_LCTRL)) { m_Graphics->SetVSync(!m_Graphics->IsVSync()); }
+					break;
 				case KC_ESCAPE:
 					StopRunning();
 					rEvt.bIsHandled = true;
 					break;
 				case KC_M:
-					m_crs.crsMode = m_crs.crsMode == CRS_DEFAULT ? CRS_CAPTURED : CRS_DEFAULT;
-					m_pWindow->SetCursorMode(m_crs.crsMode);
+					m_Cursor.crsMode = m_Cursor.crsMode == CRS_DEFAULT ? CRS_CAPTURED : CRS_DEFAULT;
+					m_Window->SetCursorMode(m_Cursor.crsMode);
 					break;
 				default: break;
 				}
 				break;
 			}
-			case EVT_KEYBOARD_CHAR:
+			case EVT_KEYBOARD_CHAR: {
 				break;
+			}
 			}
 			for (auto& itState : m_States) { if (rEvt.bIsHandled) { return; } itState->OnEvent(*pkEvt); }
 		}
 		else if (rEvt.IsInCategory(EVC_WINDOW)) {
 			WindowEvent* pwEvt = static_cast<WindowEvent*>(&rEvt);
 			switch (pwEvt->evType) {
-			case EVT_WINDOW_RESIZE:
+			case EVT_WINDOW_RESIZE: {
 				break;
-			case EVT_WINDOW_MOVE:
+			}
+			case EVT_WINDOW_MOVE: {
 				break;
-			case EVT_WINDOW_FOCUS:
+			}
+			case EVT_WINDOW_FOCUS: {
 				break;
-			case EVT_WINDOW_DEFOCUS:
+			}
+			case EVT_WINDOW_DEFOCUS: {
 				break;
-			case EVT_WINDOW_CLOSE:
+			}
+			case EVT_WINDOW_CLOSE: {
 				StopRunning();
 				rEvt.bIsHandled = true;
 				break;
+			}
 			}
 			for (auto& itState : m_States) { if (rEvt.bIsHandled) { return; } itState->OnEvent(*pwEvt); }
 		}
 	}
 
-	String CoreEngine::FDialogLoad(const char* strFilter) { return DataSys::FDialogLoad(strFilter, m_pWindow->GetNative()); }
-	String CoreEngine::FDialogSave(const char* strFilter) { return DataSys::FDialogSave(strFilter, m_pWindow->GetNative()); }
+	String CoreEngine::DialogLoad(const char* strFilter) { return DataSys::DialogLoad(strFilter, m_Window->GetNative()); }
+	String CoreEngine::DialogSave(const char* strFilter) { return DataSys::DialogSave(strFilter, m_Window->GetNative()); }
 	// --==</core_methods>==--
 }

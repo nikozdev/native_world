@@ -6,16 +6,18 @@
 #include <core/nw_engine.h>
 #include <lua/lua_engine.h>
 
-#include <../ext/imgui/imgui_core.hpp>
-#include <../ext/imgui/imgui_internal.h>
-#include <../ext/imgui/impl/imgui_win.h>
-#if (NWG_GAPI & NWG_GAPI_OGL)
-#	include <../ext/imgui/impl/imgui_ogl.h>
-#endif
-#if (NWG_GAPI & NWG_GAPI_DX)
-#	include <../ext/imgui/impl/imgui_dx.h>
-#endif
-#define GUI_DEFAULT_TREE_FLAGS ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick
+#if (defined NWG_GAPI)
+#	include <gui/imgui_core.hpp>
+#	include <gui/imgui_internal.h>
+#	include <gui/impl/imgui_win.h>
+#	if (NWG_GAPI & NWG_GAPI_OGL)
+#		include <gui/impl/imgui_ogl.h>
+#	endif
+#	if (NWG_GAPI & NWG_GAPI_DX)
+#		include <gui/impl/imgui_dx.h>
+#	endif
+#	define GUI_DEFAULT_TREE_FLAGS ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick
+#endif	// NWG_GAPI
 
 namespace NW
 {
@@ -91,19 +93,17 @@ namespace NW
 }
 namespace NW
 {
-	/// GuiOfCodeEditor struct
-	struct NW_API GuiOfCodeEditor : public AGuiOf<GuiOfCodeEditor>
+	/// GuiOfShaderEditor struct
+	struct NW_API GuiOfShaderEditor : public AGuiOf<GuiOfShaderEditor>
 	{
-		friend class AGuiOf<GuiOfCodeEditor>;
+		friend class AGuiOf<GuiOfShaderEditor>;
 	private:
-		RefKeeper<ACodeRes> pContext;
-		DArray<char> strCodeBuf;
+		RefKeeper<ShaderProg> pContext;
 	private:
-		GuiOfCodeEditor();
+		GuiOfShaderEditor();
 	public:
 		// --setters
-		void SetContext(RefKeeper<ACodeRes>& rContext);
-
+		void SetContext(RefKeeper<ShaderProg>& rContext);
 		// --core_methods
 		virtual void OnDraw() override;
 	};

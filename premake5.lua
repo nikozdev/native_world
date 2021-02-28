@@ -2,6 +2,7 @@ workspace "native_world"
 	architecture "x64"
 	configurations { "debug", "release" }
 	rtti("off")
+	removeflags("excludefrombuild")
 	defines
 	{
 		"NW_BUILD_EXE",
@@ -68,6 +69,8 @@ workspace "native_world"
 		shadertype("geometry")
 	filter("files:**.lua")
 		removeflags("excludefrombuild")
+	filter("files:**.c")
+		pchheader ""
 
 dir_out_res = "bin/"
 dir_out_int = "bin/int/"

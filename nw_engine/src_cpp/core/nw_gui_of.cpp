@@ -7,15 +7,14 @@
 namespace NW
 {
 	// --==<GuiOfCoreEngine>==--
-	GuiOfCoreEngine::GuiOfCoreEngine() {
-	}
+	GuiOfCoreEngine::GuiOfCoreEngine() { }
 	GuiOfCoreEngine::~GuiOfCoreEngine() { }
 
 	// --core_methods
 	void GuiOfCoreEngine::OnDraw() {
 		if (!bIsEnabled) return;
-		ImGui::Begin("core_engine", &bIsEnabled);
-		ImGui::End();
+		GUI::Begin("core_engine", &bIsEnabled);
+		GUI::End();
 	}
 	// --==</GuiOfCoreEngine>==--
 
@@ -26,21 +25,8 @@ namespace NW
 	// --core_methods
 	void GuiOfGfxEngine::OnDraw() {
 		if (!bIsEnabled) return;
-		ImGui::Begin("graphics_engine", &bIsEnabled);
-
-		const GfxContextInfo& rGInfo = CoreEngine::Get().GetGfx()->GetInfo();
-		ImGui::Text("\ncontext version: %s;\nrenderer: %s;"
-			"\nvendor: %s;\nshading language: %s"
-			"\nmax texture count: %d;\nmax vertex attributes: %d",
-			rGInfo.strRenderer, rGInfo.strVersion,
-			rGInfo.strVendor, rGInfo.strShdLang,
-			rGInfo.nMaxTextures, rGInfo.nMaxVertexAttribs);
-		ImGui::Separator();
-		ImGui::End();
-
-		ImGui::Begin("framebuffer");
-		ImGui::End();
-
+		GUI::Begin("graphics_engine", &bIsEnabled);
+		GUI::End();
 	}
 	// --==</GuiOfGraphEnigne>==--
 
@@ -50,8 +36,8 @@ namespace NW
 	// --core_methods
 	void GuiOfCmdEngine::OnDraw() {
 		if (!bIsEnabled) return;
-		ImGui::Begin("nwc_engine");
-		ImGui::End();
+		GUI::Begin("console_engine");
+		GUI::End();
 	}
 	// --==</GuiOfCmdEngine>==--
 }
@@ -63,26 +49,26 @@ namespace NW
 
 	void GuiOfDataSys::OnDraw() {
 		if (!bIsEnabled) return;
-		ImGui::Begin("data_system", &bIsEnabled, ImGuiWindowFlags_MenuBar);
+		GUI::Begin("data_system", &bIsEnabled, ImGuiWindowFlags_MenuBar);
 
-		if (ImGui::BeginMenuBar()) {
-			if (ImGui::BeginMenu("files")) {
-				if (ImGui::MenuItem("new...", "ctrl+n")) {
+		if (GUI::BeginMenuBar()) {
+			if (GUI::BeginMenu("files")) {
+				if (GUI::MenuItem("new...", "ctrl+n")) {
 				}
-				if (ImGui::MenuItem("save_as...", "ctrl+s")) {
+				if (GUI::MenuItem("save_as...", "ctrl+s")) {
 				}
-				if (ImGui::MenuItem("load...", "ctrl+l")) {
+				if (GUI::MenuItem("load...", "ctrl+l")) {
 				}
-				ImGui::EndMenu();
+				GUI::EndMenu();
 			}
-			ImGui::EndMenuBar();
+			GUI::EndMenuBar();
 		}
 
-		if (ImGui::Button("file system tree")) { system("tree"); }
-		else if (ImGui::Button("files list")) { system("dir"); }
-		ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal | ImGuiSeparatorFlags_SpanAllColumns);
+		if (GUI::Button("file system tree")) { system("tree"); }
+		else if (GUI::Button("files list")) { system("dir"); }
+		GUI::SeparatorEx(ImGuiSeparatorFlags_Horizontal | ImGuiSeparatorFlags_SpanAllColumns);
 
-		ImGui::End();
+		GUI::End();
 	}
 	// --==</GuiOfDataSys>==--
 }
@@ -90,27 +76,27 @@ namespace NW
 // --==<GuiOfEditors>==--
 namespace NW
 {
-	// --==<GuiOfCodeEditor>==--
-	GuiOfCodeEditor::GuiOfCodeEditor() :
-		strCodeBuf(DArray<char>(1024 * 4, 0)) { }
+	// --==<GuiOfShaderEditor>==--
+	GuiOfShaderEditor::GuiOfShaderEditor() { }
 
 	// --setters
-	void GuiOfCodeEditor::SetContext(RefKeeper<ACodeRes>& rContext) {
+	void GuiOfShaderEditor::SetContext(RefKeeper<ShaderProg>& rContext) {
 		pContext.SetRef(rContext);
 		if (rContext.IsValid()) {
 			bIsEnabled = true;
-			strcpy(&strCodeBuf[0], &pContext->GetCode()[0]);
 		}
 		else {
-			memset(&strCodeBuf[0], 0, strCodeBuf.size());
 			bIsEnabled = false;
 		}
 	}
 	// --core_methods
-	void GuiOfCodeEditor::OnDraw()
+	void GuiOfShaderEditor::OnDraw()
 	{
+		GUI::Begin("shader_editor", &bIsEnabled, ImGuiWindowFlags_MenuBar);
+		if (pContext == nullptr) { GUI::End(); return; }
+		GUI::End();
 	}
-	// --==</GuiOfCodeEditor>==--
+	// --==</GuiOfShaderEditor>==--
 
 	// --==<GuiOfGfxMaterialEditor>==--
 	GuiOfGfxMaterialEditor::GuiOfGfxMaterialEditor() :
@@ -129,25 +115,21 @@ namespace NW
 	// --core_methods
 	void GuiOfGfxMaterialEditor::OnDraw() {
 		if (!bIsEnabled) return;
-		ImGui::Begin("gmaterial_editor", &bIsEnabled, ImGuiWindowFlags_MenuBar);
-		if (pContext == nullptr) { ImGui::End(); return; }
+		GUI::Begin("graphics_material_editor", &bIsEnabled, ImGuiWindowFlags_MenuBar);
+		if (pContext == nullptr) { GUI::End(); return; }
 
-		if (ImGui::BeginMenuBar()) {
-			if (ImGui::BeginMenu("file")) {
-				if (ImGui::MenuItem("save...")) {
-					String strFPath = CoreEngine::Get().FDialogSave("all_files(*.*)\0*.*\0graphics_material(*.gmt)\0(*.gmt)\0\0");
-					if (!strFPath.empty()) {}
+		if (GUI::BeginMenuBar()) {
+			if (GUI::BeginMenu("file")) {
+				if (GUI::MenuItem("save...")) {
 				}
-				else if (ImGui::MenuItem("load...")) {
-					String strFPath = CoreEngine::Get().FDialogLoad("all_files(*.*)\0*.*\0graphics_material(*.gmt)\0(*.gmt)\0\0");
-					if (!strFPath.empty()) {}
+				else if (GUI::MenuItem("load...")) {
 				}
-				ImGui::EndMenu();
+				GUI::EndMenu();
 			}
-			ImGui::EndMenuBar();
+			GUI::EndMenuBar();
 		}
 
-		ImGui::End();
+		GUI::End();
 	}
 	// --==</GuiOfGfxMaterialEditor>==--
 
@@ -168,28 +150,24 @@ namespace NW
 	// --core_methods
 	void GuiOfSpriteEditor::OnDraw() {
 		if (!bIsEnabled) return;
-		ImGui::Begin("sprite_editor", &bIsEnabled, ImGuiWindowFlags_MenuBar);
+		GUI::Begin("sprite_editor", &bIsEnabled, ImGuiWindowFlags_MenuBar);
 
-		if (ImGui::BeginMenuBar()) {
-			if (ImGui::BeginMenu("file")) {
-				if (ImGui::MenuItem("save...")) {
-					String strFPath = CoreEngine::Get().FDialogSave("all_files\0*.*\0images\0*.png");
-					if (!strFPath.empty()) { pContext->SaveF(&strFPath[0]); }
+		if (GUI::BeginMenuBar()) {
+			if (GUI::BeginMenu("file")) {
+				if (GUI::MenuItem("save...")) {
 				}
-				else if (ImGui::MenuItem("load...")) {
-					String strFPath = CoreEngine::Get().FDialogLoad("all_files\0*.*\0images\0*.png");
-					if (!strFPath.empty()) { pContext->LoadF(&strFPath[0]); }
+				else if (GUI::MenuItem("load...")) {
 				}
-				ImGui::EndMenu();
+				GUI::EndMenu();
 			}
-			ImGui::EndMenuBar();
+			GUI::EndMenuBar();
 		}
-		if (pContext == nullptr) { ImGui::End(); return; }
+		if (pContext == nullptr) { GUI::End(); return; }
 
-		ImGui::Image(reinterpret_cast<void*>(pContext->GetEntId()),
+		GUI::Image(reinterpret_cast<void*>(pContext->GetRenderId()),
 			ImVec2{ static_cast<float>(64.0f * nAspectRatio), static_cast<float>(64.0f) });
 
-		ImGui::End();
+		GUI::End();
 	}
 	// --==</GuiOfSpriteEditor>==--
 }
