@@ -9,21 +9,18 @@
 #include <core/nw_engine_states.h>
 
 #include <native_console.hpp>
-#include <nwl_test.h>
 
 int main(int nArgs, char* strArgs[])
 {
 	try {
 #if (NW_LAUNCH & NW_LAUNCH_ENGINE)
-		NW::CoreEngine Game = NW::CoreEngine();
-		Game.AddState<NW::GfxState>();
-		Game.Run();
-		if (Game.GetRunThread()->joinable()) { Game.GetRunThread()->join(); }
+		NW::core_engine game = NW::core_engine();
+		NW::gfx_state gstate = NW::gfx_state(game);
+		game.add_state(gstate);
+		game.run();
+		if (game.get_run_thread()->joinable()) { game.get_run_thread()->join(); }
 #endif
 #if (NW_LAUNCH & NW_LAUNCH_NWC)
-		NWC::CmdEngine Cmd = NWC::CmdEngine();
-		pCmd->Run();
-		if (pCmd->GetRunThread().joinable()) { pCmd->GetRunThread().join(); }
 #endif
 #if (NW_LAUNCH & NW_LAUNCH_TEST)
 		if (false) {
@@ -42,7 +39,7 @@ int main(int nArgs, char* strArgs[])
 				&spInfo,
 				&pcInfo
 			)) {
-				throw(CodeException("failed to create a process", GetLastError()));
+				throw(Codeerror("failed to create a process", GetLastError()));
 			}
 			WaitForSingleObject(pcInfo.hProcess, INFINITE);
 			CloseHandle(pcInfo.hProcess);
@@ -50,7 +47,7 @@ int main(int nArgs, char* strArgs[])
 		}
 #endif
 	}
-	catch (NWL::Exception& exc) { std::cout << exc; }
+	catch (NWL::error& exc) { std::cout << exc; }
 	catch (std::exception& exc) { NWL_ERR(exc.what()); }
 	catch (...) { NWL_ERR("somethig went wrong"); }
 

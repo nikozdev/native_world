@@ -20,19 +20,19 @@ struct lua_State;
 
 namespace NW
 {
-	class NW_API LuaEngine;
+	class NW_API lua_engine;
 
-	struct NW_API LuaEngineInfo;
-	struct NW_API LuaRegFunc;
-	struct NW_API LuaRegTable;
+	struct NW_API lua_engine_info;
+	struct NW_API lua_func_info;
+	struct NW_API lua_table_info;
 
-	using LuaState = lua_State;
-	using LuaNativeFunc = int(*)(lua_State*);
-	using LuaUpValues = DStack<void*>;
+	using lua_state = lua_State;
+	using lua_native_func = si32(*)(lua_State*);
+	using lua_up_values = dstack<ptr>;
 }
 namespace NW
 {
-	enum LuaTypes : Int16 {
+	enum lua_types : si32 {
 		LT_NON = LUA_TNONE,
 		LT_NIL = LUA_TNIL,
 		LT_BOL = LUA_TBOOLEAN,

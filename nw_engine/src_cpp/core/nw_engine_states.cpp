@@ -8,89 +8,164 @@
 
 namespace NW
 {
-	AEngineState::AEngineState(CoreEngine& rEngine) :
-		m_pEngine(&rEngine) { }
-	AEngineState::~AEngineState() { }
+	a_engine_state::a_engine_state(core_engine& engine) :
+		m_core(&engine) { }
+	a_engine_state::~a_engine_state() { }
 }
 namespace NW
 {
-	GamerState::GamerState(CoreEngine& rEngine) :
-		AEngineState(rEngine) { }
-	GamerState::~GamerState() { }
+	game_state::game_state(core_engine& engine) :
+		a_engine_state(engine) { }
+	game_state::~game_state() { }
 
 	// --==<core_methods>==--
-	bool GamerState::Init() { return true; }
-	void GamerState::Quit() { }
-	void GamerState::Update() { }
+	bool game_state::init() { return true; }
+	void game_state::quit() { }
+	void game_state::update() { }
 
-	void GamerState::OnEvent(CursorEvent& rEvt) { }
-	void GamerState::OnEvent(KeyboardEvent& rEvt) { }
-	void GamerState::OnEvent(WindowEvent& rEvt) { }
+	void game_state::on_event(cursor_event& evt) { }
+	void game_state::on_event(keyboard_event& evt) { }
+	void game_state::on_event(window_event& evt) { }
 	// --==</core_methods>==--
 }
 namespace NW
 {
-	static RefKeeper<ADrawCmp> s_drb;
-	GfxState::GfxState(CoreEngine& rEngine) :
-		AEngineState(rEngine),
-		m_pGfx(m_pEngine->GetGfx()) { }
-	GfxState::~GfxState() { }
+	template<typename vtype, typename itype = ui32>
+	struct NWL_API gfx_mesh_data
+	{
+	public:
+		darray<vtype> vtxs;
+		darray<itype> idxs;
+		gfx_primitives prim;
+	public:
+		gfx_mesh_data(gfx_primitives primitive_topology = GPT_TRIANGLES) :
+			vtxs(3, vtype()), idxs(3, itype()), prim(primitive_topology) { }
+		// --core_methods
+		void gen_idx_data() {
+			idxs.clear();
+			switch (prim) {
+			if (vtxs.size() < 1) { break; }
+			case GPT_POINTS: case GPT_LINE_LOOP: case GPT_LINE_STRIP: case GPT_TRIANGLE_FAN: {
+				for (ui32 iv = 0; iv < vtxs.size() - 0; iv += 1) {
+					idxs.push_back(iv + 0);
+				}
+				break;
+			}
+			case GPT_LINES: {
+				if (vtxs.size() < 2) { break; }
+				for (ui32 iv = 0; iv < vtxs.size() - 1; iv += 1) {
+					idxs.push_back(iv + 0);
+					idxs.push_back(iv + 1);
+				}
+				break;
+			}
+			case GPT_TRIANGLES: {
+				if (vtxs.size() < 3) { break; }
+				for (ui32 iv = 1; iv < vtxs.size() - 1; iv += 1) {
+					idxs.push_back(iv - iv);
+					idxs.push_back(iv + 0);
+					idxs.push_back(iv + 1);
+				}
+				break;
+			}
+			case GPT_TRIANGLE_STRIP: {
+				if (vtxs.size() < 3) { break; }
+				for (ui32 iv = 1; iv < vtxs.size() - 0; iv += 1) {
+					idxs.push_back(iv - iv);
+					idxs.push_back(iv + 0);
+				}
+				break;
+			}
+			default: break;
+			}
+		}
+	};
+
+	//static mem_ref<a_gfx_ent> s_drb;
+	
+	gfx_state::gfx_state(core_engine& rEngine) :
+		a_engine_state(rEngine),
+		m_gfx(m_core->get_graphics()),
+		m_camera_lad() { }
+	gfx_state::~gfx_state() { }
 	// --==<core_methods>==--
-	bool GfxState::Init() {
-		m_pGfx = m_pEngine->GetGfx();
+	bool gfx_state::init() {
+		m_gfx = m_core->get_graphics();
 		
-		Vtx2f2f vtxData[] = {
-			{ { -0.5f,	-0.5f },	{ -0.0f,	-0.0f } },
-			{ { -0.5f,	+0.5f },	{ -0.0f,	+1.0f } },
-			{ { +0.5f,	+0.5f },	{ +1.0f,	+1.0f } },
-			{ { +0.5f,	-0.5f },	{ +1.0f,	-0.0f } },
-		};
-		UInt32 idxData[] = {
-			0, 1, 2,
-			2, 3, 0,
-		};
+		gfx_mesh_data<vtx2f2f, ui32> mesh_data(GPT_TRIANGLES);
+		mesh_data.vtxs.resize(10);
+		mesh_data.vtxs[0].vtx_crd = v2f32{ -0.5f,	-0.5f };
+		mesh_data.vtxs[1].vtx_crd = v2f32{ -0.5f,	+0.5f };
+		mesh_data.vtxs[2].vtx_crd = v2f32{ +0.0f,	+0.75f };
+		mesh_data.vtxs[3].vtx_crd = v2f32{ +0.5f,	+0.5f };
+		mesh_data.vtxs[4].vtx_crd = v2f32{ +0.5f,	-0.5f };
+		
+		mesh_data.vtxs[5].vtx_crd = v2f32{ +0.0f,	-0.75f };
+		mesh_data.vtxs[6].vtx_crd = v2f32{ +0.0f,	-0.75f };
+		mesh_data.vtxs[7].vtx_crd = v2f32{ +0.0f,	-0.75f };
+		mesh_data.vtxs[8].vtx_crd = v2f32{ +0.0f,	-0.75f };
+		mesh_data.vtxs[9].vtx_crd = v2f32{ +0.0f,	-0.75f };
+		mesh_data.gen_idx_data();
 
-		m_pGfx->NewRes<ADrawCmp, DrawIdxCmp>(s_drb,
-			sizeof(idxData) / sizeof(UInt32), &idxData[0],
-			sizeof(vtxData) / sizeof(Vtx2f2f), &vtxData[0]
-			);
+		m_gfx->new_cmp<idx_buf>();
+		m_gfx->get_cmp<a_gfx_buf>(1).
+			get_ref<idx_buf>()->remake<ui32>(mesh_data.idxs.size(), &mesh_data.idxs[0]);
+		m_gfx->new_cmp<vtx_buf>();
+		m_gfx->get_cmp<a_gfx_buf>(2).
+			get_ref<vtx_buf>()->remake<vtx2f2f>(mesh_data.vtxs.size(), &mesh_data.vtxs[0]);
 
-		RefKeeper<GfxMaterial> gMtl;
-		m_pGfx->NewRes<GfxMaterial>(gMtl, "gmt_2d_default");
-		m_pGfx->NewRes<Texture, Texture2d>(gMtl->GetTexture(), "tex_nw_logo");
-		if (!gMtl->GetTexture()->LoadF(R"(D:\dev\native_world\data\image\nw_logo.bmp)")) { return false; }
-		m_pGfx->NewRes<ShaderProg>(gMtl->GetShaderProg(), "shp_2d_default");
-		if (!gMtl->GetShaderProg()->LoadF(R"(D:\dev\native_world\data\shader\shp_2d_default.shd)")) { return false; }
-		s_drb->AddResource<GfxMaterial>(gMtl);
-
-		GfxCameraLad::Get().SetCursor(m_pEngine->GetCursor());
-		GfxCameraLad::Get().SetKeyboard(m_pEngine->GetKeyboard());
+		mem_ref<gfx_material> gmtl;
+		m_gfx->new_cmp<gfx_material>("gmt_default_2d");
+		gmtl.set_ref<gfx_material>(m_gfx->get_cmp<gfx_material>(1));
+		if (!gmtl->load_file(R"(D:\dev\native_world\data\shader\shp_2d_default.shd)")) { return false; }
+		
+		mem_ref<a_texture> tex;
+		m_gfx->new_cmp<texture2d>("txr_nw_logo");
+		tex.set_ref(m_gfx->get_cmp<a_texture>(1));
+		if (!tex->load_file(R"(D:\dev\native_world\data\image\nw_logo.bmp)")) { return false; }
+		
+		gmtl->get_shader(SHD_PIXEL)->get_texture(0).set_ref(tex);
+		//s_drb->add_cmp(gmtl);
 
 		return true;
 	}
-	void GfxState::Quit()
+	void gfx_state::quit()
 	{
-		s_drb.Reset();
-
-		GfxCameraLad::Get().SetCursor(nullptr);
-		GfxCameraLad::Get().SetKeyboard(nullptr);
+		//s_drb.reset();
 	}
-	void GfxState::Update()
+	void gfx_state::update()
 	{
-		GfxCameraLad::Get().UpdateCamera();
-		DrawScene();
+		m_camera_lad.update();
+		draw_scene();
 	}
 
-	void GfxState::OnEvent(CursorEvent& rEvt) { GfxCameraLad::Get().OnEvent(rEvt); }
-	void GfxState::OnEvent(KeyboardEvent& rEvt) { GfxCameraLad::Get().OnEvent(rEvt); }
-	void GfxState::OnEvent(WindowEvent& rEvt) {
-		GfxCameraLad::Get().OnEvent(rEvt);
-		switch (rEvt.evType) {
+	void gfx_state::on_event(cursor_event& evt) { m_camera_lad.on_event(evt); }
+	void gfx_state::on_event(keyboard_event& evt)
+	{
+		switch (evt.type) {
+		case EVT_KEYBOARD_FREE:
+			switch (evt.code) {
+			case KC_1: m_gfx->set_primitive(GPT_TRIANGLES); break;
+			case KC_2: m_gfx->set_primitive(GPT_TRIANGLE_STRIP); break;
+			case KC_3: m_gfx->set_primitive(GPT_TRIANGLE_FAN); break;
+			case KC_4: m_gfx->set_primitive(GPT_LINE_STRIP); break;
+			case KC_5: m_gfx->set_primitive(GPT_LINES); break;
+			case KC_6: m_gfx->set_primitive(GPT_LINE_LOOP); break;
+			case KC_7: m_gfx->set_primitive(GPT_POINTS); break;
+			}
+			break;
+		default: break;
+		}
+		m_camera_lad.on_event(evt);
+	}
+	void gfx_state::on_event(window_event& evt) {
+		m_camera_lad.on_event(evt);
+		switch (evt.type) {
 		case EVT_WINDOW_RESIZE: {
-			V4i rectViewport = m_pGfx->GetConfigs().General.rectViewport;
-			rectViewport[2] = rEvt.nX;
-			rectViewport[3] = rEvt.nY;
-			m_pGfx->SetViewport(rectViewport[0], rectViewport[1], rectViewport[2], rectViewport[3]);
+			v4si32 rectViewport = m_gfx->get_configs().viewport;
+			rectViewport[2] = evt.val_x;
+			rectViewport[3] = evt.val_y;
+			m_gfx->set_viewport(rectViewport[0], rectViewport[1], rectViewport[2], rectViewport[3]);
 			break;
 		}
 		case EVT_WINDOW_MOVE: { break; }
@@ -100,56 +175,64 @@ namespace NW
 	// --==</core_methods>==--
 
 	// --==<implementation_methods>==--
-	inline void GfxState::DrawScene() {
-		m_pGfx->BeginDraw();
-		m_pGfx->OnDraw(s_drb);
-		m_pGfx->EndDraw();
+	inline void gfx_state::draw_scene() {
+		m_gfx->begin_draw();
+		m_gfx->get_cmp<gfx_material>(1)->on_draw();
+		m_gfx->get_cmp<a_gfx_buf>(1)->on_draw();
+		m_gfx->get_cmp<a_gfx_buf>(2)->on_draw();
+		m_gfx->end_draw();
 	}
 	// --==</implementation_methods>==--
 }
 namespace NW
 {
-	GuiState::GuiState(CoreEngine& rEngine) :
-		AEngineState(rEngine),
-		m_bDockspace(true), m_bFullScreenPersist(true),
-		m_pGuiContext(nullptr), m_pGuiIO(nullptr), m_pGuiStyle(nullptr) { }
-	GuiState::~GuiState() { }
+	gui_state::gui_state(core_engine& rEngine) :
+		a_engine_state(rEngine),
+		m_enable_dockspace(true), m_full_screen_persist(true),
+		m_gui_context(nullptr), m_gui_io(nullptr), m_gui_style(nullptr) { }
+	gui_state::~gui_state() { }
 	// --==<core_methods>==--
-	bool GuiState::Init()
+	bool gui_state::init()
 	{
 		IMGUI_CHECKVERSION();
 		GUI::CreateContext();
 
-		m_pGuiContext = GUI::GetCurrentContext();
-		m_pGuiIO = &GUI::GetIO();
-		m_pGuiStyle = &GUI::GetStyle();
+		m_gui_context = GUI::GetCurrentContext();
+		m_gui_io = &GUI::GetIO();
+		m_gui_style = &GUI::GetStyle();
 
-		m_pGuiIO->ConfigFlags |=
+		m_gui_io->ConfigFlags |=
 			ImGuiConfigFlags_NavEnableKeyboard |
 			ImGuiConfigFlags_ViewportsEnable |
 			ImGuiConfigFlags_DockingEnable;
-		m_pGuiIO->ConfigDockingWithShift = true;
+		m_gui_io->ConfigDockingWithShift = true;
 		GUI::StyleColorsDark();
-		if (m_pGuiIO->ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-			m_pGuiStyle->WindowRounding = 0.0f;
-			m_pGuiStyle->Colors[ImGuiCol_WindowBg].w = 1.0f;
+		if (m_gui_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+			m_gui_style->WindowRounding = 0.0f;
+			m_gui_style->Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
 #if(defined NW_PLATFORM_WINDOWS)
-		GUI::Win32Init(m_pEngine->GetWindow()->GetNative());
+		GUI::Win32Init(m_core->get_window()->get_native());
 #endif
 #if (NWG_GAPI & NWG_GAPI_OGL)
 		GUI::OglInit("#version 130");
 #endif
 #if (NWG_GAPI & NWG_GAPI_DX)
-		GUI::Dx11Init(m_rEngine.GetGfx()->GetDevice(), m_rEngine.GetGfx()->GetContext());
+		GUI::Dx11Init(core.get_gfx()->get_device(), core.get_gfx()->get_context());
 #endif
-		GuiOfCoreEngine::Get().bIsEnabled = true;
-		GuiOfGfxEngine::Get().bIsEnabled = true;
-		GuiOfDataSys::Get().bIsEnabled = true;
+		m_gui_of.resize(10);
+		m_gui_of[0].make_ref<gui_of_core_engine>();
+		m_gui_of[1].make_ref<gui_of_gfx_engine>();
+		m_gui_of[2].make_ref<gui_of_cmd_engine>();
+		m_gui_of[3].make_ref<gui_of_data_sys>();
+		
+		m_gui_of[0]->m_is_enabled = true;
+		m_gui_of[1]->m_is_enabled = true;
+		m_gui_of[3]->m_is_enabled = true;
 
 		return true;
 	}
-	void GuiState::Quit()
+	void gui_state::quit()
 	{
 #if (NWG_GAPI & NWG_GAPI_OGL)
 		GUI::OglShutdown();
@@ -162,40 +245,31 @@ namespace NW
 #endif
 		GUI::DestroyContext();
 	}
-	void GuiState::Update() {
-		BeginDraw();
+	void gui_state::update() {
+		begin_draw();
 		if (GUI::BeginMenuBar()) {
 			if (GUI::BeginMenu("view")) {
-				GUI::Checkbox("core_engine", &GuiOfCoreEngine::Get().bIsEnabled);
-				GUI::Checkbox("graphichs_engine", &GuiOfGfxEngine::Get().bIsEnabled);
-				GUI::Checkbox("console_engine", &GuiOfCmdEngine::Get().bIsEnabled);
-				GUI::Checkbox("data_system", &GuiOfDataSys::Get().bIsEnabled);
-				GUI::Checkbox("shader_editor", &GuiOfShaderEditor::Get().bIsEnabled);
-				GUI::Checkbox("sprite_editor", &GuiOfSpriteEditor::Get().bIsEnabled);
-				GUI::Checkbox("graphics_material_editor", &GuiOfGfxMaterialEditor::Get().bIsEnabled);
-
+				for (auto& igui_of : m_gui_of) {
+					GUI::Checkbox(igui_of->get_name(), &igui_of->m_is_enabled);
+				}
 				GUI::EndMenu();
-		}
+			}
 			GUI::EndMenuBar();
+		}
+		for (auto& igui_of : m_gui_of) {
+			igui_of->on_draw();
+		}
+
+		end_draw();
 	}
 
-		GuiOfCoreEngine::Get().OnDraw();
-		GuiOfGfxEngine::Get().OnDraw();
-		GuiOfCmdEngine::Get().OnDraw();
-		GuiOfDataSys::Get().OnDraw();
-		GuiOfShaderEditor::Get().OnDraw();
-		GuiOfSpriteEditor::Get().OnDraw();
-		GuiOfGfxMaterialEditor::Get().OnDraw();
-		EndDraw();
-}
-
-	void GuiState::OnEvent(CursorEvent& rmEvt) { }
-	void GuiState::OnEvent(KeyboardEvent& rkEvt) { }
-	void GuiState::OnEvent(WindowEvent& rwEvt) { }
+	void gui_state::on_event(cursor_event& rmEvt) { }
+	void gui_state::on_event(keyboard_event& rkEvt) { }
+	void gui_state::on_event(window_event& rwEvt) { }
 	// --==</core_methods>==--
 
 	// --==<implementation_methods>==--
-	inline void GuiState::BeginDraw() {
+	inline void gui_state::begin_draw() {
 #if (NWG_GAPI & NWG_GAPI_OGL)
 		GUI::OglNewFrame();
 #endif
@@ -207,7 +281,7 @@ namespace NW
 #endif
 		GUI::NewFrame();
 		// note: switch this to true to enable dockspace
-		bool bFullScreen = m_bFullScreenPersist;
+		bool bFullScreen = m_full_screen_persist;
 		static ImGuiDockNodeFlags DockspaceFlags = ImGuiDockNodeFlags_None;
 		ImGuiWindowFlags WindowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
 
@@ -223,22 +297,22 @@ namespace NW
 		}
 
 		GUI::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		GUI::Begin("DockSpace", &m_bDockspace, WindowFlags);
+		GUI::Begin("dockspace", &m_enable_dockspace, WindowFlags);
 		GUI::PopStyleVar();
 
 		if (bFullScreen) { GUI::PopStyleVar(2); }
 
 		// dock space
-		float nMinSizeW = m_pGuiStyle->WindowMinSize.x;
-		m_pGuiStyle->WindowMinSize.x = 100.0f;
-		m_pGuiStyle->Alpha = 1.0f;
-		if (m_pGuiIO->ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+		float nMinSizeW = m_gui_style->WindowMinSize.x;
+		m_gui_style->WindowMinSize.x = 100.0f;
+		m_gui_style->Alpha = 1.0f;
+		if (m_gui_io->ConfigFlags & ImGuiConfigFlags_DockingEnable) {
 			ImGuiID nDockspaceId = GUI::GetID("DockSpace");
 			GUI::DockSpace(nDockspaceId, ImVec2(0.0f, 0.0f), DockspaceFlags);
 		}
-		m_pGuiStyle->WindowMinSize.x = nMinSizeW;
+		m_gui_style->WindowMinSize.x = nMinSizeW;
 	}
-	inline void GuiState::EndDraw() {
+	inline void gui_state::end_draw() {
 		GUI::End();
 		GUI::Render();
 #if (NWG_GAPI & NWG_GAPI_OGL)
@@ -248,7 +322,7 @@ namespace NW
 		GUI::Dx11RenderDrawData(GUI::GetDrawData());
 #endif
 		GUI::EndFrame();
-		if (m_pGuiIO->ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+		if (m_gui_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
 #if (defined NW_PLATFORM_WINDOWS)
 			GUI::UpdatePlatformWindows();
 			GUI::RenderPlatformWindowsDefault();

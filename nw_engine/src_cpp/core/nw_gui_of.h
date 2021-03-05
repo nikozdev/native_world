@@ -1,11 +1,7 @@
 #ifndef NW_GUI_OF_H
 #define NW_GUI_OF_H
-
 #include <nw_core.hpp>
-
-#include <core/nw_engine.h>
 #include <lua/lua_engine.h>
-
 #if (defined NWG_GAPI)
 #	include <gui/imgui_core.hpp>
 #	include <gui/imgui_internal.h>
@@ -18,130 +14,108 @@
 #	endif
 #	define GUI_DEFAULT_TREE_FLAGS ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick
 #endif	// NWG_GAPI
-
 namespace NW
 {
-	/// Abstract GuiOf struct
-	template <typename GuiOfType> struct NW_API AGuiOf
+	/// abstract gui_of struct
+	class NW_API a_gui_of
 	{
 	public:
-		bool bIsEnabled = false;
-	protected:
-		AGuiOf() = default;
+		bit m_is_enabled = false;
 	public:
-		AGuiOf(AGuiOf& rCpy) = delete;
-		void operator=(AGuiOf& rCpy) = delete;
-		virtual ~AGuiOf() = default;
+		a_gui_of();
+		virtual ~a_gui_of();
 		// --getters
-		static inline GuiOfType& Get() { static GuiOfType s_GuiOf; return s_GuiOf; }
+		virtual inline cstring get_name() const = 0;
 		// --core_methods
-		virtual void OnDraw() = 0;
-	};
-}
-
-namespace NW
-{
-	/// GuiOfCoreEngine struct
-	/// Description:
-	/// -- Renders the core engine state and window gui
-	struct NW_API GuiOfCoreEngine : public AGuiOf<GuiOfCoreEngine>
-	{
-		friend class AGuiOf<GuiOfCoreEngine>;
-	private:
-		GuiOfCoreEngine();
-		~GuiOfCoreEngine();
-	public:
-		virtual void OnDraw() override;
-	};
-	/// GuiOfGraphEngine struct
-	struct NW_API GuiOfGfxEngine : public AGuiOf<GuiOfGfxEngine>
-	{
-		friend class AGuiOf<GuiOfGfxEngine>;
-	private:
-		GuiOfGfxEngine();
-	public:
-		~GuiOfGfxEngine();
-		virtual void OnDraw() override;
-	private:
-	};
-	/// GuiOfCmdEngine struct
-	struct NW_API GuiOfCmdEngine : public AGuiOf<GuiOfCmdEngine>
-	{
-		friend class AGuiOf<GuiOfCmdEngine>;
-	private:
-		GuiOfCmdEngine();
-		~GuiOfCmdEngine();
-	public:
-		virtual void OnDraw() override;
+		virtual void on_draw() = 0;
 	};
 }
 namespace NW
 {
-	/// GuiOfDataSys struct
-	struct NW_API GuiOfDataSys : public AGuiOf<GuiOfDataSys>
+	/// gui_of_core_engine class
+	/// description:
+	/// --renders the core engine state and window gui
+	class NW_API gui_of_core_engine : public a_gui_of
 	{
-		friend class AGuiOf<GuiOfDataSys>;
-	private:
-		GuiOfDataSys();
-		~GuiOfDataSys();
 	public:
-		virtual void OnDraw() override;
+		gui_of_core_engine();
+		~gui_of_core_engine();
+		// --getters
+		virtual inline cstring get_name() const override { return "gui_of_core_engine"; }
+		// --core_methods
+		virtual void on_draw() override;
+	};
+	/// gui_of_graphics_engine class
+	class NW_API gui_of_gfx_engine : public a_gui_of
+	{
+	public:
+		gui_of_gfx_engine();
+		~gui_of_gfx_engine();
+		// --getters
+		virtual inline cstring get_name() const override { return "gui_of_gfx_engine"; }
+		// --core_methods
+		virtual void on_draw() override;
 	private:
-		Char strDir[256]{ 0 };
-		Char strCurrDir[256]{ 0 };
+	};
+	/// gui_of_console_engine class
+	class NW_API gui_of_cmd_engine : public a_gui_of
+	{
+	public:
+		gui_of_cmd_engine();
+		~gui_of_cmd_engine();
+		// --getters
+		virtual inline cstring get_name() const override { return "gui_of_cmd_engine"; }
+		// --core_methods
+		virtual void on_draw() override;
 	};
 }
 namespace NW
 {
-	/// GuiOfShaderEditor struct
-	struct NW_API GuiOfShaderEditor : public AGuiOf<GuiOfShaderEditor>
+	/// gui_of_data_sys class
+	class NW_API gui_of_data_sys : public a_gui_of
 	{
-		friend class AGuiOf<GuiOfShaderEditor>;
-	private:
-		RefKeeper<ShaderProg> pContext;
-	private:
-		GuiOfShaderEditor();
 	public:
-		// --setters
-		void SetContext(RefKeeper<ShaderProg>& rContext);
+		gui_of_data_sys();
+		~gui_of_data_sys();
+		// --getters
+		virtual inline cstring get_name() const override { return "gui_of_data_sys"; }
 		// --core_methods
-		virtual void OnDraw() override;
+		virtual void on_draw() override;
+	private:
+		char8 m_next_dir[256]{ 0 };
+		char8 m_curr_dir[256]{ 0 };
 	};
-	/// GuiOfSpriteEditor struct
-	struct NW_API GuiOfGfxMaterialEditor : public AGuiOf<GuiOfGfxMaterialEditor>
+}
+namespace NW
+{
+	/// gui_of_graphics_material class
+	class NW_API gui_of_material_editor : public a_gui_of
 	{
-		friend class AGuiOf<GuiOfGfxMaterialEditor>;
-	private:
-		GuiOfGfxMaterialEditor();
 	public:
+		gui_of_material_editor();
+		// --getters
+		virtual inline cstring get_name() const override { return "gui_of_material_editor"; }
 		// --setters
-		void SetContext(GfxMaterial& rContext);
-
+		void set_context(mem_ref<gfx_material>& ref);
 		// --core_methods
-		virtual void OnDraw() override;
+		virtual void on_draw() override;
 	private:
-		GfxMaterial* pContext;
-		Char strContextName[128];
+		mem_ref<gfx_material> m_context;
 	};
-	/// GuiOfSpriteEditor struct
-	struct NW_API GuiOfSpriteEditor : public AGuiOf<GuiOfSpriteEditor>
+	/// gui_of_sprite_editor class
+	struct NW_API gui_of_sprite_editor : public a_gui_of
 	{
-		friend class AGuiOf<GuiOfSpriteEditor>;
-	private:
-		GuiOfSpriteEditor();
 	public:
+		gui_of_sprite_editor();
+		// --getters
+		virtual inline cstring get_name() const override { return "gui_of_sprite_editor"; }
 		// --setters
-		void SetContext(Texture& rContext);
-
+		void set_context(mem_ref<a_texture>& ref);
 		// --core_methods
-		virtual void OnDraw() override;
+		virtual void on_draw() override;
 	private:
-		Texture* pContext;
-		Char strContextName[128];
-
-		Float32 nAspectRatio = 1.0f;
-
-		ImageInfo ImgInfo;
+		mem_ref<a_texture> m_context;
+		char8 m_context_name[128];
 	};
 }
 #endif	// NW_GUI_OF_H

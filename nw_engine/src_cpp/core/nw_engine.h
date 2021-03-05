@@ -5,65 +5,54 @@
 #include <core/nw_engine_states.h>;
 namespace NW
 {
-	/// CoreEngine class
-	/// Description:
-	/// Interface:
-	class NW_API CoreEngine : public AMemUser
+	/// core_engine class
+	/// description:
+	/// interface:
+	class NW_API core_engine : public a_mem_user
 	{
 	public:
-		using State = AEngineState;
-		using States = DArray<RefKeeper<State>>;
+		using state = a_engine_state;
+		using states = darray<state*>;
 	public:
-		CoreEngine(const char* strName = "nw_engine");
-		CoreEngine(const CoreEngine& rCpy) = delete;
-		virtual ~CoreEngine();
+		core_engine(cstring name = "nw_engine");
+		core_engine(const core_engine& copy) = delete;
+		virtual ~core_engine();
 		// --getters
-		inline const char* GetName()	{ return &m_strName[0]; }
-		inline Thread* GetRunThread()	{ return &m_thrRun; }
-		inline Keyboard* GetKeyboard()	{ return &m_Keyboard; }
-		inline Cursor* GetCursor()		{ return &m_Cursor; }
-		inline CoreWindow* GetWindow()	{ return m_Window; }
-		inline GfxEngine* GetGfx()		{ return m_Graphics; }
-		inline States& GetStates()		{ return m_States; }
-		inline RefKeeper<State>& GetState(UInt32 unIdx) { return m_States[unIdx]; }
+		inline cstring get_name()			{ return &m_name[0]; }
+		inline thread* get_run_thread()		{ return &m_thr_run; }
+		inline core_window* get_window()	{ return m_wnd; }
+		inline gfx_engine* get_graphics()	{ return m_gfx; }
+		inline state* get_state(ui32 idx)	{ return m_states[idx]; }
+		inline const keyboard_state* get_keyboard() const	{ return &m_kbd; }
+		inline const cursor_state* get_cursor() const		{ return &m_crs; }
+		inline const timer* get_timer() const				{ return &m_timer; }
 		// --setters
-		template<class SType, typename ... Args>
-		RefKeeper<State>& AddState(Args&& ... Arguments);
-		void AddState(RefKeeper<State>& rState);
-		void RmvState(UInt8 nIdx);
-		void StopRunning();
+		void add_state(state& state);
+		void rmv_state(ui8 idx);
+		void stop_running();
 		// --predicates
-		inline Bit IsRunning() const { return m_bIsRunning; }
+		inline bit is_running() const { return m_is_running; }
 		// --operators
-		void operator=(const CoreEngine& rCpy) = delete;
+		void operator=(const core_engine& copy) = delete;
 		// --core_methods
-		bool Init();
-		void Quit();
-		void Run();
-		void Update();
-		void OnEvent(AEvent& rEvt);
+		bool init();
+		void quit();
+		void run();
+		void update();
+		void on_event(a_event& evt);
 		// --data_methods
-		String DialogLoad(const char* strFilter);
-		String DialogSave(const char* strFilter);
+		dstring dialog_load(cstring filter);
+		dstring dialog_save(cstring filter);
 	private:
-		const char* m_strName;
-		Bit m_bIsRunning;
-		Thread m_thrRun;
-		Mutex m_mtxRun;
-		States m_States;
-		Keyboard m_Keyboard;
-		Cursor m_Cursor;
-		RefKeeper<CoreWindow> m_Window;
-		RefKeeper<GfxEngine> m_Graphics;
+		cstring m_name;
+		thread m_thr_run;
+		bit m_is_running;
+		mem_ref<core_window> m_wnd;
+		mem_ref<gfx_engine> m_gfx;
+		states m_states;
+		keyboard_state m_kbd;
+		cursor_state m_crs;
+		timer m_timer;
 	};
-	template<class SType, typename ... Args>
-	RefKeeper<CoreEngine::State>& CoreEngine::AddState(Args&& ... Arguments) {
-		m_mtxRun.lock();
-		m_States.push_back(RefKeeper<AEngineState>());
-		m_States.back().MakeRef<SType>(*this, std::forward<Args>(Arguments)...);
-		m_mtxRun.unlock();
-		return m_States.back();
-	}
 }
-
 #endif	// NW_ENGINE_H

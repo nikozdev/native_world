@@ -32,12 +32,12 @@ typedef struct {
 ** All high-level dumps go through dumpVector; you can change it to
 ** change the endianness of the result
 */
-#define dumpVector(D,v,n)	dumpBlock(D,v,(n)*sizeof((v)[0]))
+#define dumpVector(D,v,n)	dumblock_ptr(D,v,(n)*sizeof((v)[0]))
 
-#define dumpLiteral(D, s)	dumpBlock(D,s,sizeof(s) - sizeof(char))
+#define dumpLiteral(D, s)	dumblock_ptr(D,s,sizeof(s) - sizeof(char))
 
 
-static void dumpBlock (DumpState *D, const void *b, size_t size) {
+static void dumblock_ptr (DumpState *D, const void *b, size_t size) {
   if (D->status == 0 && size > 0) {
     lua_unlock(D->L);
     D->status = (*D->writer)(D->L, b, size, D->data);

@@ -19,8 +19,8 @@
 
 namespace NW
 {
-	class NW_API CoreEngine;
-	class NW_API CoreWindow;
+	class NW_API core_engine;
+	class NW_API core_window;
 }
 
 #endif // NW_CORE_HPP

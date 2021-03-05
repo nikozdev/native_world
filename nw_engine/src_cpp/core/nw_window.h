@@ -3,75 +3,74 @@
 #include <nw_core.hpp>
 namespace NW
 {
-	struct NW_API WindowInfo : public AInfo
+	struct NW_API window_info : public a_info
 	{
 	public:
-		String strTitle = "default";
-		String strApiVer = "default";
-		UInt16 nX = 0, nY = 0, nW = 800, nH = 600;
-		Float32 nAspectRatio = 800.0f / 600.0f;
-		Float32 nOpacity = 0.0f;
-		Bit bIsHovered = false;
-		Bit bIsFocused = false;
-		Bit bIsEnabled = false;
-		EventCallback fnOnEvent = [](AEvent&)->void { return; };
+		dstring title = "default";
+		dstring api_version = "default";
+		ui16 coord_x = 0, coord_y = 0;
+		ui16 size_x = 800, size_y = 600;
+		f32 aspect_ratio = 800.0f / 600.0f;
+		f32 opacity= 0.0f;
+		bit is_hovered = false;
+		bit is_focused = false;
+		bit is_enabled = false;
+		event_callback on_event = [](a_event&)->void { return; };
 	public:
-		WindowInfo(const char* cstTitle = "default", UInt16 unWidth = 800, UInt16 unHeight = 600, Bit bVSync = false);
+		window_info(cstring window_title = "default", ui16 width = 800, ui16 height = 600);
 		// --operators
-		virtual OutStream& operator<<(OutStream& rStream) const override;
-		virtual InStream& operator>>(InStream& rStream) override;
+		virtual out_stream& operator<<(out_stream& stm) const override;
+		virtual in_stream& operator>>(in_stream& stm) override;
 	};
 }
-#if (defined NW_PLATFORM_WINDOWS)
 namespace NW
 {
-	/// Window Class
-	class NW_API CoreWindow : public AMemUser
+	/// core_window class
+	class NW_API core_window : public a_mem_user
 	{
 	public:
-		CoreWindow(const WindowInfo& rwInfo);
-		CoreWindow(const CoreWindow& rCpy) = delete;
-		virtual ~CoreWindow();
+		core_window(const window_info& info);
+		core_window(const core_window& copy) = delete;
+		virtual ~core_window();
 		// --getters
-		inline UInt16 GetSizeW() const		{ return m_Info.nW; }
-		inline UInt16 GetSizeH() const		{ return m_Info.nH; }
-		inline UInt16 GetCoordX() const		{ return m_Info.nX; }
-		inline UInt16 GetCoordY() const		{ return m_Info.nY; }
-		inline UInt16 GetOpacity() const	{ return m_Info.nOpacity; }
-		inline const char* GetTitle() const	{ return &m_Info.strTitle[0]; }
-		inline const WindowInfo& GetWindowInfo() const { return m_Info; }
-		inline HWND& GetNative()	{ return m_pNative; }
+		inline ui16 get_coord_x() const	{ return m_info.coord_x; }
+		inline ui16 get_coord_y() const	{ return m_info.coord_y; }
+		inline ui16 get_size_x() const	{ return m_info.size_x; }
+		inline ui16 get_size_y() const	{ return m_info.size_y; }
+		inline ui16 get_opacity() const	{ return m_info.opacity; }
+		inline cstring get_title() const{ return &m_info.title[0]; }
+		inline HWND& get_native()		{ return m_native; }
+		inline const window_info& get_info() const { return m_info; }
 		// --setters
-		void SetTitle(const char* strTitle);
-		void SetFocused(bool bFocus);
-		void SetEnabled(bool bEnable);
-		void SetOpacity(float nOpacity);
-		void SetIcon(const ImageInfo& rImgInfo);
-		void SetEventCallback(const EventCallback& fnOnEvent);
-		void SetKeyboardMode(KeyboardModes kbdMode);
-		void SetCursorMode(CursorModes crsMode);
+		void set_title(cstring title);
+		void set_focused(bit is_focused);
+		void set_enabled(bit enable);
+		void set_opacity(f32 opacity);
+		void set_icon(const image_info& info);
+		void set_event_callback(const event_callback& on_event);
+		void set_keyboard_mode(keyboard_modes kbdMode);
+		void set_cursor_mode(cursor_modes crsMode);
 		// --predicates
-		inline bool IsHovered() const	{ return m_Info.bIsHovered; }
-		inline bool IsFocused() const	{ return m_Info.bIsFocused; }
-		inline bool IsEnabled() const	{ return m_Info.bIsEnabled; }
+		inline bit is_hovered() const	{ return m_info.is_hovered; }
+		inline bit  is_focused() const	{ return m_info.is_focused; }
+		inline bit is_enabled() const	{ return m_info.is_enabled; }
 		// --operators
-		void operator=(const CoreWindow& rCpy) = delete;
+		void operator=(const core_window& copy) = delete;
 		// --core_methods
-		void Update();
+		void update();
 	private:
-		static LRESULT __stdcall MsgProcInit(HWND pWindow, UINT unMsg, WPARAM wParam, LPARAM lParam);
-		static LRESULT __stdcall StaticMsgProc(HWND pWindow, UINT unMsg, WPARAM wParam, LPARAM lParam);
-		LRESULT __stdcall MsgProc(HWND pWindow, UINT unMsg, WPARAM wParam, LPARAM lParam);
+		static LRESULT __stdcall msg_proc_init(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam);
+		static LRESULT __stdcall msg_proc_static(HWND wnd, UINT msd, WPARAM wparam, LPARAM lparam);
+		LRESULT __stdcall msg_proc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	private:
-		WindowInfo m_Info;
-		HWND m_pNative;
-		MSG m_wMsg;
-		WNDCLASSEX m_wndClass;
-		PAINTSTRUCT m_pntStruct;
+		core_engine* core;
+		window_info m_info;
+		HWND m_native;
+		MSG m_msg;
+		WNDCLASSEX m_class;
+		PAINTSTRUCT m_pts;
 	};
 }
-#endif	// NW_PLATFORM
-
 #endif	// NW_CORE_WINDOW_H
 /*
 * Development started 18.10.2020
