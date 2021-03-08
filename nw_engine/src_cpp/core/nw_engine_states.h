@@ -18,9 +18,9 @@ namespace NW
 		virtual bool init() = 0;
 		virtual void quit() = 0;
 		virtual void update() = 0;
-		virtual void on_event(cursor_event& crs_evt) = 0;
-		virtual void on_event(keyboard_event& kbd_evt) = 0;
-		virtual void on_event(window_event& wnd_evt) = 0;
+		virtual void event_proc(cursor_event& crs_evt) = 0;
+		virtual void event_proc(keyboard_event& kbd_evt) = 0;
+		virtual void event_proc(window_event& wnd_evt) = 0;
 	protected:
 		core_engine* m_core;
 	};
@@ -39,9 +39,9 @@ namespace NW
 		virtual bool init() override;
 		virtual void quit() override;
 		virtual void update() override;
-		virtual void on_event(cursor_event& crs_evt) override;
-		virtual void on_event(keyboard_event& kbd_evt) override;
-		virtual void on_event(window_event& wnd_evt) override;
+		virtual void event_proc(cursor_event& crs_evt) override;
+		virtual void event_proc(keyboard_event& kbd_evt) override;
+		virtual void event_proc(window_event& wnd_evt) override;
 	};
 }
 #include <core/nw_gui_of.h>
@@ -60,16 +60,13 @@ namespace NW
 		virtual bool init() override;
 		virtual void quit() override;
 		virtual void update() override;
-		virtual void on_event(cursor_event& crs_evt) override;
-		virtual void on_event(keyboard_event& kbd_evt) override;
-		virtual void on_event(window_event& wnd_evt) override;
-	private:
-		inline void begin_draw();
-		inline void end_draw();
+		virtual void event_proc(cursor_event& crs_evt) override;
+		virtual void event_proc(keyboard_event& kbd_evt) override;
+		virtual void event_proc(window_event& wnd_evt) override;
 	private:
 		ImGuiContext* m_gui_context;
-		ImGuiIO* m_gui_io;
-		ImGuiStyle* m_gui_style;
+		imgui_io* m_gui_io;
+		imgui_style* m_gui_style;
 
 		bit m_full_screen_persist;
 		bit m_enable_dockspace;
@@ -91,9 +88,9 @@ namespace NW
 		virtual bool init() override;
 		virtual void quit() override;
 		virtual void update() override;
-		virtual void on_event(cursor_event& crs_evt) override;
-		virtual void on_event(keyboard_event& kbd_evt) override;
-		virtual void on_event(window_event& wnd_evt) override;
+		virtual void event_proc(cursor_event& crs_evt) override;
+		virtual void event_proc(keyboard_event& kbd_evt) override;
+		virtual void event_proc(window_event& wnd_evt) override;
 	private:
 		inline void draw_scene();
 	private:

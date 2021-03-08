@@ -1,0 +1,6 @@
+--==shader_info==--
+gapi:2;
+type:1;
+name:shd_skybox_3d;
+src:D:\dev\native_world\nw_gfx\src_glsl\skybox_3d_vtx.glsl;
+--==/shader_info==--

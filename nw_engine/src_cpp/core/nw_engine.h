@@ -25,7 +25,7 @@ namespace NW
 		inline state* get_state(ui32 idx)	{ return m_states[idx]; }
 		inline const keyboard_state* get_keyboard() const	{ return &m_kbd; }
 		inline const cursor_state* get_cursor() const		{ return &m_crs; }
-		inline const timer* get_timer() const				{ return &m_timer; }
+		inline const time_state* get_timer() const			{ return &m_timer; }
 		// --setters
 		void add_state(state& state);
 		void rmv_state(ui8 idx);
@@ -39,7 +39,7 @@ namespace NW
 		void quit();
 		void run();
 		void update();
-		void on_event(a_event& evt);
+		void event_proc(a_event& evt);
 		// --data_methods
 		dstring dialog_load(cstring filter);
 		dstring dialog_save(cstring filter);
@@ -52,7 +52,7 @@ namespace NW
 		states m_states;
 		keyboard_state m_kbd;
 		cursor_state m_crs;
-		timer m_timer;
+		time_state m_timer;
 	};
 }
 #endif	// NW_ENGINE_H

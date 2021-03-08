@@ -3,7 +3,7 @@
 
 #include <core/nw_engine.h>
 #include <resource.h>
-#include <gui/impl/imgui_win.h>
+#include <gui/nwg_imgui.h>
 
 namespace NW
 {
@@ -34,6 +34,30 @@ namespace NW
 #if (defined NW_PLATFORM_WINDOWS)
 namespace NW
 {
+	extern LRESULT __stdcall event_proc_init(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	extern LRESULT __stdcall event_proc_static(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam);
+
+	LRESULT __stdcall event_proc_init(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+		if (msg != WM_NCCREATE) { return DefWindowProc(wnd, msg, wparam, lparam); }
+
+		CREATESTRUCT* crtst = reinterpret_cast<CREATESTRUCT*>(lparam);
+		core_window* core_wnd = reinterpret_cast<core_window*>(crtst->lpCreateParams);
+
+		SetWindowLongPtr(wnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(core_wnd));
+		SetWindowLongPtr(wnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(event_proc_static));
+
+		return event_proc_static(wnd, msg, wparam, lparam);
+	}
+	LRESULT __stdcall event_proc_static(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+		core_window* core_wnd = reinterpret_cast<core_window*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
+
+		if (NWG::imgui_event_proc(wnd, msg, wparam, lparam)) { return true; }
+
+		return core_wnd->event_proc(wnd, msg, wparam, lparam);
+	}
+}
+namespace NW
+{
 	core_window::core_window(const window_info& info) :
 		m_info(info), m_native{ 0 },
 		m_class{ 0 }, m_msg{ 0 },
@@ -43,7 +67,7 @@ namespace NW
 		auto class_name = L"nw_core_window";
 		m_class.lpszClassName = class_name;
 		m_class.lpszMenuName = NULL;
-		m_class.lpfnWndProc = msg_proc_init;
+		m_class.lpfnWndProc = event_proc_init;
 		m_class.style = CS_OWNDC | CS_VREDRAW | CS_HREDRAW;
 		m_class.hInstance = GetModuleHandle(NULL);
 		m_class.hIcon = LoadIcon(m_class.hInstance, MAKEINTRESOURCE(NW_ICON1));
@@ -59,7 +83,7 @@ namespace NW
 		RECT wnd_rect = { 100, 100, 100 + get_size_x(), 100 + get_size_y() };
 		AdjustWindowRect(&wnd_rect, wnd_style, FALSE);
 		
-		char16 wnd_name[256]{ 0 };
+		wchar wnd_name[256]{ 0 };
 		OemToChar(get_title(), &wnd_name[0]);
 		m_native = CreateWindowEx(0, class_name, wnd_name,
 			wnd_style,
@@ -85,7 +109,7 @@ namespace NW
 		m_info.title = window_title;
 		SetWindowTextA(m_native, window_title);
 	}
-	void core_window::set_event_callback(const event_callback& on_event) { m_info.on_event = on_event; }
+	void core_window::set_event_callback(const event_callback& event_proc) { m_info.event_proc = event_proc; }
 	void core_window::set_icon(const image_info& info) { }
 	void core_window::set_opacity(f32 opacity) {
 		opacity = opacity > 1.0f ? 1.0f : opacity < 0.1f ? 0.1f : opacity;
@@ -110,34 +134,6 @@ namespace NW
 		m_info.is_enabled = is_enabled;
 		EnableWindow(m_native, is_enabled);
 	}
-	void core_window::set_keyboard_mode(keyboard_modes kbd_mode) {
-		switch (kbd_mode) {
-		case KBD_LOCK: break;
-		case KBD_STICK: break;
-		default: break;
-		}
-	}
-	void core_window::set_cursor_mode(cursor_modes crs_mode) {
-		switch (crs_mode) {
-		case CRS_CAPTURED: {
-			SetCapture(m_native);
-			RECT wnd_rect = { get_coord_x(), get_coord_y(), get_coord_y() + get_size_x(), get_coord_y() + get_size_y() };
-			ClipCursor(&wnd_rect);
-			ShowCursor(FALSE);
-			break;
-		}
-		case CRS_HIDDEN: {
-			ShowCursor(FALSE);
-			break;
-		}
-		default: {
-			ShowCursor(TRUE);
-			ClipCursor(NULL);
-			ReleaseCapture();
-			break;
-		}
-		}
-	}
 	// --==<core_methods>==--
 	void core_window::update()
 	{
@@ -151,28 +147,8 @@ namespace NW
 			}
 		}
 	}
-	// --==</core_methods>==--
 	
-	// --==<callback_methods>==--
-	LRESULT __stdcall core_window::msg_proc_init(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-		if (msg != WM_NCCREATE) { return DefWindowProc(wnd, msg, wparam, lparam); }
-		
-		CREATESTRUCT* crtst = reinterpret_cast<CREATESTRUCT*>(lparam);
-		core_window* core_wnd = reinterpret_cast<core_window*>(crtst->lpCreateParams);
-		
-		SetWindowLongPtr(wnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(core_wnd));
-		SetWindowLongPtr(wnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(msg_proc_static));
-		
-		return msg_proc_static(wnd, msg, wparam, lparam);
-	}
-	LRESULT __stdcall core_window::msg_proc_static(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-		core_window* core_wnd = reinterpret_cast<core_window*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
-		
-		if (GUI::Win32MsgProc(wnd, msg, wparam, lparam)) { return true; }
-		
-		return core_wnd->msg_proc(wnd, msg, wparam, lparam);
-	}
-	LRESULT __stdcall core_window::msg_proc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+	LRESULT __stdcall core_window::event_proc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 
 		switch (msg) {
 		case WM_CREATE: {
@@ -193,15 +169,15 @@ namespace NW
 
 		case WM_MOUSEMOVE: {
 			const POINTS crd_xy = MAKEPOINTS(lparam);
-			m_info.on_event(cursor_event(EVT_CURSOR_MOVE, crd_xy.x, crd_xy.y));
+			m_info.event_proc(cursor_event(EVT_CURSOR_MOVE, crd_xy.x, crd_xy.y));
 			return 0l;
 		}
 		case WM_MOUSEHWHEEL: {
-			m_info.on_event(cursor_event(EVT_CURSOR_SCROLL, GET_WHEEL_DELTA_WPARAM(wparam) / 100.0f, 0.0));
+			m_info.event_proc(cursor_event(EVT_CURSOR_SCROLL, GET_WHEEL_DELTA_WPARAM(wparam) / 100.0f, 0.0));
 			return 0l;
 		}
 		case WM_MOUSEWHEEL: {
-			m_info.on_event(cursor_event(EVT_CURSOR_SCROLL, 0.0, GET_WHEEL_DELTA_WPARAM(wparam) / 100.0f));
+			m_info.event_proc(cursor_event(EVT_CURSOR_SCROLL, 0.0, GET_WHEEL_DELTA_WPARAM(wparam) / 100.0f));
 			return 0l;
 		}
 		case WM_LBUTTONDOWN: case WM_LBUTTONDBLCLK:
@@ -215,7 +191,7 @@ namespace NW
 			if (msg == WM_MBUTTONDOWN || msg == WM_MBUTTONDBLCLK) { nButton = 2u; }
 			if (msg == WM_XBUTTONDOWN || msg == WM_XBUTTONDBLCLK) { nButton = (GET_XBUTTON_WPARAM(wparam) == XBUTTON1) ? 3u : 4u; }
 			if (::GetCapture() == nullptr) { ::SetCapture(m_native); }
-			m_info.on_event(cursor_event(EVT_CURSOR_HELD, static_cast<cursor_codes>(nButton)));
+			m_info.event_proc(cursor_event(EVT_CURSOR_PRESSED, static_cast<cursor_codes>(nButton)));
 			return 0l;
 		}
 		case WM_LBUTTONUP: case WM_RBUTTONUP: case WM_MBUTTONUP: case WM_XBUTTONUP: {
@@ -224,21 +200,21 @@ namespace NW
 			if (msg == WM_RBUTTONUP) { nButton = 1u; }
 			if (msg == WM_MBUTTONUP) { nButton = 2u; }
 			if (msg == WM_XBUTTONUP) { nButton = (GET_XBUTTON_WPARAM(wparam) == XBUTTON1) ? 3u : 4u; }
-			m_info.on_event(cursor_event(EVT_CURSOR_FREE, static_cast<cursor_codes>(nButton)));
+			m_info.event_proc(cursor_event(EVT_CURSOR_RELEASED, static_cast<cursor_codes>(nButton)));
 			if (::GetCapture() == m_native) { ::ReleaseCapture(); }
 			return 0l;
 		}
 
 		case WM_KEYDOWN: case WM_SYSKEYDOWN: {
-			m_info.on_event(keyboard_event(EVT_KEYBOARD_HELD, static_cast<key_codes>(wparam)));
+			m_info.event_proc(keyboard_event(EVT_KEYBOARD_PRESSED, static_cast<keyboard_codes>(wparam)));
 			return 0l;
 		}
 		case WM_KEYUP: case WM_SYSKEYUP: {
-			m_info.on_event(keyboard_event(EVT_KEYBOARD_FREE, static_cast<key_codes>(wparam)));
+			m_info.event_proc(keyboard_event(EVT_KEYBOARD_RELEASED, static_cast<keyboard_codes>(wparam)));
 			return 0l;
 		}
 		case WM_CHAR: case WM_SYSCHAR: {
-			m_info.on_event(keyboard_event(EVT_KEYBOARD_CHAR, static_cast<key_codes>(wparam)));
+			m_info.event_proc(keyboard_event(EVT_KEYBOARD_CHAR, static_cast<keyboard_codes>(wparam)));
 			return 0l;
 		}
 
@@ -246,36 +222,36 @@ namespace NW
 			m_info.size_x = LOWORD(lparam);
 			m_info.size_y = HIWORD(lparam);
 			//SetWindowPos(m_native, NULL, 0, 0, GetSizeW(), GetSizeH(), SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
-			m_info.on_event(window_event(EVT_WINDOW_RESIZE, get_size_x(), get_size_y()));
+			m_info.event_proc(window_event(EVT_WINDOW_RESIZE, get_size_x(), get_size_y()));
 			PostMessage(m_native, WM_PAINT, 0, 0);
-			return 0;
+			return 0l;
 		}
 		case WM_MOVE: {
 			m_info.coord_y = LOWORD(lparam);
 			m_info.coord_x = HIWORD(lparam);
 			//SetWindowPos(m_native, NULL, GetCoordX(), GetCoordY(), 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
-			m_info.on_event(window_event(EVT_WINDOW_MOVE, get_coord_x(), get_coord_y()));
+			m_info.event_proc(window_event(EVT_WINDOW_MOVE, get_coord_x(), get_coord_y()));
 			PostMessage(m_native, WM_PAINT, 0, 0);
-			return 0;
+			return 0l;
 		}
 		case WM_SETFOCUS: {		// wparam is the last window was focused, lParam is not used
-			m_info.on_event(window_event(EVT_WINDOW_FOCUS));
+			m_info.event_proc(window_event(EVT_WINDOW_FOCUS));
 			m_info.is_focused = true;
-			return 0;
+			return 0l;
 		}
 		case WM_KILLFOCUS: {	// wparam is the next window will be focused, lParam is not used
 			m_info.is_focused = false;
-			return 0;
+			return 0l;
 		}
 		case WM_CLOSE: {
-			m_info.on_event(window_event(EVT_WINDOW_CLOSE));
+			m_info.event_proc(window_event(EVT_WINDOW_CLOSE));
 			PostQuitMessage(0);
-			return 0;
+			return 0l;
 		}
 		default: break;
 		}
 		return DefWindowProc(wnd, msg, wparam, lparam);
 	}
-	// --==</callback_methods>==--
+	// --==</core_methods>==--
 }
 #endif // NW_PLATFORM

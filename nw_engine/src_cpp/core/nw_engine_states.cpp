@@ -4,8 +4,6 @@
 #include <core/nw_engine.h>
 #include <core/nw_gui_of.h>
 
-#include <data/data_mesh.h>
-
 namespace NW
 {
 	a_engine_state::a_engine_state(core_engine& engine) :
@@ -23,66 +21,13 @@ namespace NW
 	void game_state::quit() { }
 	void game_state::update() { }
 
-	void game_state::on_event(cursor_event& evt) { }
-	void game_state::on_event(keyboard_event& evt) { }
-	void game_state::on_event(window_event& evt) { }
+	void game_state::event_proc(cursor_event& evt) { }
+	void game_state::event_proc(keyboard_event& evt) { }
+	void game_state::event_proc(window_event& evt) { }
 	// --==</core_methods>==--
 }
 namespace NW
 {
-	template<typename vtype, typename itype = ui32>
-	struct NWL_API gfx_mesh_data
-	{
-	public:
-		darray<vtype> vtxs;
-		darray<itype> idxs;
-		gfx_primitives prim;
-	public:
-		gfx_mesh_data(gfx_primitives primitive_topology = GPT_TRIANGLES) :
-			vtxs(3, vtype()), idxs(3, itype()), prim(primitive_topology) { }
-		// --core_methods
-		void gen_idx_data() {
-			idxs.clear();
-			switch (prim) {
-			if (vtxs.size() < 1) { break; }
-			case GPT_POINTS: case GPT_LINE_LOOP: case GPT_LINE_STRIP: case GPT_TRIANGLE_FAN: {
-				for (ui32 iv = 0; iv < vtxs.size() - 0; iv += 1) {
-					idxs.push_back(iv + 0);
-				}
-				break;
-			}
-			case GPT_LINES: {
-				if (vtxs.size() < 2) { break; }
-				for (ui32 iv = 0; iv < vtxs.size() - 1; iv += 1) {
-					idxs.push_back(iv + 0);
-					idxs.push_back(iv + 1);
-				}
-				break;
-			}
-			case GPT_TRIANGLES: {
-				if (vtxs.size() < 3) { break; }
-				for (ui32 iv = 1; iv < vtxs.size() - 1; iv += 1) {
-					idxs.push_back(iv - iv);
-					idxs.push_back(iv + 0);
-					idxs.push_back(iv + 1);
-				}
-				break;
-			}
-			case GPT_TRIANGLE_STRIP: {
-				if (vtxs.size() < 3) { break; }
-				for (ui32 iv = 1; iv < vtxs.size() - 0; iv += 1) {
-					idxs.push_back(iv - iv);
-					idxs.push_back(iv + 0);
-				}
-				break;
-			}
-			default: break;
-			}
-		}
-	};
-
-	//static mem_ref<a_gfx_ent> s_drb;
-	
 	gfx_state::gfx_state(core_engine& rEngine) :
 		a_engine_state(rEngine),
 		m_gfx(m_core->get_graphics()),
@@ -92,80 +37,93 @@ namespace NW
 	bool gfx_state::init() {
 		m_gfx = m_core->get_graphics();
 		
-		gfx_mesh_data<vtx2f2f, ui32> mesh_data(GPT_TRIANGLES);
-		mesh_data.vtxs.resize(10);
-		mesh_data.vtxs[0].vtx_crd = v2f32{ -0.5f,	-0.5f };
-		mesh_data.vtxs[1].vtx_crd = v2f32{ -0.5f,	+0.5f };
-		mesh_data.vtxs[2].vtx_crd = v2f32{ +0.0f,	+0.75f };
-		mesh_data.vtxs[3].vtx_crd = v2f32{ +0.5f,	+0.5f };
-		mesh_data.vtxs[4].vtx_crd = v2f32{ +0.5f,	-0.5f };
-		
-		mesh_data.vtxs[5].vtx_crd = v2f32{ +0.0f,	-0.75f };
-		mesh_data.vtxs[6].vtx_crd = v2f32{ +0.0f,	-0.75f };
-		mesh_data.vtxs[7].vtx_crd = v2f32{ +0.0f,	-0.75f };
-		mesh_data.vtxs[8].vtx_crd = v2f32{ +0.0f,	-0.75f };
-		mesh_data.vtxs[9].vtx_crd = v2f32{ +0.0f,	-0.75f };
-		mesh_data.gen_idx_data();
+		gfx_mesh_data<vtx_3f2f3f, ui32> gmd;
+		// back
+		gmd.add_vertex(vtx_3f2f3f{ { -0.5f,	-0.5f,	-0.5f },	{ 0.00f,	0.00f } });
+		gmd.add_vertex(vtx_3f2f3f{ { -0.5f,	+0.5f,	-0.5f },	{ 0.00f,	1.00f } });
+		gmd.add_vertex(vtx_3f2f3f{ { +0.5f,	+0.5f,	-0.5f },	{ 1.00f,	1.00f } });
+		gmd.add_vertex(vtx_3f2f3f{ { +0.5f,	-0.5f,	-0.5f },	{ 1.00f,	0.00f } });
+		// bottom
+		gmd.add_vertex(vtx_3f2f3f{ { +0.5f,	-0.5f,	+0.5f },	{ 1.00f,	1.00f } });
+		gmd.add_vertex(vtx_3f2f3f{ { -0.5f,	-0.5f,	+0.5f },	{ 1.00f,	0.00f } });
+		// left
+		gmd.add_vertex(vtx_3f2f3f{ { -0.5f,	+0.5f,	+0.5f },	{ 1.00f,	1.00f } });
+		gmd.add_vertex(vtx_3f2f3f{ { -0.5f,	+0.5f,	-0.5f },	{ 0.00f,	1.00f } });
+		gmd.update_indices(GPT_TRIANGLES);
+		// front
+		gmd.add_vertex(vtx_3f2f3f{ { +0.5f,	+0.5f,	+0.5f },	{ 1.00f,	1.00f } });
+		gmd.add_vertex(vtx_3f2f3f{ { +0.5f,	-0.5f,	+0.5f },	{ 1.00f,	0.00f } });
+		gmd.add_vertex(vtx_3f2f3f{ { -0.5f,	-0.5f,	+0.5f },	{ 0.00f,	0.00f } });
+		gmd.add_vertex(vtx_3f2f3f{ { -0.5f,	+0.5f,	+0.5f },	{ 0.00f,	1.00f } });
+		// top
+		gmd.add_vertex(vtx_3f2f3f{ { -0.5f,	+0.5f,	-0.5f },	{ 0.00f,	0.00f } });
+		gmd.add_vertex(vtx_3f2f3f{ { +0.5f,	+0.5f,	-0.5f },	{ 0.00f,	1.00f } });
+		// right
+		gmd.add_vertex(vtx_3f2f3f{ { +0.5f,	-0.5f,	-0.5f },	{ 0.00f,	0.00f } });
+		gmd.add_vertex(vtx_3f2f3f{ { +0.5f,	-0.5f,	+0.5f },	{ 1.00f,	0.00f } });
+		gmd.update_indices(GPT_TRIANGLES);
 
-		m_gfx->new_cmp<idx_buf>();
-		m_gfx->get_cmp<a_gfx_buf>(1).
-			get_ref<idx_buf>()->remake<ui32>(mesh_data.idxs.size(), &mesh_data.idxs[0]);
-		m_gfx->new_cmp<vtx_buf>();
-		m_gfx->get_cmp<a_gfx_buf>(2).
-			get_ref<vtx_buf>()->remake<vtx2f2f>(mesh_data.vtxs.size(), &mesh_data.vtxs[0]);
+		mem_ref<idx_drawable> drb;
+		m_gfx->new_res<idx_drawable>(drb);
+
+		m_gfx->new_res<idx_buf>(drb->get_buf());
+		drb->get_buf()->remake<ui32>(gmd.get_idx_count(), gmd.get_idx_data());
+		
+		mem_ref<vtx_buf> vbuf;
+		m_gfx->new_res<vtx_buf>(vbuf);
+		vbuf->remake<vtx_3f2f3f>(gmd.get_vtx_count(), gmd.get_vtx_data());
+		drb->add_res(vbuf);
 
 		mem_ref<gfx_material> gmtl;
-		m_gfx->new_cmp<gfx_material>("gmt_default_2d");
-		gmtl.set_ref<gfx_material>(m_gfx->get_cmp<gfx_material>(1));
-		if (!gmtl->load_file(R"(D:\dev\native_world\data\shader\shp_2d_default.shd)")) { return false; }
+		m_gfx->new_res<gfx_material>(gmtl, "gmt_default_3d");
+		if (!gmtl->load_file(R"(D:\dev\native_world\data\material\default_3d.gmt)")) { return false; }
+		drb->add_res(gmtl);
 		
 		mem_ref<a_texture> tex;
-		m_gfx->new_cmp<texture2d>("txr_nw_logo");
-		tex.set_ref(m_gfx->get_cmp<a_texture>(1));
+		m_gfx->new_res<a_texture, texture2d>(tex, "txr_nw_logo");
 		if (!tex->load_file(R"(D:\dev\native_world\data\image\nw_logo.bmp)")) { return false; }
-		
+
 		gmtl->get_shader(SHD_PIXEL)->get_texture(0).set_ref(tex);
-		//s_drb->add_cmp(gmtl);
 
 		return true;
 	}
 	void gfx_state::quit()
 	{
-		//s_drb.reset();
 	}
 	void gfx_state::update()
 	{
-		m_camera_lad.update();
+		m_camera_lad.update(*m_core->get_keyboard() , *m_core->get_cursor(), *m_core->get_timer());
 		draw_scene();
 	}
 
-	void gfx_state::on_event(cursor_event& evt) { m_camera_lad.on_event(evt); }
-	void gfx_state::on_event(keyboard_event& evt)
+	void gfx_state::event_proc(cursor_event& evt)
+	{
+	}
+	void gfx_state::event_proc(keyboard_event& evt)
 	{
 		switch (evt.type) {
-		case EVT_KEYBOARD_FREE:
+		case EVT_KEYBOARD_RELEASED:
 			switch (evt.code) {
-			case KC_1: m_gfx->set_primitive(GPT_TRIANGLES); break;
-			case KC_2: m_gfx->set_primitive(GPT_TRIANGLE_STRIP); break;
-			case KC_3: m_gfx->set_primitive(GPT_TRIANGLE_FAN); break;
-			case KC_4: m_gfx->set_primitive(GPT_LINE_STRIP); break;
-			case KC_5: m_gfx->set_primitive(GPT_LINES); break;
-			case KC_6: m_gfx->set_primitive(GPT_LINE_LOOP); break;
-			case KC_7: m_gfx->set_primitive(GPT_POINTS); break;
+			//case KC_1: m_gfx->set_primitive(GPT_TRIANGLES); break;
+			//case KC_2: m_gfx->set_primitive(GPT_TRIANGLE_STRIP); break;
+			//case KC_3: m_gfx->set_primitive(GPT_TRIANGLE_FAN); break;
+			//case KC_4: m_gfx->set_primitive(GPT_LINE_STRIP); break;
+			//case KC_5: m_gfx->set_primitive(GPT_LINES); break;
+			//case KC_6: m_gfx->set_primitive(GPT_LINE_LOOP); break;
+			//case KC_7: m_gfx->set_primitive(GPT_POINTS); break;
 			}
 			break;
 		default: break;
 		}
-		m_camera_lad.on_event(evt);
 	}
-	void gfx_state::on_event(window_event& evt) {
-		m_camera_lad.on_event(evt);
+	void gfx_state::event_proc(window_event& evt) {
 		switch (evt.type) {
 		case EVT_WINDOW_RESIZE: {
-			v4si32 rectViewport = m_gfx->get_configs().viewport;
-			rectViewport[2] = evt.val_x;
-			rectViewport[3] = evt.val_y;
-			m_gfx->set_viewport(rectViewport[0], rectViewport[1], rectViewport[2], rectViewport[3]);
+			v4si viewport = m_gfx->get_configs().viewport;
+			viewport[2] = evt.val_x;
+			viewport[3] = evt.val_y;
+			m_gfx->set_viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+			m_camera_lad.aspect_ratio = static_cast<f32>(viewport[2] - viewport[0]) / static_cast<f32>(viewport[3] - viewport[1]);
 			break;
 		}
 		case EVT_WINDOW_MOVE: { break; }
@@ -176,11 +134,30 @@ namespace NW
 
 	// --==<implementation_methods>==--
 	inline void gfx_state::draw_scene() {
-		m_gfx->begin_draw();
-		m_gfx->get_cmp<gfx_material>(1)->on_draw();
-		m_gfx->get_cmp<a_gfx_buf>(1)->on_draw();
-		m_gfx->get_cmp<a_gfx_buf>(2)->on_draw();
-		m_gfx->end_draw();
+		static f32 angle = 0.0f;
+		static f32 time_delta = 0.0f;
+		static f32 time_curr = 0.0f;
+		static buf_m4fm4fm4f unf_tform;
+		auto& viewport = m_core->get_graphics()->get_configs().viewport;
+
+		time_delta = m_core->get_timer()->get_delta();
+		time_curr = m_core->get_timer()->get_curr();
+		angle = sinf(time_curr);
+
+		unf_tform.view = m_camera_lad.get_view_mat();
+		unf_tform.proj = m_camera_lad.get_proj_mat();
+
+		auto& shd = m_gfx->get_res<vtx_shader>(0);
+		auto* vshd = shd.get_ref<vtx_shader>();
+		auto& sbuf = vshd->get_buffer(0);
+		sbuf->on_draw();
+		sbuf->set_data(sizeof(buf_m4fm4fm4f), &unf_tform);
+
+		m_gfx->get_configs().clear_color.g = angle;
+		m_gfx->get_configs().clear_color.b = angle;
+
+		auto& drb = m_gfx->get_res<idx_drawable>(0);
+		drb->on_draw();
 	}
 	// --==</implementation_methods>==--
 }
@@ -192,35 +169,11 @@ namespace NW
 		m_gui_context(nullptr), m_gui_io(nullptr), m_gui_style(nullptr) { }
 	gui_state::~gui_state() { }
 	// --==<core_methods>==--
-	bool gui_state::init()
+	bit gui_state::init()
 	{
-		IMGUI_CHECKVERSION();
-		GUI::CreateContext();
-
-		m_gui_context = GUI::GetCurrentContext();
-		m_gui_io = &GUI::GetIO();
-		m_gui_style = &GUI::GetStyle();
-
-		m_gui_io->ConfigFlags |=
-			ImGuiConfigFlags_NavEnableKeyboard |
-			ImGuiConfigFlags_ViewportsEnable |
-			ImGuiConfigFlags_DockingEnable;
-		m_gui_io->ConfigDockingWithShift = true;
-		GUI::StyleColorsDark();
-		if (m_gui_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-			m_gui_style->WindowRounding = 0.0f;
-			m_gui_style->Colors[ImGuiCol_WindowBg].w = 1.0f;
-		}
-#if(defined NW_PLATFORM_WINDOWS)
-		GUI::Win32Init(m_core->get_window()->get_native());
-#endif
-#if (NWG_GAPI & NWG_GAPI_OGL)
-		GUI::OglInit("#version 130");
-#endif
-#if (NWG_GAPI & NWG_GAPI_DX)
-		GUI::Dx11Init(core.get_gfx()->get_device(), core.get_gfx()->get_context());
-#endif
-		m_gui_of.resize(10);
+		if (!NWG::imgui_init(m_core->get_window()->get_native(), m_core->get_graphics()->get_device(), m_core->get_graphics()->get_context())) { return false; }
+		
+		m_gui_of.resize(4);
 		m_gui_of[0].make_ref<gui_of_core_engine>();
 		m_gui_of[1].make_ref<gui_of_gfx_engine>();
 		m_gui_of[2].make_ref<gui_of_cmd_engine>();
@@ -234,19 +187,11 @@ namespace NW
 	}
 	void gui_state::quit()
 	{
-#if (NWG_GAPI & NWG_GAPI_OGL)
-		GUI::OglShutdown();
-#endif
-#if (NWG_GAPI & NWG_GAPI_DX)
-		GUI::Dx11Shutdown();
-#endif
-#if(defined NW_PLATFORM_WINDOWS)
-		GUI::Win32Shutdown();
-#endif
-		GUI::DestroyContext();
+		NWG::imgui_quit();
 	}
 	void gui_state::update() {
-		begin_draw();
+		imgui_begin_frame();
+
 		if (GUI::BeginMenuBar()) {
 			if (GUI::BeginMenu("view")) {
 				for (auto& igui_of : m_gui_of) {
@@ -260,74 +205,11 @@ namespace NW
 			igui_of->on_draw();
 		}
 
-		end_draw();
+		imgui_end_frame();
 	}
 
-	void gui_state::on_event(cursor_event& rmEvt) { }
-	void gui_state::on_event(keyboard_event& rkEvt) { }
-	void gui_state::on_event(window_event& rwEvt) { }
+	void gui_state::event_proc(cursor_event& rmEvt) { }
+	void gui_state::event_proc(keyboard_event& rkEvt) { }
+	void gui_state::event_proc(window_event& rwEvt) { }
 	// --==</core_methods>==--
-
-	// --==<implementation_methods>==--
-	inline void gui_state::begin_draw() {
-#if (NWG_GAPI & NWG_GAPI_OGL)
-		GUI::OglNewFrame();
-#endif
-#if (NWG_GAPI & NWG_GAPI_DX)
-		GUI::Dx11NewFrame();
-#endif
-#if (defined NW_PLATFORM_WINDOWS)
-		GUI::Win32NewFrame();
-#endif
-		GUI::NewFrame();
-		// note: switch this to true to enable dockspace
-		bool bFullScreen = m_full_screen_persist;
-		static ImGuiDockNodeFlags DockspaceFlags = ImGuiDockNodeFlags_None;
-		ImGuiWindowFlags WindowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-
-		if (bFullScreen) {
-			ImGuiViewport* Viewport = GUI::GetMainViewport();
-			GUI::SetNextWindowPos(Viewport->Pos);
-			GUI::SetNextWindowSize(Viewport->Size);
-			GUI::SetNextWindowViewport(Viewport->ID);
-			GUI::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-			GUI::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-			WindowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-			WindowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-		}
-
-		GUI::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		GUI::Begin("dockspace", &m_enable_dockspace, WindowFlags);
-		GUI::PopStyleVar();
-
-		if (bFullScreen) { GUI::PopStyleVar(2); }
-
-		// dock space
-		float nMinSizeW = m_gui_style->WindowMinSize.x;
-		m_gui_style->WindowMinSize.x = 100.0f;
-		m_gui_style->Alpha = 1.0f;
-		if (m_gui_io->ConfigFlags & ImGuiConfigFlags_DockingEnable) {
-			ImGuiID nDockspaceId = GUI::GetID("DockSpace");
-			GUI::DockSpace(nDockspaceId, ImVec2(0.0f, 0.0f), DockspaceFlags);
-		}
-		m_gui_style->WindowMinSize.x = nMinSizeW;
-	}
-	inline void gui_state::end_draw() {
-		GUI::End();
-		GUI::Render();
-#if (NWG_GAPI & NWG_GAPI_OGL)
-		GUI::OglRenderDrawData(GUI::GetDrawData());
-#endif
-#if (NWG_GAPI & NWG_GAPI_DX)
-		GUI::Dx11RenderDrawData(GUI::GetDrawData());
-#endif
-		GUI::EndFrame();
-		if (m_gui_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-#if (defined NW_PLATFORM_WINDOWS)
-			GUI::UpdatePlatformWindows();
-			GUI::RenderPlatformWindowsDefault();
-#endif
-		}
-	}
-	// --==</implementation_methods>==--
 }

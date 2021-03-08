@@ -3,6 +3,8 @@
 #include <nw_core.hpp>
 namespace NW
 {
+	using native_window = HWND;
+	/// window_info struct
 	struct NW_API window_info : public a_info
 	{
 	public:
@@ -15,7 +17,7 @@ namespace NW
 		bit is_hovered = false;
 		bit is_focused = false;
 		bit is_enabled = false;
-		event_callback on_event = [](a_event&)->void { return; };
+		event_callback event_proc = [](a_event&)->void { return; };
 	public:
 		window_info(cstring window_title = "default", ui16 width = 800, ui16 height = 600);
 		// --operators
@@ -39,7 +41,7 @@ namespace NW
 		inline ui16 get_size_y() const	{ return m_info.size_y; }
 		inline ui16 get_opacity() const	{ return m_info.opacity; }
 		inline cstring get_title() const{ return &m_info.title[0]; }
-		inline HWND& get_native()		{ return m_native; }
+		inline native_window* get_native()	{ return &m_native; }
 		inline const window_info& get_info() const { return m_info; }
 		// --setters
 		void set_title(cstring title);
@@ -47,9 +49,7 @@ namespace NW
 		void set_enabled(bit enable);
 		void set_opacity(f32 opacity);
 		void set_icon(const image_info& info);
-		void set_event_callback(const event_callback& on_event);
-		void set_keyboard_mode(keyboard_modes kbdMode);
-		void set_cursor_mode(cursor_modes crsMode);
+		void set_event_callback(const event_callback& event_proc);
 		// --predicates
 		inline bit is_hovered() const	{ return m_info.is_hovered; }
 		inline bit  is_focused() const	{ return m_info.is_focused; }
@@ -58,14 +58,12 @@ namespace NW
 		void operator=(const core_window& copy) = delete;
 		// --core_methods
 		void update();
+#if defined (NW_PLATFORM_WINDOWS)
+		LRESULT __stdcall event_proc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam);
+#endif	// NW_PLATFORM
 	private:
-		static LRESULT __stdcall msg_proc_init(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam);
-		static LRESULT __stdcall msg_proc_static(HWND wnd, UINT msd, WPARAM wparam, LPARAM lparam);
-		LRESULT __stdcall msg_proc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam);
-	private:
-		core_engine* core;
 		window_info m_info;
-		HWND m_native;
+		native_window m_native;
 		MSG m_msg;
 		WNDCLASSEX m_class;
 		PAINTSTRUCT m_pts;

@@ -5,13 +5,7 @@
 #if (defined NWG_GAPI)
 #	include <gui/imgui_core.hpp>
 #	include <gui/imgui_internal.h>
-#	include <gui/impl/imgui_win.h>
-#	if (NWG_GAPI & NWG_GAPI_OGL)
-#		include <gui/impl/imgui_ogl.h>
-#	endif
-#	if (NWG_GAPI & NWG_GAPI_DX)
-#		include <gui/impl/imgui_dx.h>
-#	endif
+#	include <gui/nwg_imgui.h>
 #	define GUI_DEFAULT_TREE_FLAGS ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick
 #endif	// NWG_GAPI
 namespace NW
@@ -82,8 +76,8 @@ namespace NW
 		// --core_methods
 		virtual void on_draw() override;
 	private:
-		char8 m_next_dir[256]{ 0 };
-		char8 m_curr_dir[256]{ 0 };
+		schar m_next_dir[256]{ 0 };
+		schar m_curr_dir[256]{ 0 };
 	};
 }
 namespace NW
@@ -115,7 +109,7 @@ namespace NW
 		virtual void on_draw() override;
 	private:
 		mem_ref<a_texture> m_context;
-		char8 m_context_name[128];
+		schar m_context_name[128];
 	};
 }
 #endif	// NW_GUI_OF_H

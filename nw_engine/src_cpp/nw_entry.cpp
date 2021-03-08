@@ -15,8 +15,10 @@ int main(int nArgs, char* strArgs[])
 	try {
 #if (NW_LAUNCH & NW_LAUNCH_ENGINE)
 		NW::core_engine game = NW::core_engine();
-		NW::gfx_state gstate = NW::gfx_state(game);
-		game.add_state(gstate);
+		NW::gfx_state gfx = NW::gfx_state(game);
+		//NW::gui_state gui = NW::gui_state(game);
+		game.add_state(gfx);
+		//game.add_state(gui);
 		game.run();
 		if (game.get_run_thread()->joinable()) { game.get_run_thread()->join(); }
 #endif

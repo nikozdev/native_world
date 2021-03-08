@@ -1,6 +1,0 @@
---==shader_info==--
-gapi:2;
-type:3;
-name:shd_gmt_2d_default;
-source:D:\dev\native_world\nw_gfx\src_glsl\gmt_2d_default.glsl;
---==/shader_info==--

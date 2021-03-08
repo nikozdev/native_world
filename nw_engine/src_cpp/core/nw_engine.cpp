@@ -41,9 +41,9 @@ namespace NW
 		if (!m_is_running) { m_is_running = true; }
 
 		m_wnd.make_ref<core_window>(window_info{ &m_name[0], 1200, 800 });
-		m_wnd->set_event_callback([this](a_event& evt)->void { return this->on_event(evt); });
+		m_wnd->set_event_callback([this](a_event& evt)->void { return this->event_proc(evt); });
 
-		m_gfx.make_ref<gfx_engine>(m_wnd->get_native());
+		m_gfx.make_ref<gfx_engine>(*m_wnd->get_native());
 		m_gfx->set_viewport(0, 0, m_wnd->get_size_x(), m_wnd->get_size_y());
 		m_gfx->set_vsync(true);
 
@@ -85,37 +85,40 @@ namespace NW
 	{
 		for (auto& istate : m_states) { istate->update(); }
 		log_sys::update();
+		m_crs.update();
+		m_kbd.update();
 		m_timer.update();
 		m_wnd->update();
 		m_gfx->update();
 	}
-	void core_engine::on_event(a_event& evt)
+	void core_engine::event_proc(a_event& evt)
 	{
 		if (evt.is_in_category(EVC_CURSOR)) {
 			cursor_event& crs_evt = static_cast<cursor_event&>(evt);
-			m_crs.on_event(crs_evt);
-			for (auto& istate : m_states) { if (evt.is_handled) return; istate->on_event(crs_evt); }
+			m_crs.event_proc(crs_evt);
+			for (auto& istate : m_states) { if (evt.is_handled) return; istate->event_proc(crs_evt); }
 			if (crs_evt.is_handled) { return; }
 		}
 		else if (evt.is_in_category(EVC_KEYBOARD)) {
 			keyboard_event& kbd_evt = static_cast<keyboard_event&>(evt);
-			m_kbd.on_event(kbd_evt);
-			for (auto& istate : m_states) { if (evt.is_handled) { return; } istate->on_event(kbd_evt); }
+			m_kbd.event_proc(kbd_evt);
+			for (auto& istate : m_states) { if (evt.is_handled) { return; } istate->event_proc(kbd_evt); }
 			if (kbd_evt.is_handled) { return; }
-			if (m_kbd.get_held(KC_LSHIFT)) {
-				if (m_kbd.get_held(KC_M)) {
-					m_crs.set_mode( (m_crs.get_mode() == CRS_DEFAULT) ? CRS_CAPTURED : CRS_DEFAULT );
-					m_wnd->set_cursor_mode(m_crs.get_mode());
-				}
-				else if (m_kbd.get_held(KC_ESCAPE)) {
+			if (kbd_evt.type == EVT_KEYBOARD_RELEASED) {
+				switch (kbd_evt.code) {
+				case KC_M:
+					m_crs.set_mode((m_crs.get_mode() == CRS_DEFAULT) ? CRS_CAPTURED : CRS_DEFAULT);
+					break;
+				case KC_ESCAPE:
 					stop_running();
 					evt.is_handled = true;
+					break;
 				}
 			}
 		}
 		else if (evt.is_in_category(EVC_WINDOW)) {
 			window_event& wnd_evt = static_cast<window_event&>(evt);
-			for (auto& istate : m_states) { if (evt.is_handled) { return; } istate->on_event(wnd_evt); }
+			for (auto& istate : m_states) { if (evt.is_handled) { return; } istate->event_proc(wnd_evt); }
 			if (wnd_evt.is_handled) { return; }
 			if (wnd_evt.type == EVT_WINDOW_CLOSE) {
 				stop_running();

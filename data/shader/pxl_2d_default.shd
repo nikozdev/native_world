@@ -1,6 +1,0 @@
---==shader_info==--
-gapi:2;
-type:2;
-name:shd_pxl_2d_default;
-src:D:\dev\native_world\nw_gfx\src_glsl\pxl_2d_default.glsl;
---==/shader_info==--

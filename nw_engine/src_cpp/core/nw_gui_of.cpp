@@ -132,7 +132,7 @@ namespace NW
 		}
 		if (!m_context.is_valid()) { GUI::End(); return; }
 
-		GUI::Image(reinterpret_cast<ptr>(m_context->get_ogl_id()), { static_cast<f32>(64.0f), static_cast<f32>(64.0f) });
+		GUI::Image(reinterpret_cast<imgui_texture_id>(m_context->get_ogl_id()), { 64.0f, 64.0f });
 
 		GUI::End();
 	}
