@@ -10,39 +10,18 @@ workspace "native_world"
 		--"NW_LINK_STATIC",
 		--"NW_BUILD_DLL"
 		--"NW_LINK_DYNAMIC",
-
-		"NWL_BUILD_LIB",
-		"NWL_LINK_STATIC",
-		--"NWL_BUILD_DLL"
-		--"NWL_LINK_DYNAMIC",
-		
-		"NWG_BUILD_LIB",
-		"NWG_LINK_STATIC",
-		--"NWG_BUILD_DLL",
-		--"NWG_LINK_DYNAMIC",
-		
-		"NWC_BUILD_LIB",
-		"NWC_LINK_STATIC",
-		--"NWC_BUILD_DLL"
-		--"NWC_LINK_DYNAMIC",
 	}
 	filter "system:windows"
 	systemversion "latest"
 	defines
 	{
 		"NW_PLATFORM_WINDOWS",
-		"NWL_PLATFORM_WINDOWS",
-		"NWG_PLATFORM_WINDOWS",
-		"NWC_PLATFORM_WINDOWS",
 	}
 	filter "configurations:debug"
 	defines
 	{
 		"DEBUG",
 		"NW_DEBUG",
-		"NWL_DEBUG",
-		"NWG_DEBUG",
-		"NWC_DEBUG",
 	}
 	symbols "on"
 	filter "configurations:release"
@@ -50,9 +29,6 @@ workspace "native_world"
 	{
 		"NDEBUG",
 		"NW_RELEASE",
-		"NWL_RELEASE",
-		"NWG_RELEASE",
-		"NWC_RELEASE",
 	}
 	filter("files:**.hlsl")
 		flags("excludefrombuild")

@@ -51,7 +51,7 @@ namespace NW
 	LRESULT __stdcall event_proc_static(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		core_window* core_wnd = reinterpret_cast<core_window*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
 
-		if (NWG::imgui_event_proc(wnd, msg, wparam, lparam)) { return true; }
+		if (NW::imgui_event_proc(wnd, msg, wparam, lparam)) { return true; }
 
 		return core_wnd->event_proc(wnd, msg, wparam, lparam);
 	}
@@ -109,8 +109,6 @@ namespace NW
 		m_info.title = window_title;
 		SetWindowTextA(m_native, window_title);
 	}
-	void core_window::set_event_callback(const event_callback& event_proc) { m_info.event_proc = event_proc; }
-	void core_window::set_icon(const image_info& info) { }
 	void core_window::set_opacity(f32 opacity) {
 		opacity = opacity > 1.0f ? 1.0f : opacity < 0.1f ? 0.1f : opacity;
 		m_info.opacity = opacity;
@@ -134,6 +132,8 @@ namespace NW
 		m_info.is_enabled = is_enabled;
 		EnableWindow(m_native, is_enabled);
 	}
+	void core_window::set_icon(const a_image& img) { }
+	void core_window::set_event_callback(const event_callback& event_proc) { m_info.event_proc = event_proc; }
 	// --==<core_methods>==--
 	void core_window::update()
 	{

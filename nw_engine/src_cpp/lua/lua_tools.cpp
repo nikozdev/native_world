@@ -32,4 +32,7 @@ namespace NW
 		stm << "--==/lua_engine_info==--" << std::endl;
 		return stm;
 	}
+	in_stream& lua_engine_info::operator>>(in_stream& stm) {
+		return stm;
+	}
 }

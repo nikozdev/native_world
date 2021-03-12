@@ -28,6 +28,96 @@ namespace NW
 }
 namespace NW
 {
+	vtx_3f vtx_cube_3f[] = {
+		{ { -1.0f,  1.0f, -1.0f } },
+		{ { -1.0f, -1.0f, -1.0f } },
+		{ {  1.0f, -1.0f, -1.0f } },
+		{ {  1.0f, -1.0f, -1.0f } },
+		{ {  1.0f,  1.0f, -1.0f } },
+		{ { -1.0f,  1.0f, -1.0f } },
+
+		{ { -1.0f, -1.0f,  1.0f } },
+		{ { -1.0f, -1.0f, -1.0f } },
+		{ { -1.0f,  1.0f, -1.0f } },
+		{ { -1.0f,  1.0f, -1.0f } },
+		{ { -1.0f,  1.0f,  1.0f } },
+		{ { -1.0f, -1.0f,  1.0f } },
+
+		{  { 1.0f, -1.0f, -1.0f } },
+		{  { 1.0f, -1.0f,  1.0f } },
+		{  { 1.0f,  1.0f,  1.0f } },
+		{  { 1.0f,  1.0f,  1.0f } },
+		{  { 1.0f,  1.0f, -1.0f } },
+		{  { 1.0f, -1.0f, -1.0f } },
+
+		{ { -1.0f, -1.0f,  1.0f } },
+		{ { -1.0f,  1.0f,  1.0f } },
+		{ {  1.0f,  1.0f,  1.0f } },
+		{ {  1.0f,  1.0f,  1.0f } },
+		{ {  1.0f, -1.0f,  1.0f } },
+		{ { -1.0f, -1.0f,  1.0f } },
+
+		{ { -1.0f,  1.0f, -1.0f } },
+		{ {  1.0f,  1.0f, -1.0f } },
+		{ {  1.0f,  1.0f,  1.0f } },
+		{ {  1.0f,  1.0f,  1.0f } },
+		{ { -1.0f,  1.0f,  1.0f } },
+		{ { -1.0f,  1.0f, -1.0f } },
+
+		{ { -1.0f, -1.0f, -1.0f } },
+		{ { -1.0f, -1.0f,  1.0f } },
+		{ {  1.0f, -1.0f, -1.0f } },
+		{ {  1.0f, -1.0f, -1.0f } },
+		{ { -1.0f, -1.0f,  1.0f } },
+		{ {  1.0f, -1.0f,  1.0f } },
+	};
+	vtx_3f2f3f vtx_cube_3f2f3f[] = {
+		// back
+		{ { -1.0f,	+1.0f,	-1.0f },	{ 0.00f,	1.00f } },
+		{ { -1.0f,	-1.0f,	-1.0f },	{ 0.00f,	0.00f } },
+		{ { +1.0f,	+1.0f,	-1.0f },	{ 1.00f,	1.00f } },
+		{ { +1.0f,	-1.0f,	-1.0f },	{ 1.00f,	0.00f } },
+		{ { +1.0f,	+1.0f,	-1.0f },	{ 1.00f,	1.00f } },
+		{ { -1.0f,	+1.0f,	-1.0f },	{ 0.00f,	1.00f } },
+		// left
+		{ { -1.0f,	-1.0f,	+1.0f },	{ 0.00f,	1.00f } },
+		{ { -1.0f,	-1.0f,	-1.0f },	{ 0.00f,	0.00f } },
+		{ { -1.0f,	+1.0f,	-1.0f },	{ 1.00f,	0.00f } },
+		{ { -1.0f,	+1.0f,	-1.0f },	{ 1.00f,	0.00f } },
+		{ { -1.0f,	+1.0f,  +1.0f },	{ 1.00f,	1.00f } },
+		{ { -1.0f,	-1.0f,  +1.0f },	{ 0.00f,	1.00f } },
+		// right
+		{ { +1.0f,	-1.0f,	-1.0f },	{ 0.00f,	0.00f } },
+		{ { +1.0f,	-1.0f,	+1.0f },	{ 0.00f,	1.00f } },
+		{ { +1.0f,	+1.0f,	+1.0f },	{ 1.00f,	1.00f } },
+		{ { +1.0f,	+1.0f,	+1.0f },	{ 1.00f,	1.00f } },
+		{ { +1.0f,	+1.0f,	-1.0f },	{ 1.00f,	0.00f } },
+		{ { +1.0f,	-1.0f,	-1.0f },	{ 0.00f,	0.00f } },
+		// front
+		{ { -1.0f,	-1.0f,	+1.0f },	{ 0.00f,	0.00f } },
+		{ { -1.0f,	+1.0f,	+1.0f },	{ 0.00f,	1.00f } },
+		{ { +1.0f,	+1.0f,	+1.0f },	{ 1.00f,	1.00f } },
+		{ { +1.0f,	+1.0f,	+1.0f },	{ 1.00f,	1.00f } },
+		{ { +1.0f,	-1.0f,	+1.0f },	{ 1.00f,	0.00f } },
+		{ { -1.0f,	-1.0f,	+1.0f },	{ 0.00f,	0.00f } },
+		// top
+		{ { -1.0f,	+1.0f,	-1.0f },	{ 0.00f,	0.00f } },
+		{ { +1.0f,	+1.0f,	-1.0f },	{ 1.00f,	0.00f } },
+		{ { +1.0f,	+1.0f,	+1.0f },	{ 1.00f,	1.00f } },
+		{ { +1.0f,	+1.0f,	+1.0f },	{ 1.00f,	1.00f } },
+		{ { -1.0f,	+1.0f,	+1.0f },	{ 0.00f,	1.00f } },
+		{ { -1.0f,	+1.0f,	-1.0f },	{ 0.00f,	0.00f } },
+		// bottom
+		{ { -1.0f,	-1.0f,	-1.0f },	{ 0.00f,	0.00f } },
+		{ { -1.0f,	-1.0f,	+1.0f },	{ 0.00f,	1.00f } },
+		{ { +1.0f,	-1.0f,	-1.0f },	{ 1.00f,	0.00f } },
+		{ { +1.0f,	-1.0f,	-1.0f },	{ 1.00f,	0.00f } },
+		{ { -1.0f,	-1.0f,	+1.0f },	{ 0.00f,	1.00f } },
+		{ { +1.0f,	-1.0f,	+1.0f },	{ 1.00f,	1.00f } },
+	};
+}
+namespace NW
+{
 	gfx_state::gfx_state(core_engine& rEngine) :
 		a_engine_state(rEngine),
 		m_gfx(m_core->get_graphics()),
@@ -37,54 +127,9 @@ namespace NW
 	bool gfx_state::init() {
 		m_gfx = m_core->get_graphics();
 		
-		gfx_mesh_data<vtx_3f2f3f, ui32> gmd;
-		// back
-		gmd.add_vertex(vtx_3f2f3f{ { -0.5f,	-0.5f,	-0.5f },	{ 0.00f,	0.00f } });
-		gmd.add_vertex(vtx_3f2f3f{ { -0.5f,	+0.5f,	-0.5f },	{ 0.00f,	1.00f } });
-		gmd.add_vertex(vtx_3f2f3f{ { +0.5f,	+0.5f,	-0.5f },	{ 1.00f,	1.00f } });
-		gmd.add_vertex(vtx_3f2f3f{ { +0.5f,	-0.5f,	-0.5f },	{ 1.00f,	0.00f } });
-		// bottom
-		gmd.add_vertex(vtx_3f2f3f{ { +0.5f,	-0.5f,	+0.5f },	{ 1.00f,	1.00f } });
-		gmd.add_vertex(vtx_3f2f3f{ { -0.5f,	-0.5f,	+0.5f },	{ 1.00f,	0.00f } });
-		// left
-		gmd.add_vertex(vtx_3f2f3f{ { -0.5f,	+0.5f,	+0.5f },	{ 1.00f,	1.00f } });
-		gmd.add_vertex(vtx_3f2f3f{ { -0.5f,	+0.5f,	-0.5f },	{ 0.00f,	1.00f } });
-		gmd.update_indices(GPT_TRIANGLES);
-		// front
-		gmd.add_vertex(vtx_3f2f3f{ { +0.5f,	+0.5f,	+0.5f },	{ 1.00f,	1.00f } });
-		gmd.add_vertex(vtx_3f2f3f{ { +0.5f,	-0.5f,	+0.5f },	{ 1.00f,	0.00f } });
-		gmd.add_vertex(vtx_3f2f3f{ { -0.5f,	-0.5f,	+0.5f },	{ 0.00f,	0.00f } });
-		gmd.add_vertex(vtx_3f2f3f{ { -0.5f,	+0.5f,	+0.5f },	{ 0.00f,	1.00f } });
-		// top
-		gmd.add_vertex(vtx_3f2f3f{ { -0.5f,	+0.5f,	-0.5f },	{ 0.00f,	0.00f } });
-		gmd.add_vertex(vtx_3f2f3f{ { +0.5f,	+0.5f,	-0.5f },	{ 0.00f,	1.00f } });
-		// right
-		gmd.add_vertex(vtx_3f2f3f{ { +0.5f,	-0.5f,	-0.5f },	{ 0.00f,	0.00f } });
-		gmd.add_vertex(vtx_3f2f3f{ { +0.5f,	-0.5f,	+0.5f },	{ 1.00f,	0.00f } });
-		gmd.update_indices(GPT_TRIANGLES);
-
-		mem_ref<idx_drawable> drb;
-		m_gfx->new_res<idx_drawable>(drb);
-
-		m_gfx->new_res<idx_buf>(drb->get_buf());
-		drb->get_buf()->remake<ui32>(gmd.get_idx_count(), gmd.get_idx_data());
+		//if (!init_skybox()) { return false; }
+		if (!init_scene()) { return false; }
 		
-		mem_ref<vtx_buf> vbuf;
-		m_gfx->new_res<vtx_buf>(vbuf);
-		vbuf->remake<vtx_3f2f3f>(gmd.get_vtx_count(), gmd.get_vtx_data());
-		drb->add_res(vbuf);
-
-		mem_ref<gfx_material> gmtl;
-		m_gfx->new_res<gfx_material>(gmtl, "gmt_default_3d");
-		if (!gmtl->load_file(R"(D:\dev\native_world\data\material\default_3d.gmt)")) { return false; }
-		drb->add_res(gmtl);
-		
-		mem_ref<a_texture> tex;
-		m_gfx->new_res<a_texture, texture2d>(tex, "txr_nw_logo");
-		if (!tex->load_file(R"(D:\dev\native_world\data\image\nw_logo.bmp)")) { return false; }
-
-		gmtl->get_shader(SHD_PIXEL)->get_texture(0).set_ref(tex);
-
 		return true;
 	}
 	void gfx_state::quit()
@@ -93,6 +138,7 @@ namespace NW
 	void gfx_state::update()
 	{
 		m_camera_lad.update(*m_core->get_keyboard() , *m_core->get_cursor(), *m_core->get_timer());
+		//draw_skybox();
 		draw_scene();
 	}
 
@@ -104,7 +150,7 @@ namespace NW
 		switch (evt.type) {
 		case EVT_KEYBOARD_RELEASED:
 			switch (evt.code) {
-			//case KC_1: m_gfx->set_primitive(GPT_TRIANGLES); break;
+			case KC_1: m_gfx->set_primitive(GPT_TRIANGLES); break;
 			//case KC_2: m_gfx->set_primitive(GPT_TRIANGLE_STRIP); break;
 			//case KC_3: m_gfx->set_primitive(GPT_TRIANGLE_FAN); break;
 			//case KC_4: m_gfx->set_primitive(GPT_LINE_STRIP); break;
@@ -133,30 +179,94 @@ namespace NW
 	// --==</core_methods>==--
 
 	// --==<implementation_methods>==--
-	inline void gfx_state::draw_scene() {
-		static f32 angle = 0.0f;
-		static f32 time_delta = 0.0f;
-		static f32 time_curr = 0.0f;
-		static buf_m4fm4fm4f unf_tform;
-		auto& viewport = m_core->get_graphics()->get_configs().viewport;
+	inline bool gfx_state::init_scene() {
+		mem_ref<drawable_vtx> drb;
+		m_gfx->new_rsc<drawable_vtx>(drb);
 
-		time_delta = m_core->get_timer()->get_delta();
-		time_curr = m_core->get_timer()->get_curr();
-		angle = sinf(time_curr);
+		mem_ref<buf_vtx> vbuf;
+		m_gfx->new_rsc<buf_vtx>(vbuf);
+		vbuf->remake<vtx_3f2f3f>(std::size(vtx_cube_3f2f3f), &vtx_cube_3f2f3f[0]);
+		drb->get_bufs().push_back(vbuf);
+
+		dstring str_buf = "default";
+
+		mem_ref<a_shader> vshd;
+		m_gfx->new_rsc<a_shader, shader_vtx>(vshd, "shd_default_3d_vtx");
+		if (!data_sys::load_file(R"(F:\projects\native_world\nw_gfx\src_glsl\default_3d_vtx.glsl)", str_buf)) { return false; }
+		if (!vshd->remake(&str_buf[0])) { return false; }
+
+		mem_ref<a_shader> pshd;
+		m_gfx->new_rsc<a_shader, shader_pxl>(pshd, "shd_default_3d_pxl");
+		if (!data_sys::load_file(R"(F:\projects\native_world\nw_gfx\src_glsl\default_3d_pxl.glsl)", str_buf)) { return false; }
+		if (!pshd->remake(&str_buf[0])) { return false; }
+
+		mem_ref<a_texture> txr;
+		m_gfx->new_rsc<a_texture, texture_2d>(txr, "txr_nw_logo");
+		image_bmp img("nw_logo.bmp");
+		if (!data_sys::load_file(R"(F:\projects\native_world\data\image\nw_logo.bmp)", img)) { return false; }
+		if (!txr->remake(img)) { return false; }
+		
+		mem_ref<gfx_material> gmtl;
+		m_gfx->new_rsc<gfx_material>(gmtl, "gmt_default_3d");
+		gmtl->add_shader(vshd);
+		gmtl->add_shader(pshd);
+		gmtl->add_texture(txr);
+		if (!gmtl->remake()) { return false; }
+		drb->add_rsc(gmtl);
+		
+		mem_ref<sampler> smp;
+		m_gfx->new_rsc<sampler>(smp);
+		drb->add_rsc(smp);
+
+		return true;
+	}
+	inline bool gfx_state::init_skybox() {
+		mem_ref<drawable_vtx> drb;
+		m_gfx->new_rsc<drawable_vtx>(drb);
+
+		drb->get_bufs().push_back(mem_ref<buf_vtx>());
+		m_gfx->new_rsc<buf_vtx>(drb->get_bufs().back());
+
+		mem_ref<gfx_material> gmtl;
+		m_gfx->new_rsc<gfx_material>(gmtl, "gmt");
+		drb->add_rsc(gmtl);
+
+		mem_ref<a_texture> txr;
+		image_bmp img("nw_skybox.bmp");
+		if (!data_sys::load_file(R"(F:\projects\native_world\data\image\nw_sb.bmp)", img)) { return false; }
+		m_gfx->new_rsc<a_texture, texture_cube>(txr, "txr_skybox_0");
+		if (!txr->remake(img)) { return false; }
+
+		return true;
+	}
+	inline void gfx_state::draw_scene() {
+		static buf_16f16f16f unf_tform;
 
 		unf_tform.view = m_camera_lad.get_view_mat();
 		unf_tform.proj = m_camera_lad.get_proj_mat();
 
-		auto& shd = m_gfx->get_res<vtx_shader>(0);
-		auto* vshd = shd.get_ref<vtx_shader>();
+		auto& shd_rsc = m_gfx->get_rsc<shader_vtx>(0);
+		auto* vshd = shd_rsc.get_ref<shader_vtx>();
 		auto& sbuf = vshd->get_buffer(0);
 		sbuf->on_draw();
-		sbuf->set_data(sizeof(buf_m4fm4fm4f), &unf_tform);
+		sbuf->set_data(sizeof(buf_16f16f16f), &unf_tform);
 
-		m_gfx->get_configs().clear_color.g = angle;
-		m_gfx->get_configs().clear_color.b = angle;
+		auto& drb = m_gfx->get_rsc<drawable_vtx>(0);
+		drb->on_draw();
+	}
+	inline void gfx_state::draw_skybox() {
+		static buf_16f16f unf_tform;
 
-		auto& drb = m_gfx->get_res<idx_drawable>(0);
+		unf_tform.view = m4f( m3f(m_camera_lad.get_view_mat()) );
+		unf_tform.proj = m_camera_lad.get_proj_mat();
+
+		auto& shd = m_gfx->get_rsc<shader_vtx>(1);
+		auto* vshd = shd.get_ref<shader_vtx>();
+		auto& sbuf = vshd->get_buffer(1);
+		sbuf->on_draw();
+		sbuf->set_data(sizeof(buf_16f16f), &unf_tform);
+
+		auto& drb = m_gfx->get_rsc<drawable_vtx>(1);
 		drb->on_draw();
 	}
 	// --==</implementation_methods>==--
@@ -171,7 +281,7 @@ namespace NW
 	// --==<core_methods>==--
 	bit gui_state::init()
 	{
-		if (!NWG::imgui_init(m_core->get_window()->get_native(), m_core->get_graphics()->get_device(), m_core->get_graphics()->get_context())) { return false; }
+		if (!NW::imgui_init(m_core->get_window()->get_native(), m_core->get_graphics()->get_device(), m_core->get_graphics()->get_context())) { return false; }
 		
 		m_gui_of.resize(4);
 		m_gui_of[0].make_ref<gui_of_core_engine>();
@@ -187,7 +297,7 @@ namespace NW
 	}
 	void gui_state::quit()
 	{
-		NWG::imgui_quit();
+		NW::imgui_quit();
 	}
 	void gui_state::update() {
 		imgui_begin_frame();

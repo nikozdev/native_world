@@ -1,7 +1,0 @@
---==<graphics_material_info>==--
-gapi:2;
-name:shp_2d_default;
-src_vtx:D:\dev\native_world\data\shader\default_3d_vtx.shd;
-src_pxl:D:\dev\native_world\data\shader\default_3d_pxl.shd;
-src_gmt:D:\dev\native_world\data\shader\default_3d_gmt.shd;
---==</graphics_material_info>==--

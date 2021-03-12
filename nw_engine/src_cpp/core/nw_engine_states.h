@@ -1,12 +1,12 @@
-#ifndef NW_ENGINE_STATES_H
-#define NW_ENGINE_STATES_H
+#ifndef NATIVE_ENGINE_STATES_H
+#define NATIVE_ENGINE_STATES_H
 #include <nw_core.hpp>
 namespace NW
 {
 	/// abstract engine_state class
 	/// description:
 	/// --this is the main interaction part for the engine.
-	class NWL_API a_engine_state : public a_mem_user
+	class NW_API a_engine_state : public a_mem_user
 	{
 	public:
 		a_engine_state(core_engine& engine);
@@ -92,10 +92,13 @@ namespace NW
 		virtual void event_proc(keyboard_event& kbd_evt) override;
 		virtual void event_proc(window_event& wnd_evt) override;
 	private:
+		inline bool init_scene();
+		inline bool init_skybox();
 		inline void draw_scene();
+		inline void draw_skybox();
 	private:
 		gfx_engine* m_gfx;
 		gfx_camera_lad m_camera_lad;
 	};
 }
-#endif	// NW_ENGINE_STATES_H
+#endif	// NATIVE_ENGINE_STATES_H

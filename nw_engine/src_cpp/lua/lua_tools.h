@@ -12,7 +12,7 @@ namespace NW
 	struct NW_API lua_engine_info : public a_info
 	{
 	public:
-		using stack_types_info = carray<lua_types, 20>;
+		using stack_types_info = sarray<lua_types, 20>;
 	public:
 		lua_engine_info() { memset(&m_stack_types[0], LT_NON, sizeof(si8)); }
 		// --getters
@@ -25,6 +25,7 @@ namespace NW
 		void reset();
 		// --operators
 		virtual out_stream& operator<<(out_stream& stm) const override;
+		virtual in_stream& operator>>(in_stream& stm) override;
 	private:
 		ui8 m_nlevel = 0;
 		stack_types_info m_stack_types;

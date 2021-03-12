@@ -2,12 +2,12 @@
 #define NW_GUI_OF_H
 #include <nw_core.hpp>
 #include <lua/lua_engine.h>
-#if (defined NWG_GAPI)
+#if (defined NW_GAPI)
 #	include <gui/imgui_core.hpp>
 #	include <gui/imgui_internal.h>
 #	include <gui/nwg_imgui.h>
 #	define GUI_DEFAULT_TREE_FLAGS ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick
-#endif	// NWG_GAPI
+#endif	// NW_GAPI
 namespace NW
 {
 	/// abstract gui_of struct

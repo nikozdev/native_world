@@ -57,9 +57,9 @@ namespace NW
 	// -- Support methods
 	static inline a_ent* GetEntByArg(lua_state* pLState, si32 nIdx) {
 		si32 ltypeArg = lua_type(pLState, nIdx);
-		if (ltypeArg == LT_STR) { return a_data_res::GetDataRes<a_ent>(lua_tostring(pLState, nIdx)); }
+		if (ltypeArg == LT_STR) { return a_data_rsc::GetDataRes<a_ent>(lua_tostring(pLState, nIdx)); }
 		else if (ltypeArg == LT_LUD) { return static_cast<a_ent*>(lua_touserdata(pLState, nIdx)); }
-		else if (ltypeArg == LT_NUM) { return a_data_res::GetDataRes<a_ent>(lua_tonumber(pLState, nIdx)); }
+		else if (ltypeArg == LT_NUM) { return a_data_rsc::GetDataRes<a_ent>(lua_tonumber(pLState, nIdx)); }
 		else { return nullptr; }
 	}
 	class NW_API Luacmp_sys

@@ -2,7 +2,7 @@
 
 #define NW_LAUNCH_TEST		1 << 0
 #define NW_LAUNCH_ENGINE	1 << 1
-#define NW_LAUNCH_NWC		1 << 2
+#define NW_LAUNCH_NW		1 << 2
 #define NW_LAUNCH			NW_LAUNCH_ENGINE
 
 #include <core/nw_engine.h>
@@ -22,7 +22,7 @@ int main(int nArgs, char* strArgs[])
 		game.run();
 		if (game.get_run_thread()->joinable()) { game.get_run_thread()->join(); }
 #endif
-#if (NW_LAUNCH & NW_LAUNCH_NWC)
+#if (NW_LAUNCH & NW_LAUNCH_NW)
 #endif
 #if (NW_LAUNCH & NW_LAUNCH_TEST)
 		if (false) {
@@ -49,9 +49,9 @@ int main(int nArgs, char* strArgs[])
 		}
 #endif
 	}
-	catch (NWL::error& exc) { std::cout << exc; }
-	catch (std::exception& exc) { NWL_ERR(exc.what()); }
-	catch (...) { NWL_ERR("somethig went wrong"); }
+	catch (NW::error& exc) { std::cout << exc; }
+	catch (std::exception& exc) { NW_ERR(exc.what()); }
+	catch (...) { NW_ERR("somethig went wrong"); }
 
 	return 0;
 }

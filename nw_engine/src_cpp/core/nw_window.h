@@ -3,7 +3,6 @@
 #include <nw_core.hpp>
 namespace NW
 {
-	using native_window = HWND;
 	/// window_info struct
 	struct NW_API window_info : public a_info
 	{
@@ -41,14 +40,14 @@ namespace NW
 		inline ui16 get_size_y() const	{ return m_info.size_y; }
 		inline ui16 get_opacity() const	{ return m_info.opacity; }
 		inline cstring get_title() const{ return &m_info.title[0]; }
-		inline native_window* get_native()	{ return &m_native; }
+		inline window_handle* get_native()	{ return &m_native; }
 		inline const window_info& get_info() const { return m_info; }
 		// --setters
 		void set_title(cstring title);
 		void set_focused(bit is_focused);
 		void set_enabled(bit enable);
 		void set_opacity(f32 opacity);
-		void set_icon(const image_info& info);
+		void set_icon(const a_image& img);
 		void set_event_callback(const event_callback& event_proc);
 		// --predicates
 		inline bit is_hovered() const	{ return m_info.is_hovered; }
@@ -63,7 +62,7 @@ namespace NW
 #endif	// NW_PLATFORM
 	private:
 		window_info m_info;
-		native_window m_native;
+		window_handle m_native;
 		MSG m_msg;
 		WNDCLASSEX m_class;
 		PAINTSTRUCT m_pts;

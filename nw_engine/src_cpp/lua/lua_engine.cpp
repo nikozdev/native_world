@@ -273,14 +273,14 @@ namespace NW
 	inline bool lua_engine::lua_move(cstring strLoc, cstring name)
 	{	// get on the top of the stack some value due to string "tab1.tab2.value"
 		dstring str_buf("", 256);		// String buffer for the currently serched name
-		str_stream ststm = str_stream(dstring(strLoc) + '.' + name);
+		io_stream_str stm = io_stream_str(dstring(strLoc) + '.' + name);
 
 		// start with the global namespace
-		ststm.getline(&str_buf[0], str_buf.size(), '.');
+		stm.getline(&str_buf[0], str_buf.size(), '.');
 		if (!lua_move_glb(&str_buf[0])) { return false; }
 
-		while (!ststm.eof()) {	// Works only if with the global name is char '.'
-			ststm.getline(&str_buf[0], str_buf.size(), '.');
+		while (!stm.eof()) {	// Works only if with the global name is char '.'
+			stm.getline(&str_buf[0], str_buf.size(), '.');
 			if (!lua_move_loc(&str_buf[0])) { return false; }
 		}
 		//// We have found a value by the full path. It can be anything
@@ -374,7 +374,7 @@ namespace NW
 		va_end(valArgs);
 		if (lua_isstring(m_lstate, -1)) { err_commentLog += lua_tolstring(m_lstate, -1, 0); }
 		lua_clear();
-		NWL_ERR(&err_commentLog[0]);
+		NW_ERR(&err_commentLog[0]);
 	}
 	// --==</implementation_methods>==--
 

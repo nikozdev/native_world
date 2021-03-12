@@ -1,5 +1,5 @@
-#ifndef NW_ENGINE_H
-#define NW_ENGINE_H
+#ifndef NW_CORE_ENGINE_H
+#define NW_CORE_ENGINE_H
 #include <nw_core.hpp>
 #include <core/nw_window.h>
 #include <core/nw_engine_states.h>;
@@ -55,4 +55,4 @@ namespace NW
 		time_state m_timer;
 	};
 }
-#endif	// NW_ENGINE_H
+#endif	// NW_CORE_ENGINE_H

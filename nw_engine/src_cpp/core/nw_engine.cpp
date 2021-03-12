@@ -66,16 +66,16 @@ namespace NW
 		m_is_running = true;
 		auto run_loop = [this]()->void {
 			try {
-				if (!init()) { return; }
+				if (!init()) { throw error("failed init"); return; }
 				while (m_is_running) { update(); }
 				quit();
 			}
-			catch (NWL::error& exc) {
+			catch (NW::error& exc) {
 				std::cout << exc;
 				quit();
 			}
 			catch (std::exception& exc) {
-				std::cout << exc.what();
+				NW_ERR(exc.what());
 				quit();
 			}
 		};
