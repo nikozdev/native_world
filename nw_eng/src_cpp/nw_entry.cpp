@@ -21,18 +21,8 @@ int main(int nof_arguments, char* arguments[])
 	//
 #endif
 #if (NW_LAUNCH & NW_LAUNCH_TEST)
-		NW::mem_sys::on_init(2 << 16);
-		NW::data_sys::on_init();
-		NW::log_sys::on_init();
-		NW::ent_sys::on_init();
-		NW::cmp_sys::on_init();
 #	if true
 #	endif
-		NW::cmp_sys::on_quit();
-		NW::ent_sys::on_quit();
-		NW::log_sys::on_quit();
-		NW::data_sys::on_quit();
-		NW::mem_sys::on_quit();
 #	if false
 		STARTUPINFO spInfo{ 0 };
 		PROCESS_INFORMATION pcInfo{ 0 };

@@ -85,6 +85,7 @@ namespace NW
 
 		m_gfx.make_ref<gfx_engine>(m_handle);
 		m_gfx->set_viewport(0, 0, get_size_x(), get_size_y());
+		m_gfx->set_fbuf_size(get_size_x(), get_size_y());
 	}
 	wnd_core::~wnd_core()
 	{

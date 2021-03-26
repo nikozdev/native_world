@@ -35,6 +35,8 @@ namespace NW
 }
 namespace NW
 {
+	static darray<mem_ref<gfx_ent_cube>> s_cubes;
+
 	gfx_core_state::gfx_core_state(core_engine& engine) :
 		a_core_state(engine),
 		m_gfx(nullptr),
@@ -49,56 +51,54 @@ namespace NW
 	{
 		m_gfx = m_core->get_graphics();
 		m_gfx->set_swap_delay(0u);
+		m_gfx->set_clear_color(get_rand_f32(), get_rand_f32(), get_rand_f32(), 1.0f);
 
-		m_gfx->new_ent<gfx_ent_cube>();
+		for (v1ui itr = 0; itr < 1;  itr++) {
+			//s_cubes.push_back(m_gfx->new_ent<gfx_ent_cube>(0u));
+			//s_cubes.push_back(m_gfx->new_ent<gfx_ent_cube>(1u));
+			s_cubes.push_back(m_gfx->new_ent<gfx_ent_cube>(2u));
+		}
 
 		return true;
 	}
 	void gfx_core_state::quit()
 	{
+		s_cubes.clear();
 		m_gfx = nullptr;
 	}
 	void gfx_core_state::update()
 	{
-		m_cam_lad.update(m_core->get_keyboard(), m_core->get_mouse(), m_core->get_timer());
-		
+		v1ui cmp_count = 0u;
+		for (auto& itabs : m_gfx->get_cmp_reg()) { cmp_count += itabs.second.size(); }
 		const static dstr title = m_core->get_window()->get_title();
 		sbyte title_buf[256];
-		sprintf_s(&title_buf[0], 256, "%s||ups:%d||ents:%zd||", &title[0], static_cast<v1si>(m_core->get_time_ups()), m_gfx->get_ent_tab<a_gfx_ent>().size());
+		sprintf_s(
+			&title_buf[0], 256, "%s||ups:%d||ents:%zd||cmps:%d",
+			&title[0],
+			static_cast<v1si>(m_core->get_time_ups()),
+			m_gfx->get_ent_tab<a_gfx_ent>().size(), cmp_count
+		);
 		m_core->get_window()->set_title(&title_buf[0]);
 
+		m_cam_lad.update(m_core->get_keyboard(), m_core->get_mouse(), m_core->get_timer());
+		
 		buf_16f16f16f buf_tform;
+		buf_tform.model = m4f(1.0f);
 		buf_tform.view = m_cam_lad.get_view(),
-			buf_tform.proj = m_cam_lad.get_proj();
+		buf_tform.proj = m_cam_lad.get_proj();
 		
 		mem_ref<buf_shd> sbuf = m_gfx->get_cmp<buf_shd>(0);
-		mem_ref<a_gfx_ent> cube = m_gfx->get_ent_ref<a_gfx_ent>(0);
+		sbuf->set_data(&buf_tform);
 		if constexpr (true) {
-			buf_tform.model = m4f(1.0f) * mat_move(m4f(1.0f), v3f{ +3.0f, 0.0f, 0.0f });
-			sbuf->set_data(sizeof(buf_tform), &buf_tform);
-			cube->on_draw();
-			buf_tform.model = m4f(1.0f) * mat_move(m4f(1.0f), v3f{ -3.0f, 0.0f, 0.0f });
-			sbuf->set_data(sizeof(buf_tform), &buf_tform);
-			cube->on_draw();
-			
-			buf_tform.model = m4f(1.0f) * mat_move(m4f(1.0f), v3f{ 0.0f, +3.0f, 0.0f });
-			sbuf->set_data(sizeof(buf_tform), &buf_tform);
-			cube->on_draw();
-			buf_tform.model = m4f(1.0f) * mat_move(m4f(1.0f), v3f{ 0.0f, -3.0f, 0.0f });
-			sbuf->set_data(sizeof(buf_tform), &buf_tform);
-			cube->on_draw();
-
-			buf_tform.model = m4f(1.0f) * mat_move(m4f(1.0f), v3f{ 0.0f, 0.0f, +3.0f });
-			sbuf->set_data(sizeof(buf_tform), &buf_tform);
-			cube->on_draw();
-			buf_tform.model = m4f(1.0f) * mat_move(m4f(1.0f), v3f{ 0.0f, 0.0f, -3.0f });
-			sbuf->set_data(sizeof(buf_tform), &buf_tform);
-			cube->on_draw();
+			for (auto& icube : s_cubes) {
+				v1ui eid = static_cast<v1ui>(icube.get_ref<a_ent>()->get_id());
+				icube->set_crd(v3f{ (v1f)(eid % 4), sinf(m_core->get_time_curr()), v1f(eid / 4) });
+			}
 		}
-		if (m_core->get_mouse()->is_held(MSC_1)) {
-			buf_tform.model = mat_move(m4f(1.0f), m_cam_lad.get_front_dir(2.0f)) * m_cam_lad.get_tform();
-			m_gfx->get_cmp<buf_shd>(0).get_ref<buf_shd>()->set_data(sizeof(buf_16f16f16f), &buf_tform);
-			m_gfx->get_ent<a_gfx_ent>(0)->on_draw();
+		if constexpr (true) {
+			for (auto& ient : m_gfx->get_ent_tab<a_gfx_ent>()) {
+				ient.second->on_draw();
+			}
 		}
 	}
 
@@ -109,18 +109,16 @@ namespace NW
 			switch (evt.type) {
 			case EVT_KBD_RELEASED:
 				switch (kbd_evt.code) {
-				case KBC_1: m_gfx->set_primitive(GPT_TRIANGLES); break;
-				case KBC_2: m_gfx->set_primitive(GPT_TRIANGLE_STRIP); break;
+				case KBC_1: m_gfx->set_prim(PRIM_TRIANGLES); break;
+				case KBC_2: m_gfx->set_prim(PRIM_TRIANGLE_STRIP); break;
 				case KBC_M:
-					if (m_core->is_cursor_enabled()) {
-						m_core->set_cursor_enabled(false);
-						m_cam_lad.set_mode(GCM_3D);
-						m_cam_lad.set_type(GCT_PERSPECT);
+					if (!m_core->is_cursor_enabled()) {
+						m_core->set_cursor_enabled(true);
+						m_cam_lad.set_mode(CAM_2D);
 					}
 					else {
-						m_core->set_cursor_enabled(true);
-						m_cam_lad.set_mode(GCM_2D);
-						m_cam_lad.set_type(GCT_ORTHO);
+						m_core->set_cursor_enabled(false);
+						m_cam_lad.set_mode(CAM_3D);
 					}
 					break;
 				}
@@ -131,13 +129,7 @@ namespace NW
 			wnd_event& wnd_evt = static_cast<wnd_event&>(evt);
 			switch (wnd_evt.type) {
 			case EVT_WND_RESIZE: {
-				v4si viewp = m_gfx->get_viewport();
-				viewp[0] = 0;
-				viewp[1] = 0;
-				viewp[2] = wnd_evt.val_x;
-				viewp[3] = wnd_evt.val_y;
-				m_gfx->set_viewport(viewp);
-				m_cam_lad.set_ratio(viewp[2] - viewp[0], viewp[3] - viewp[1]);
+				m_cam_lad.set_ratio(wnd_evt.val_x, wnd_evt.val_y);
 				break;
 			}
 			case EVT_WND_MOVE: { break; }

@@ -16,8 +16,13 @@ namespace NW
 	void core_engine::set_cursor_enabled(bit enable) {
 		m_wnd->set_cursor_enabled(enable);
 	}
-	void core_engine::del_state(v1ui idx) { if (m_states.size() <= idx) { return; } m_states.erase(m_states.begin() + idx); }
-	void core_engine::stop_running() { m_is_running = false; }
+	void core_engine::del_state(v1ui idx) {
+		if (m_states.size() <= idx) { return; }
+		m_states.erase(m_states.begin() + idx);
+	}
+	void core_engine::stop_running() {
+		m_is_running = false;
+	}
 	// --==<core_methods>==--
 	bool core_engine::init()
 	{
@@ -90,6 +95,12 @@ namespace NW
 			case KBC_F9: { m_wnd->set_opacity(0.9f); return; break; }
 			case KBC_F10: { m_wnd->set_opacity(1.0f); return; break; }
 			}
+			break;
+		}
+		case EVT_WND_RESIZE: {
+			wnd_event& wnd_evt = static_cast<wnd_event&>(evt);
+			get_graphics()->set_viewport(0, 0, wnd_evt.val_x, wnd_evt.val_y);
+			get_graphics()->set_fbuf_size(wnd_evt.val_x, wnd_evt.val_y);
 			break;
 		}
 		case EVT_WND_CLOSE: { stop_running(); return; break; }
