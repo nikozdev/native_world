@@ -11,15 +11,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "premake5.lua",
-			"settings":
-			{
-				"buffer_size": 1853,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -61,15 +52,32 @@
 	],
 	"file_history":
 	[
-		"/F/dev/mcvs/VC/Tools/MSVC/14.28.29333/include/filesystem",
-		"/F/projects/native_world/nw_lib/premake5.lua",
-		"/F/projects/native_world/nw_gui/premake5.lua",
-		"/F/projects/native_world/nw_eng/premake5.lua",
-		"/F/projects/native_world/premake5.lua",
-		"/F/projects/native_world/nw_lua/premake5.lua",
-		"/F/projects/code_scholar/py/pm_exam.py",
+		"/F/projects/native_world/.gitmodules",
+		"/F/projects/native_world/.git/config",
+		"/F/projects/native_world/.git/COMMIT_EDITMSG",
+		"/F/projects/native_world/nw_app/premake5.lua",
+		"/F/projects/native_world/nw_lua/src_cpp/nwlua_code.c",
 		"/F/projects/native_world/nw_cmd/premake5.lua",
 		"/F/projects/native_world/nw_gfx/premake5.lua",
+		"/F/projects/native_world/nw_gui/premake5.lua",
+		"/F/projects/native_world/nw_lib/premake5.lua",
+		"/F/projects/native_world/premake5.lua",
+		"/F/projects/native_world/nw_lua/premake5.lua",
+		"/F/projects/native_world/nw_lib/src_cpp/std/nwlib_std_rand.cpp",
+		"/F/projects/native_world/nw_lib/src_cpp/std/nwlib_std_id.h",
+		"/F/projects/native_world/nw_lib/src_cpp/std/nwlib_std_time.cpp",
+		"/F/projects/native_world/nw_lib/src_cpp/std/nwlib_std_rand.h",
+		"/F/projects/native_world/nw_lib/src_cpp/std/nwlib_std_time.h",
+		"/F/projects/code_scholar/scripts/lua_entry.bat",
+		"/F/projects/native_world/nw_lib/src_cpp/std/nwlib_std.h",
+		"/F/projects/native_world/nw_lib/src_cpp/std/nwlib_stde.cpp",
+		"/F/projects/native_world/nw_lib/src_cpp/std/nwlib_stdd.cpp",
+		"/F/projects/native_world/nw_gui/src_cpp/nwgui.hpp",
+		"/F/projects/native_world/nw_eng/src_cpp/lua_core.hpp",
+		"/F/projects/native_world/nw_eng/premake5.lua",
+		"/F/projects/native_world/nw_gui/src_cpp/lib/nwgui_lib.h",
+		"/F/dev/mcvs/VC/Tools/MSVC/14.28.29333/include/filesystem",
+		"/F/projects/code_scholar/py/pm_exam.py",
 		"/D/art/isometry_2d/canvas_2.aseprite",
 		"/D/dev/native_world/premake5.lua",
 		"/D/dev/native_world/nw_gfx/premake5.lua",
@@ -171,24 +179,7 @@
 		"/E/storage/skyrim files/Meshes/face_female_0.obj",
 		"/E/storage/skyrim files/Meshes/raw_mesh/dragon_0_head.dae",
 		"/E/storage/skyrim files/Meshes/vampire_lord.mtl",
-		"/E/storage/skyrim files/Meshes/vampire_lord.obj",
-		"/D/dev/native_world/.git/modules/nw_console/COMMIT_EDITMSG",
-		"/D/dev/native_world/nw_glib/src_glsl/shd_3d_batch.glsl",
-		"/D/dev/code_schoolar/learn_script.lua",
-		"/D/dev/code_schoolar/cpp_build.bat",
-		"/D/dev/code_schoolar/knowledge.exe",
-		"/D/dev/learn_script.cpp",
-		"/D/dev/cpp_build.bat",
-		"/E/learning/coding/graph_library",
-		"/C/Users/Asus/.gitconfig",
-		"/D/dev/native_world/ext/stbi/stb_image_write.h",
-		"/D/dev/native_world/ext/stbi/stb_image.h",
-		"/E/learning/coding/cout_api_0",
-		"/E/Своё родное/english_crossword",
-		"/D/dev/native_world/nw_library/.gitignore",
-		"/D/dev/native_world/.git/modules/nw_console/TAG_EDITMSG",
-		"/D/dev/native_world/nw_console/README.md",
-		"/D/dev/native_world/nw_glib/README.md"
+		"/E/storage/skyrim files/Meshes/vampire_lord.obj"
 	],
 	"find":
 	{
@@ -224,38 +215,8 @@
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "premake5.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1853,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								889,
-								889
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				}
 			]
 		}
 	],

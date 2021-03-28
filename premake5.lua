@@ -44,7 +44,7 @@ dir_cpp["nw_lua"] = "../nw_lua/src_cpp/"
 dir_cpp["nw_gfx"] = "../nw_gfx/src_cpp/"
 dir_cpp["nw_gui"] = "../nw_gui/src_cpp/"
 dir_cpp["nw_cmd"] = "../nw_cmd/src_cpp/"
-dir_cpp["nw_eng"] = "../nw_eng/src_cpp/"
+dir_cpp["nw_app"] = "../nw_app/src_cpp/"
 
 dir_data = "../data/"
 
@@ -54,16 +54,16 @@ dir_lib["nw_lua"] = "../nw_lua/"
 dir_lib["nw_gfx"] = "../nw_gfx/"
 dir_lib["nw_gui"] = "../nw_gui/"
 dir_lib["nw_cmd"] = "../nw_cmd/"
-dir_lib["nw_eng"] = "../nw_eng/"
---==<library project>==--
+dir_lib["nw_eng"] = "../nw_app/"
+--==<native_library>==--
 include("nw_lib")
---==<graphics project>==--
+--==<native_graphics>==--
 include("nw_gfx")
---==<graphics_user_interface project>==--
+--==<native_graphical_user_interface>==--
 include("nw_gui")
---==<console project>==--
+--==<native_console>==--
 include("nw_cmd")
---==<engine project>==--
-include("nw_eng")
---==<lua_library project>==--
+--==<native_application>==--
+include("nw_app")
+--==<native_lua>==--
 include("nw_lua")

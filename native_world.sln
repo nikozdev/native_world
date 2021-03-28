@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_cmd", "nw_cmd\nw_cmd.vcxproj", "{7DA91511-694B-40E7-5206-543B3E47C737}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_app", "nw_app\nw_app.vcxproj", "{6AA11511-5643-40E7-3FFE-533B2B3FC737}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_engine", "nw_eng\nw_engine.vcxproj", "{7F70A556-EBDA-59CD-3419-0B73A0C23722}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_cmd", "nw_cmd\nw_cmd.vcxproj", "{7DA91511-694B-40E7-5206-543B3E47C737}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nw_gfx", "nw_gfx\nw_gfx.vcxproj", "{AEB91511-9A5B-40E7-8316-543B6F57C737}"
 EndProject
@@ -19,14 +19,14 @@ Global
 		release|x64 = release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6AA11511-5643-40E7-3FFE-533B2B3FC737}.debug|x64.ActiveCfg = debug|x64
+		{6AA11511-5643-40E7-3FFE-533B2B3FC737}.debug|x64.Build.0 = debug|x64
+		{6AA11511-5643-40E7-3FFE-533B2B3FC737}.release|x64.ActiveCfg = release|x64
+		{6AA11511-5643-40E7-3FFE-533B2B3FC737}.release|x64.Build.0 = release|x64
 		{7DA91511-694B-40E7-5206-543B3E47C737}.debug|x64.ActiveCfg = debug|x64
 		{7DA91511-694B-40E7-5206-543B3E47C737}.debug|x64.Build.0 = debug|x64
 		{7DA91511-694B-40E7-5206-543B3E47C737}.release|x64.ActiveCfg = release|x64
 		{7DA91511-694B-40E7-5206-543B3E47C737}.release|x64.Build.0 = release|x64
-		{7F70A556-EBDA-59CD-3419-0B73A0C23722}.debug|x64.ActiveCfg = debug|x64
-		{7F70A556-EBDA-59CD-3419-0B73A0C23722}.debug|x64.Build.0 = debug|x64
-		{7F70A556-EBDA-59CD-3419-0B73A0C23722}.release|x64.ActiveCfg = release|x64
-		{7F70A556-EBDA-59CD-3419-0B73A0C23722}.release|x64.Build.0 = release|x64
 		{AEB91511-9A5B-40E7-8316-543B6F57C737}.debug|x64.ActiveCfg = debug|x64
 		{AEB91511-9A5B-40E7-8316-543B6F57C737}.debug|x64.Build.0 = debug|x64
 		{AEB91511-9A5B-40E7-8316-543B6F57C737}.release|x64.ActiveCfg = release|x64

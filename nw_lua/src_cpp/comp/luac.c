@@ -1,4 +1,4 @@
-#include "lua_prefix.h"
+#include "nwlua_prefix.h"
 
 #include <ctype.h>
 #include <errno.h>
@@ -6,15 +6,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "lua_core.h"
-#include "lib/lua_lib_aux.h"
+#include "nwlua_core.h"
+#include "lib/nwlua_lib_aux.h"
 
-#include "lua_debug.h"
-#include "lua_obj.h"
-#include "lua_op_codes.h"
-#include "lua_op_names.h"
-#include "lua_stt.h"
-#include "lua_undump.h"
+#include "nwlua_debug.h"
+#include "nwlua_obj.h"
+#include "nwlua_op_codes.h"
+#include "nwlua_op_names.h"
+#include "nwlua_stt.h"
+#include "nwlua_undump.h"
 
 static void PrintFunction(const Proto* f, int full);
 #define luaU_print	PrintFunction
@@ -106,7 +106,7 @@ static int doargs(int argc, char* argv[])
  }
  if (version)
  {
-  printf("%s\n",LUA_COPYRIGHT);
+  printf("%s\n",NWLUA_COPYRIGHT);
   if (version==argc-1) exit(EXIT_SUCCESS);
  }
  return i;
@@ -139,7 +139,7 @@ static const Proto* combine(lua_State* L, int n)
  {
   Proto* f;
   int i=n;
-  if (lua_load(L,reader,&i,"=(" PROGNAME ")",NULL)!=LUA_OK) fatal(lua_tostring(L,-1));
+  if (lua_load(L,reader,&i,"=(" PROGNAME ")",NULL)!=NWLUA_OK) fatal(lua_tostring(L,-1));
   f=toproto(L,-1);
   for (i=0; i<n; i++)
   {
@@ -168,7 +168,7 @@ static int pmain(lua_State* L)
  for (i=0; i<argc; i++)
  {
   const char* filename=IS("-") ? NULL : argv[i];
-  if (luaL_loadfile(L,filename)!=LUA_OK) fatal(lua_tostring(L,-1));
+  if (luaL_loadfile(L,filename)!=NWLUA_OK) fatal(lua_tostring(L,-1));
  }
  f=combine(L,argc);
  if (listing) luaU_print(f,listing>1);
@@ -196,7 +196,7 @@ int main(int argc, char* argv[])
  lua_pushcfunction(L,&pmain);
  lua_pushinteger(L,argc);
  lua_pushlightuserdata(L,argv);
- if (lua_pcall(L,2,0,0)!=LUA_OK) fatal(lua_tostring(L,-1));
+ if (lua_pcall(L,2,0,0)!=NWLUA_OK) fatal(lua_tostring(L,-1));
  lua_close(L);
  return EXIT_SUCCESS;
 }
@@ -259,21 +259,21 @@ static void PrintType(const Proto* f, int i)
  const TValue* o=&f->k[i];
  switch (ttypetag(o))
  {
-  case LUA_VNIL:
+  case NWLUA_VNIL:
 	printf("N");
 	break;
-  case LUA_VFALSE:
-  case LUA_VTRUE:
+  case NWLUA_VFALSE:
+  case NWLUA_VTRUE:
 	printf("B");
 	break;
-  case LUA_VNUMFLT:
+  case NWLUA_VNUMFLT:
 	printf("F");
 	break;
-  case LUA_VNUMINT:
+  case NWLUA_VNUMINT:
 	printf("I");
 	break;
-  case LUA_VSHRSTR:
-  case LUA_VLNGSTR:
+  case NWLUA_VSHRSTR:
+  case NWLUA_VLNGSTR:
 	printf("S");
 	break;
   default:				/* cannot happen */
@@ -288,28 +288,28 @@ static void PrintConstant(const Proto* f, int i)
  const TValue* o=&f->k[i];
  switch (ttypetag(o))
  {
-  case LUA_VNIL:
+  case NWLUA_VNIL:
 	printf("nil");
 	break;
-  case LUA_VFALSE:
+  case NWLUA_VFALSE:
 	printf("false");
 	break;
-  case LUA_VTRUE:
+  case NWLUA_VTRUE:
 	printf("true");
 	break;
-  case LUA_VNUMFLT:
+  case NWLUA_VNUMFLT:
 	{
 	char buff[100];
-	sprintf(buff,LUA_NUMBER_FMT,fltvalue(o));
+	sprintf(buff,NWLUA_NUMBER_FMT,fltvalue(o));
 	printf("%s",buff);
 	if (buff[strspn(buff,"-0123456789")]=='\0') printf(".0");
 	break;
 	}
-  case LUA_VNUMINT:
-	printf(LUA_INTEGER_FMT,ivalue(o));
+  case NWLUA_VNUMINT:
+	printf(NWLUA_INTEGER_FMT,ivalue(o));
 	break;
-  case LUA_VSHRSTR:
-  case LUA_VLNGSTR:
+  case NWLUA_VSHRSTR:
+  case NWLUA_VLNGSTR:
 	PrintString(tsvalue(o));
 	break;
   default:				/* cannot happen */
@@ -662,7 +662,7 @@ static void PrintHeader(const Proto* f)
  const char* s=f->source ? getstr(f->source) : "=?";
  if (*s=='@' || *s=='=')
   s++;
- else if (*s==LUA_SIGNATURE[0])
+ else if (*s==NWLUA_SIGNATURE[0])
   s="(bstring)";
  else
   s="(string)";

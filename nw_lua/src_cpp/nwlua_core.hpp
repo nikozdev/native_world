@@ -1,0 +1,4 @@
+#ifndef NWLUA_CORE_HPP
+#define NWLUA_CORE_HPP
+
+#endif	// NWLUA_CORE_HPP
