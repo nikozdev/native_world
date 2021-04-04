@@ -1,11 +1,11 @@
-#include "nwapp_pch.hpp"
-#include "nwapp_wnd_core.h"
+#include "nw_app_pch.hpp"
+#include "nw_app_wnd_core.h"
 #if (defined NW_WAPI)
-#include <core/nwapp_engine.h>
-#include "nwapp_wnd_sub.h"
+#include "core/nw_app_engine.h"
+#include "nw_app_wnd_sub.h"
 #if (NW_WAPI & NW_WAPI_WIN)
 #include <shellapi.h>
-namespace NWAPP
+namespace NW
 {
 	app_wnd_core::app_wnd_core(cinfo& information) :
 		app_wnd(information),
@@ -94,7 +94,7 @@ namespace NWAPP
 
 	void app_wnd_core::set_cursor_enabled(v1b enable_cursor) {
 		m_mouse.set_cursor_enabled(enable_cursor);
-		NWGUI::gui_set_mouse_enabled(enable_cursor);
+		NW_GUI::gui_set_mouse_enabled(enable_cursor);
 	}
 	// --==<core_methods>==--
 	void app_wnd_core::update()
@@ -110,15 +110,15 @@ namespace NWAPP
 		if (msg != WM_NCCREATE) { return ::DefWindowProc(hwnd, msg, wparam, lparam); }
 
 		CREATESTRUCT* crtst = reinterpret_cast<CREATESTRUCT*>(lparam);
-		app_wnd* nwapp_window = reinterpret_cast<app_wnd*>(crtst->lpCreateParams);
+		app_wnd* nw_app_window = reinterpret_cast<app_wnd*>(crtst->lpCreateParams);
 
-		::SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(nwapp_window));
+		::SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(nw_app_window));
 		::SetWindowLongPtr(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(app_wnd_core::event_proc_static));
 
 		return app_wnd_core::event_proc_static(hwnd, msg, wparam, lparam);
 	}
 	LRESULT inline __stdcall app_wnd_core::event_proc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-		if (NWGUI::gui_wapi_event_proc(hwnd, msg, wparam, lparam) == TRUE) { return 0l; }
+		if (NW_GUI::gui_wapi_event_proc(hwnd, msg, wparam, lparam) == TRUE) { return 0l; }
 		return reinterpret_cast<app_wnd_core*>(::GetWindowLongPtr(hwnd, GWLP_USERDATA))->event_proc(hwnd, msg, wparam, lparam);
 	}
 	inline LRESULT __stdcall app_wnd_core::event_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {

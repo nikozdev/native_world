@@ -1,8 +1,8 @@
-#ifndef NWAPP_ENGINE_STATES_H
-#define NWAPP_ENGINE_STATES_H
-#include "nwapp_core.hpp"
+#ifndef NW_APP_ENGINE_STATES_H
+#define NW_APP_ENGINE_STATES_H
+#include "nw_app_core.hpp"
 #if (defined NW_API)
-namespace NWAPP
+namespace NW
 {
 	/// abstract core_state class
 	/// description:
@@ -24,7 +24,7 @@ namespace NWAPP
 		core_engine* m_core;
 	};
 }
-namespace NWAPP
+namespace NW
 {
 	/// game_core_state class
 	class game_core_state : public a_core_state
@@ -41,7 +41,7 @@ namespace NWAPP
 		virtual void event_proc(a_event& evt) override;
 	};
 }
-namespace NWAPP
+namespace NW
 {
 	/// graphics_core_state class
 	class gfx_core_state : public a_core_state
@@ -61,8 +61,8 @@ namespace NWAPP
 		gfx_cam_lad m_cam_lad;
 	};
 }
-#include <core/nwapp_gui_of.h>
-namespace NWAPP
+#include <core/nw_app_gui_of.h>
+namespace NW
 {
 	/// gui_core_state class
 	/// description:
@@ -85,4 +85,4 @@ namespace NWAPP
 	};
 }
 #endif	// NW_API
-#endif	// NWAPP_ENGINE_STATES_H
+#endif	// NW_APP_ENGINE_STATES_H

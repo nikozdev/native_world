@@ -1,7 +1,7 @@
-#include "nwapp_pch.hpp"
-#include "nwapp_wnd.h"
+#include "nw_app_pch.hpp"
+#include "nw_app_wnd.h"
 #if (defined NW_WAPI)
-namespace NWAPP
+namespace NW
 {
 	window_info::window_info(cstr window_title, v1u width, v1u height) :
 		title(window_title),
@@ -28,7 +28,7 @@ namespace NWAPP
 	}
 }
 #	if (NW_WAPI & NW_WAPI_WIN)
-namespace NWAPP
+namespace NW
 {
 	app_wnd::app_wnd(cinfo& information) :
 		a_mem_user(),
@@ -42,9 +42,9 @@ namespace NWAPP
 		m_class.lpszMenuName = NULL;
 		m_class.lpfnWndProc = NULL;
 		m_class.hInstance = GetModuleHandle(NULL);
-		m_class.hIcon = LoadIcon(m_class.hInstance, MAKEINTRESOURCE(NWAPP_ICON1));
-		m_class.hIconSm = LoadIcon(m_class.hInstance, MAKEINTRESOURCE(NWAPP_ICON1));
-		m_class.hCursor = LoadCursor(m_class.hInstance, MAKEINTRESOURCE(NWAPP_CURSOR0));
+		m_class.hIcon = LoadIcon(m_class.hInstance, MAKEINTRESOURCE(NW_APP_ICON1));
+		m_class.hIconSm = LoadIcon(m_class.hInstance, MAKEINTRESOURCE(NW_APP_ICON1));
+		m_class.hCursor = LoadCursor(m_class.hInstance, MAKEINTRESOURCE(NW_APP_CURSOR0));
 		m_class.hbrBackground = NULL;
 		m_class.cbClsExtra = 0;
 		m_class.cbWndExtra = 0;
@@ -107,9 +107,9 @@ namespace NWAPP
 		if (msg != WM_NCCREATE) { return ::DefWindowProc(hwnd, msg, wparam, lparam); }
 
 		CREATESTRUCT* crtst = reinterpret_cast<CREATESTRUCT*>(lparam);
-		app_wnd* nwapp_window = reinterpret_cast<app_wnd*>(crtst->lpCreateParams);
+		app_wnd* nw_app_window = reinterpret_cast<app_wnd*>(crtst->lpCreateParams);
 
-		::SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(nwapp_window));
+		::SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(nw_app_window));
 		::SetWindowLongPtr(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(app_wnd::event_proc_static));
 
 		return app_wnd::event_proc_static(hwnd, msg, wparam, lparam);

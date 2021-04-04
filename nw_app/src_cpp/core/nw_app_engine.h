@@ -1,10 +1,10 @@
-#ifndef NWAPP_CORE_ENGINE_H
-#define NWAPP_CORE_ENGINE_H
-#include "nwapp_core.hpp"
-#include "nwapp_wnd_core.h"
-#include "nwapp_engine_states.h"
+#ifndef NW_APP_CORE_ENGINE_H
+#define NW_APP_CORE_ENGINE_H
+#include "nw_app_core.hpp"
+#include "nw_app_wnd_core.h"
+#include "nw_app_engine_states.h"
 #if (defined NW_API)
-namespace NWAPP
+namespace NW
 {
 	/// core_engine class
 	/// description:
@@ -22,7 +22,7 @@ namespace NWAPP
 		using kbd_code = keyboard_codes;
 		using msb_code = mouse_codes;
 	public:
-		core_engine(cstr name = "nwapp_engine");
+		core_engine(cstr name = "nw_app_engine");
 		core_engine(const core_engine& copy) = delete;
 		virtual ~core_engine();
 		// --getters
@@ -93,4 +93,4 @@ namespace NWAPP
 	}
 }
 #endif	// NW_API
-#endif	// NWAPP_CORE_ENGINE_H
+#endif	// NW_APP_CORE_ENGINE_H

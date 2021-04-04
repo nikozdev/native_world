@@ -30,9 +30,9 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
-NWAPP_ICON0               ICON                    "..\\data\\icon\\nw_bat.ico"
-NWAPP_ICON1               ICON                    "..\\data\\icon\\nw_logo.ico"
-NWAPP_CURSOR0             CURSOR                  "..\\data\\cursor\\skyrim_normal.cur"
+NW_APP_ICON0               ICON                    "..\\data\\icon\\nw_bat.ico"
+NW_APP_ICON1               ICON                    "..\\data\\icon\\nw_logo.ico"
+NW_APP_CURSOR0             CURSOR                  "..\\data\\cursor\\skyrim_normal.cur"
 
 #endif
 /////////////////////////////////////////////////////////////////////////////

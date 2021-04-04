@@ -1,8 +1,8 @@
-#ifndef NWAPP_GUI_OF_H
-#define NWAPP_GUI_OF_H
-#include "nwapp_core.hpp"
+#ifndef NW_APP_GUI_OF_H
+#define NW_APP_GUI_OF_H
+#include "nw_app_core.hpp"
 #if (defined NW_API)
-namespace NWAPP
+namespace NW
 {
 	/// abstract gui_of struct
 	class NW_API a_gui_of
@@ -23,7 +23,7 @@ namespace NWAPP
 		v1b m_is_enabled = false;
 	};
 }
-namespace NWAPP
+namespace NW
 {
 	/// gui_of_core_engine class
 	/// description:
@@ -65,7 +65,7 @@ namespace NWAPP
 		virtual void on_draw() override;
 	};
 }
-namespace NWAPP
+namespace NW
 {
 	/// gui_of_io_sys class
 	class NW_API gui_of_io_sys : public a_gui_of
@@ -79,7 +79,7 @@ namespace NWAPP
 		virtual void on_draw() override;
 	};
 }
-namespace NWAPP
+namespace NW
 {
 	/// gui_of_graphics_material class
 	class NW_API gui_of_material_editor : public a_gui_of
@@ -114,4 +114,4 @@ namespace NWAPP
 	};
 }
 #endif	// NW_API
-#endif	// NWAPP_GUI_OF_H
+#endif	// NW_APP_GUI_OF_H

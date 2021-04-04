@@ -7,7 +7,6 @@ set environment="vs2019"
 
 set solution_name=native_world.sln
 
-del %solution_name%
 pushd "../"
 call %premake_exe% %environment%
 popd

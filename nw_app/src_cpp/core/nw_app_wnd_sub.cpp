@@ -1,9 +1,9 @@
-#include "nwapp_pch.hpp"
-#include "nwapp_wnd_sub.h"
+#include "nw_app_pch.hpp"
+#include "nw_app_wnd_sub.h"
 #if (defined NW_WAPI)
-#include "nwapp_wnd_core.h"
+#include "nw_app_wnd_core.h"
 #	if (NW_WAPI & NW_WAPI_WIN)
-namespace NWAPP
+namespace NW
 {
 	app_wnd_sub::app_wnd_sub(app_wnd_core& core, cinfo& information) :
 		app_wnd(information),
@@ -65,9 +65,9 @@ namespace NWAPP
 		if (msg != WM_NCCREATE) { return ::DefWindowProc(hwnd, msg, wparam, lparam); }
 
 		CREATESTRUCT* crtst = reinterpret_cast<CREATESTRUCT*>(lparam);
-		app_wnd_sub* nwapp_window = reinterpret_cast<app_wnd_sub*>(crtst->lpCreateParams);
+		app_wnd_sub* nw_app_window = reinterpret_cast<app_wnd_sub*>(crtst->lpCreateParams);
 
-		::SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(nwapp_window));
+		::SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(nw_app_window));
 		::SetWindowLongPtr(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(app_wnd_sub::event_proc_static));
 
 		return app_wnd_sub::event_proc_static(hwnd, msg, wparam, lparam);

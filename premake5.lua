@@ -14,6 +14,12 @@ workspace("native_world")
 	filter("configurations:release")
 		optimize("on")
 		defines { "NDEBUG", "NW_RELEASE" }
+	filter("files:**.c")
+		pchheader("")
+		pchsource("")
+	filter("files:**.cpp")
+		pchheader("nw_pch.hpp")
+		pchsource("src_cpp/nw_pch.cpp")
 	filter("files:**.hlsl")
 		--flags("excludefrombuild")
 		--shadermodel("5.0")
@@ -29,9 +35,6 @@ workspace("native_world")
 		shadertype("geometry")
 	filter("files:**.lua")
 		removeflags("excludefrombuild")
-	filter("files:**.c")
-		pchheader("")
-		pchsource("")
 
 dir_out_res = "../bin/"
 dir_out_int = "../bin/int/"

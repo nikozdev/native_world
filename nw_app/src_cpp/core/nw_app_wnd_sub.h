@@ -1,9 +1,9 @@
-#ifndef NWAPP_SUB_WINDOW_H
-#define NWAPP_SUB_WINDOW_H
-#include "nwapp_core.hpp"
+#ifndef NW_APP_SUB_WINDOW_H
+#define NW_APP_SUB_WINDOW_H
+#include "nw_app_core.hpp"
 #if (defined NW_WAPI)
-#include "nwapp_wnd.h"
-namespace NWAPP
+#include "nw_app_wnd.h"
+namespace NW
 {
 	class NW_API app_wnd_sub : public app_wnd
 	{
@@ -25,4 +25,4 @@ namespace NWAPP
 	};
 }
 #endif	// NW_WAPI
-#endif	// NWAPP_SUB_WINDOW_H
+#endif	// NW_APP_SUB_WINDOW_H

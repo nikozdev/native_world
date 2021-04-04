@@ -1,6 +1,6 @@
-#define NWAPP_ICON0                       101
-#define NWAPP_ICON1                       102
-#define NWAPP_CURSOR0                     103
+#define NW_APP_ICON0                       101
+#define NW_APP_ICON1                       102
+#define NW_APP_CURSOR0                     103
 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS

@@ -1,11 +1,11 @@
-#ifndef NWAPP_WINDOW_H
-#define NWAPP_WINDOW_H
-#include "nwapp_core.hpp"
+#ifndef NW_APP_WINDOW_H
+#define NW_APP_WINDOW_H
+#include "nw_app_core.hpp"
 #if (defined NW_WAPI)
-namespace NWAPP
+namespace NW
 {
 	/// window_info struct
-	struct NW_API window_info : public a_info
+	struct NW_API window_info : public a_info_cmp
 	{
 	public:
 		dstr title = "default";
@@ -25,7 +25,7 @@ namespace NWAPP
 		virtual stm_in& operator>>(stm_in& stm) override;
 	};
 }
-namespace NWAPP
+namespace NW
 {
 	class NW_API app_wnd : public a_mem_user
 	{
@@ -79,4 +79,4 @@ namespace NWAPP
 	};
 }
 #endif	// NW_WAPI
-#endif	// NWAPP_WINDOW_H
+#endif	// NW_APP_WINDOW_H

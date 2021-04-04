@@ -1,7 +1,7 @@
-#include "nwapp_pch.hpp"
-#include "nwapp_engine.h"
+#include "nw_app_pch.hpp"
+#include "nw_app_engine.h"
 #if (defined NW_API)
-namespace NWAPP
+namespace NW
 {
 	core_engine::core_engine(cstr name) :
 		m_name(&name[0]),
@@ -56,7 +56,7 @@ namespace NWAPP
 				while (m_is_running) { update(); }
 				quit();
 			}
-			catch (NWAPP::a_error& exc) {
+			catch (NW::a_error& exc) {
 				std::cout << exc;
 				quit();
 			}
