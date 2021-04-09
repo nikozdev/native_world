@@ -8,7 +8,7 @@
 #include "nw_app.hpp"
 
 template<typename vtype, NW::csize mat_size_x, NW::csize mat_size_y>
-vtype static constexpr get_deter(const NW::mat_t<vtype, mat_size_x, mat_size_y>& matrix) {
+static constexpr vtype get_deter(const NW::mat_t<vtype, mat_size_x, mat_size_y>& matrix) {
 	using namespace NW;
 	vtype result = static_cast<vtype>(0);
 	if constexpr (mat_size_x == 1u && mat_size_y == 1u) {
@@ -30,6 +30,29 @@ vtype static constexpr get_deter(const NW::mat_t<vtype, mat_size_x, mat_size_y>&
 	return result;
 }
 
+static inline NW::dstr make_str_tree(NW::mem_elem& node, NW::cv1u generation = 0u) {
+	static NW::size total_size = 0u;
+	NW::stm_io_str stm{ };
+	NW::schar offset[32]{ };
+	
+	if (generation == 0u) { total_size = 0u; }
+
+	for (NW::v1u itr = 0u; itr < generation * 4; itr++) { offset[itr] = ' '; }
+	stm << &offset[4u] << "[" << node.get_name() << "]:" << "{" << NW_STR_EOL;
+	stm << &offset[0u] << "name:" << node.get_name() << ";" << NW_STR_EOL;
+	stm << &offset[0u] << "type:" << node.get_type_info() << ";" << NW_STR_EOL;
+	stm << &offset[0u] << "size:" << node.get_size() << ";" << NW_STR_EOL;
+	stm << &offset[0u] << "offset:" << node.get_offset() << ";" << NW_STR_EOL;
+	stm << &offset[0u] << "count:" << node.get_count() << ";" << NW_STR_EOL;
+	for (auto& inode : node) { stm << make_str_tree(inode, generation + 1u); }
+	stm << &offset[4u] << "}" << "[" << node.get_name() << "]" << ";" << NW_STR_EOL;
+
+	total_size += sizeof(node);
+	if (generation == 0u) { stm << "total_size:" << total_size << NW_STR_EOL; }
+
+	return stm.str();
+}
+
 int main(int nof_arguments, char* arguments[])
 {
 	try {
@@ -45,38 +68,36 @@ int main(int nof_arguments, char* arguments[])
 #if (NW_APP_LAUNCH & NW_APP_LAUNCH_TEST)
 #	if (NW_TRUE)
 		// build a structure
-		unsigned char root_buf[2 << 12]{ NW_NULL };
-		NW::mem_table root;
+		char* buf = NW::mem_sys::get().new_arr<char>(1 << 12);
 		if constexpr (NW_TRUE) {
-			// create elements
-			auto& materials = root.add_elem<NW::mem_array>("materials").get<NW::mem_array>();
-			materials.set_elems<NW::mem_table>(3u);
-			auto& colors = root.add_elem<NW::mem_array>("colors").get<NW::mem_array>();
-			colors.set_elems<NW::mem_array>(3u);
-			// configure elements
-			for (NW::v1s ei = 0u; ei < materials.get_count(); ei++) {
-				auto& material = materials[ei].get<NW::mem_table>();
-				material.add_elem<NW::v4u*>("color_ref");
-				material.add_elem<NW::mem_array>("diffuse").get<NW::mem_array>().set_elems<NW::v1u>(4u);
-				// colors
-				auto& color = colors[ei].get<NW::mem_array>();
-				color.set_elems<NW::v1u>(4u);
-			}
-			// and now the game begins
-			NW_CHECK(root.remake(root_buf), "failed to build a layout", return -1);
-			// itterate throught every material
-			for (NW::v1s ei = 0u; ei < materials.get_count(); ei++) {
-				colors[ei][0u] = NW::get_rand<NW::v1u>(0x00, 0xff);
-				colors[ei][1u] = NW::get_rand<NW::v1u>(0x00, 0xff);
-				colors[ei][2u] = NW::get_rand<NW::v1u>(0x00, 0xff);
-				colors[ei][3u] = NW::get_rand<NW::v1u>(0x00, 0xff);
-				materials[ei]["color_ref"] = reinterpret_cast<NW::v4u*>(colors[ei].get_data());
-				materials[ei]["diffuse"][0u] = colors[ei][0u].get<NW::v1u>();
-				materials[ei]["diffuse"][1u] = colors[ei][1u].get<NW::v1u>();
-				materials[ei]["diffuse"][2u] = colors[ei][2u].get<NW::v1u>();
-				materials[ei]["diffuse"][3u] = colors[ei][3u].get<NW::v1u>();
-			}
+			NW::type_info::get<NW::mem_elem>();
+			NW::mem_elem root("root", {
+				NW::mem_elem("0", NW::type_info::get_id<NW::v1f>(), NW_NULL),
+				NW::mem_elem("1", NW::type_info::get_id<NW::v1f>(), NW_NULL),
+				NW::mem_elem("2", NW::type_info::get_id<NW::v1f>(), NW_NULL),
+				NW::mem_elem("3", NW::type_info::get_id<NW::v1f>(), NW_NULL),
+				NW::mem_elem("branch_0", {
+					NW::mem_elem("0", NW::type_info::get_id<NW::v1u>(), NW_NULL ),
+					NW::mem_elem("1", NW::type_info::get_id<NW::v1u>(), NW_NULL ),
+					NW::mem_elem("2", NW::type_info::get_id<NW::v1u>(), NW_NULL ),
+					NW::mem_elem("branch_0_0", {
+						NW::mem_elem("1", NW::type_info::get_id<NW::v4f>(), NW_NULL),
+						NW::mem_elem("2", NW::type_info::get_id<NW::v4f>(), NW_NULL),
+						NW::mem_elem("3", NW::type_info::get_id<NW::v4f>(), NW_NULL),
+						NW::mem_elem("4", NW::type_info::get_id<NW::v4f>(), NW_NULL),
+						NW::mem_elem("branch_0_0_0", {
+							NW::mem_elem("1", NW::type_info::get_id<NW::v4f>(), NW_NULL),
+							NW::mem_elem("2", NW::type_info::get_id<NW::v4f>(), NW_NULL),
+							NW::mem_elem("3", NW::type_info::get_id<NW::v4f>(), NW_NULL),
+							NW::mem_elem("4", NW::type_info::get_id<NW::v4f>(), NW_NULL),
+						}),
+					} ),
+				} )
+			} );
+			NW_CHECK(root.remake(buf), "failed to build the structure!", return -1);
+			std::cout << make_str_tree(root) << NW_STR_EOL;
 		}
+		NW::mem_sys::get().del_arr<char>(buf, 1 << 12);
 #	endif
 #	if (NW_FALSE)
 		STARTUPINFO spInfo{ 0 };
