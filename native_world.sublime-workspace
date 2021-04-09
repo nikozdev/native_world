@@ -53,8 +53,11 @@
 	],
 	"file_history":
 	[
-		"/F/projects/native_world/nw_cmd/premake5.lua",
+		"/F/projects/code_scholar/var_1/sln.py",
+		"/F/projects/native_world/.git/COMMIT_EDITMSG",
+		"/F/projects/native_world/.git/modules/nw_gfx/COMMIT_EDITMSG",
 		"/F/projects/native_world/.git/modules/nw_cmd/COMMIT_EDITMSG",
+		"/F/projects/native_world/nw_cmd/premake5.lua",
 		"/F/projects/native_world/.git/modules/nw_lua/COMMIT_EDITMSG",
 		"/F/projects/native_world/.git/modules/nw_gui/COMMIT_EDITMSG",
 		"/F/projects/native_world/.git/modules/nw_lib/COMMIT_EDITMSG",
@@ -76,8 +79,6 @@
 		"/F/dev/nif_skope/shaders/ob_normalmap_vcol_e.prog",
 		"/F/dev/nif_skope/shaders/ob_glowmap.vert",
 		"/F/projects/native_world/scripts/gen_premake5.bat",
-		"/F/projects/native_world/.git/COMMIT_EDITMSG",
-		"/F/projects/native_world/.git/modules/nw_gfx/COMMIT_EDITMSG",
 		"/F/projects/native_world/.git/TAG_EDITMSG",
 		"/F/projects/native_world/.git/modules/nw_gfx/TAG_EDITMSG",
 		"/F/projects/native_world/.git/modules/nw_cmd/TAG_EDITMSG",
@@ -179,8 +180,7 @@
 		"/D/dev/native_world/.gitmodules",
 		"/D/dev/native_world/README.md",
 		"/D/dev/native_world/nw_core/premake5.lua",
-		"/D/dev/native_world/nw_core/gfx/premake5.lua",
-		"/D/dev/native_world/.git/config"
+		"/D/dev/native_world/nw_core/gfx/premake5.lua"
 	],
 	"find":
 	{

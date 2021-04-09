@@ -7,7 +7,7 @@ namespace NW
 	/// abstract core_state class
 	/// description:
 	/// --this is the main interaction part for the engine.
-	class NW_API a_core_state : public a_mem_user
+	class NW_API a_core_state : public a_mem_cmp
 	{
 	public:
 		a_core_state(core_engine& engine);

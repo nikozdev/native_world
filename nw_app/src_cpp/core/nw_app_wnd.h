@@ -8,8 +8,8 @@ namespace NW
 	struct NW_API window_info : public a_info_cmp
 	{
 	public:
-		dstr title = "default";
-		dstr api_version = "default";
+		dstr title = NW_DEFAULT_STR;
+		dstr api_version = NW_DEFAULT_STR;
 		v1u coord_x = 0, coord_y = 0;
 		v1u size_x = 800, size_y = 600;
 		v1f aspect_ratio = 800.0f / 600.0f;
@@ -19,7 +19,7 @@ namespace NW
 		v1b is_enabled = false;
 		event_callback event_proc = [](a_event&)->void { return; };
 	public:
-		window_info(cstr window_title = "default", v1u width = 800, v1u height = 600);
+		window_info(cstr window_title = NW_DEFAULT_STR, v1u width = 800, v1u height = 600);
 		// --operators
 		virtual stm_out& operator<<(stm_out& stm) const override;
 		virtual stm_in& operator>>(stm_in& stm) override;
@@ -27,7 +27,7 @@ namespace NW
 }
 namespace NW
 {
-	class NW_API app_wnd : public a_mem_user
+	class NW_API app_wnd : public a_mem_cmp
 	{
 	public:
 		using info = window_info;
@@ -55,7 +55,7 @@ namespace NW
 		void set_focused(v1b is_focused);
 		void set_enabled(v1b enable);
 		void set_opacity(v1f opacity);
-		void set_icon(const a_img_cmp& img);
+		void set_icon(const a_gfx_img& img);
 		void set_callback(const event_callback& event_proc);
 		// --predicates
 		inline v1b is_hovered() const { return m_info.is_hovered; }

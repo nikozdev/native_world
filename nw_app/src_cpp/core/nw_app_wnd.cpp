@@ -31,7 +31,7 @@ namespace NW
 namespace NW
 {
 	app_wnd::app_wnd(cinfo& information) :
-		a_mem_user(),
+		a_mem_cmp(),
 		m_info(information), m_handle{ 0 },
 		m_class{ 0 }, m_msg{ 0 }
 	{
@@ -83,7 +83,7 @@ namespace NW
 		m_info.is_enabled = is_enabled;
 		::EnableWindow(m_handle, is_enabled);
 	}
-	void app_wnd::set_icon(const a_img_cmp& img) {
+	void app_wnd::set_icon(const a_gfx_img& img) {
 	}
 	void app_wnd::set_callback(const event_callback& event_proc) {
 		m_info.event_proc = event_proc;

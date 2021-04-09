@@ -9,7 +9,7 @@ namespace NW
 	/// core_engine class
 	/// description:
 	/// interface:
-	class NW_API core_engine : public a_mem_user
+	class NW_API core_engine : public a_mem_cmp
 	{
 	public:
 		using state = mem_ref<a_core_state>;

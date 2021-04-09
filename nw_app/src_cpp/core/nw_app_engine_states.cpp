@@ -3,6 +3,7 @@
 
 #include "nw_app_engine.h"
 #include "nw_app_gui_of.h"
+#include "core/nw_gfx_data.h"
 
 namespace NW
 {
@@ -51,11 +52,12 @@ namespace NW
 		m_gfx->set_swap_delay(0u);
 		m_gfx->set_clear_color(get_rand(0.0f, 1.0f), get_rand(0.0f, 1.0f), get_rand(0.0f, 1.0f), 1.0f);
 
-		for (v1u itr = 0u; itr < 5u; itr++) {
-			m_gfx->new_ent<gfx_ent_cube>(get_rand(0u, 2u))
-				->set_crd({ get_rand(-1.0f, +1.0f), get_rand(-3.0f, +3.0f), get_rand(-3.0f, +3.0f) })
-				.set_rtn({ get_rand(-180.0f, 180.0f), get_rand(-180.0f, 180.0f), get_rand(-180.0f, 180.0f) })
-				.set_scl({ get_rand(0.05f, 1.0f), get_rand(0.05f, 1.0f), get_rand(0.05f, 1.0f) });
+		cv1u count = get_rand(10u, 50u);
+		for (v1u itr = 0u; itr < count; itr++) {
+			//m_gfx->new_ent<gfx_ent_cube>(get_rand(0u, 2u))
+			//	->set_crd({ get_rand(-1.0f, +1.0f), get_rand(-3.0f, +3.0f), get_rand(-3.0f, +3.0f) })
+			//	.set_rtn({ get_rand(-180.0f, 180.0f), get_rand(-180.0f, 180.0f), get_rand(-180.0f, 180.0f) })
+			//	.set_scl({ get_rand(0.05f, 1.0f), get_rand(0.05f, 1.0f), get_rand(0.05f, 1.0f) });
 		}
 
 		return true;
@@ -84,23 +86,6 @@ namespace NW
 		buf_tform.model = m4f::make_ident();
 		buf_tform.view = m_cam_lad.get_view(),
 		buf_tform.proj = m_cam_lad.get_proj();
-		
-		mem_ref<gfx_buf_shd> sbuf = m_gfx->get_cmp<gfx_buf_shd>(0);
-		sbuf->set_data(&buf_tform);
-		if constexpr (true) {
-			for (auto& icube : m_gfx->get_ent_tab<a_gfx_ent>()) {
-				v1u eid = static_cast<v1u>(icube.second.get_ref<a_ent>()->get_id());
-				//icube.second.get_ref<gfx_ent_mesh>()->set_rtn(v3f{
-				//	NW_MATH_SIN(m_core->get_time_curr()), 0.0f, NW_MATH_COS(m_core->get_time_curr())
-				//	});
-			}
-		}
-		if constexpr (true) {
-			for (auto& ient : m_gfx->get_ent_tab<a_gfx_ent>()) {
-				sbuf->set_data(&ient.second.get_ref<gfx_ent_mesh>()->get_tform());
-				ient.second->on_draw();
-			}
-		}
 	}
 
 	void gfx_core_state::event_proc(a_event& evt)
@@ -110,16 +95,16 @@ namespace NW
 			switch (evt.type) {
 			case EVT_KBD_RELEASED:
 				switch (kbd_evt.code) {
-				case KBC_1: m_gfx->set_prim(PRIM_TRIANGLES); break;
-				case KBC_2: m_gfx->set_prim(PRIM_TRIANGLE_STRIP); break;
+				case KBC_1: m_gfx->set_prim(NW_PRIM_TRIANGLES); break;
+				case KBC_2: m_gfx->set_prim(NW_PRIM_TRIANGLE_STRIP); break;
 				case KBC_M:
 					if (!m_core->is_cursor_enabled()) {
 						m_core->set_cursor_enabled(true);
-						m_cam_lad.set_mode(CAM_2D);
+						m_cam_lad.set_mode(NW_CAMERA_2D);
 					}
 					else {
 						m_core->set_cursor_enabled(false);
-						m_cam_lad.set_mode(CAM_3D);
+						m_cam_lad.set_mode(NW_CAMERA_3D);
 					}
 					break;
 				}
@@ -181,7 +166,7 @@ namespace NW
 		ref.make_ref<gui_of_io_sys>();
 		ref->set_enabled(true);
 		m_gui_refs.push_back(ref);
-		
+
 		ref.make_ref<gui_of_gfx_engine>(*m_core->get_graphics());
 		ref->set_enabled(true);
 		m_gui_refs.push_back(ref);

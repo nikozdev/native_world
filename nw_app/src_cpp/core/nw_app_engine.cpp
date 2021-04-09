@@ -57,12 +57,13 @@ namespace NW
 				quit();
 			}
 			catch (NW::a_error& exc) {
-				std::cout << exc;
-				quit();
+				NW_ERROR(exc.get_str(), quit());
 			}
 			catch (std::exception& exc) {
-				NW_ERR(exc.what());
-				quit();
+				NW_ERROR(exc.what(), quit());
+			}
+			catch (...) {
+				NW_ERROR("something went wrong", quit());
 			}
 		};
 		m_thr_run = thread(run_loop);

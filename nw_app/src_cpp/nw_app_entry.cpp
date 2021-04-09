@@ -8,33 +8,7 @@
 #include "nw_app.hpp"
 
 template<typename vtype, NW::csize mat_size_x, NW::csize mat_size_y>
-NW::mat_t<vtype, mat_size_x - 1u, mat_size_y - 1u> static constexpr make_erase(NW::mat_t<vtype, mat_size_x, mat_size_y>& matrix, NW::v1u erase_y, NW::v1u erase_x) {
-	using namespace NW;
-	mat_t<vtype, mat_size_x - 1u, mat_size_y - 1u> result(static_cast<vtype>(0));
-	for (v1u iy = 0u; iy < mat_size_y; iy++) {
-		for (v1u ix = 0u; ix < mat_size_x; ix++) {
-			if (iy < erase_y) {
-				if (ix < erase_x) {
-					result[iy - 0u][ix - 0u] = matrix[iy + 0u][ix + 0u];
-				}
-				else if (ix > erase_x) {
-					result[iy - 0u][ix - 1u] = matrix[iy + 0u][ix + 0u];
-				}
-			}
-			else if (iy > erase_y) {
-				if (ix < erase_x) {
-					result[iy - 1u][ix - 0u] = matrix[iy + 0u][ix + 0u];
-				}
-				else if (ix > erase_x) {
-					result[iy - 1u][ix - 1u] = matrix[iy + 0u][ix + 0u];
-				}
-			}
-		}
-	}
-	return result;
-}
-template<typename vtype, NW::csize mat_size_x, NW::csize mat_size_y>
-vtype static constexpr get_deter(NW::mat_t<vtype, mat_size_x, mat_size_y>& matrix) {
+vtype static constexpr get_deter(const NW::mat_t<vtype, mat_size_x, mat_size_y>& matrix) {
 	using namespace NW;
 	vtype result = static_cast<vtype>(0);
 	if constexpr (mat_size_x == 1u && mat_size_y == 1u) {
@@ -44,9 +18,9 @@ vtype static constexpr get_deter(NW::mat_t<vtype, mat_size_x, mat_size_y>& matri
 		result = (matrix[0][0] * matrix[1][1]) - (matrix[0][1] * matrix[1][0]);
 	}
 	else if constexpr (mat_size_x > 2u && mat_size_y > 2u) {
-		v1u sign = +1; // -1 power(itr)
+		v1s sign = +1; // -1 power(itr)
 		for (v1u itr = 0u; itr < mat_size_x; itr++) {
-			result += sign * matrix[0u][itr] * get_deter((make_erase(matrix, 0u, itr)));
+			result += sign * matrix[0u][itr] * get_deter(matrix.erase(0u, itr));
 			sign = -sign;
 		}
 	}
@@ -62,28 +36,49 @@ int main(int nof_arguments, char* arguments[])
 #if (NW_APP_LAUNCH & NW_APP_LAUNCH_ENGINE)
 		NW::core_engine game = NW::core_engine("native_world");
 		game.run();
-		//game.new_state<NW::gui_core_state>();
-		game.new_state<NW::gfx_core_state>();
+		game.new_state<NW::gui_core_state>();
+		// game.new_state<NW::gfx_core_state>();
 		if (game.get_run_thread()->joinable()) { game.get_run_thread()->join(); }
 #endif
 #if (NW_APP_LAUNCH & NW_APP_LAUNCH_CONSOLE)
 #endif
 #if (NW_APP_LAUNCH & NW_APP_LAUNCH_TEST)
-#	if true
-		NW::m3f mtx = NW::m3f(0.0f);
-		mtx[0][0] = 2.0f;
-		mtx[0][1] = 4.0f;
-		mtx[0][2] = 3.0f;
-		mtx[1][0] = 5.0f;
-		mtx[1][1] = 7.0f;
-		mtx[1][2] = 8.0f;
-		mtx[2][0] = 6.0f;
-		mtx[2][1] = 9.0f;
-		mtx[2][2] = 1.0f;
-		std::cout << "matrix" << NW_STR_EOL << mtx;
-		std::cout << "matrix determinant" << NW_STR_EOL << get_deter(mtx);
+#	if (NW_TRUE)
+		// build a structure
+		unsigned char root_buf[2 << 12]{ NW_NULL };
+		NW::mem_table root;
+		if constexpr (NW_TRUE) {
+			// create elements
+			auto& materials = root.add_elem<NW::mem_array>("materials").get<NW::mem_array>();
+			materials.set_elems<NW::mem_table>(3u);
+			auto& colors = root.add_elem<NW::mem_array>("colors").get<NW::mem_array>();
+			colors.set_elems<NW::mem_array>(3u);
+			// configure elements
+			for (NW::v1s ei = 0u; ei < materials.get_count(); ei++) {
+				auto& material = materials[ei].get<NW::mem_table>();
+				material.add_elem<NW::v4u*>("color_ref");
+				material.add_elem<NW::mem_array>("diffuse").get<NW::mem_array>().set_elems<NW::v1u>(4u);
+				// colors
+				auto& color = colors[ei].get<NW::mem_array>();
+				color.set_elems<NW::v1u>(4u);
+			}
+			// and now the game begins
+			NW_CHECK(root.remake(root_buf), "failed to build a layout", return -1);
+			// itterate throught every material
+			for (NW::v1s ei = 0u; ei < materials.get_count(); ei++) {
+				colors[ei][0u] = NW::get_rand<NW::v1u>(0x00, 0xff);
+				colors[ei][1u] = NW::get_rand<NW::v1u>(0x00, 0xff);
+				colors[ei][2u] = NW::get_rand<NW::v1u>(0x00, 0xff);
+				colors[ei][3u] = NW::get_rand<NW::v1u>(0x00, 0xff);
+				materials[ei]["color_ref"] = reinterpret_cast<NW::v4u*>(colors[ei].get_data());
+				materials[ei]["diffuse"][0u] = colors[ei][0u].get<NW::v1u>();
+				materials[ei]["diffuse"][1u] = colors[ei][1u].get<NW::v1u>();
+				materials[ei]["diffuse"][2u] = colors[ei][2u].get<NW::v1u>();
+				materials[ei]["diffuse"][3u] = colors[ei][3u].get<NW::v1u>();
+			}
+		}
 #	endif
-#	if false
+#	if (NW_FALSE)
 		STARTUPINFO spInfo{ 0 };
 		PROCESS_INFORMATION pcInfo{ 0 };
 		if (!CreateProcess(
@@ -107,9 +102,9 @@ int main(int nof_arguments, char* arguments[])
 #	endif
 #endif
 	}
-	catch (NW::a_error& exc) { std::cout << exc; }
-	catch (std::exception& exc) { NW_ERR(exc.what()); }
-	catch (...) { NW_ERR("somethig went wrong"); }
+	catch (NW::a_error& exc) { NW_ERROR(exc.get_str(), return -1); }
+	catch (std::exception& exc) { NW_ERROR(exc.what(), return -1); }
+	catch (...) { NW_ERROR("somethig went wrong", return -1); }
 
 	return 0;
 }
