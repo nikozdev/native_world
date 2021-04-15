@@ -5,7 +5,7 @@
 namespace NW
 {
 	/// window_info struct
-	struct NW_API window_info : public a_info_cmp
+	struct NW_API window_info : public a_io_cmp
 	{
 	public:
 		dstr title = NW_DEFAULT_STR;
@@ -14,10 +14,10 @@ namespace NW
 		v1u size_x = 800, size_y = 600;
 		v1f aspect_ratio = 800.0f / 600.0f;
 		v1f opacity = 0.0f;
-		v1b is_hovered = false;
-		v1b is_focused = false;
-		v1b is_enabled = false;
-		event_callback event_proc = [](a_event&)->void { return; };
+		v1b is_hovered = NW_FALSE;
+		v1b is_focused = NW_FALSE;
+		v1b is_enabled = NW_FALSE;
+		event_callback event_proc = [](a_event&)->v1nil { return; };
 	public:
 		window_info(cstr window_title = NW_DEFAULT_STR, v1u width = 800, v1u height = 600);
 		// --operators
@@ -55,7 +55,7 @@ namespace NW
 		void set_focused(v1b is_focused);
 		void set_enabled(v1b enable);
 		void set_opacity(v1f opacity);
-		void set_icon(const a_gfx_img& img);
+		void set_icon(const gfx_img& img);
 		void set_callback(const event_callback& event_proc);
 		// --predicates
 		inline v1b is_hovered() const { return m_info.is_hovered; }
@@ -65,9 +65,9 @@ namespace NW
 		void update();
 	protected:
 #if (NW_WAPI & NW_WAPI_WIN)
-		static LRESULT __stdcall event_proc_init(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-		static LRESULT __stdcall event_proc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-		inline LRESULT __stdcall event_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+		static LRESULT WINAPI event_proc_init(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+		static LRESULT WINAPI event_proc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+		inline LRESULT WINAPI event_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 #endif
 	protected:
 		info m_info;

@@ -2,6 +2,7 @@
 #include "nw_app_gui_of.h"
 #if (defined NW_API)
 #include "core/nw_app_engine.h"
+#pragma warning(disable : 4312) // "reinterpret_cast' : conversion from "type" to "type" of greater size
 namespace NW
 {
 	a_gui_of::a_gui_of() { }
@@ -32,7 +33,7 @@ namespace NW
 		NW_GUI::Begin("core_engine", &m_is_enabled);
 		NW_GUI::Text("updates per second: %f;", m_core->get_timer()->get_ups());
 		
-		NW_GUI::Columns(2, nullptr, true);
+		NW_GUI::Columns(2, nullptr, NW_TRUE);
 		if (NW_GUI::TreeNodeEx("entity_system", NW_GUI_TREE_FLAGS)) {
 			for (auto& ietab : ent_sys::get().get_ent_reg()) {
 				if (NW_GUI::TreeNodeEx(&ietab, NW_GUI_TREE_FLAGS, "type_id: %d", ietab.first)) {
@@ -78,7 +79,7 @@ namespace NW
 		NW_GUI::Begin("graphics_engine", &m_is_enabled);
 		
 		if (NW_GUI::TreeNodeEx("graphics_engine", NW_GUI_TREE_FLAGS)) {
-			NW_GUI::Columns(2, nullptr, true);
+			NW_GUI::Columns(2, nullptr, NW_TRUE);
 			if (NW_GUI::TreeNodeEx("entities", NW_GUI_TREE_FLAGS)) {
 				for (auto& ients : m_gfx->get_ent_reg()) {
 					if (NW_GUI::TreeNodeEx(&ients, NW_GUI_TREE_FLAGS, "type_id: %d", ients.first)) {
@@ -181,7 +182,7 @@ namespace NW
 	void gui_of_material_editor::set_context(context& ref) {
 		m_context.set_ref(ref);
 		if (ref.is_valid()) {
-			m_is_enabled = true;
+			m_is_enabled = NW_TRUE;
 		}
 		else {
 			m_is_enabled = false;
@@ -205,7 +206,7 @@ namespace NW
 			m_is_enabled = false;
 		}
 		else {
-			m_is_enabled = true;
+			m_is_enabled = NW_TRUE;
 		}
 	}
 	// --core_methods

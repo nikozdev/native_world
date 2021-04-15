@@ -50,11 +50,11 @@ namespace NW
 		inline v1f get_mouse_held_delta_x(msb_code code) const { return m_wnd->get_mouse()->get_held_delta_x(code); }
 		inline v1f get_mouse_held_delta_y(msb_code code) const { return m_wnd->get_mouse()->get_held_delta_y(code); }
 		// --setters
-		void set_cursor_enabled(v1b enable);
+		v1nil set_cursor_enabled(v1b enable);
 		template<class stype, typename ... args>
 		state& new_state(args ... arguments);
-		void del_state(v1u idx);
-		void stop_running();
+		v1nil del_state(v1u idx);
+		v1nil stop_running();
 		// --predicates
 		inline v1b is_running() const                    { return m_is_running; }
 		inline v1b is_cursor_enabled() const             { return m_wnd->is_cursor_enabled(); }
@@ -67,13 +67,13 @@ namespace NW
 		inline v1b is_key_free(kbd_code code) const      { return m_wnd->get_keyboard()->is_free(code); }
 		inline v1b is_key_held(kbd_code code) const      { return m_wnd->get_keyboard()->is_held(code); }
 		// --operators
-		void operator=(const core_engine& copy) = delete;
+		v1nil operator=(const core_engine& copy) = delete;
 		// --core_methods
-		bool init();
-		void quit();
-		void run();
-		void update();
-		void event_proc(a_event& evt);
+		v1bit init();
+		v1nil quit();
+		v1nil run();
+		v1nil update();
+		v1nil event_proc(a_event& evt);
 		// --data_methods
 		dstr dialog_load(cstr filter);
 		dstr dialog_save(cstr filter);

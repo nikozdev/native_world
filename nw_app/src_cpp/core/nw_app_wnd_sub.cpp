@@ -102,7 +102,7 @@ namespace NW
 		case WM_SETFOCUS: {		// wparam is the last window was focused, lParam is not used
 			wnd_event wnd_evt = wnd_event(EVT_WND_FOCUS);
 			m_info.event_proc(wnd_evt);
-			m_info.is_focused = true;
+			m_info.is_focused = NW_TRUE;
 			return 0l;
 			break;
 		}

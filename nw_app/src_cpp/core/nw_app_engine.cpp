@@ -5,7 +5,7 @@ namespace NW
 {
 	core_engine::core_engine(cstr name) :
 		m_name(&name[0]),
-		m_is_running(false), m_thr_run(thread()),
+		m_is_running(NW_FALSE), m_thr_run(thread()),
 		m_states(states()),
 		m_wnd(mem_ref<app_wnd_core>())
 	{
@@ -14,43 +14,43 @@ namespace NW
 	{
 	}
 	// --setters
-	void core_engine::set_cursor_enabled(v1b enable) {
+	v1nil core_engine::set_cursor_enabled(v1b enable) {
 		m_wnd->set_cursor_enabled(enable);
 	}
-	void core_engine::del_state(v1u idx) {
+	v1nil core_engine::del_state(v1u idx) {
 		if (m_states.size() <= idx) { return; }
 		m_states.erase(m_states.begin() + idx);
 	}
-	void core_engine::stop_running() {
-		m_is_running = false;
+	v1nil core_engine::stop_running() {
+		m_is_running = NW_FALSE;
 	}
 	// --==<core_methods>==--
-	bool core_engine::init()
+	v1bit core_engine::init()
 	{
-		if (m_wnd.is_valid()) { return false; }
-		if (!m_is_running) { m_is_running = true; }
+		if (m_wnd.is_valid()) { return NW_FALSE; }
+		if (!m_is_running) { m_is_running = NW_TRUE; }
 		
 		m_wnd.make_ref<app_wnd_core>(window_info{ &m_name[0], 1200, 800 });
-		m_wnd->set_callback([this](a_event& evt)->void { return this->event_proc(evt); });
+		m_wnd->set_callback([this](a_event& evt)->v1nil { return this->event_proc(evt); });
 
-		for (auto& istate : m_states) { if (!istate->init()) { throw init_error(__FILE__, __LINE__); return false; } }
+		for (auto& istate : m_states) { if (!istate->init()) { throw init_error(__FILE__, __LINE__); return NW_FALSE; } }
 		
-		return true;
+		return NW_TRUE;
 	}
-	void core_engine::quit()
+	v1nil core_engine::quit()
 	{
 		if (!m_wnd.is_valid()) { return; }
-		if (!m_is_running) { m_is_running = true; }
+		if (!m_is_running) { m_is_running = NW_TRUE; }
 
 		for (auto& istate : m_states) { istate->quit(); }
 		
 		m_states.clear();
 		m_wnd.reset();
 	}
-	void core_engine::run()
+	v1nil core_engine::run()
 	{
-		m_is_running = true;
-		auto run_loop = [this]()->void {
+		m_is_running = NW_TRUE;
+		auto run_loop = [this]()->v1nil {
 			try {
 				if (!init()) { throw init_error(__FILE__, __LINE__); return; }
 				while (m_is_running) { update(); }
@@ -68,13 +68,13 @@ namespace NW
 		};
 		m_thr_run = thread(run_loop);
 	}
-	void core_engine::update()
+	v1nil core_engine::update()
 	{
 		for (auto& istate : m_states) { istate->update(); }
 		m_timer.update();
 		m_wnd->update();
 	}
-	void core_engine::event_proc(a_event& evt)
+	v1nil core_engine::event_proc(a_event& evt)
 	{
 		for (auto& istt : m_states) {
 			if (evt.is_handled) { return; }

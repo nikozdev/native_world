@@ -16,10 +16,10 @@ namespace NW
 		virtual inline cstr get_name() const = 0;
 		// --setters
 		// --core_methods
-		virtual bool init() = 0;
-		virtual void quit() = 0;
-		virtual void update() = 0;
-		virtual void event_proc(a_event& evt) = 0;
+		virtual v1bit init() = 0;
+		virtual v1nil quit() = 0;
+		virtual v1nil update() = 0;
+		virtual v1nil event_proc(a_event& evt) = 0;
 	protected:
 		core_engine* m_core;
 	};
@@ -35,10 +35,10 @@ namespace NW
 		// --getters
 		virtual inline cstr get_name() const override { return "game_core_state"; }
 		// --core_methods
-		virtual bool init() override;
-		virtual void quit() override;
-		virtual void update() override;
-		virtual void event_proc(a_event& evt) override;
+		virtual v1bit init() override;
+		virtual v1nil quit() override;
+		virtual v1nil update() override;
+		virtual v1nil event_proc(a_event& evt) override;
 	};
 }
 namespace NW
@@ -52,10 +52,10 @@ namespace NW
 		// --getters
 		virtual inline cstr get_name() const override { return "gfx_core_state"; }
 		// --core_methods
-		virtual bool init() override;
-		virtual void quit() override;
-		virtual void update() override;
-		virtual void event_proc(a_event& evt) override;
+		virtual v1bit init() override;
+		virtual v1nil quit() override;
+		virtual v1nil update() override;
+		virtual v1nil event_proc(a_event& evt) override;
 	private:
 		gfx_engine* m_gfx;
 		gfx_cam_lad m_cam_lad;
@@ -74,12 +74,12 @@ namespace NW
 		gui_core_state(core_engine& engine);
 		~gui_core_state();
 		// --getters
-		virtual inline cstr get_name() const override { return "gui_core_state"; }
+		virtual inline cstr get_name(v1nil) const override { return "gui_core_state"; }
 		// --core_methods
-		virtual bool init() override;
-		virtual void quit() override;
-		virtual void update() override;
-		virtual void event_proc(a_event& evt) override;
+		virtual v1bit init() override;
+		virtual v1nil quit() override;
+		virtual v1nil update() override;
+		virtual v1nil event_proc(a_event& evt) override;
 	private:
 		gui_refs m_gui_refs;
 	};

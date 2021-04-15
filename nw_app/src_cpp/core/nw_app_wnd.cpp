@@ -56,40 +56,40 @@ namespace NW
 		if (m_class.lpfnWndProc != NULL) { ::UnregisterClass(m_class.lpszClassName, m_class.hInstance); m_class = { 0 }; }
 	}
 	// --setters
-	void app_wnd::set_title(cstr window_title) {
+	v1nil app_wnd::set_title(cstr window_title) {
 		m_info.title = window_title;
 		::SetWindowTextA(m_handle, window_title);
 	}
-	void app_wnd::set_opacity(v1f opacity) {
+	v1nil app_wnd::set_opacity(v1f opacity) {
 		opacity = opacity > 1.0f ? 1.0f : opacity < 0.1f ? 0.1f : opacity;
 		m_info.opacity = opacity;
 		DWORD style_flags = ::GetWindowLongW(m_handle, GWL_EXSTYLE);
 		if (opacity < 1.0f) {	// get window style and add "layered attribute" to it
 			style_flags |= WS_EX_LAYERED;
 			::SetWindowLongW(m_handle, GWL_EXSTYLE, style_flags);
-			::SetLayeredWindowAttributes(m_handle, 0u, static_cast<ubyte>(255 * opacity), LWA_ALPHA);
+			::SetLayeredWindowAttributes(m_handle, 0u, static_cast<byte_t>(255 * opacity), LWA_ALPHA);
 		}
 		else {  // get rid of transparency
 			style_flags &= ~WS_EX_LAYERED;	// "&~0b0010" == get all bits except this one
 			::SetWindowLongW(m_handle, GWL_EXSTYLE, style_flags);
 		}
 	}
-	void app_wnd::set_focused(v1b is_focused) {
+	v1nil app_wnd::set_focused(v1b is_focused) {
 		if (m_info.is_focused == is_focused) { return; }
 		if (is_focused) { SetFocus(m_handle); }
 	}
-	void app_wnd::set_enabled(v1b is_enabled) {
+	v1nil app_wnd::set_enabled(v1b is_enabled) {
 		if (m_info.is_enabled == is_enabled) { return; }
 		m_info.is_enabled = is_enabled;
 		::EnableWindow(m_handle, is_enabled);
 	}
-	void app_wnd::set_icon(const a_gfx_img& img) {
+	v1nil app_wnd::set_icon(const gfx_img& img) {
 	}
-	void app_wnd::set_callback(const event_callback& event_proc) {
+	v1nil app_wnd::set_callback(const event_callback& event_proc) {
 		m_info.event_proc = event_proc;
 	}
 	// --==<core_methods>==--
-	void app_wnd::update()
+	v1nil app_wnd::update()
 	{
 		// if the message queue is empty - thread can be blocked by GetMessage()
 		// if there is 0 - we've got a quit; can be also -1
@@ -103,7 +103,7 @@ namespace NW
 	}
 	// --==</core_methods>==--
 	// --==<impl_methods>==--
-	LRESULT __stdcall app_wnd::event_proc_init(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+	LRESULT WINAPI app_wnd::event_proc_init(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		if (msg != WM_NCCREATE) { return ::DefWindowProc(hwnd, msg, wparam, lparam); }
 
 		CREATESTRUCT* crtst = reinterpret_cast<CREATESTRUCT*>(lparam);
@@ -114,10 +114,10 @@ namespace NW
 
 		return app_wnd::event_proc_static(hwnd, msg, wparam, lparam);
 	}
-	LRESULT __stdcall app_wnd::event_proc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+	LRESULT WINAPI app_wnd::event_proc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		return reinterpret_cast<app_wnd*>(::GetWindowLongPtr(hwnd, GWLP_USERDATA))->event_proc(hwnd, msg, wparam, lparam);
 	}
-	LRESULT inline __stdcall app_wnd::event_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+	LRESULT inline WINAPI app_wnd::event_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		switch (msg) {
 		// events_of_application
 		case WM_CREATE: {
@@ -166,7 +166,7 @@ namespace NW
 		case WM_SETFOCUS: {		// wparam is the last window was focused, lParam is not used
 			wnd_event wnd_evt = wnd_event(EVT_WND_FOCUS);
 			m_info.event_proc(wnd_evt);
-			m_info.is_focused = true;
+			m_info.is_focused = NW_TRUE;
 			return 0l;
 			break;
 		}

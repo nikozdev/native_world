@@ -1,10 +1,10 @@
 #include "nw_app_pch.hpp"
 #include "nw_app_wnd_core.h"
 #if (defined NW_WAPI)
-#include "core/nw_app_engine.h"
-#include "nw_app_wnd_sub.h"
-#if (NW_WAPI & NW_WAPI_WIN)
-#include <shellapi.h>
+#	include "core/nw_app_engine.h"
+#	include "nw_app_wnd_sub.h"
+#	if (NW_WAPI & NW_WAPI_WIN)
+#		include <shellapi.h>
 namespace NW
 {
 	app_wnd_core::app_wnd_core(cinfo& information) :
@@ -118,7 +118,7 @@ namespace NW
 		return app_wnd_core::event_proc_static(hwnd, msg, wparam, lparam);
 	}
 	LRESULT inline __stdcall app_wnd_core::event_proc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-		if (NW_GUI::gui_wapi_event_proc(hwnd, msg, wparam, lparam) == TRUE) { return 0l; }
+		if (gui_wapi_event_proc(hwnd, msg, wparam, lparam) == TRUE) { return 0l; }
 		return reinterpret_cast<app_wnd_core*>(::GetWindowLongPtr(hwnd, GWLP_USERDATA))->event_proc(hwnd, msg, wparam, lparam);
 	}
 	inline LRESULT __stdcall app_wnd_core::event_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
@@ -293,7 +293,7 @@ namespace NW
 		case WM_SETFOCUS: {		// wparam is the last window was focused, lParam is not used
 			wnd_event wnd_evt = wnd_event(EVT_WND_FOCUS);
 			m_info.event_proc(wnd_evt);
-			m_info.is_focused = true;
+			m_info.is_focused = NW_TRUE;
 			return 0l;
 			break;
 		}
@@ -311,7 +311,7 @@ namespace NW
 		case WM_ACTIVATE: {
 			if (m_mouse.is_cursor_enabled()) {
 				if (wparam & WA_ACTIVE) { m_mouse.set_cursor_enabled(false); }
-				else { m_mouse.set_cursor_enabled(true); }
+				else { m_mouse.set_cursor_enabled(NW_TRUE); }
 			}
 			break;
 		}
@@ -321,5 +321,5 @@ namespace NW
 	}
 	// --==</impl_methods>==--
 }
-#endif
+#	endif	// WAPI_WIN
 #endif // NW_WAPI

@@ -12,7 +12,7 @@ namespace NW
 		using graphics = mem_ref<gfx_engine>;
 		using keyboard = keyboard_state;
 		using mouse = mouse_state;
-		using raw_buf = darray<sbyte>;
+		using raw_buf = darray<sbyte_t>;
 	public:
 		app_wnd_core(cinfo& information);
 		virtual ~app_wnd_core();
