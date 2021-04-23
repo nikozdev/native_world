@@ -1,96 +1,105 @@
 #ifndef NW_APP_CORE_ENGINE_H
 #define NW_APP_CORE_ENGINE_H
 #include "nw_app_core.hpp"
-#include "nw_app_wnd_core.h"
-#include "nw_app_engine_states.h"
 #if (defined NW_API)
+#	include "nw_app_wnd_core.h"
+#	include "nw_app_states.h"
+#	include "std/nw_std_sing.h"
 namespace NW
 {
-	/// core_engine class
+	/// app_engine class
 	/// description:
 	/// interface:
-	class NW_API core_engine : public a_mem_cmp
+	class NW_API app_engine : public t_singleton<app_engine>
 	{
 	public:
-		using state = mem_ref<a_core_state>;
-		using states = darray<state>;
-		using window = mem_ref<app_wnd_core>;
-		using graphics = app_wnd_core::graphics;
-		using keyboard = app_wnd_core::keyboard;
-		using mouse = app_wnd_core::mouse;
-		using timer = time_state;
-		using kbd_code = keyboard_codes;
-		using msb_code = mouse_codes;
+		using state_t = app_state;
+		using state_tc = const state_t;
+		using states_t = t_darray<state_t*>;
+		using states_tc = const states_t;
+		using window_t = app_wnd_core;
+		using window_tc = const window_t;
+		using keybod_t = iop_keybod_t;
+		using keybod_tc = const keybod_t;
+		using kbd_code_t = keybod_t::code_t;
+		using kbd_code_tc = keybod_t::code_tc;
+		using cursor_t = iop_cursor_t;
+		using cursor_tc = const cursor_t;
+		using crs_code_t = cursor_t::code_t;
+		using crs_code_tc = cursor_t::code_tc;
+		using timer_t = time_state;
+		using timer_tc = const timer_t;
 	public:
-		core_engine(cstr name = "nw_app_engine");
-		core_engine(const core_engine& copy) = delete;
-		virtual ~core_engine();
+		app_engine();
+		virtual ~app_engine();
 		// --getters
-		inline cstr get_name() const        { return &m_name[0]; }
-		inline thread* get_run_thread()     { return &m_thr_run; }
-		inline states& get_states()         { return m_states; }
-		inline state& get_state(v1u idx)   { return m_states[idx % m_states.size()]; }
-		inline window& get_window()         { return m_wnd; }
-		inline graphics& get_graphics()     { return m_wnd->get_graphics(); }
-		inline const mouse* get_mouse() const             { return m_wnd->get_mouse(); }
-		inline const keyboard* get_keyboard() const       { return m_wnd->get_keyboard(); }
-		inline const timer* get_timer() const             { return &m_timer; }
-		inline v1f get_time_curr(v1f scale = 1.0f) const  { return m_timer.get_curr(scale); }
-		inline v1f get_time_last(v1f scale = 1.0f) const  { return m_timer.get_last(scale); }
-		inline v1f get_time_delta(v1f scale = 1.0f) const { return m_timer.get_delta(scale); }
-		inline v1f get_time_ups(v1f scale = 1.0f) const   { return m_timer.get_ups(scale); }
-		inline v1f get_mouse_move_coord_x() const                 { return m_wnd->get_mouse()->get_move_coord_x(); }
-		inline v1f get_mouse_move_coord_y() const                 { return m_wnd->get_mouse()->get_move_coord_y(); }
-		inline v1f get_mouse_free_coord_x(msb_code code) const { return m_wnd->get_mouse()->get_free_coord_x(code); }
-		inline v1f get_mouse_free_coord_y(msb_code code) const { return m_wnd->get_mouse()->get_free_coord_y(code); }
-		inline v1f get_mouse_free_delta_x(msb_code code) const { return m_wnd->get_mouse()->get_free_delta_x(code); }
-		inline v1f get_mouse_free_delta_y(msb_code code) const { return m_wnd->get_mouse()->get_free_delta_y(code); }
-		inline v1f get_mouse_held_coord_x(msb_code code) const { return m_wnd->get_mouse()->get_held_coord_x(code); }
-		inline v1f get_mouse_held_coord_y(msb_code code) const { return m_wnd->get_mouse()->get_held_coord_y(code); }
-		inline v1f get_mouse_held_delta_x(msb_code code) const { return m_wnd->get_mouse()->get_held_delta_x(code); }
-		inline v1f get_mouse_held_delta_y(msb_code code) const { return m_wnd->get_mouse()->get_held_delta_y(code); }
+		inline thread* get_run_thread() { return &m_thr_run; }
+		inline state_t* get_state(cv1u key)        { NW_CHECK(has_state(key), "not found!", return NW_NULL); return m_states[key]; }
+		inline state_tc* get_state(cv1u key) const { NW_CHECK(has_state(key), "not found!", return NW_NULL); return m_states[key]; }
+		inline window_t* get_window()        { return &m_window; }
+		inline window_tc* get_window() const { return &m_window; }
+		inline keybod_t* get_keybod()        { return &m_keybod; }
+		inline keybod_tc* get_keybod() const { return &m_keybod; }
+		inline cursor_t* get_cursor()        { return &m_cursor; }
+		inline cursor_tc* get_cursor() const { return &m_cursor; }
+		inline timer_t* get_timer()        { return &m_timer; }
+		inline timer_tc* get_timer() const { return &m_timer; }
+		inline cv1f get_timer_curr(v1f scale = 1.0f) const  { return m_timer.get_curr(scale); }
+		inline cv1f get_timer_last(v1f scale = 1.0f) const  { return m_timer.get_last(scale); }
+		inline cv1f get_timer_delta(v1f scale = 1.0f) const { return m_timer.get_delta(scale); }
+		inline cv1f get_timer_ups(v1f scale = 1.0f) const   { return m_timer.get_ups(scale); }
+		inline cstr_t get_window_title() const { return m_window.get_title(); }
+		inline cv1u get_window_size_x() const  { return m_window.get_size_x(); }
+		inline cv1u get_window_size_y() const  { return m_window.get_size_y(); }
+		inline cv2u get_window_size_xy() const { return m_window.get_size_xy(); }
+		inline cv1f get_cursor_move_coord_x() const                 { return get_cursor()->get_move_coord_x(); }
+		inline cv1f get_cursor_move_coord_y() const                 { return get_cursor()->get_move_coord_y(); }
+		inline cv1f get_cursor_free_coord_x(crs_code_tc code) const { return get_cursor()->get_free_coord_x(code); }
+		inline cv1f get_cursor_free_coord_y(crs_code_tc code) const { return get_cursor()->get_free_coord_y(code); }
+		inline cv1f get_cursor_free_delta_x(crs_code_tc code) const { return get_cursor()->get_free_delta_x(code); }
+		inline cv1f get_cursor_free_delta_y(crs_code_tc code) const { return get_cursor()->get_free_delta_y(code); }
+		inline cv1f get_cursor_held_coord_x(crs_code_tc code) const { return get_cursor()->get_held_coord_x(code); }
+		inline cv1f get_cursor_held_coord_y(crs_code_tc code) const { return get_cursor()->get_held_coord_y(code); }
+		inline cv1f get_cursor_held_delta_x(crs_code_tc code) const { return get_cursor()->get_held_delta_x(code); }
+		inline cv1f get_cursor_held_delta_y(crs_code_tc code) const { return get_cursor()->get_held_delta_y(code); }
 		// --setters
-		v1nil set_cursor_enabled(v1b enable);
-		template<class stype, typename ... args>
-		state& new_state(args ... arguments);
-		v1nil del_state(v1u idx);
+		v1nil set_keybod_enabled(v1bit enable);
+		v1nil set_cursor_enabled(v1bit enable);
+		template<class tstate, typename ... args>
+		v1nil add_state(args ... arguments) { m_states.push_back(new tstate(std::forward<args>(arguments)...)); }
+		v1nil rmv_state(cv1u key = NW_NULL);
 		v1nil stop_running();
 		// --predicates
-		inline v1b is_running() const                    { return m_is_running; }
-		inline v1b is_cursor_enabled() const             { return m_wnd->is_cursor_enabled(); }
-		inline v1b is_mouse_released(msb_code code)const { return m_wnd->get_mouse()->is_released(code); }
-		inline v1b is_mouse_pressed(msb_code code) const { return m_wnd->get_mouse()->is_pressed(code); }
-		inline v1b is_mouse_free(msb_code code) const    { return m_wnd->get_mouse()->is_free(code); }
-		inline v1b is_mouse_held(msb_code code) const    { return m_wnd->get_mouse()->is_held(code); }
-		inline v1b is_key_released(kbd_code code) const  { return m_wnd->get_keyboard()->is_released(code); }
-		inline v1b is_key_pressed(kbd_code code) const   { return m_wnd->get_keyboard()->is_pressed(code); }
-		inline v1b is_key_free(kbd_code code) const      { return m_wnd->get_keyboard()->is_free(code); }
-		inline v1b is_key_held(kbd_code code) const      { return m_wnd->get_keyboard()->is_held(code); }
+		inline v1bit has_state(cv1u key = 0u) const { return m_states.size() > key; }
+		inline v1bit has_state(cstr_t key) const { for (auto& istate : m_states) { if (istate->has_name(key)) { return NW_TRUE; } } return NW_FALSE; }
+		inline v1bit is_running() const { return m_is_running; }
+		inline v1bit is_keybod_enabled() const  { return m_keybod.is_enabled(); }
+		inline v1bit is_keybod_raise(kbd_code_tc code) const { return m_keybod.is_raise(code); }
+		inline v1bit is_keybod_press(kbd_code_tc code) const { return m_keybod.is_press(code); }
+		inline v1bit is_keybod_free(kbd_code_tc code) const  { return m_keybod.is_free(code); }
+		inline v1bit is_keybod_held(kbd_code_tc code) const  { return m_keybod.is_held(code); }
+		inline v1bit is_cursor_enabled() const  { return m_cursor.is_enabled(); }
+		inline v1bit is_cursor_raise(crs_code_tc code) const { return m_cursor.is_raise(code); }
+		inline v1bit is_cursor_press(crs_code_tc code) const { return m_cursor.is_press(code); }
+		inline v1bit is_cursor_free(crs_code_tc code) const  { return m_cursor.is_free(code); }
+		inline v1bit is_cursor_held(crs_code_tc code) const  { return m_cursor.is_held(code); }
 		// --operators
-		v1nil operator=(const core_engine& copy) = delete;
 		// --core_methods
 		v1bit init();
-		v1nil quit();
+		v1bit quit();
 		v1nil run();
 		v1nil update();
-		v1nil event_proc(a_event& evt);
+		v1nil event_proc(iop_event_t& evt);
 		// --data_methods
-		dstr dialog_load(cstr filter);
-		dstr dialog_save(cstr filter);
 	private:
-		cstr m_name;
 		thread m_thr_run;
-		v1b m_is_running;
-		states m_states;
-		window m_wnd;
-		timer m_timer;
+		v1bit m_is_running;
+		states_t m_states;
+		window_t m_window;
+		keybod_t m_keybod;
+		cursor_t m_cursor;
+		timer_t m_timer;
 	};
-	template<class stype, typename ... args>
-	core_engine::state& core_engine::new_state(args ... arguments) {
-		m_states.push_back(state());
-		m_states.back().make_ref<stype>(*this, std::forward<args>(arguments)...);
-		return m_states.back();
-	}
 }
 #endif	// NW_API
 #endif	// NW_APP_CORE_ENGINE_H

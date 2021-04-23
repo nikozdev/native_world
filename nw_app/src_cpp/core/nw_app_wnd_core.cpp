@@ -7,19 +7,32 @@
 #		include <shellapi.h>
 namespace NW
 {
-	app_wnd_core::app_wnd_core(cinfo& information) :
-		app_wnd(information),
-		m_gfx(graphics()), m_kbd(keyboard()), m_mouse(mouse())
+	app_wnd_core::app_wnd_core() :
+		app_wnd()
 	{
+	}
+	app_wnd_core::~app_wnd_core()
+	{
+	}
+	// --setters
+	// --==<core_methods>==--
+	v1nil app_wnd_core::update()
+	{
+		app_wnd::update();
+	}
+	v1bit app_wnd_core::remake()
+	{
+		NW_CHECK(app_wnd::remake(), "failed remake!", return NW_FALSE);
+
 		// register a window class to create a window; ModuleHandle is the current application;
 		m_class.lpfnWndProc = app_wnd_core::event_proc_init;
 		m_class.style = CS_OWNDC | CS_VREDRAW | CS_HREDRAW;
-		if (::RegisterClassEx(&m_class) == FALSE) { throw init_error(__FILE__, __LINE__); return; }
+		NW_CHECK(::RegisterClassEx(&m_class), "failed class register", return NW_FALSE);
 		// WS_OVERLAPPEDWINDOW is the same as:
 		// (WS_OVERLAPPED | WS_CAPTION | WS_SYS_MENU | WS_THICKFRAME | WS_MINIMIZE_BOX | WS_MAXIMIZE_BOX);
 		// WS_TILEDWINDOW is the same as:
 		// (WS_TILED | WS_CAPTION | WS_SYS_MENU | WS_THICKFRAME | WS_MINIMIZE_BOX | WS_MAXIMIZE_BOX);
-		DWORD style = 0;
+		DWORD style = NW_NULL;
 		// control styles;
 		style |= WS_CAPTION;		// title bar;
 		style |= WS_SYSMENU;		// must be used with WS_CAPTION;
@@ -43,7 +56,7 @@ namespace NW
 		// (WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE);
 		// WS_EX_PALETTEWINDOW is the same as
 		// (WS_EX_WINDOWEDGE | WS_EX_TOOLWINDOW | WS_EX_TOPMOST);
-		DWORD style_ex = 0;
+		DWORD style_ex = NW_NULL;
 		style_ex |= WS_EX_APPWINDOW;	// force top window onto the taskbar whe it is visible;
 		style_ex |= WS_EX_ACCEPTFILES;	// drag-drop files;
 		// style_ex |= WS_EX_CONTEXTHELP;	// add an icon which makes WM_HELP message and changes the cursor to question mark;
@@ -67,46 +80,23 @@ namespace NW
 			m_class.hInstance,
 			this
 		);
-		if (m_handle == NULL) { throw init_error(__FILE__, __LINE__); return; }
+		NW_CHECK(m_handle, "no handle!", return NW_FALSE);
 		// do some stuff with the window;
 		::ShowWindow(m_handle, SW_SHOWDEFAULT);
 		::UpdateWindow(m_handle);
-		set_title(get_title());
 		// register mouse raw input device;
 		RAWINPUTDEVICE raw_dvc;
-		raw_dvc.usUsagePage = 0x01;	// mouse page bit;
-		raw_dvc.usUsage = 0x02;		// mouse usage bit;
-		raw_dvc.dwFlags = 0u;		// additional param;
-		raw_dvc.hwndTarget = NULL;	// we don't really need a target;
-		if (::RegisterRawInputDevices(&raw_dvc, 1u, sizeof(RAWINPUTDEVICE)) == FALSE) {
-			throw init_error(__FILE__, __LINE__);
-			return;
-		}
-
-		m_gfx.make_ref<gfx_engine>(m_handle);
-		m_gfx->set_viewport(0, 0, get_size_x(), get_size_y());
-		m_gfx->set_fbuf_size(get_size_x(), get_size_y());
-	}
-	app_wnd_core::~app_wnd_core()
-	{
-	}
-	// --setters
-
-	void app_wnd_core::set_cursor_enabled(v1b enable_cursor) {
-		m_mouse.set_cursor_enabled(enable_cursor);
-		NW_GUI::gui_set_mouse_enabled(enable_cursor);
-	}
-	// --==<core_methods>==--
-	void app_wnd_core::update()
-	{
-		m_gfx->update();
-		m_mouse.update();
-		m_kbd.update();
-		app_wnd::update();
+		raw_dvc.usUsagePage = 0x01; // mouse page bit;
+		raw_dvc.usUsage = 0x02;     // mouse usage bit;
+		raw_dvc.dwFlags = NW_NULL;  // additional param;
+		raw_dvc.hwndTarget = NW_NULL; // we don't really need a target;
+		NW_CHECK(::RegisterRawInputDevices(&raw_dvc, 1u, sizeof(raw_dvc)), "failed raw register!", return NW_FALSE);
+		
+		return NW_TRUE;
 	}
 	// --==</core_methods>==--
 	// --==<impl_methods>==--
-	LRESULT inline __stdcall app_wnd_core::event_proc_init(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+	LRESULT WINAPI app_wnd_core::event_proc_init(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		if (msg != WM_NCCREATE) { return ::DefWindowProc(hwnd, msg, wparam, lparam); }
 
 		CREATESTRUCT* crtst = reinterpret_cast<CREATESTRUCT*>(lparam);
@@ -117,11 +107,11 @@ namespace NW
 
 		return app_wnd_core::event_proc_static(hwnd, msg, wparam, lparam);
 	}
-	LRESULT inline __stdcall app_wnd_core::event_proc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+	LRESULT WINAPI app_wnd_core::event_proc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		if (gui_wapi_event_proc(hwnd, msg, wparam, lparam) == TRUE) { return 0l; }
 		return reinterpret_cast<app_wnd_core*>(::GetWindowLongPtr(hwnd, GWLP_USERDATA))->event_proc(hwnd, msg, wparam, lparam);
 	}
-	inline LRESULT __stdcall app_wnd_core::event_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+	inline LRESULT WINAPI app_wnd_core::event_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		switch (msg) {
 		// events_of_application
 		{
@@ -133,8 +123,8 @@ namespace NW
 		case WM_DROPFILES: {	// wparam is HDROP; lparam is not used;
 			TCHAR str_buf[MAX_PATH]{ 0 };
 			HDROP drop_info = reinterpret_cast<HDROP>(wparam);
-			UINT drop_result = DragQueryFile(drop_info, 0u, str_buf, MAX_PATH);	// we can retrieve the file path;
-			if (drop_result == FALSE) { throw run_error(__FILE__, __LINE__); }
+			UINT drop_result = DragQueryFile(drop_info, 0u, str_buf, MAX_PATH); // we can retrieve the file path;
+			NW_CHECK(drop_result, "invalid result!", return NW_NULL);
 			DragFinish(drop_info);	// free that resources that windows has just taken to help us;
 			DWORD attribs = GetFileAttributes(str_buf);
 			if (attribs & FILE_ATTRIBUTE_ARCHIVE) {
@@ -159,9 +149,9 @@ namespace NW
 			if (attribs & FILE_ATTRIBUTE_NORMAL) {
 				std::cout << "a file does not have other attributes set;" << std::endl;
 			}
-			app_event app_evt(EVT_APP_DROP_FILE, str_buf);
-			m_info.event_proc(app_evt);
-			return 0l; break;
+			m_event_proc(iop_event_app_t(NW_EVTYPE_APPLIC_DROPF, str_buf));
+			return 0l;
+			break;
 		}
 		}
 		// events_of_input
@@ -183,10 +173,8 @@ namespace NW
 			const RAWINPUT& raw_in = reinterpret_cast<const RAWINPUT&>(m_raw_buf[0]);
 			// we are interested in the header and data;
 			if (raw_in.header.dwType == RIM_TYPEMOUSE) {
-				if (raw_in.data.mouse.lLastX != 0 || raw_in.data.mouse.lLastY != 0) {
-					ms_event ms_evt = ms_event(EVT_MS_MOVE, raw_in.data.mouse.lLastX, raw_in.data.mouse.lLastY);
-					m_mouse.event_proc(ms_evt);
-					m_info.event_proc(ms_evt);
+				if (raw_in.data.mouse.lLastX != NW_NULL || raw_in.data.mouse.lLastY != NW_NULL) {
+					m_event_proc(iop_cursor_t::event_t(NW_EVTYPE_CURSOR_MOVED, raw_in.data.mouse.lLastX, raw_in.data.mouse.lLastY));
 				}
 			}
 			break;
@@ -196,23 +184,17 @@ namespace NW
 		{
 		case WM_MOUSEMOVE: {
 			POINTS coord = MAKEPOINTS(lparam);
-			ms_event ms_evt = ms_event(EVT_MS_COORD, coord.x, coord.y);
-			m_mouse.event_proc(ms_evt);
-			m_info.event_proc(ms_evt);
+			m_event_proc(iop_cursor_t::event_t(NW_EVTYPE_CURSOR_COORD, coord.x, coord.y));
 			return 0l;
 			break;
 		}
 		case WM_MOUSEHWHEEL: {
-			ms_event ms_evt = ms_event(EVT_MS_SCROLL, GET_WHEEL_DELTA_WPARAM(wparam) / static_cast<v1f64>(WHEEL_DELTA), 0.0);
-			m_mouse.event_proc(ms_evt);
-			m_info.event_proc(ms_evt);
+			m_event_proc(iop_cursor_t::event_t(NW_EVTYPE_CURSOR_SCROL, GET_WHEEL_DELTA_WPARAM(wparam) / WHEEL_DELTA, NW_NULL));
 			return 0l;
 			break;
 		}
 		case WM_MOUSEWHEEL: {
-			ms_event ms_evt = ms_event(EVT_MS_SCROLL, 0.0, GET_WHEEL_DELTA_WPARAM(wparam) / static_cast<v1f64>(WHEEL_DELTA));
-			m_mouse.event_proc(ms_evt);
-			m_info.event_proc(ms_evt);
+			m_event_proc(iop_cursor_t::event_t(NW_EVTYPE_CURSOR_SCROL, NW_NULL, GET_WHEEL_DELTA_WPARAM(wparam) / WHEEL_DELTA));
 			return 0l;
 			break;
 		}
@@ -220,50 +202,40 @@ namespace NW
 		case WM_RBUTTONDOWN: case WM_RBUTTONDBLCLK:
 		case WM_MBUTTONDOWN: case WM_MBUTTONDBLCLK:
 		{
-			mouse_codes msb_code = MSC_DEFAULT;
-			if (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONDBLCLK) { msb_code = MSC_LEFT; }
-			if (msg == WM_RBUTTONDOWN || msg == WM_RBUTTONDBLCLK) { msb_code = MSC_RIGHT; }
-			if (msg == WM_MBUTTONDOWN || msg == WM_MBUTTONDBLCLK) { msb_code = MSC_MIDDLE; }
-			if (::GetCapture() == nullptr) { ::SetCapture(m_handle); }
-			ms_event ms_evt = ms_event(EVT_MS_PRESSED, msb_code);
-			m_mouse.event_proc(ms_evt);
-			m_info.event_proc(ms_evt);
+			iop_cursor_t::code_t msb_code = NW_NULL;
+			if (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONDBLCLK) { msb_code = NW_CURCODE_LEFT; }
+			if (msg == WM_RBUTTONDOWN || msg == WM_RBUTTONDBLCLK) { msb_code = NW_CURCODE_RIGT; }
+			if (msg == WM_MBUTTONDOWN || msg == WM_MBUTTONDBLCLK) { msb_code = NW_CURCODE_MIDL; }
+			if (::GetCapture() == NW_NULL) { ::SetCapture(m_handle); }
+			m_event_proc(iop_cursor_t::event_t(NW_EVTYPE_CURSOR_PRESS, msb_code));
 			return 0l;
 			break;
 		}
 		}
 		{
 		case WM_LBUTTONUP: case WM_RBUTTONUP: case WM_MBUTTONUP: {
-			mouse_codes msb_code = MSC_DEFAULT;
-			if (msg == WM_LBUTTONUP) { msb_code = MSC_LEFT; }
-			if (msg == WM_RBUTTONUP) { msb_code = MSC_RIGHT; }
-			if (msg == WM_MBUTTONUP) { msb_code = MSC_MIDDLE; }
-			ms_event ms_evt = ms_event(EVT_MS_RELEASED, msb_code);
-			m_mouse.event_proc(ms_evt);
-			m_info.event_proc(ms_evt);
+			iop_cursor_t::code_t msb_code = NW_NULL;
+			if (msg == WM_LBUTTONUP) { msb_code = NW_CURCODE_LEFT; }
+			if (msg == WM_RBUTTONUP) { msb_code = NW_CURCODE_RIGT; }
+			if (msg == WM_MBUTTONUP) { msb_code = NW_CURCODE_MIDL; }
+			m_event_proc(iop_cursor_t::event_t(NW_EVTYPE_CURSOR_RAISE, msb_code));
 			if (::GetCapture() == m_handle) { ::ReleaseCapture(); }
 			return 0l;
 			break;
 		}
 		// events_of_keyboard
 		case WM_KEYDOWN: case WM_SYSKEYDOWN: {
-			kbd_event kbd_evt = kbd_event(EVT_KBD_PRESSED, static_cast<keyboard_codes>(wparam));
-			m_kbd.event_proc(kbd_evt);
-			m_info.event_proc(kbd_evt);
+			m_event_proc(iop_keybod_t::event_t(NW_EVTYPE_KEYBOD_PRESS, wparam));
 			return 0l;
 			break;
 		}
 		case WM_KEYUP: case WM_SYSKEYUP: {
-			kbd_event kbd_evt = kbd_event(EVT_KBD_RELEASED, static_cast<keyboard_codes>(wparam));
-			m_kbd.event_proc(kbd_evt);
-			m_info.event_proc(kbd_evt);
+			m_event_proc(iop_keybod_t::event_t(NW_EVTYPE_KEYBOD_RAISE, wparam));
 			return 0l;
 			break;
 		}
 		case WM_CHAR: case WM_SYSCHAR: {
-			kbd_event kbd_evt = kbd_event(EVT_KBD_CHAR, static_cast<keyboard_codes>(wparam));
-			m_kbd.event_proc(kbd_evt);
-			m_info.event_proc(kbd_evt);
+			m_event_proc(iop_keybod_t::event_t(NW_EVTYPE_KEYBOD_CHART, wparam));
 			return 0l;
 			break;
 		}
@@ -271,48 +243,38 @@ namespace NW
 		// events_of_window
 		{
 		case WM_SIZE: {
-			m_info.size_x = LOWORD(lparam);
-			m_info.size_y = HIWORD(lparam);
-			//SetWindowPos(m_handle, NULL, 0, 0, GetSizeW(), GetSizeH(), SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
-			wnd_event wnd_evt = wnd_event(EVT_WND_RESIZE, get_size_x(), get_size_y());
-			m_info.event_proc(wnd_evt);
-			PostMessage(m_handle, WM_PAINT, 0, 0);
+			set_size_xy({ LOWORD(lparam), HIWORD(lparam) });
+			m_event_proc(event_t(NW_EVTYPE_WINDOW_SIZED, get_size_x(), get_size_y()));
 			return 0l;
 			break;
 		}
 		case WM_MOVE: {
-			m_info.coord_y = LOWORD(lparam);
-			m_info.coord_x = HIWORD(lparam);
-			//SetWindowPos(m_handle, NULL, GetCoordX(), GetCoordY(), 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
-			wnd_event wnd_evt = wnd_event(EVT_WND_MOVE, get_coord_x(), get_coord_y());
-			m_info.event_proc(wnd_evt);
-			PostMessage(m_handle, WM_PAINT, 0, 0);
+			set_coord_xy({ LOWORD(lparam), HIWORD(lparam) });
+			m_event_proc(event_t(NW_EVTYPE_WINDOW_MOVED, get_coord_x(), get_coord_y()));
 			return 0l;
 			break;
 		}
 		case WM_SETFOCUS: {		// wparam is the last window was focused, lParam is not used
-			wnd_event wnd_evt = wnd_event(EVT_WND_FOCUS);
-			m_info.event_proc(wnd_evt);
-			m_info.is_focused = NW_TRUE;
-			return 0l;
-			break;
-		}
-		case WM_CLOSE: {
-			m_info.event_proc(wnd_event(EVT_WND_CLOSE));
-			::PostQuitMessage(0);
+			set_focused(NW_TRUE);
+			m_event_proc(event_t(NW_EVTYPE_WINDOW_FOCUS, NW_TRUE));
 			return 0l;
 			break;
 		}
 		case WM_KILLFOCUS: {	// wparam is the next window will be focused, lParam is not used
-			m_info.is_focused = false;
+			set_focused(NW_FALSE);
+			m_event_proc(event_t(NW_EVTYPE_WINDOW_FOCUS, NW_FALSE));
+			return 0l;
+			break;
+		}
+		case WM_CLOSE: {
+			m_event_proc(event_t(NW_EVTYPE_WINDOW_CLOSE, NW_TRUE));
+			::PostQuitMessage(NW_NULL);
 			return 0l;
 			break;
 		}
 		case WM_ACTIVATE: {
-			if (m_mouse.is_cursor_enabled()) {
-				if (wparam & WA_ACTIVE) { m_mouse.set_cursor_enabled(false); }
-				else { m_mouse.set_cursor_enabled(NW_TRUE); }
-			}
+			m_event_proc(event_t(NW_EVTYPE_WINDOW_ACTIV, NW_TRUE));
+			return 0l;
 			break;
 		}
 		}

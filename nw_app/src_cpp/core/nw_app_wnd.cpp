@@ -1,92 +1,87 @@
 #include "nw_app_pch.hpp"
 #include "nw_app_wnd.h"
 #if (defined NW_WAPI)
-namespace NW
-{
-	window_info::window_info(cstr window_title, v1u width, v1u height) :
-		title(window_title),
-		coord_x(0), coord_y(0), size_x(width), size_y(height),
-		aspect_ratio(static_cast<v1f>(width) / static_cast<v1f>(height)) { }
-	// --operators
-	stm_out& window_info::operator<<(stm_out& stm) const {
-		return stm <<
-			"--==<window_info>==--" << std::endl <<
-			"title: " << &title[0] << std::endl <<
-			"coord_x/coord_y: " << coord_x << "/" << coord_y << std::endl <<
-			"size_w/size_h: " << size_x << "/" << size_y << std::endl <<
-			"aspect_ratio: " << aspect_ratio << std::endl <<
-			"api_version: " << &api_version[0] << std::endl <<
-			"--==</window_info>==--";
-	}
-	stm_in& window_info::operator>>(stm_in& stm) {
-		return stm >>
-			title >> api_version >>
-			coord_x >> coord_y >> size_x >> size_y >>
-			aspect_ratio >>
-			opacity >>
-			is_hovered >> is_hovered >> is_hovered;
-	}
-}
 #	if (NW_WAPI & NW_WAPI_WIN)
 namespace NW
 {
-	app_wnd::app_wnd(cinfo& information) :
+	app_wnd::app_wnd() :
 		a_mem_cmp(),
-		m_info(information), m_handle{ 0 },
-		m_class{ 0 }, m_msg{ 0 }
+		m_handle{ NW_NULL },
+		m_class{ NW_NULL },
+		m_msg{ NW_NULL },
+		m_title(NW_DEFAULT_STR),
+		m_ver_str(NW_DEFAULT_STR),
+		m_viewp(NW_NULL),
+		m_ratio(NW_NULL),
+		m_opacity(NW_NULL),
+		m_is_enabled(NW_NULL),
+		m_is_hovered(NW_NULL),
+		m_is_focused(NW_NULL),
+		m_event_proc([](iop_event_t&)->v1nil { return; })
 	{
-		static TCHAR class_name[256];
-		OemToChar(&information.title[0], class_name);
-		m_class.lpszClassName = class_name;
-		// register a window class to create a window; ModuleHandle is the current application;
-		m_class.lpszMenuName = NULL;
-		m_class.lpfnWndProc = NULL;
-		m_class.hInstance = GetModuleHandle(NULL);
-		m_class.hIcon = LoadIcon(m_class.hInstance, MAKEINTRESOURCE(NW_APP_ICON1));
-		m_class.hIconSm = LoadIcon(m_class.hInstance, MAKEINTRESOURCE(NW_APP_ICON1));
-		m_class.hCursor = LoadCursor(m_class.hInstance, MAKEINTRESOURCE(NW_APP_CURSOR0));
-		m_class.hbrBackground = NULL;
-		m_class.cbClsExtra = 0;
-		m_class.cbWndExtra = 0;
-		m_class.cbSize = sizeof(WNDCLASSEX);
 	}
 	app_wnd::~app_wnd()
 	{
-		if (m_handle != NULL) { ::DestroyWindow(m_handle); m_handle = { 0 }; }
-		if (m_class.lpfnWndProc != NULL) { ::UnregisterClass(m_class.lpszClassName, m_class.hInstance); m_class = { 0 }; }
+		if (m_handle != NULL) { ::DestroyWindow(m_handle); m_handle = { NW_NULL }; }
+		if (m_class.lpfnWndProc != NULL) { ::UnregisterClass(m_class.lpszClassName, m_class.hInstance); m_class = { NW_NULL }; }
 	}
 	// --setters
-	v1nil app_wnd::set_title(cstr window_title) {
-		m_info.title = window_title;
+	v1nil app_wnd::set_size_xy(cv2u size_xy) {
+		m_viewp[2] = size_xy[0];
+		m_viewp[3] = size_xy[1];
+		//SetWindowPos(m_handle, NULL, 0, 0, GetSizeW(), GetSizeH(), SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
+		PostMessage(m_handle, WM_PAINT, NW_NULL, NW_NULL);
+	}
+	v1nil app_wnd::set_coord_xy(cv2u coord_xy) {
+		m_viewp[0] = coord_xy[0];
+		m_viewp[1] = coord_xy[1];
+		//SetWindowPos(m_handle, NULL, GetCoordX(), GetCoordY(), 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+		PostMessage(m_handle, WM_PAINT, NW_NULL, NW_NULL);
+	}
+	v1nil app_wnd::set_viewp_xywh(cv4u viewport) {
+		m_viewp[0] = viewport[0];
+		m_viewp[1] = viewport[1];
+		m_viewp[2] = viewport[2];
+		m_viewp[3] = viewport[3];
+	}
+	v1nil app_wnd::set_title(cstr_t window_title) {
+		m_title = window_title;
 		::SetWindowTextA(m_handle, window_title);
 	}
 	v1nil app_wnd::set_opacity(v1f opacity) {
 		opacity = opacity > 1.0f ? 1.0f : opacity < 0.1f ? 0.1f : opacity;
-		m_info.opacity = opacity;
+		m_opacity = opacity;
 		DWORD style_flags = ::GetWindowLongW(m_handle, GWL_EXSTYLE);
 		if (opacity < 1.0f) {	// get window style and add "layered attribute" to it
 			style_flags |= WS_EX_LAYERED;
 			::SetWindowLongW(m_handle, GWL_EXSTYLE, style_flags);
-			::SetLayeredWindowAttributes(m_handle, 0u, static_cast<byte_t>(255 * opacity), LWA_ALPHA);
+			::SetLayeredWindowAttributes(m_handle, NW_NULL, static_cast<byte_t>(255.0f * opacity), LWA_ALPHA);
 		}
 		else {  // get rid of transparency
 			style_flags &= ~WS_EX_LAYERED;	// "&~0b0010" == get all bits except this one
 			::SetWindowLongW(m_handle, GWL_EXSTYLE, style_flags);
 		}
 	}
-	v1nil app_wnd::set_focused(v1b is_focused) {
-		if (m_info.is_focused == is_focused) { return; }
-		if (is_focused) { SetFocus(m_handle); }
+	v1nil app_wnd::set_enabled(v1bit is_enabled) {
+		if (m_is_enabled == is_enabled) { return; }
+		m_is_enabled = is_enabled;
+		if (is_enabled) { ::EnableWindow(m_handle, NW_TRUE); }
+		else { ::EnableWindow(m_handle, NW_FALSE); }
 	}
-	v1nil app_wnd::set_enabled(v1b is_enabled) {
-		if (m_info.is_enabled == is_enabled) { return; }
-		m_info.is_enabled = is_enabled;
-		::EnableWindow(m_handle, is_enabled);
+	v1nil app_wnd::set_focused(v1bit is_focused) {
+		if (m_is_focused == is_focused) { return; }
+		m_is_focused = is_focused;
+		if (is_focused) { ::SetFocus(m_handle); }
+		else { ::SetFocus(NW_NULL); }
+	}
+	v1nil app_wnd::set_hovered(v1bit is_hovered) {
+		if (m_is_hovered == is_hovered) { return; }
+		if (is_hovered) { }
 	}
 	v1nil app_wnd::set_icon(const gfx_img& img) {
 	}
 	v1nil app_wnd::set_callback(const event_callback& event_proc) {
-		m_info.event_proc = event_proc;
+		m_event_proc = event_proc;
 	}
 	// --==<core_methods>==--
 	v1nil app_wnd::update()
@@ -101,6 +96,32 @@ namespace NW
 			}
 		}
 	}
+	v1bit app_wnd::remake()
+	{
+		NW_CHECK(NW_TRUE, "", return NW_FALSE);
+
+		static TCHAR class_name[256];
+		OemToChar(get_title(), class_name);
+		m_class.lpszClassName = class_name;
+		// register a window class to create a window;
+		m_class.lpszMenuName = NW_NULL;
+		m_class.lpfnWndProc = NW_NULL;
+		// GetModuleHandle(NULL) is the current application;
+		m_class.hInstance = GetModuleHandle(NW_NULL);
+		m_class.hIcon = LoadIcon(m_class.hInstance, MAKEINTRESOURCE(NW_APP_ICON1));
+		m_class.hIconSm = LoadIcon(m_class.hInstance, MAKEINTRESOURCE(NW_APP_ICON1));
+		m_class.hCursor = LoadCursor(m_class.hInstance, MAKEINTRESOURCE(NW_APP_CURSOR0));
+		m_class.hbrBackground = NW_NULL;
+		m_class.cbClsExtra = NW_NULL;
+		m_class.cbWndExtra = NW_NULL;
+		m_class.cbSize = sizeof(WNDCLASSEX);
+		// everything is left is:
+		// ->set up window class procedure;
+		// ->set up window class style;
+		// ->create window handle;
+		return NW_TRUE;
+	}
+
 	// --==</core_methods>==--
 	// --==<impl_methods>==--
 	LRESULT WINAPI app_wnd::event_proc_init(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
@@ -144,40 +165,39 @@ namespace NW
 		// events_of_mouse
 		// events_of_window
 		case WM_SIZE: {
-			m_info.size_x = LOWORD(lparam);
-			m_info.size_y = HIWORD(lparam);
-			//SetWindowPos(m_handle, NULL, 0, 0, GetSizeW(), GetSizeH(), SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
-			wnd_event wnd_evt = wnd_event(EVT_WND_RESIZE, get_size_x(), get_size_y());
-			m_info.event_proc(wnd_evt);
+			set_size_xy({ LOWORD(lparam), HIWORD(lparam) });
+			event_t wnd_evt = event_t(NW_EVTYPE_WINDOW_SIZED, get_size_x(), get_size_y());
+			m_event_proc(wnd_evt);
 			PostMessage(m_handle, WM_PAINT, 0, 0);
 			return 0l;
 			break;
 		}
 		case WM_MOVE: {
-			m_info.coord_y = LOWORD(lparam);
-			m_info.coord_x = HIWORD(lparam);
-			//SetWindowPos(m_handle, NULL, GetCoordX(), GetCoordY(), 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
-			wnd_event wnd_evt = wnd_event(EVT_WND_MOVE, get_coord_x(), get_coord_y());
-			m_info.event_proc(wnd_evt);
-			PostMessage(m_handle, WM_PAINT, 0, 0);
+			set_coord_xy(v2u{ LOWORD(lparam), HIWORD(lparam) });
+			event_t wnd_evt = event_t(NW_EVTYPE_WINDOW_MOVED, get_coord_x(), get_coord_y());
+			m_event_proc(wnd_evt);
+			PostMessage(m_handle, WM_PAINT, NW_NULL, NW_NULL);
 			return 0l;
 			break;
 		}
 		case WM_SETFOCUS: {		// wparam is the last window was focused, lParam is not used
-			wnd_event wnd_evt = wnd_event(EVT_WND_FOCUS);
-			m_info.event_proc(wnd_evt);
-			m_info.is_focused = NW_TRUE;
+			event_t wnd_evt(NW_EVTYPE_WINDOW_FOCUS, NW_TRUE);
+			m_event_proc(wnd_evt);
+			set_focused(NW_TRUE);
 			return 0l;
 			break;
 		}
 		case WM_CLOSE: {
-			m_info.event_proc(wnd_event(EVT_WND_CLOSE));
-			::PostQuitMessage(0);
+			event_t wnd_evt(NW_EVTYPE_WINDOW_CLOSE, NW_TRUE);
+			m_event_proc(wnd_evt);
+			::PostQuitMessage(NW_NULL);
 			return 0l;
 			break;
 		}
 		case WM_KILLFOCUS: {	// wparam is the next window will be focused, lParam is not used
-			m_info.is_focused = false;
+			set_focused(NW_FALSE);
+			event_t wnd_evt = event_t(NW_EVTYPE_WINDOW_FOCUS, NW_FALSE);
+			m_event_proc(wnd_evt);
 			return 0l;
 			break;
 		}

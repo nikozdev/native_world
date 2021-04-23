@@ -3,7 +3,7 @@
 
 // --==<global>==--
 #include "core/nw_app_engine.h"
-#include "core/nw_app_engine_states.h"
+#include "core/nw_app_states.h"
 
 #include "core/nw_app_wnd.h"
 #include "core/nw_app_wnd_core.h"
