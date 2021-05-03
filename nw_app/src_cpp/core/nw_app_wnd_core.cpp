@@ -22,7 +22,7 @@ namespace NW
 	}
 	v1bit app_wnd_core::remake()
 	{
-		NW_CHECK(app_wnd::remake(), "failed remake!", return NW_FALSE);
+		NW_CHECK(app_wnd::remake(), "remake error!", return NW_FALSE);
 
 		// register a window class to create a window; ModuleHandle is the current application;
 		m_class.lpfnWndProc = app_wnd_core::event_proc_init;

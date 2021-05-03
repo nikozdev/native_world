@@ -91,7 +91,7 @@ namespace NW
 			if (fmbuf->get_size_x() != size_xy[0] || fmbuf->get_size_y() != size_xy[1]) {
 				//gfx_engine::get().set_fmbuf_size(size_xy[0], size_xy[1]);
 			}
-			gfx_engine::get().set_viewp(0.0f, 0.0f, size_xy_gui[0], size_xy_gui[1]);
+			gfx_engine::get().set_viewp({ 0.0f, 0.0f, size_xy_gui[0], size_xy_gui[1] });
 			NW_GUI::Image(
 				reinterpret_cast<ImTextureID>(fmbuf_part->get_handle()),
 				size_xy_gui, { 0.0f, 1.0f }, { 1.0f, 0.0f }

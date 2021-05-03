@@ -5,7 +5,7 @@
 namespace NW
 {
 	app_wnd::app_wnd() :
-		a_mem_cmp(),
+		a_mem_user(),
 		m_handle{ NW_NULL },
 		m_class{ NW_NULL },
 		m_msg{ NW_NULL },

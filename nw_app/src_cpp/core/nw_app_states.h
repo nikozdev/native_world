@@ -46,7 +46,7 @@ namespace NW
 	class app_state_gui : public app_state
 	{
 		using gui_ref = mem_ref<a_gui_of>;
-		using gui_refs = t_darray<gui_ref>;
+		using gui_refs = darray_t<gui_ref>;
 	public:
 		app_state_gui();
 		~app_state_gui();

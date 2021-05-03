@@ -13,9 +13,11 @@ namespace NW
 	class NW_API app_engine : public t_singleton<app_engine>
 	{
 	public:
+		using engine_t = app_engine;
+		using engine_tc = const engine_t;
 		using state_t = app_state;
 		using state_tc = const state_t;
-		using states_t = t_darray<state_t*>;
+		using states_t = darray_t<state_t*>;
 		using states_tc = const states_t;
 		using window_t = app_wnd_core;
 		using window_tc = const window_t;
@@ -63,12 +65,13 @@ namespace NW
 		inline cv1f get_cursor_held_delta_x(crs_code_tc code) const { return get_cursor()->get_held_delta_x(code); }
 		inline cv1f get_cursor_held_delta_y(crs_code_tc code) const { return get_cursor()->get_held_delta_y(code); }
 		// --setters
-		v1nil set_keybod_enabled(v1bit enable);
-		v1nil set_cursor_enabled(v1bit enable);
+		engine_t& set_keybod_enabled(v1bit enable);
+		engine_t& set_cursor_enabled(v1bit enable);
+		engine_t& set_cursor_bounds(cv4s& bounds);
 		template<class tstate, typename ... args>
-		v1nil add_state(args ... arguments) { m_states.push_back(new tstate(std::forward<args>(arguments)...)); }
-		v1nil rmv_state(cv1u key = NW_NULL);
-		v1nil stop_running();
+		engine_t& add_state(args ... arguments) { m_states.push_back(new tstate(std::forward<args>(arguments)...)); return *this; }
+		engine_t& rmv_state(cv1u key = NW_NULL);
+		engine_t& stop_running();
 		// --predicates
 		inline v1bit has_state(cv1u key = 0u) const { return m_states.size() > key; }
 		inline v1bit has_state(cstr_t key) const { for (auto& istate : m_states) { if (istate->has_name(key)) { return NW_TRUE; } } return NW_FALSE; }

@@ -4,7 +4,7 @@
 #if (defined NW_WAPI)
 namespace NW
 {
-	class NW_API app_wnd : public a_mem_cmp
+	class NW_API app_wnd : public a_mem_user
 	{
 	public:
 		using handle_t = window_handle;
@@ -30,16 +30,16 @@ namespace NW
 		inline cstr_t get_title() const  { return &m_title[0]; }
 		// --setters
 		v1nil set_size_xy(cv2u size_xy);
-		inline v1nil set_size_x(cv1u size_x) { set_size_xy({size_x, get_size_y()}); }
+		inline v1nil set_size_x(cv1u dims) { set_size_xy({dims, get_size_y()}); }
 		inline v1nil set_size_y(cv1u size_y) { set_size_xy({ get_size_x(), size_y }); }
-		inline v1nil set_size_xy(cv1u size_x, cv1u size_y) { set_size_xy({ size_x, size_y }); }
+		inline v1nil set_size_xy(cv1u dims, cv1u size_y) { set_size_xy({ dims, size_y }); }
 		v1nil set_coord_xy(cv2u coord_xy);
 		inline v1nil set_coord_x(cv1u coord_x) { set_size_xy({ coord_x, get_coord_y() }); }
 		inline v1nil set_coord_y(cv1u coord_y) { set_size_xy({ get_coord_x(), coord_y }); }
 		inline v1nil set_coord_xy(cv1u coord_x, cv1u coord_y) { set_coord_xy({ coord_x, coord_y }); }
 		v1nil set_viewp_xywh(cv4u viewport);
 		inline v1nil set_viewp_xywh(cv2u coord_xy, cv2u size_xy) { set_viewp_xywh({ coord_xy[0], coord_xy[1], size_xy[0], size_xy[1] }); }
-		inline v1nil set_viewp_xywh(cv1u coord_x, cv1u coord_y, cv1u size_x, cv1u size_y) { set_viewp_xywh({ coord_x, coord_y, size_x, size_y }); }
+		inline v1nil set_viewp_xywh(cv1u coord_x, cv1u coord_y, cv1u dims, cv1u size_y) { set_viewp_xywh({ coord_x, coord_y, dims, size_y }); }
 		v1nil set_title(cstr_t title);
 		v1nil set_enabled(v1bit is_enabled);
 		v1nil set_hovered(v1bit is_hovered);

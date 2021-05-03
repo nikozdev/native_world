@@ -61,11 +61,11 @@ namespace NW
     //   qsort(p, nv, sizeof(XYZ), XYZCompare);
     ///////////////////////////////////////////////////////////////////////////////
     inline v1bit triangulate(mem_buf& vbuf, mem_buf& ibuf) {
-        NW_CHECK(vbuf.get_layt().has_vtype<v2f>(), "type error!", return NW_FALSE);
-        NW_CHECK(ibuf.get_layt().has_vtype<v3u>(), "type error!", return NW_FALSE);
+        NW_CHECK(vbuf.get_layt().has_type<v2f>(), "type error!", return NW_FALSE);
+        NW_CHECK(ibuf.get_layt().has_type<v3u>(), "type error!", return NW_FALSE);
 
-        t_darray<v1bit> complete;
-        t_darray<v2u> ibuf_edges;
+        darray_t<v1bit> complete;
+        darray_t<v2u> ibuf_edges;
         v1s nedge = NW_NULL;
         v1bit status = NW_FALSE;
         v1bit is_inside = NW_FALSE;

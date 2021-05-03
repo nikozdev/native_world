@@ -17,21 +17,31 @@ namespace NW
 	{
 	}
 	// --setters
-	v1nil app_engine::set_keybod_enabled(v1bit enable) {
+	app_engine::engine_t& app_engine::set_keybod_enabled(v1bit enable) {
 		m_keybod.set_enabled(enable);
 		gui_set_cursor_enabled(enable);
+		return *this;
 	}
-	v1nil app_engine::set_cursor_enabled(v1bit enable) {
+	app_engine::engine_t& app_engine::set_cursor_enabled(v1bit enable) {
 		m_cursor.set_enabled(enable);
 		gui_set_cursor_enabled(enable);
+		if (enable) { set_cursor_bounds(cv4s(NW_NULL)); }
+		else { set_cursor_bounds(get_window()->get_viewp_xywh()); }
+		return *this;
 	}
-	v1nil app_engine::rmv_state(cv1u key) {
-		NW_CHECK(has_state(key), "not found!", return);
+	app_engine::engine_t& app_engine::set_cursor_bounds(cv4s& bounds) {
+		m_cursor.set_bounds(bounds);
+		return *this;
+	}
+	app_engine::engine_t& app_engine::rmv_state(cv1u key) {
+		NW_CHECK(has_state(key), "not found!", return *this);
 		delete m_states[key];
 		m_states.erase(m_states.begin() + key);
+		return *this;
 	}
-	v1nil app_engine::stop_running() {
+	app_engine::engine_t& app_engine::stop_running() {
 		m_is_running = NW_FALSE;
+		return *this;
 	}
 	// --==<core_methods>==--
 	v1bit app_engine::init()
@@ -44,13 +54,12 @@ namespace NW
 		NW_CHECK(cmp_sys::get().init(), "failed init!", return NW_FALSE);
 		NW_CHECK(ent_sys::get().init(), "failed init!", return NW_FALSE);
 		
-		NW_CHECK(m_window.remake(NW_NAME_STR, 1200u, 800u), "failed remake!", return NW_FALSE);
+		NW_CHECK(m_window.remake(NW_NAME_STR, 1200u, 800u), "remake error!", return NW_FALSE);
 		m_window.set_callback([this](iop_event_t& evt)->v1nil { return this->event_proc(evt); });
 
 		NW_CHECK(gfx_engine::get().init(m_window.get_handle()), "failed init!", return NW_FALSE);
-		gfx_engine::get().set_viewp(0u, 0u, m_window.get_size_x(), m_window.get_size_y());
-		//gfx_engine::get().set_fmbuf_size(get_window_size_x(), get_window_size_y());
-
+		gfx_engine::get().set_viewp({ 0.0f, 0.0f, NW_CAST_FLOAT(m_window.get_size_x()), NW_CAST_FLOAT(m_window.get_size_y()) });
+		
 		for (auto& istate : m_states) { NW_CHECK(istate->init(), "failed init!", return NW_FALSE); }
 		
 		return NW_TRUE;
@@ -137,8 +146,7 @@ namespace NW
 			iop_event_wnd_t& wnd_evt = evt;
 			switch (evt.get_type()) {
 			case NW_EVTYPE_WINDOW_SIZED: {
-				gfx_engine::get().set_viewp(0, 0, wnd_evt.get_val_x(), wnd_evt.get_val_y());
-				//gfx_engine::get().set_fmbuf_size(wnd_evt.get_val_x(), wnd_evt.get_val_y());
+				gfx_engine::get().set_viewp({ 0, 0, NW_CAST_FLOAT(wnd_evt.get_val_x()), NW_CAST_FLOAT(wnd_evt.get_val_y()) });
 				break;
 			}
 			case NW_EVTYPE_WINDOW_ACTIV: {

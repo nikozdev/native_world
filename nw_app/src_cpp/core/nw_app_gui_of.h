@@ -97,7 +97,7 @@ namespace NW
 	/// gui_of_sprite_editor class
 	struct NW_API gui_of_sprite_editor : public a_gui_of
 	{
-		using context = mem_ref<a_gfx_txr>;
+		using context = mem_ref<gfx_txr>;
 	public:
 		gui_of_sprite_editor();
 		// --getters
