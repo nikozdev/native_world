@@ -145,6 +145,7 @@ namespace NW
 	#define NW_LOG(loc, what);
 	#define NW_LOG_LC(loc, what);
 	#define NW_ASSERT(expr, comment);
+	#define NW_BREAK();
 	#define NW_ERR(function);
 
 	#define GL_CALL(function);

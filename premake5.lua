@@ -98,11 +98,11 @@ project "nw_engine"
 	filter "configurations:debug"
 		defines {"NW_DEBUG"}
 		symbols "on"
-		buildoptions "/md"
+		buildoptions "/MDd"
 	filter "configurations:release"
 		defines {"NW_RELEASE"}
 		optimize "on"
-		buildoptions "/md"
+		buildoptions "/MDd"
 
 --==<editor_project>==--
 project "nw_game"
@@ -161,11 +161,11 @@ project "nw_game"
 	filter "configurations:debug"
 		defines "NW_DEBUG"
 		symbols "on"
-		buildoptions "/md"
+		buildoptions "/MDd"
 	filter "configurations:release"
 		defines "NW_RELEASE"
 		optimize "on"
-		buildoptions "/md"
+		buildoptions "/MDd"
 
 --Copy and paste project premake5.lua files
 --==<glfw Project>==--

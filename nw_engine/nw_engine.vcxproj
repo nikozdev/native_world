@@ -22,13 +22,13 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -62,8 +62,9 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalOptions>/md %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/MDd %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -87,8 +88,9 @@
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalOptions>/md %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/MDd %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -222,6 +224,8 @@
     <ClInclude Include="ext\glm\glm\ext\matrix_int4x3_sized.hpp" />
     <ClInclude Include="ext\glm\glm\ext\matrix_int4x4.hpp" />
     <ClInclude Include="ext\glm\glm\ext\matrix_int4x4_sized.hpp" />
+    <ClInclude Include="ext\glm\glm\ext\matrix_integer.hpp" />
+    <ClInclude Include="ext\glm\glm\ext\matrix_integer.inl" />
     <ClInclude Include="ext\glm\glm\ext\matrix_projection.hpp" />
     <ClInclude Include="ext\glm\glm\ext\matrix_projection.inl" />
     <ClInclude Include="ext\glm\glm\ext\matrix_relational.hpp" />
@@ -454,6 +458,8 @@
     <ClInclude Include="ext\glm\glm\gtx\optimum_pow.inl" />
     <ClInclude Include="ext\glm\glm\gtx\orthonormalize.hpp" />
     <ClInclude Include="ext\glm\glm\gtx\orthonormalize.inl" />
+    <ClInclude Include="ext\glm\glm\gtx\pca.hpp" />
+    <ClInclude Include="ext\glm\glm\gtx\pca.inl" />
     <ClInclude Include="ext\glm\glm\gtx\perpendicular.hpp" />
     <ClInclude Include="ext\glm\glm\gtx\perpendicular.inl" />
     <ClInclude Include="ext\glm\glm\gtx\polar_coordinates.hpp" />
@@ -553,9 +559,6 @@
     <ClInclude Include="src_cpp\core\nw_core_engine.h" />
     <ClInclude Include="src_cpp\core\nw_core_state.h" />
     <ClInclude Include="src_cpp\core\nw_data_res.h" />
-    <ClInclude Include="src_cpp\glib\nw_gbuffer.h" />
-    <ClInclude Include="src_cpp\lib\nw_event.h" />
-    <ClInclude Include="src_cpp\lib\nw_singleton.h" />
     <ClInclude Include="src_cpp\ecs\nw_collider_cmp.h" />
     <ClInclude Include="src_cpp\ecs\nw_entity.h" />
     <ClInclude Include="src_cpp\ecs\nw_entity_cmp.h" />
@@ -572,6 +575,7 @@
     <ClInclude Include="src_cpp\glib\gcontext\nw_framebuf.h" />
     <ClInclude Include="src_cpp\glib\gcontext\nw_gcontext.h" />
     <ClInclude Include="src_cpp\glib\gcontext\nw_window.h" />
+    <ClInclude Include="src_cpp\glib\nw_gbuffer.h" />
     <ClInclude Include="src_cpp\glib\nw_glib_core.h" />
     <ClInclude Include="src_cpp\glib\render\nw_drawable.h" />
     <ClInclude Include="src_cpp\glib\render\nw_texture.h" />
@@ -586,9 +590,11 @@
     <ClInclude Include="src_cpp\gui_decl.hpp" />
     <ClInclude Include="src_cpp\lib\nw_algorithm.h" />
     <ClInclude Include="src_cpp\lib\nw_container.h" />
+    <ClInclude Include="src_cpp\lib\nw_event.h" />
     <ClInclude Include="src_cpp\lib\nw_io_lib.h" />
     <ClInclude Include="src_cpp\lib\nw_math.h" />
     <ClInclude Include="src_cpp\lib\nw_memory.h" />
+    <ClInclude Include="src_cpp\lib\nw_singleton.h" />
     <ClInclude Include="src_cpp\lib\nw_string.h" />
     <ClInclude Include="src_cpp\lib\nw_time.h" />
     <ClInclude Include="src_cpp\lib\utils\math_matrix.h" />
@@ -616,52 +622,183 @@
     <ClInclude Include="src_cpp\sys\nw_time_sys.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src_cpp\core\nw_core_engine.cpp" />
-    <ClCompile Include="src_cpp\core\nw_data_res.cpp" />
-    <ClCompile Include="src_cpp\ecs\nw_collider_cmp.cpp" />
-    <ClCompile Include="src_cpp\ecs\nw_entity.cpp" />
-    <ClCompile Include="src_cpp\ecs\nw_entity_cmp.cpp" />
-    <ClCompile Include="src_cpp\ecs\nw_graphics_cmp.cpp" />
-    <ClCompile Include="src_cpp\ecs\nw_physics_cmp.cpp" />
-    <ClCompile Include="src_cpp\ecs\nw_scene.cpp" />
-    <ClCompile Include="src_cpp\ecs\nw_script_cmp.cpp" />
-    <ClCompile Include="src_cpp\ecs\nw_transform_cmp.cpp" />
-    <ClCompile Include="src_cpp\glib\control\nw_draw_engine.cpp" />
-    <ClCompile Include="src_cpp\glib\control\nw_draw_state.cpp" />
-    <ClCompile Include="src_cpp\glib\control\nw_gapi.cpp" />
-    <ClCompile Include="src_cpp\glib\control\nw_gcamera_lad.cpp" />
-    <ClCompile Include="src_cpp\glib\gcontext\nw_framebuf.cpp" />
-    <ClCompile Include="src_cpp\glib\gcontext\nw_gcontext.cpp" />
-    <ClCompile Include="src_cpp\glib\gcontext\nw_window.cpp" />
-    <ClCompile Include="src_cpp\glib\nw_gbuffer.cpp" />
-    <ClCompile Include="src_cpp\glib\nw_glib_core.cpp" />
-    <ClCompile Include="src_cpp\glib\render\nw_drawable.cpp" />
-    <ClCompile Include="src_cpp\glib\render\nw_texture.cpp" />
-    <ClCompile Include="src_cpp\glib\vision\nw_gcamera.cpp" />
-    <ClCompile Include="src_cpp\glib\vision\nw_gmaterial.cpp" />
-    <ClCompile Include="src_cpp\glib\vision\nw_shader.cpp" />
-    <ClCompile Include="src_cpp\gui\nw_gui_core.cpp" />
-    <ClCompile Include="src_cpp\gui\nw_gui_of.cpp" />
-    <ClCompile Include="src_cpp\gui\nw_gui_widget.cpp" />
-    <ClCompile Include="src_cpp\lib\nw_imgui_build.cpp" />
-    <ClCompile Include="src_cpp\lib\nw_memory.cpp" />
-    <ClCompile Include="src_cpp\lib\nw_string.cpp" />
-    <ClCompile Include="src_cpp\lib\nw_time.cpp" />
-    <ClCompile Include="src_cpp\lib\utils\nw_code_chunk.cpp" />
-    <ClCompile Include="src_cpp\lua\nw_lua_core.cpp" />
-    <ClCompile Include="src_cpp\lua\nw_lua_vm.cpp" />
+    <ClCompile Include="src_cpp\core\nw_core_engine.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\core\nw_data_res.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\ecs\nw_collider_cmp.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\ecs\nw_entity.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\ecs\nw_entity_cmp.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\ecs\nw_graphics_cmp.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\ecs\nw_physics_cmp.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\ecs\nw_scene.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\ecs\nw_script_cmp.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\ecs\nw_transform_cmp.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\control\nw_draw_engine.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\control\nw_draw_state.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\control\nw_gapi.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\control\nw_gcamera_lad.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\gcontext\nw_framebuf.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\gcontext\nw_gcontext.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\gcontext\nw_window.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\nw_gbuffer.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\nw_glib_core.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\render\nw_drawable.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\render\nw_texture.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\vision\nw_gcamera.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\vision\nw_gmaterial.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\glib\vision\nw_shader.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\gui\nw_gui_core.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\gui\nw_gui_of.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\gui\nw_gui_widget.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\lib\nw_imgui_build.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\lib\nw_memory.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\lib\nw_string.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\lib\nw_time.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\lib\utils\nw_code_chunk.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\lua\nw_lua_core.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\lua\nw_lua_vm.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
     <ClCompile Include="src_cpp\nw_pch.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src_cpp\phys\nw_phys_engine.cpp" />
-    <ClCompile Include="src_cpp\sys\nw_data_sys.cpp" />
-    <ClCompile Include="src_cpp\sys\nw_ev_sys.cpp" />
-    <ClCompile Include="src_cpp\sys\nw_gui_sys.cpp" />
-    <ClCompile Include="src_cpp\sys\nw_io_sys.cpp" />
-    <ClCompile Include="src_cpp\sys\nw_log_sys.cpp" />
-    <ClCompile Include="src_cpp\sys\nw_mem_sys.cpp" />
-    <ClCompile Include="src_cpp\sys\nw_rand_sys.cpp" />
-    <ClCompile Include="src_cpp\sys\nw_time_sys.cpp" />
+    <ClCompile Include="src_cpp\phys\nw_phys_engine.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\sys\nw_data_sys.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\sys\nw_ev_sys.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\sys\nw_gui_sys.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\sys\nw_io_sys.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\sys\nw_log_sys.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\sys\nw_mem_sys.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\sys\nw_rand_sys.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src_cpp\sys\nw_time_sys.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ext\glm\doc\api\a00001_source.html" />
@@ -1373,14 +1510,14 @@
     <None Include="src_lua\estates\est_default.lua" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="ext\glfw\glfw.vcxproj">
-      <Project>{9563977C-819A-980D-2A87-7E10169D140F}</Project>
+    <ProjectReference Include="ext\glfw\GLFW.vcxproj">
+      <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
     </ProjectReference>
     <ProjectReference Include="ext\glad\glad.vcxproj">
       <Project>{DD62977C-C999-980D-7286-7E105E9C140F}</Project>
     </ProjectReference>
-    <ProjectReference Include="ext\imgui\imgui.vcxproj">
-      <Project>{0098A80F-6CAC-D0C0-352E-7420A101CDF1}</Project>
+    <ProjectReference Include="ext\imgui\ImGui.vcxproj">
+      <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
     </ProjectReference>
     <ProjectReference Include="ext\lua_lib\lua_lib.vcxproj">
       <Project>{9D0A4E95-09EA-CC30-1202-58077E603392}</Project>

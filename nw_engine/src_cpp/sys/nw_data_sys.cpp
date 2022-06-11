@@ -60,24 +60,23 @@ namespace NW
         FStream fStream;
         fStream.exceptions(std::ios::badbit | std::ios::failbit);
 
-        if (true) {
-            AShader::Create("shd_default");
-            DataSys::GetDataRes<AShader>("shd_default")->LoadF("D:/dev/native_world/nw_engine/src_glsl/batch_3d.glsl");
-        }
-        if (true) {
-            ATexture2d::Create("tex_white_solid");
-            GetDataRes<ATexture2d>("tex_white_solid")->LoadF("");
-        }
-        if (true) {
-            GMaterial* pGMtl = MemSys::NewT<GMaterial>("gmt_default");
-        }
+        AShader* pShader = AShader::Create("shd_default");
+        pShader->LoadF("src_glsl/batch_3d.glsl");
+        
+        ATexture* pTexture = ATexture2d::Create("tex_white_solid");
+        pTexture->LoadF("");
+        
+        GMaterial* pMaterial = MemSys::NewT<GMaterial>("gmt_default");
+        pMaterial->SetShader(pShader);
+        pMaterial->SetTexture(pTexture);
+        
         return true;
     }
 
     void DataSys::OnQuit()
     {
         if (true) {
-            MemSys::DelT<AShader>(GetDataRes<AShader>("gmt_default"));
+            MemSys::DelT<AShader>(GetDataRes<AShader>("shd_default"));
         }
         if (true) {
             MemSys::DelT<ATexture2d>(GetDataRes<ATexture2d>("tex_white_solid"));

@@ -15,8 +15,8 @@
 #if (NW_GUI & NW_GUI_IMGUI)
 #include <imgui.h>
 #include <imgui_internal.h>
-#include <examples/imgui_impl_opengl3.h>
-#include <examples/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <backends/imgui_impl_glfw.h>
 #endif	// NW_GUI
 
 namespace NW

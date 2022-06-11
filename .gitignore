@@ -1,8 +1,9 @@
 # Ignore these directories
 .vs/
 bin/
-.git/
-native_world/ext//
+native_world/ext
 # Files
-**.vcxproj**
-*.sln
+**/*.vcxproj**
+**/*.sln
+**/*.tlog
+**/*.obj
