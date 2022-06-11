@@ -31,7 +31,6 @@ namespace CN
 			for (int i = 0; i < attribs->size(); i++)
 			{// Add all attributes of VBO to VAO layout
 				m_layout.addAttrib(attribs->at(i));
-				m_layout.addAttrib(attribs->at(i));
 			}
 			for (int i = 0; i < attribs->size(); i++)
 			{// Config every attribute due to layout's attributes

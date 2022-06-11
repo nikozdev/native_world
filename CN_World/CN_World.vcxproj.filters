@@ -24,4 +24,13 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\core_2d_fs.lua" />
+    <None Include="shaders\core_2d_vs.lua" />
+    <None Include="shaders\obj0_2d_fs.lua" />
+    <None Include="shaders\obj0_2d_vs.lua" />
+    <None Include="shaders\obj0_3d_fs.lua" />
+    <None Include="shaders\obj0_3d_phong_fs.lua" />
+    <None Include="shaders\obj0_3d_vs.lua" />
+  </ItemGroup>
 </Project>

@@ -3,6 +3,8 @@
 
 #include <extern/GLEW/glew.h>
 
+#include <filesystem>
+
 namespace CN
 {
 	namespace GL
@@ -184,7 +186,8 @@ namespace CN
 			shFile.exceptions(std::ifstream::badbit || std::ifstream::failbit);
 			try
 			{
-				shFile.open(shaderPath);
+				auto path = (std::filesystem::current_path() / shaderPath).string();
+				shFile.open(path);
 				shStream << shFile.rdbuf();
 				shFile.close();
 				shaderCode = shStream.str();

@@ -64,7 +64,6 @@ namespace CN
         return false;
     }
 
-    // 
     /*
     int _png_load(const char* file, int* width, int* height) {
         FILE* f;
