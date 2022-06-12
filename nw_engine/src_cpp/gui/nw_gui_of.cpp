@@ -586,7 +586,7 @@ namespace NW
 		UInt32 IndData[] = { 0, 1, 2,	2, 3, 0 };
 		pIndBuf.reset(AIndexBuf::Create(sizeof(IndData), &IndData[0]));
 		
-		pShader->LoadF("D:/dev/native_world/nw_engine/src_glsl/display_img.glsl");
+		pShader->LoadF("src_glsl/display_img.glsl");
 		pVtxBuf->SetLayout(pShader->GetVertexLayout());
 
 		FrameBufInfo fbInfo;

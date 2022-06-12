@@ -118,6 +118,18 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="src_glsl\batch_2d.glsl" />
+    <None Include="src_glsl\batch_3d.glsl" />
+    <None Include="src_glsl\batch_gizmos.glsl" />
+    <None Include="src_glsl\batch_gui.glsl" />
+    <None Include="src_glsl\batch_lines.glsl" />
+    <None Include="src_glsl\batch_points.glsl" />
+    <None Include="src_glsl\core_2d.glsl" />
+    <None Include="src_glsl\core_3d.glsl" />
+    <None Include="src_glsl\display_img.glsl" />
+    <None Include="src_glsl\frame.glsl" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\nw_engine\nw_engine.vcxproj">
       <Project>{7F70A556-EBDA-59CD-3419-0B73A0C23722}</Project>
     </ProjectReference>

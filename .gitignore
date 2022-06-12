@@ -1,6 +1,6 @@
 # Ignore these directories
 .vs/
-bin/
+
 # Files
 **/*.vcxproj**
 **/*.sln
