@@ -57,6 +57,9 @@
     <ClCompile Include="src_cpp\gl\cn_gl_lib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="extern\GLAD\glad.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src_cpp\events\ev_Event.cpp">
@@ -164,9 +167,6 @@
     <ClInclude Include="extern\GLFW\glfw3native.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="extern\GLEW\glew.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src_cpp\_hpp\cn\scenes\scn_scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -185,10 +185,12 @@
     <ClInclude Include="src_cpp\_hpp\gl\cn_gl_lib.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="extern\GLFW\glfw3.lib" />
-    <Library Include="extern\GLEW\glew32.lib" />
+    <ClInclude Include="extern\GLAD\khrplatform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\GLAD\glad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\core_2d_fs.lua" />

@@ -1,7 +1,13 @@
 # Ignore these directories
 .vs/
 bin/
-.git/
 CN_Engine/extern/LuaJIT-2.0.5/
 # Files
+**/*.o
+**/*.d
+**/*.out
+**/*.obj
+**/*.pdb
+**/*.exe
+**/*.exp
 *.user

@@ -2,7 +2,7 @@
 
 #include <cn/Window/WinWindow.h>
 
-#include <extern/GLEW/glew.h>
+#include <extern/GLAD/glad.h>
 #include <extern/GLFW/glfw3.h>
 
 #include <events/ev_EvSys.h>
@@ -20,7 +20,7 @@ namespace CN
 	extern bool s_wndWork;
 	/// We need to know whether glfw is initialized or not
 	static bool s_GLFWinit = false;
-	static bool s_GLEWinit = false;
+	static bool s_GLADinit = false;
 }
 // Base Window class definitions
 namespace CN
@@ -93,11 +93,10 @@ namespace CN
 			m_data.Title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(m_wnd);
 
-		if (!s_GLEWinit)
+		if (!s_GLADinit)
 		{
-			CN_ASSERT(glewInit() == GLEW_OK, "Couldn't initialize GLEW");
-			s_GLEWinit = true;
-			glewExperimental = GL_TRUE;
+			CN_ASSERT(gladLoadGL(), "Couldn't initialize GLEW");
+			s_GLADinit = true;
 		}
 		setVSync(true);
 		// Bind own data pointer to window. It allows to get this pointer in callback

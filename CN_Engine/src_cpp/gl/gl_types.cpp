@@ -2,7 +2,7 @@
 #include <gl/gl_types.h>
 #include <gl/gl_structs.h>
 
-#include <extern/GLEW/glew.h>
+#include <extern/GLAD/glad.h>
 
 namespace CN
 {

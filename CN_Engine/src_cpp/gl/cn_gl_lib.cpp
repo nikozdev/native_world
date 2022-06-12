@@ -1,6 +1,6 @@
 #include <cn_pch.hpp>
 #include <gl/cn_gl_lib.hpp>
-#include <extern/GLEW/glew.h>
+#include <extern/GLAD/glad.h>
 
 namespace CN
 {

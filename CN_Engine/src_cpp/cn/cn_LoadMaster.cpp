@@ -1,7 +1,8 @@
 #include <cn_pch.hpp>
 #include <cn\cn_LoadMaster.h>
+
 #include <extern/stbiLoad/stb_image.h>
-#include <extern/GLEW/glew.h>
+#include <extern/GLAD/glad.h>
 
 // LoadMaster
 namespace CN

@@ -6,7 +6,8 @@
 #include <gl/gl_structs.h>
 
 #include <cn/cn_LoadMaster.h>
-#include <extern/GLEW/glew.h>
+
+#include <extern/GLAD/glad.h>
 
 namespace CN
 {

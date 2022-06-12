@@ -1,7 +1,7 @@
 #include <cn_pch.hpp>
 #include <gl/gl_Shader.h>
 
-#include <extern/GLEW/glew.h>
+#include <extern/GLAD/glad.h>
 
 #include <filesystem>
 

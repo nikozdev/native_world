@@ -134,6 +134,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(SolutionDir)extern\GLFW\glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -152,9 +153,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(SolutionDir)extern\GLFW\glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="extern\GLAD\glad.cpp" />
     <ClCompile Include="extern\stbiLoad\ch_stbi_load.cpp" />
     <ClCompile Include="src_cpp\CheerNik.cpp" />
     <ClCompile Include="src_cpp\events\ev_EvSys.cpp" />
@@ -174,7 +177,8 @@
     <ClCompile Include="src_cpp\math\cn_math.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="extern\GLEW\glew.h" />
+    <ClInclude Include="extern\GLAD\glad.h" />
+    <ClInclude Include="extern\GLAD\khrplatform.h" />
     <ClInclude Include="extern\GLFW\glfw3.h" />
     <ClInclude Include="extern\GLFW\glfw3native.h" />
     <ClInclude Include="src_cpp\_hpp\cn\layers\cn_AppLayer.h" />
@@ -216,10 +220,6 @@
     <ClInclude Include="src_cpp\_hpp\phys\cn_phys.h" />
     <ClInclude Include="src_cpp\_hpp\cn\scenes\scn_scene.h" />
     <ClInclude Include="src_cpp\events\ev_Event.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="extern\GLEW\glew32.lib" />
-    <Library Include="extern\GLFW\glfw3.lib" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\core_2d_fs.lua" />
