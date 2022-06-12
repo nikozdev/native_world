@@ -1,6 +1,5 @@
 # directories
 bin/
-ext/
 .vs/
 
 # gPrerequisites
@@ -11,6 +10,9 @@ ext/
 *.lo
 *.o
 *.obj
+*.tlog
+*.log
+*.recipe
 
 # Precompiled Headers
 *.gch
