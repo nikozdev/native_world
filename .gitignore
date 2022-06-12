@@ -1,7 +1,6 @@
 # Ignore these directories
 .vs/
 bin/
-native_world/ext
 # Files
 **/*.vcxproj**
 **/*.sln
