@@ -1,6 +1,18 @@
 # Ignore these directories
 .vs/
-
+**/*.o
+**/*.d
+**/*.out
+**/*.obj
+**/*.pdb
+**/*.tlog
+**/*.recipe
+**/*.ilk
+**/*.log
+**/*.pch
+**/*.idb
+**/*.exe
+**/*.lib
 # Files
 **/*.vcxproj**
 **/*.sln
