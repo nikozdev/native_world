@@ -1,5 +1,2 @@
-*.vsxproj* binary
-*.docx diff=word
-*.png diff=exif
-#*.c filter=indent
-#template export-ignore
+# auto-detect and normalise LF instead of having core.autocrlf set
+* text=auto
